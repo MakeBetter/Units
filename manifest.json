@@ -1,0 +1,61 @@
+{
+    "name": "Swiftly",
+    "version": "0.5",
+    "manifest_version": 2,
+    "description": "Keyboard navigation on web pages + better focus using units.",
+     "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "settings/popup.html",
+        "default_title": "Units"
+    },
+
+    "background": {
+        "scripts": ["common_scripts/commonHelper.js", "background_scripts/searchData.js",
+            "background_scripts/searchExternalSite.js",
+            "background_scripts/urlData.js", "background_scripts/mainBackgroundScript.js"]
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+
+            "js": ["vendor/jquery-1.9.0.min.js", "vendor/mousetrap-modified.js", "common_scripts/commonHelper.js",
+                "content_scripts/helper.js",
+                "content_scripts/mousetrapExtensions.js", "content_scripts/chromeAltHack.js",
+                "content_scripts/help.js", "content_scripts/selectFocusables.js",
+                "content_scripts/mainContentScript.js"],
+
+            "css": ["swiftly.css"],
+            "run_at": "document_start",
+            "all_frames": false
+        }
+    ],
+
+    "permissions": [
+        "tabs"
+    ],
+
+    "commands": {
+        "toggle-feature-foo": {
+            "suggested_key": {
+                "default": "Alt+Shift+Y",
+                "mac": "Alt+Shift+Y"
+            },
+            "description": "Toggle feature foo"
+        },
+        "test": {
+            "suggested_key": {
+                "default": "Alt+Y",
+                "mac": "Alt+Y"
+            },
+            "description": "Toggle feature foo"
+        },
+
+        "toggle-feature-bar": {
+            "suggested_key": {
+                "default": "Alt+Shift+P"
+            },
+            "description": "Toggle feature bar"
+        }
+    }
+}
