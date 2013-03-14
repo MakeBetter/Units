@@ -43,9 +43,11 @@
     underlying DOM element(s), rather  than the jQuery set which changes whenever the Units Array is recalculated,
     for instance on dom change. E.g: $unit.data('foo', bar) instead of $unit.foo = bar.
 
- The data is structured this way for efficient performance. This is so, because this way the retrieval of the array of
+ The data is structured this way because:
+ i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
  urlData objects associated with a URL's domain takes O(1) time, and search for the specific urlData object matching
  the URL is then restricted to the (very small) array.
+ ii) it results in better structure/organization compared to having arrays of regexps at the top level.
 
  6) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
 */
