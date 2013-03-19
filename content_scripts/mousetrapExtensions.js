@@ -86,13 +86,13 @@ function invokeSpaceOnElement(element) {
 function isElementEditable(element) {
 
     var tagName_lowerCase = element.tagName.toLowerCase(),
-        typeAttr_lowerCase = element.getAttribute("type") && element.getAttribute("type").toLowerCase(),
+        typeProp_lowerCase = element.type && element.type.toLowerCase(),
 
         editableInputTypes = ['text', 'date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
         'range', 'search', 'tel', 'time', 'url', 'week'];
 
-    // if 'input' element with an unspecified type attribute (defaults to text) or an explicitly specified editable one
-    if (tagName_lowerCase === 'input' && ( !typeAttr_lowerCase || editableInputTypes.indexOf(typeAttr_lowerCase) >= 0)) {
+    // if 'input' element with an unspecified type or an explicitly specified editable one
+    if (tagName_lowerCase === 'input' && ( !typeProp_lowerCase || editableInputTypes.indexOf(typeProp_lowerCase) >= 0)) {
 
         return true;
     }
