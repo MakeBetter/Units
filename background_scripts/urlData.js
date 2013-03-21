@@ -365,6 +365,9 @@ var urlToUrlDataMap = {
                    }
                }
            },
+           CUSpecifier: {
+               buildCUAround: "td.title>a"
+           },
        }
 };
 
