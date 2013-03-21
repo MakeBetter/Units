@@ -329,7 +329,7 @@ var urlToUrlDataMap = {
 
                CUSpecifier: {
                    CU: ".question, .answer",
-                   "overlay-padding": "5px"
+                   "overlay-padding": "0 5px 0 5px"
                }
            },
            {
