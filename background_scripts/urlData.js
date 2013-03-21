@@ -113,7 +113,8 @@ var urlToUrlDataMap = {
             CUSpecifier: {
                 CU: ".foo .bar",
                 main: ".main-link",
-                "overlay-padding": "5px"
+                "overlay-padding": "5px",
+                useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
             },
             fn_onCUSelection: function($deselectedCU, document) {
                // do anything here
@@ -268,7 +269,9 @@ var urlToUrlDataMap = {
                 CUSpecifier: {
                     CU: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
                     main: ".title",
-                    style: "minimal"
+                    // style: "minimal",
+                    useInnerElementsToGetOverlaySize: true,
+                    "overlay-padding": "5px 10px 5px 0"
                 },
                 CU_shortcuts: {
                     "upvote": {keys: ["u"],  selector: ".arrow.up, .arrow.upmod" },
@@ -366,7 +369,9 @@ var urlToUrlDataMap = {
                }
            },
            CUSpecifier: {
-               buildCUAround: "td.title>a"
+               buildCUAround: "td.title>a",
+               useInnerElementsToGetOverlaySize: true,
+               "overlay-padding": "3px 6px 3px 0"
            },
        }
 };

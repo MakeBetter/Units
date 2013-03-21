@@ -76,7 +76,6 @@ function $CUIsInvisible($CU) {
           return false;
       }
   }
-
   return true;
 }
 

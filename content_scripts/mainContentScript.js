@@ -413,7 +413,7 @@ function removeOverlay ($CU, type) {
  *
  * @param $CU
  * @param {string} type Can be 'selected' or 'hovered'
- * @return {*} Returns $overlay (the jQuery wrapper overlay element)
+ * @return {*} Displays and returns $overlay (i.e. a jQuery wrapped overlay element)
  */
 var showOverlay = function($CU, type) {
     if (!$CU || !$CU.length) {
@@ -919,43 +919,71 @@ var areCUsSame = function($1, $2) {
 
 };
 
-// returns a bounding rectangle for the constituents of a jQuery set $obj
+// returns a bounding rectangle for $CU
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
-var getBoundingRectangle = function($obj) {
+var getBoundingRectangle = function($CU) {
 
-    if (!$obj || !$obj.length)
+    if (!$CU || !$CU.length)
         return;
 
-    if ($obj.length === 1) {
-        var offset = $obj.offset();
+    var CUSpecifier = urlData.CUSpecifier,
+        elements = [];
+    if (CUSpecifier.useInnerElementsToGetOverlaySize) {
+        var $innermostDescendants = $CU.find('*').filter(function() {
+            if (!($(this).children().length)) {
+                return true;
+            }
+        });
+        elements = $innermostDescendants.get();
+    }
+    else {
+        elements = $CU.get();
+    }
+    return getBoundingRectangleForElements(elements);
+};
+
+// returns a bounding rectangle for the set (array) of DOM elements specified
+// the returned rectangle object has the keys: top, left, width, height, (such
+// that the rectangle object can be directly passed to jQuery's css() function).
+var getBoundingRectangleForElements = function(elements) {
+
+    if (!elements || !elements.length)
+        return;
+
+    if (elements.length === 1) {
+        var $el = $(elements[0]),
+            offset = $el.offset();
         return {
             top: offset.top,
             left: offset.left,
-            width: $obj.innerWidth(),
-            height: $obj.innerHeight()
+            width: $el.innerWidth(),
+            height: $el.innerHeight()
         };
-//
+
     }
 
     // if function has still not returned...
 
     // x1, y1 => top-left. x2, y2 => bottom-right.
-    // for the boundin   g rectangle:
+    // for the bounding rectangle:
     var x1 = Infinity,
         y1 = Infinity
         x2 = -Infinity,
         y2 = -Infinity;
 
-    $obj.each(function(i, el) {
-        var elPosition = $(el).css('position');
-        // ignore elements out of normal flow to calculate rectangle
 
-        if (elPosition === "fixed" || elPosition === "absolute" || elPosition === "relative") {
-            return;
+    for (var i = 0; i < elements.length; i++) {
+        var el = elements[i],
+            $el = $(el);
+            elPosition = $(el).css('position');
+        // ignore elements out of normal flow to calculate rectangle + hidden/invisible elements
+        if (elPosition === "fixed" || elPosition === "absolute" /*|| elPosition === "relative"*/
+            || !$el.is(':visible') || $el.css('visibility') === "hidden"
+            || !$el.innerWidth() || !$el.innerHeight()) {
+            continue;
         }
 
-        var $el = $(el);
         var offset = $el.offset();
 
         // for the current element:
@@ -978,7 +1006,7 @@ var getBoundingRectangle = function($obj) {
         if (_y2 > y2)
             y2 = _y2;
 
-    });
+    }
 
     // return an object with a format such that it can directly be passed to jQuery's css() function).
     return {
