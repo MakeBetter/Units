@@ -2686,7 +2686,7 @@ function disableExtension() {
         altShortcutKeys = [];
         $topLevelContainer.find('.' + class_usedForChromeAltHack).remove();
     }
-    bind(browserActionShortcuts.toggleExtension, disableExtension);
+    bind(browserActionShortcuts.toggleExtension, initializeExtension);
 }
 
 // call this to (re)initialize/reset the extension. first disables and then re-enables the extn.
