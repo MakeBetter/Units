@@ -203,7 +203,7 @@ var  getUrlData = function(locationObj) {
         return urlData;
     }
     else {
-        // TODO: unitSpecifier not found; anything else to be done?
+        // TODO: CUSpecifier not found; anything else to be done?
         return null;
     }
 
@@ -223,14 +223,14 @@ function stringifyFunctions(urlData) {
         return "(" + fn.toString() + ")";
     }
 
-    if (urlData.fn_onUnitSelection) {
-        urlData.fn_onUnitSelection = stringifyFn(urlData.fn_onUnitSelection);
+    if (urlData.fn_onCUSelection) {
+        urlData.fn_onCUSelection = stringifyFn(urlData.fn_onCUSelection);
     }
-    if (urlData.fn_onUnitDeselection) {
-        urlData.fn_onUnitDeselection = stringifyFn(urlData.fn_onUnitDeselection);
+    if (urlData.fn_onCUDeselection) {
+        urlData.fn_onCUDeselection = stringifyFn(urlData.fn_onCUDeselection);
     }
 
-    // to stringify any functions within 'unit_shortcuts' and 'page_shortcuts' objects which have the same structure
+    // to stringify any functions within 'CU_shortcuts' and 'page_shortcuts' objects which have the same structure
     var stringifyShortcuts = function(shortcuts) {
 
         if (shortcuts) {
@@ -244,7 +244,7 @@ function stringifyFunctions(urlData) {
     };
 
     stringifyShortcuts(urlData.page_shortcuts);
-    stringifyShortcuts(urlData.unit_shortcuts);
+    stringifyShortcuts(urlData.CU_shortcuts);
 
 }
 

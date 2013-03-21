@@ -6,7 +6,7 @@
 
 /* The 'urlToUrlDataMap' object (along with the 'specialDomain_masterDomain_map' object) provides a way to map a URL
  (stripped of http(s):// etc) to the data associated with that URL (called 'urlData'), which identifies elements of
-  importance on the webpage, including any "units", and the  associated keyboard shortcuts. The 'urlData' also specifies
+  importance on the webpage, including any Container Units (CUs), and the  associated keyboard shortcuts. The 'urlData' also specifies
   any other information associated with the URL.
 
  Notes:
@@ -38,10 +38,10 @@
 
  5) Regarding functions specified in the object:
     i) They will run in the context of the content script
-    ii) Most functions will have access to a $unit type variable. If for any reason, the function needs to modify any
+    ii) Most functions will have access to a $CU type variable. If for any reason, the function needs to modify any
     properties on it, it must be done indirectly using the jQuery data() function (so that it stays associated with
-    underlying DOM element(s), rather  than the jQuery set which changes whenever the Units Array is recalculated,
-    for instance on dom change. E.g: $unit.data('foo', bar) instead of $unit.foo = bar.
+    underlying DOM element(s), rather  than the jQuery set which changes whenever the CUs array is recalculated,
+    for instance on dom change. E.g: $CU.data('foo', bar) instead of $CU.foo = bar.
 
  The data is structured this way because:
  i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
@@ -66,59 +66,59 @@ var urlToUrlDataMap = {
             urlPatterns: ["@.0000-example.com/images/*, www.example.com/archive/images/*"],
             // Use regexps for cases where a simple url-pattern using '*' and '@' won't suffice, for example:
             urlRegexps: [/^www\.000-example\.com\/image|images$/],
-            unitSpecifier: ".image, .post"  // NOTE: currently units within others units are removed
+            CUSpecifier: ".image, .post"  // NOTE: currently CUs within others CUs are removed
         },
 
         {
             urlPatterns: ["www.0000-example.com/*"],
             urlRegexps: [], // since the array is empty this is redundant
 
-            /* There are two types of shortcuts that can be specified here: page-specific and unit-specific.
+            /* There are two types of shortcuts that can be specified here: page-specific and CU-specific.
              Each shortcut is identified by a property that indicates its purpose, and has associated with it
              a set of keyboard shortcuts that invoke it. Each shortcut also has one of the  properties: 'selector'
               or 'fn'.
 
              If the 'selector' property is specified, and is a string, a click is invoked on the *first* element
-             matching it within the page or the unit, depending on whether the shortcut is page or unit specific.
+             matching it within the page or the CU, depending on whether the shortcut is page or CU specific.
              If 'selector' specifies an array of selectors, the behavior is identical except that now a series of clicks
              will be invoked in order. (can be used to automate a sequence of clicks). If a pause is required after
              clicking an  element corresponding to a selector, before the element corresponding to the next selector
              can be found, it will be handled automatically)
 
              If, instead, the 'fn' property is used, it specifies a function that will be executed when the shortcut is
-             invoked. The function is passed two arguments -- $selectedUnit (which is the jQuery set
-             consisting of the elements comprising the unit) and document
+             invoked. The function is passed two arguments -- $selectedCU (which is the jQuery set
+             consisting of the elements comprising the CU) and document
 
-             [When using the 'fn' key, given that the functions for both page-specific and unit-specific shortcuts
+             [When using the 'fn' key, given that the functions for both page-specific and CU-specific shortcuts
              are passed the same arguments, it doesn't technically matter if the shortcut is defined as page
-             specific or unit specific, except as a matter of good practice.]
+             specific or CU specific, except as a matter of good practice.]
              */
             page_shortcuts: {
                 "images": { keys: ["i"], selector: "#images"},
 
-                "messages": { keys: ["m"], fn: function(document, $selectedUnit) {
+                "messages": { keys: ["m"], fn: function(document, $selectedCU) {
                     $(document).find('#messages').click();
                 }}
             },
-            unit_shortcuts: {
+            CU_shortcuts: {
                 "like": {keys: ["l", "u"],  selector: ".upvote" },
 
                 // if 'selector' specifies an array of selectors, clicks will be invoked on those elements in order
                 "foo": {keys: ["f"], selector: [".abc", "a.xyz"]},
 
-                "collapse-comments": {keys: ["-", "c"], fn: function(document, $selectedUnit) {
-                    //do anything. like invoke some javascript, apply css to $selectedUnit, etc
+                "collapse-comments": {keys: ["-", "c"], fn: function(document, $selectedCU) {
+                    //do anything. like invoke some javascript, apply css to $selectedCU, etc
                 }}
             },
-            unitSpecifier: {
-                unit: ".foo .bar",
+            CUSpecifier: {
+                CU: ".foo .bar",
                 main: ".main-link",
                 "overlay-padding": "5px"
             },
-            fn_onUnitSelection: function($deselectedUnit, document) {
+            fn_onCUSelection: function($deselectedCU, document) {
                // do anything here
             },
-            fn_onUnitDeselection: function($deselectedUnit, document) {
+            fn_onCUDeselection: function($deselectedCU, document) {
                 // do anything here
             },
             // element that should be clicked to load "next" page in a paginated view or "more" content in an infinite
@@ -135,23 +135,23 @@ var urlToUrlDataMap = {
     ],
     "amazon.com": {
         urlPatterns: ["www.amazon.com*"],
-        unitSpecifier: "#center .prod"
+        CUSpecifier: "#center .prod"
     },
     "facebook.com": {
         urlPatterns: ["www.facebook.com*"],
-        unit_shortcuts: {
+        CU_shortcuts: {
             "like": {keys: ["l", "u"],  selector: ".UFILikeLink" },
             "comment": {keys: ["c"],  selector: ".comment_link" },
             "share": {keys: ["s"],  selector: ".share_action_link" },
             "view_all_comments": {keys: ["v"],  selector: ".UFIPagerLink" }
         },
-        unitSpecifier: {
-//            unit: "li.genericStreamStory.uiUnifiedStory, .fbTimelineUnit, .escapeHatchUnit, .fbTimelineCompactSection",
+        CUSpecifier: {
+//            CU: "li.genericStreamStory.uiUnifiedStory, .fbTimelineUnit, .escapeHatchUnit, .fbTimelineCompactSection",
 
             /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com
              the rest -> timeline pages
              */
-            unit: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer"
+            CU: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer"
         },
         header: "#headNav, .stickyHeaderWrap",
         nextOrMore: ".uiMorePagerPrimary"
@@ -172,11 +172,11 @@ var urlToUrlDataMap = {
                   selector: ["#hdtb_tls", ".hdtb-mn-hd:contains('Any time')", ".q.qs:contains('Past year')"]
               }
             },
-            unit_shortcuts: {
+            CU_shortcuts: {
                 "toggle-preview": {
                     keys: ["p"],
-                    // this function is meant to work in conjunction with fn_onUnitDeselection (see below)
-                    fn: function($selectedUnit, document) {
+                    // this function is meant to work in conjunction with fn_onCUDeselection (see below)
+                    fn: function($selectedCU, document) {
                         var $previewPane = $('#nycp');
                         // Closes any open preview on the page.
                         var closePreview = function() {
@@ -185,9 +185,9 @@ var urlToUrlDataMap = {
                                 closePreviewBtn &&  closePreviewBtn.click();
                             }
                         };
-                        // Shows preview associated with currently selected unit ($selectedUnit)
+                        // Shows preview associated with currently selected CU ($selectedCU)
                         var showPreview = function() {
-                            var $previewButton = $selectedUnit.find(".vspib");
+                            var $previewButton = $selectedCU.find(".vspib");
                             $previewButton.length && $previewButton[0].click();
                         };
                         if ($previewPane.is(':visible')) {
@@ -199,14 +199,14 @@ var urlToUrlDataMap = {
                     }
                 }
             },
-            fn_onUnitDeselection: function($deselectedUnit, document) {
+            fn_onCUDeselection: function($deselectedCU, document) {
                 if ($('#nycp').is(':visible')) { // if the preview pane is already visible
                     var closePreviewBtn = document.getElementById("nycx");
                     closePreviewBtn &&  closePreviewBtn.click();
                 }
             },
-            unitSpecifier: {
-                unit: "#res li.g, #foot, #brs",
+            CUSpecifier: {
+                CU: "#res li.g, #foot, #brs",
                 main: "a.l",
                 "overlay-padding": "5px"
             }
@@ -214,30 +214,30 @@ var urlToUrlDataMap = {
         {
             // for scholar.google.com etc.
             urlPatterns: ["scholar.google.@/*", "scholar.google.co.@/*"],
-            unitSpecifier: ".gs_r, .gs_ico_nav_next"
+            CUSpecifier: ".gs_r, .gs_ico_nav_next"
         }
     ],
     "guardian.co.uk": {
         urlPatterns: ["www.guardian.co.uk*"],
-        unitSpecifier:"#inner-wrapper li.b3, #inner-wrapper li.inline-pic, #inner-wrapper li.wide-image"
+        CUSpecifier:"#inner-wrapper li.b3, #inner-wrapper li.inline-pic, #inner-wrapper li.wide-image"
     },
     "nytimes.com": {
         urlPatterns: ["www.nytimes.com*"],
-        unitSpecifier: ".story:not(.clearfix,.advertisement), #wellRegion .column, .cColumn .columnGroup"
+        CUSpecifier: ".story:not(.clearfix,.advertisement), #wellRegion .column, .cColumn .columnGroup"
     },
     "quora.com": [
         {
             urlPatterns: ["www.quora.com"], // main quora feed page
-            unitSpecifier: {
-                unit: ".feed_item, .announcement, .pager_next.action_button",  //TODO: needs work
+            CUSpecifier: {
+                CU: ".feed_item, .announcement, .pager_next.action_button",  //TODO: needs work
                 main: " a.question_link"
             }
 
         },
         {
             urlPatterns: ["www.quora.com/*"], // all other pages on quora (tested currently for question pages)
-            unitSpecifier: {
-                unit: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
+            CUSpecifier: {
+                CU: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
                 main: ".answer_user>span>a.user",
 //                "overlay-padding": "5px"
             }
@@ -246,13 +246,13 @@ var urlToUrlDataMap = {
     "reddit.com": [
             {
                 urlPatterns: ["www.reddit.com/*/comments/*"],
-                unitSpecifier: {
-                    buildUnitAround: ".arrow.up, .usertext-edit",
+                CUSpecifier: {
+                    buildCUAround: ".arrow.up, .usertext-edit",
     //                exclude: ".panestack-title, .menuarea"
     //                main: ".title",
     //                style: "minimal"
                 },
-                unit_shortcuts: {
+                CU_shortcuts: {
                     "upvote": {keys: ["u"],  selector: ".arrow.up, .arrow.upmod" },
                     "downvote": {keys: ["d"],  selector: ".arrow.down, .arrow.downmod" },
                     "share": {keys: ["s"],  selector: ".share-button .active" },
@@ -265,18 +265,18 @@ var urlToUrlDataMap = {
             },
             {
                 urlPatterns: ["www.reddit.com*"],
-                unitSpecifier: {
-                    unit: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
+                CUSpecifier: {
+                    CU: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
                     main: ".title",
                     style: "minimal"
                 },
-                unit_shortcuts: {
+                CU_shortcuts: {
                     "upvote": {keys: ["u"],  selector: ".arrow.up, .arrow.upmod" },
                     "downvote": {keys: ["d"],  selector: ".arrow.down, .arrow.downmod" },
                     "share": {keys: ["s"],  selector: ".share-button .active" },
                     "edit": {keys: ["c"],
-                        fn: function($selectedUnit, document) {
-                            var $el = $selectedUnit.find(".flat-list.buttons .comments");
+                        fn: function($selectedCU, document) {
+                            var $el = $selectedCU.find(".flat-list.buttons .comments");
                             var ctrlClickEvent = document.createEvent("MouseEvents");
 
                             // detecting OS detection based on:
@@ -304,18 +304,18 @@ var urlToUrlDataMap = {
     // "stackoverflow.com": [
     //     {
     //         urlPatterns: ["stackoverflow.com/questions/*"],
-    //         unitSpecifier: ".question, .answer"
+    //         CUSpecifier: ".question, .answer"
     //     },
     //     {
     //         urlPatterns: ["stackoverflow.com*"],
-    //         unitSpecifier: ".question-summary"
+    //         CUSpecifier: ".question-summary"
     //     }
     // ],
     "stackoverflow.com": [
            {
                urlPatterns: ["stackoverflow.com/questions/*"],
 
-               unit_shortcuts: {
+               CU_shortcuts: {
                    "upvote": {keys: ["u"],  selector: ".vote-up-off" },
                    "downvote": {keys: ["d"],  selector: ".vote-down-off" },
                    "share": {keys: ["s"],  selector: ".short-link" },
@@ -324,30 +324,30 @@ var urlToUrlDataMap = {
                    "star": {keys: ["r"],  selector: ".star-off" }
                },
 
-               unitSpecifier: {
-                   unit: ".question, .answer",
+               CUSpecifier: {
+                   CU: ".question, .answer",
                    "overlay-padding": "5px"
                }
            },
            {
                urlPatterns: ["stackoverflow.com*"],
-               unitSpecifier: ".question-summary"
+               CUSpecifier: ".question-summary"
            }
        ],
     "wikipedia.org": {
         urlPatterns: ["@.wikipedia.org/wiki/*"],
-        unitSpecifier: {
-            buildUnitAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
+        CUSpecifier: {
+            buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
             exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
         }
     },
     "ycombinator.com": {
            urlPatterns: ["news.ycombinator.com*"],
-           unit_shortcuts: {
+           CU_shortcuts: {
                "comment": {
                    keys: ["c"],
-                   fn: function($selectedUnit, document) {
-                       var $el = $selectedUnit.find("a:contains('comment'), a:contains('discuss')");
+                   fn: function($selectedCU, document) {
+                       var $el = $selectedCU.find("a:contains('comment'), a:contains('discuss')");
                        var ctrlClickEvent = document.createEvent("MouseEvents");
 
                        // detecting OS detection based on:

@@ -1,8 +1,8 @@
 /* NOTES
-1)  The set of all logical units of navigation/user attention on a page are simply called "Units" in the
-    context of this program. Each unit consists of one or more DOM elements.
+1)  A 'Container Unit' is set of DOM elements that together consitute an logical unit of attention/navigation/access. 
+    The set of all the important container units on the page is called CUs. Each CU consists of one or more DOM elements.
 
-2)  The set of all elements that can receive focus on the current page are called the "focusables"
+2)  Elements that can receive focus on the current page are called the "focusables"
 
 3)  In the comments, including JSDoc snippets, the term "JQuery *set*" is used to mean a JQuery
     object that can contain *one or more* DOM elements; the term "JQuery *wrapper*" is used to
@@ -27,10 +27,10 @@
 
 /* TODOs:
 
-- on quora etc, clicking an a unit scrolls suddenly
+- on quora etc, clicking an a CU scrolls suddenly
 
 - exclude images from rect if affecting both dimensions (including single child ancestors)
-- on stackoverflow / questions page: clicking a unit, messes with
+- on stackoverflow / questions page: clicking a CU, messes with
  text selection etc in some weird way. doesn't happen every time.
 
 - add padding to the overlay(s) (see wikipedia pages for why)
@@ -40,38 +40,38 @@
 - override scroll animation when cycling from last to first or first to last
 - quora: click doesnt focus
 - stackoverflow: clicking doesn't focus main element/etc
-- exclude display:none when populating $units
+- exclude display:none when populating $CUs
 
 - implement exclude
 
 - animate hovering/unhovering and selection/unselection
 
-check where all deselectUnit() is being called, and if that needs any modifying/placing a check around the call
+check where all deselectCU() is being called, and if that needs any modifying/placing a check around the call
 
 remove prevALL etc if not using
 
 */
 
 var currentUrl = window.location.href,
-    urlData,    // Data that identifies elements and  unit and specifies shortcuts and other information for the
+    urlData,    // Data that identifies elements and  CU and specifies shortcuts and other information for the
                         // current url. This is updated whenever the current url changes.
 
-    $unitsArray = [], /* An array of jQuery sets. The array represents the *sequence* of Units on the current page.
+    $CUsArray = [], /* An array of jQuery sets. The array represents the *sequence* of CUs on the current page.
     Each constituent element (which is a jQuery set) represents the set of DOM elements that constitute a single
-    unit for the current page.
-    Most web pages will allow writing simple selectors such that each unit can be represented as a jQuery set
+    CU for the current page.
+    Most web pages will allow writing simple selectors such that each CU can be represented as a jQuery set
     consisting of a single DOM element.(Because these web pages group related logical entities in a single container,
     for which the selector can be specified.)
-    However, some web pages (like news.ycombinator.com, wikipedia.org, etc) require writing selectors such each unit
+    However, some web pages (like news.ycombinator.com, wikipedia.org, etc) require writing selectors such each CU
     has to be represented as a jQuery set comprising of multiple DOM elements.
     (For more details, see the documentation on how to specify selectors for webpages.)
 
-    Note: If the search feature has been invoked, this contains only the filtered Units that are visible on the page.
+    Note: If the search feature has been invoked, this contains only the filtered CUs that are visible on the page.
     This helps keep things simple.
     */
 
-    selectedUnitIndex  = -1, // Index of the selected unit in $unitsArray
-    hoveredUnitIndex  = -1, // Index of the hovered unit in $unitsArray
+    selectedCUIndex  = -1, // Index of the selected CU in $CUsArray
+    hoveredCUIndex  = -1, // Index of the hovered CU in $CUsArray
 
     /* This class should be applied to all elements added by this extension. This is used to distinguish DOM mutation
     events caused by them from the those of the page's own elements. This is also a "responsible" thing since it marks
@@ -84,9 +84,9 @@ var currentUrl = window.location.href,
     This allows keeping modifications to the DOM localized inside a single element. */
     $topLevelContainer = $('<div></div>').addClass(class_addedBySwiftlyExtn),
 
-    class_overlay = "unit-overlay",                     // class applied to all unit overlays
-    class_overlaySelected = "unit-overlay-selected",    // class applied to overlay on a selected unit
-    class_overlayHovered = "unit-overlay-hovered",      // class applied to overlay on a hovered unit
+    class_overlay = "CU-overlay",                     // class applied to all CU overlays
+    class_overlaySelected = "CU-overlay-selected",    // class applied to overlay on a selected CU
+    class_overlayHovered = "CU-overlay-hovered",      // class applied to overlay on a hovered CU
     $unusedOverlaysArray = [],   // to enable reusing existing unused overlays
 
     // boolean, holds a value indicating where the css specifies a transition style for overlays
@@ -100,20 +100,20 @@ var currentUrl = window.location.href,
     ltMouseBtnDown,         // boolean holding the state of the left mouse button
     scrolledWithRtMouseBtn, // boolean indicating if right mouse button was used to modify scrolling
 
-    class_scrollingMarker = 'unit-scrolling-marker',
+    class_scrollingMarker = 'CU-scrolling-marker',
     $scrollingMarker,
 
     $searchContainer,
     $helpContainer,
     timeout_search,
 
-    $lastSelectedUnit = null,   // to store a reference to the last selected unit
+    $lastSelectedCU = null,   // to store a reference to the last selected CU
 
-    // If a unit is currently selected, this stores the time it was selected, else this stores the time the last
-    // selected unit was deselected.
-    lastSelectedUnitTime,
+    // If a CU is currently selected, this stores the time it was selected, else this stores the time the last
+    // selected CU was deselected.
+    lastSelectedCUTime,
 
-    // number of milliseconds since its last selection/deselection after which a unit is no longer deemed to be
+    // number of milliseconds since its last selection/deselection after which a CU is no longer deemed to be
     // selected/last-selected, IF it is not in the viewport
     selectionTimeoutPeriod = 60000,
 
@@ -146,19 +146,19 @@ var currentUrl = window.location.href,
     // values for those properties.
     globalSettings = {
 
-        selectUnitOnLoad: true, // whether the first unit should be selected when the page loads
-        animatedUnitScroll: true,
-        animatedUnitScroll_Speed: 2, // pixels per millisecond
-        animatedUnitScroll_MaxDuration: 300, // milliseconds
+        selectCUOnLoad: true, // whether the first CU should be selected when the page loads
+        animatedCUScroll: true,
+        animatedCUScroll_Speed: 2, // pixels per millisecond
+        animatedCUScroll_MaxDuration: 300, // milliseconds
 
-        increaseFontInSelectedUnit: false,
+        increaseFontInSelectedCU: false,
 
-        // determines if while scrolling a unit should always be centered (whenever possitble) or only if it lies
+        // determines if while scrolling a CU should always be centered (whenever possitble) or only if it lies
         // outside the view port
-        tryCenteringUnitOnEachScroll: false,
+        tryCenteringCUOnEachScroll: false,
 
-        // if true, scrollNext() and scrollPrev() will scroll more of the current unit, if it is not in view
-        sameUnitScroll: true,
+        // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
+        sameCUScroll: true,
 
         pageScrollDelta: 100, // pixels to scroll on each key press
 
@@ -171,32 +171,32 @@ var currentUrl = window.location.href,
 
 
 // returns a jQuery set composed of all focusable DOM elements contained in the
-// jQuery set ($unit) passed
-var $getContainedFocusables = function($unit) {
+// jQuery set ($CU) passed
+var $getContainedFocusables = function($CU) {
 
-    var $allElements = $unit.find('*').addBack()
+    var $allElements = $CU.find('*').addBack()
     var $containedFocusables = $allElements.filter(focusablesSelector);
     return $containedFocusables;
 
 };
 
 /**
- * Returns the "main" element in the specified unit, which is determined as follows:
- * 1) Return the first "focusable" element within $unit which matches the selector specified in any of these
- * properties in the urlData.unitSpecifier object (checked in order): 'main', 'buildUnitAround', 'first'
- * 2) If no such element is found, return the first focusable element contained in $unit, if one can be found
+ * Returns the "main" element in the specified CU, which is determined as follows:
+ * 1) Return the first "focusable" element within $CU which matches the selector specified in any of these
+ * properties in the urlData.CUSpecifier object (checked in order): 'main', 'buildCUAround', 'first'
+ * 2) If no such element is found, return the first focusable element contained in $CU, if one can be found
  *
- * @param $unit
+ * @param $CU
  * @return {DOM element} Returns the "main" element, if one was found, else null.
  */
-var getMainElement = function($unit) {
+var getMainElement = function($CU) {
 
-    if (!$unit || !$unit.length) {
+    if (!$CU || !$CU.length) {
         return null;
     }
 
-    var $containedFocusables = $getContainedFocusables($unit),
-        unitSpecifier = urlData.unitSpecifier;
+    var $containedFocusables = $getContainedFocusables($CU),
+        CUSpecifier = urlData.CUSpecifier;
 
     if (!$containedFocusables.length) {
         return null;
@@ -204,12 +204,12 @@ var getMainElement = function($unit) {
 
     var mainSelector,
         $filteredFocusables,
-    // we look for these keys in unitSpecifier, in order
-        focusableSelectorKeys = ['main', 'buildUnitAround', 'first'];
+    // we look for these keys in CUSpecifier, in order
+        focusableSelectorKeys = ['main', 'buildCUAround', 'first'];
 
     for (var i = 0, focusableSelectorKey; i < focusableSelectorKeys.length; ++i) {
         focusableSelectorKey = focusableSelectorKeys[i];
-        if ((mainSelector = unitSpecifier[focusableSelectorKey]) &&
+        if ((mainSelector = CUSpecifier[focusableSelectorKey]) &&
             ($filteredFocusables = $containedFocusables.filter(mainSelector)) &&
             $filteredFocusables.length) {
 
@@ -222,18 +222,18 @@ var getMainElement = function($unit) {
     return $containedFocusables[0];
 };
 
-// Focuses the "main" focusable element in a unit, if one can be found.
+// Focuses the "main" focusable element in a CU, if one can be found.
 // See function "getMainElement" for more details.
-function focusMainElement($unit) {
-    var mainEl = getMainElement($unit);
+function focusMainElement($CU) {
+    var mainEl = getMainElement($CU);
     if (mainEl) {
-//        $(mainEl).data('containingUnitJustSelected', true);
+//        $(mainEl).data('enclosingCUJustSelected', true);
         mainEl.focus();
     }
 }
 
 /**
- * Invokes a click on the active element (see getMainElement()) of the selected unit. Passing true for
+ * Invokes a click on the active element (see getMainElement()) of the selected CU. Passing true for
  * 'newTab' invokes "ctrl+click", which has the effect of opening the link in a new tab (if the "main" element is
  * a link)
  * @param {boolean} newTab {Determines whether to invoke ctrl+click or simply a click)
@@ -260,9 +260,9 @@ function openActiveElement(newTab) {
         document.activeElement.click();
     }
 
-//    var $unit = $unitsArray[selectedUnitIndex];
-//    if ($unit) {
-//        var element = getMainElement($unit)
+//    var $CU = $CUsArray[selectedCUIndex];
+//    if ($CU) {
+//        var element = getMainElement($CU)
 //        if (element) {
 //            if (newTab) {
 //                var ctrlClickEvent = document.createEvent("MouseEvents");
@@ -280,71 +280,71 @@ function openActiveElement(newTab) {
 }
 
 /**
- * Selects the unit specified.
- * @param {number|DOMElement (or jQuery wrapper)} unitOrItsIndex Specifies the unit.
- * Can be an integer that specifies the index in $unitsArray or a jQuery object representing the unit.
+ * Selects the CU specified.
+ * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
+ * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
  * (While performance isn't a major concern here,) passing the index is preferable if it is already known,
- * otherwise the function will determine it itself (in order to set the selectedUnitIndex variable).
- * @param {boolean} setFocus If true, the "main" element for this unit, if one is found, is
+ * otherwise the function will determine it itself (in order to set the selectedCUIndex variable).
+ * @param {boolean} setFocus If true, the "main" element for this CU, if one is found, is
  * focused.
  * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
- * all (or such much as is possible) of the selected unit is in the viewport. Defaults to false.
+ * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
  * This parameter is currently passed as true only from selectPrev() and selectNext()
  * @param {object} options
  */
-var selectUnit = function(unitOrItsIndex, setFocus, adjustScrolling, options) {
-    console.log('selectUnit() called');
-    var $unit,
-        indexOf$unit; // index in $unitsArray
+var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
+    console.log('selectCU() called');
+    var $CU,
+        indexOf$CU; // index in $CUsArray
 
-    if (typeof unitOrItsIndex === "number" || unitOrItsIndex instanceof Number) {
-        indexOf$unit = unitOrItsIndex;
-        $unit = $unitsArray[indexOf$unit];
+    if (typeof CUOrItsIndex === "number" || CUOrItsIndex instanceof Number) {
+        indexOf$CU = CUOrItsIndex;
+        $CU = $CUsArray[indexOf$CU];
     }
     else {
-        $unit = $(unitOrItsIndex);
-        indexOf$unit = findIndex_In_$unitsArray($unit);
+        $CU = $(CUOrItsIndex);
+        indexOf$CU = findIndex_In_$CUsArray($CU);
     }
 
-    if (!$unit || !$unit.length || indexOf$unit < 0) {
+    if (!$CU || !$CU.length || indexOf$CU < 0) {
         return;
     }
 
     options = $.extend(true, {}, globalSettings, options);
 
-    deselectUnit(options); // before proceeding, deselect currently selected unit, if any
+    deselectCU(options); // before proceeding, deselect currently selected CU, if any
 
-    selectedUnitIndex = indexOf$unit;
-    var $overlaySelected = showOverlay($unit, 'selected');
+    selectedCUIndex = indexOf$CU;
+    var $overlaySelected = showOverlay($CU, 'selected');
 
     if (!$overlaySelected) {
         console.warn('swiftly: no $overlay returned by showOverlay');
     }
 
     if (!options || !options.onDomChangeOrWindowResize) {
-        selectUnit.invokedYet = true; // to indicate that now this function (selectUnit) has been invoked at least once
+        selectCU.invokedYet = true; // to indicate that now this function (selectCU) has been invoked at least once
 
-        $lastSelectedUnit = $unit;
-        lastSelectedUnitTime = new Date();
+        $lastSelectedCU = $CU;
+        lastSelectedCUTime = new Date();
 
         if (adjustScrolling) {
             scrollIntoView($overlaySelected, options);
         }
 
         if (setFocus) {
-            focusMainElement($unit);
+            focusMainElement($CU);
         }
 
-        if (options.increaseFontInSelectedUnit && !$unit.data('fontIncreasedOnSelection')) {
+        if (options.increaseFontInSelectedCU && !$CU.data('fontIncreasedOnSelection')) {
             mutationObserver.disconnect();
-            increaseFont($unit);
+            increaseFont($CU);
             mutationObserver.observe(document, mutationObserverConfig);
-            $unit.data('fontIncreasedOnSelection', true)
+            $CU.data('fontIncreasedOnSelection', true)
         }
 
-        if (urlData.fn_onUnitSelection) {
+        if (urlData.fn_onCUSelection) {
             mutationObserver.disconnect();
-            urlData.fn_onUnitSelection($unitsArray[selectedUnitIndex], document);
+            urlData.fn_onCUSelection($CUsArray[selectedCUIndex], document);
             mutationObserver.observe(document, mutationObserverConfig);
 
         }
@@ -352,49 +352,49 @@ var selectUnit = function(unitOrItsIndex, setFocus, adjustScrolling, options) {
 };
 
 /**
- * Deselects the currently selected unit, if there is one
+ * Deselects the currently selected CU, if there is one
  */
-var deselectUnit = function (options) {
+var deselectCU = function (options) {
 
-    var $unit;
-    if ($unit = $unitsArray[selectedUnitIndex]) {
+    var $CU;
+    if ($CU = $CUsArray[selectedCUIndex]) {
 
-        // console.log('deselecting unit...');
-        removeOverlay($unit, 'selected');
+        // console.log('deselecting CU...');
+        removeOverlay($CU, 'selected');
 
         if (!options || !options.onDomChangeOrWindowResize) {
-            lastSelectedUnitTime = new Date();
+            lastSelectedCUTime = new Date();
 
-            if ($unit.data('fontIncreasedOnSelection')) {
+            if ($CU.data('fontIncreasedOnSelection')) {
                 mutationObserver.disconnect();
-                decreaseFont($unit);
+                decreaseFont($CU);
                 mutationObserver.observe(document, mutationObserverConfig);
-                $unit.data('fontIncreasedOnSelection', false)
+                $CU.data('fontIncreasedOnSelection', false)
             }
 
-            if (urlData.fn_onUnitDeselection) {
+            if (urlData.fn_onCUDeselection) {
                 mutationObserver.disconnect();
-                urlData.fn_onUnitDeselection($unit, document);
+                urlData.fn_onCUDeselection($CU, document);
                 mutationObserver.observe(document, mutationObserverConfig);
             }
         }
 
     }
-    selectedUnitIndex = -1;
+    selectedCUIndex = -1;
 };
 
 /**
- * Removes the 'selected' or 'hovered' css class from the unit, as specified by 'type'
- * @param $unit
+ * Removes the 'selected' or 'hovered' css class from the CU, as specified by 'type'
+ * @param $CU
  * @param {string} type Can be 'selected' or 'hovered'
  * @return {*} Returns $overlay (the jQuery wrapper overlay element)
  */
-function removeOverlay ($unit, type) {
-    if (!$unit || !$unit.length) {
+function removeOverlay ($CU, type) {
+    if (!$CU || !$CU.length) {
         return null;
     }
 
-    var $overlay = $unit.data('$overlay');
+    var $overlay = $CU.data('$overlay');
 
     if ($overlay) {
         $overlay.removeClass(type === 'selected'? class_overlaySelected: class_overlayHovered);
@@ -411,16 +411,16 @@ function removeOverlay ($unit, type) {
 
 /**
  *
- * @param $unit
+ * @param $CU
  * @param {string} type Can be 'selected' or 'hovered'
  * @return {*} Returns $overlay (the jQuery wrapper overlay element)
  */
-var showOverlay = function($unit, type) {
-    if (!$unit || !$unit.length) {
+var showOverlay = function($CU, type) {
+    if (!$CU || !$CU.length) {
         return null;
     }
 
-    var $overlay = $unit.data('$overlay');
+    var $overlay = $CU.data('$overlay');
     if (!$overlay || !$overlay.length) {
         if ($unusedOverlaysArray.length) {
             $overlay = $unusedOverlaysArray.shift();
@@ -430,24 +430,24 @@ var showOverlay = function($unit, type) {
         }
     }
 
-    var overlayStyle = urlData && urlData.unitSpecifier && urlData.unitSpecifier.style;
+    var overlayStyle = urlData && urlData.CUSpecifier && urlData.CUSpecifier.style;
 
     if (overlayStyle && overlayStyle === "minimal") {
-        $overlay.addClass("unit-overlay-selected-minimal");
+        $overlay.addClass("CU-overlay-selected-minimal");
     }
     else {
-        $overlay.removeClass("unit-overlay-selected-minimal");
+        $overlay.removeClass("CU-overlay-selected-minimal");
     }
         
-    $overlay.data('$unit', $unit);
-    $unit.data('$overlay', $overlay);
+    $overlay.data('$CU', $CU);
+    $CU.data('$overlay', $overlay);
 
-    // position the overlay above the unit, and ensure that its visible
-    $overlay.css(getBoundingRectangle($unit)).show();
-    var unitSpecifier = urlData.unitSpecifier,
+    // position the overlay above the CU, and ensure that its visible
+    $overlay.css(getBoundingRectangle($CU)).show();
+    var CUSpecifier = urlData.CUSpecifier,
         overlayPadding;
 
-    if (unitSpecifier && (overlayPadding = unitSpecifier["overlay-padding"])) {
+    if (CUSpecifier && (overlayPadding = CUSpecifier["overlay-padding"])) {
         $overlay.css("padding", overlayPadding);
         $overlay.css("top", parseFloat($overlay.css("top"))
             -  parseFloat($overlay.css("padding-top")));
@@ -483,45 +483,45 @@ function ensureTopLevelContainerIsInDom() {
 }
 
 /**
- * Shows as hovered the unit specified.
- * @param {number|DOMElement (or jQuery wrapper)} unitOrItsIndex Specifies the unit.
- * Can be an integer that specifies the index in $unitsArray or a jQuery object representing the unit.
+ * Shows as hovered the CU specified.
+ * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
+ * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
  * (While performance isn't a major concern,) passing the index is preferable if it is already known.
  */
-var hoverUnit = function(unitOrItsIndex) {
+var hoverCU = function(CUOrItsIndex) {
 
-    var $unit,
-        indexOf$unit; // index in $unitsArray
+    var $CU,
+        indexOf$CU; // index in $CUsArray
 
-    if (typeof unitOrItsIndex === "number" || unitOrItsIndex instanceof Number) {
-        indexOf$unit = unitOrItsIndex;
-        $unit = $unitsArray[indexOf$unit];
+    if (typeof CUOrItsIndex === "number" || CUOrItsIndex instanceof Number) {
+        indexOf$CU = CUOrItsIndex;
+        $CU = $CUsArray[indexOf$CU];
     }
     else {
-        $unit = $(unitOrItsIndex);
-        indexOf$unit = findIndex_In_$unitsArray($unit);
+        $CU = $(CUOrItsIndex);
+        indexOf$CU = findIndex_In_$CUsArray($CU);
     }
 
-    if (!$unit || !$unit.length || indexOf$unit < 0) {
+    if (!$CU || !$CU.length || indexOf$CU < 0) {
         return;
     }
 
-    dehoverUnit(); // before proceeding, dehover currently hovered-over unit, if any
+    dehoverCU(); // before proceeding, dehover currently hovered-over CU, if any
 
-    hoveredUnitIndex = indexOf$unit;
-    showOverlay($unit, 'hovered');
+    hoveredCUIndex = indexOf$CU;
+    showOverlay($CU, 'hovered');
 
 };
 
 /**
- * Dehovers the currently hovered (over) unit, if there is one
+ * Dehovers the currently hovered (over) CU, if there is one
  */
-var dehoverUnit = function () {
-    var $unit;
-    if ($unit = $unitsArray[hoveredUnitIndex]) {
-        removeOverlay($unit, 'hovered');
+var dehoverCU = function () {
+    var $CU;
+    if ($CU = $CUsArray[hoveredCUIndex]) {
+        removeOverlay($CU, 'hovered');
     }
-    hoveredUnitIndex = -1;
+    hoveredCUIndex = -1;
 };
 
 var showScrollingMarker = function(x, y) {
@@ -537,17 +537,17 @@ var showScrollingMarker = function(x, y) {
 };
 
 /**
- * Scrolls more of the currently selected unit into view if required (i.e. if the unit is too large),
+ * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
  * in the direction specified.
  * @param {string} direction Can be either 'up' or 'down'
  * @param {object} options
  * @return {Boolean} value indicating whether scroll took place
  */
-var scrollSelectedUnitIfRequired = function(direction, options) {
+var scrollSelectedCUIfRequired = function(direction, options) {
 
     options = $.extend(true, {}, globalSettings, options);
 
-    var $unit = $unitsArray[selectedUnitIndex];
+    var $CU = $CUsArray[selectedCUIndex];
 
     var pageHeaderHeight = getEffectiveHeaderHeight();
 
@@ -556,42 +556,42 @@ var scrollSelectedUnitIfRequired = function(direction, options) {
         winHeight = $(window).height(),
         winBottom = winTop + winHeight,
 
-    // for the unit:
-        unitTop = $unit.offset().top,
-        unitHeight = $unit.height(),
-        unitBottom = unitTop + unitHeight;
+    // for the CU:
+        CUTop = $CU.offset().top,
+        CUHeight = $CU.height(),
+        CUBottom = CUTop + CUHeight;
 
     var newWinTop, // new value of scrollTop
-        sameUnitScrollOverlap = 70,
+        sameCUScrollOverlap = 70,
         margin = 30;
 
     var direction = direction.toLowerCase();
-    if ( (direction === 'up' && unitTop < winTop + pageHeaderHeight)
-        || (direction === 'down' && unitBottom > winBottom) ) {
-        if (direction === 'up' ) { // implies unitTop < winTop + pageHeaderHeight
-            newWinTop = winTop - winHeight + sameUnitScrollOverlap;
+    if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight)
+        || (direction === 'down' && CUBottom > winBottom) ) {
+        if (direction === 'up' ) { // implies CUTop < winTop + pageHeaderHeight
+            newWinTop = winTop - winHeight + sameCUScrollOverlap;
 
-            // if newWinTop calculated would scroll the unit more than required for it to get completely in the view,
-            // increase it to the max value required to show the entire unit with some margin left.
-            if (newWinTop + pageHeaderHeight < unitTop) {
-                newWinTop = unitTop - pageHeaderHeight - margin;
+            // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
+            // increase it to the max value required to show the entire CU with some margin left.
+            if (newWinTop + pageHeaderHeight < CUTop) {
+                newWinTop = CUTop - pageHeaderHeight - margin;
             }
 
             if (newWinTop < 0) {
                 newWinTop = 0;
             }
 
-//            showScrollingMarker($unit.offset().left, winTop + 25);
+//            showScrollingMarker($CU.offset().left, winTop + 25);
         }
 
-        else  { //direction === 'down' && unitBottom > winBottom
+        else  { //direction === 'down' && CUBottom > winBottom
             
-            newWinTop = winBottom - sameUnitScrollOverlap;
+            newWinTop = winBottom - sameCUScrollOverlap;
 
-            // if newWinTop calculated would scroll the unit more than required for it to get completely in the view,
-            // reduce it to the min value required to show the entire unit with some margin left.
-            if (newWinTop + winHeight > unitBottom) {
-                newWinTop = unitBottom - winHeight + margin;
+            // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
+            // reduce it to the min value required to show the entire CU with some margin left.
+            if (newWinTop + winHeight > CUBottom) {
+                newWinTop = CUBottom - winHeight + margin;
             }
 
             // ensure value is not more then the max possible
@@ -599,22 +599,22 @@ var scrollSelectedUnitIfRequired = function(direction, options) {
                 newWinTop = $document.height() - winHeight;
             }
 
-            showScrollingMarker($unit.offset().left, winBottom - 25);
+            showScrollingMarker($CU.offset().left, winBottom - 25);
         }
 
-        if (options.animatedUnitScroll) {
+        if (options.animatedCUScroll) {
 
-            console.log('animated SAME unit scroll');
+            console.log('animated SAME CU scroll');
 
-            var animationDuration = Math.min(options.animatedUnitScroll_MaxDuration,
-                Math.abs(newWinTop-winTop) / options.animatedUnitScroll_Speed);
+            var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
+                Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
 
             animatedScroll(newWinTop, animationDuration);
 
 //            $('html, body').animate({scrollTop: newWinTop}, animatedScroll);
         }
         else {
-            console.log('NON animated SAME unit scroll');
+            console.log('NON animated SAME CU scroll');
             $document.scrollTop(newWinTop);
         }
 
@@ -626,11 +626,11 @@ var scrollSelectedUnitIfRequired = function(direction, options) {
 }
 
 /**
- * Selects the previous unit to the currently selected one.
+ * Selects the previous CU to the currently selected one.
  */
 var selectPrev = function() {
 
-    if (!$unitsArray || !$unitsArray.length || $unitsArray.length == 1) {
+    if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
         scrollUp();
         return;
     }
@@ -648,7 +648,7 @@ var selectPrev = function() {
     }
     else if (lastInvocationTime && currentTime - lastInvocationTime < 200) {
         options = {
-            animatedUnitScroll: false
+            animatedCUScroll: false
         }
         stopExistingScrollAnimation = true;
     }
@@ -662,38 +662,38 @@ var selectPrev = function() {
 
     var newIndex;
 
-    if (selectedUnitIndex >=0 && (isUnitInViewport($unitsArray[selectedUnitIndex])
-        || new Date() - lastSelectedUnitTime < selectionTimeoutPeriod)) {
-        if (options.sameUnitScroll) {
-             var scrolled = scrollSelectedUnitIfRequired('up', options);
+    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex])
+        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+        if (options.sameCUScroll) {
+             var scrolled = scrollSelectedCUIfRequired('up', options);
             if (scrolled) {
                 return;
             }
-            else if (selectedUnitIndex === 0) { // special case for first unit
+            else if (selectedCUIndex === 0) { // special case for first CU
                 scrollUp();
             }
         }
 
-        newIndex = selectedUnitIndex - 1;
+        newIndex = selectedCUIndex - 1;
         if (newIndex >= 0) {
-            selectUnit(newIndex, true, true, options);
+            selectCU(newIndex, true, true, options);
         }
         // else do nothing
 
     }
     else {
-        selectMostSensibleUnit(true, true);
+        selectMostSensibleCU(true, true);
     }
 
 
 };
 
 /**
- * Selects the next unit to the currently selected one.
+ * Selects the next CU to the currently selected one.
  */
 var selectNext = function() {
 
-    if (!$unitsArray || !$unitsArray.length || $unitsArray.length == 1) {
+    if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
         scrollDown();
         return;
     }
@@ -715,7 +715,7 @@ var selectNext = function() {
 //    }
 //    else if (lastInvocationTime && currentTime - lastInvocationTime < 200) {
 //        options = {
-//            animatedUnitScroll: false
+//            animatedCUScroll: false
 //        }
 //        stopExistingScrollAnimation = true;
 //    }
@@ -731,89 +731,89 @@ var selectNext = function() {
 
     var newIndex;
 
-    if (selectedUnitIndex >=0 && (isUnitInViewport($unitsArray[selectedUnitIndex])
-        || new Date() - lastSelectedUnitTime < selectionTimeoutPeriod)) {
+    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex])
+        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
-        if (options.sameUnitScroll) {
-            var scrolled = scrollSelectedUnitIfRequired('down', options);
+        if (options.sameCUScroll) {
+            var scrolled = scrollSelectedCUIfRequired('down', options);
             if (scrolled) {
                 return;
             }
-            else  if (selectedUnitIndex === $unitsArray.length-1) { // special case for last unit
+            else  if (selectedCUIndex === $CUsArray.length-1) { // special case for last CU
                 scrollDown();
             }
         }
 
-        newIndex = selectedUnitIndex + 1;
-        if (newIndex < $unitsArray.length) {
-            selectUnit(newIndex, true, true);
+        newIndex = selectedCUIndex + 1;
+        if (newIndex < $CUsArray.length) {
+            selectCU(newIndex, true, true);
         }
         // else do nothing
 
     }
     else {
-        selectMostSensibleUnit(true, true);
+        selectMostSensibleCU(true, true);
     }
 };
 
 /**
- * Called typically when there is no currently selected unit, and we need to select the unit that makes most sense
+ * Called typically when there is no currently selected CU, and we need to select the CU that makes most sense
  * to select in this situation.
  */
-function selectMostSensibleUnit(setFocus, adjustScrolling) {
+function selectMostSensibleCU(setFocus, adjustScrolling) {
 
-    var lastSelectedUnitIndex;
+    var lastSelectedCUIndex;
 
-    // if a unit is already selected AND (is present in the viewport OR was selected only recently)...
-    if (selectedUnitIndex >= 0
-        && (isUnitInViewport($unitsArray[selectedUnitIndex])
-        || new Date() - lastSelectedUnitTime < selectionTimeoutPeriod)) {
+    // if a CU is already selected AND (is present in the viewport OR was selected only recently)...
+    if (selectedCUIndex >= 0
+        && (isCUInViewport($CUsArray[selectedCUIndex])
+        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
 
-        //...call selectUnit() on it again passing on the provided parameters
-        selectUnit(selectedUnitIndex, setFocus, adjustScrolling);
+        //...call selectCU() on it again passing on the provided parameters
+        selectCU(selectedCUIndex, setFocus, adjustScrolling);
         return;
     }
-    // if last selected unit exists AND (is present in the viewport OR was deselected only recently)...
-    else if( (lastSelectedUnitIndex = findIndex_In_$unitsArray($lastSelectedUnit)) >=0
-        && (isUnitInViewport($lastSelectedUnit)
-        || new Date() - lastSelectedUnitTime < selectionTimeoutPeriod)) {
+    // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
+    else if( (lastSelectedCUIndex = findIndex_In_$CUsArray($lastSelectedCU)) >=0
+        && (isCUInViewport($lastSelectedCU)
+        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
-        selectUnit(lastSelectedUnitIndex, setFocus, adjustScrolling);
+        selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
        
     }
   
     else {
-        // Selects first unit in the viewport; if none is found, this selects the first unit on the page
-        selectFirstUnitInViewport(setFocus, adjustScrolling);
+        // Selects first CU in the viewport; if none is found, this selects the first CU on the page
+        selectFirstCUInViewport(setFocus, adjustScrolling);
     }
 }
 
 /**
- * Selects first (topmost) unit in the visible part of the page. If none is found, selects the first unit on the page
+ * Selects first (topmost) CU in the visible part of the page. If none is found, selects the first CU on the page
  * @param {boolean} setFocus
  * @param {boolean} adjustScrolling
  */
 
-function selectFirstUnitInViewport (setFocus, adjustScrolling) {
+function selectFirstCUInViewport (setFocus, adjustScrolling) {
 
-    if ($unitsArray && $unitsArray.length) {
+    if ($CUsArray && $CUsArray.length) {
         var winTop = $document.scrollTop(),
-            unitsArrLen = $unitsArray.length;
+            CUsArrLen = $CUsArray.length;
 
-        for (var i = 0; i < unitsArrLen; ++i) {
-            var $unit = $unitsArray[i];
-            var offset = $unit.offset();
+        for (var i = 0; i < CUsArrLen; ++i) {
+            var $CU = $CUsArray[i];
+            var offset = $CU.offset();
             if (offset.top > winTop) {
                 break;
             }
         }
 
-        if (i < unitsArrLen) {
-            selectUnit(i, setFocus, adjustScrolling);
+        if (i < CUsArrLen) {
+            selectCU(i, setFocus, adjustScrolling);
         }
         else {
-            selectUnit(0, setFocus, adjustScrolling);
+            selectCU(0, setFocus, adjustScrolling);
         }
 
     }
@@ -821,17 +821,17 @@ function selectFirstUnitInViewport (setFocus, adjustScrolling) {
 }
 
 /**
- * If the specified element exists within a unit, the index of that unit in $unitsArray is 
+ * If the specified element exists within a CU, the index of that CU in $CUsArray is 
  * returned, else -1 is returned.
  * @param {DOM element|jQuery wrapper} element
- * @return {number} If containing unit was found, its index, else -1
+ * @return {number} If containing CU was found, its index, else -1
  */
-var getContainingUnitIndex = function(element) {
+var getEnclosingCUIndex = function(element) {
     var $element = $(element),
-        unitsArrLen = $unitsArray.length;
+        CUsArrLen = $CUsArray.length;
 
-    for (var i = 0; i < unitsArrLen; ++i) {
-        if ($unitsArray[i].is($element) || $unitsArray[i].find($element).length) {
+    for (var i = 0; i < CUsArrLen; ++i) {
+        if ($CUsArray[i].is($element) || $CUsArray[i].find($element).length) {
             return i;
         }
     }
@@ -856,18 +856,18 @@ $.fn.nextALL = function(filter) {
 };
 
 
-// this will find index of the passed jQuery set ($unit) in the $unitsArray. However, unlike JavaScript's
+// this will find index of the passed jQuery set ($CU) in the $CUsArray. However, unlike JavaScript's
 // Array#indexOf() method, a match will be found even if the passed jQuery set is "equivalent" (i.e has the same
-// contents as a member of $unitsArray, even if they are not the *same* object.
+// contents as a member of $CUsArray, even if they are not the *same* object.
 // Returns -1 if not found.
-var findIndex_In_$unitsArray = function($unit)  {
+var findIndex_In_$CUsArray = function($CU)  {
 
-    var unitsArrLen;
+    var CUsArrLen;
 
-    if ($unitsArray && (unitsArrLen = $unitsArray.length)) {
+    if ($CUsArray && (CUsArrLen = $CUsArray.length)) {
 
-        for (var i = 0; i < unitsArrLen; ++i) {
-            if (areUnitsSame($unit, $unitsArray[i])) {
+        for (var i = 0; i < CUsArrLen; ++i) {
+            if (areCUsSame($CU, $CUsArray[i])) {
                 return i;
             }
         }
@@ -876,16 +876,16 @@ var findIndex_In_$unitsArray = function($unit)  {
     return -1
 };
 
-// returns a boolean indicating if the passed Units (jQuery sets) have the same contents in the same order (for
+// returns a boolean indicating if the passed CUs (jQuery sets) have the same contents in the same order (for
 // instances where we use this function, the order of elements is always the document order)
 /**
- * returns a boolean indicating if the passed Units (jQuery sets) have the same contents in the same order (for
+ * returns a boolean indicating if the passed CUs (jQuery sets) have the same contents in the same order (for
  * instances where we use this function, the order of elements is always the document order)
- * @param $1 A unit
- * @param $2 Another unit to compare with the first one.
+ * @param $1 A CU
+ * @param $2 Another CU to compare with the first one.
  * @return {Boolean}
  */
-var areUnitsSame = function($1, $2) {
+var areCUsSame = function($1, $2) {
 
     // if each jQuery set is either empty or nonexistent, their "contents" are "same".
     if (!$1 && (!$2 || !$2.length)) {
@@ -1022,7 +1022,7 @@ var animatedScroll = function(scrollTop, duration) {
         // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
         // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
         // This is  handled by calculating the time diff. between invocations. See later.)
-        intervalPeriod = Math.min(100, globalSettings.animatedUnitScroll_MaxDuration/4),
+        intervalPeriod = Math.min(100, globalSettings.animatedCUScroll_MaxDuration/4),
 
         lastInvocationTime, // will contain the time of the last invocation (of invokeIncrementalScroll)
 
@@ -1070,7 +1070,7 @@ var animatedScroll = function(scrollTop, duration) {
  * Scrolls the window such the specified element lies fully in the viewport (or as much as is
  * possible if the element is too large).
  * //TODO3: consider if horizontal scrolling should be adjusted as well (some, very few, sites sites might, like an
- * image gallery, might have Units laid out horizontally)
+ * image gallery, might have CUs laid out horizontally)
  * @param {DOM element|JQuery wrapper} $element
  * @param {object} options
  */
@@ -1110,8 +1110,8 @@ function scrollIntoView($element, options) {
     }
 */
 
-    if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) // unit is fully in viewport
-        && !scrollIntoView.tryCenteringUnitOnEachScroll) {
+    if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) // CU is fully in viewport
+        && !scrollIntoView.tryCenteringCUOnEachScroll) {
 
         return false;
     }
@@ -1129,12 +1129,12 @@ function scrollIntoView($element, options) {
         }
     }
 
-    if (options.animatedUnitScroll) {
+    if (options.animatedCUScroll) {
 
-        console.log('animated unit scroll');
+        console.log('animated CU scroll');
 
-        var animationDuration = Math.min(options.animatedUnitScroll_MaxDuration,
-            Math.abs(newWinTop-winTop) / options.animatedUnitScroll_Speed);
+        var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
+            Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
 
         animatedScroll(newWinTop, animationDuration);
 
@@ -1142,7 +1142,7 @@ function scrollIntoView($element, options) {
 
     }
     else {
-        console.log('NON animated unit scroll');
+        console.log('NON animated CU scroll');
         $document.scrollTop(newWinTop);
 
     }
@@ -1217,7 +1217,7 @@ function focusPrevTextInput() {
 var timeout_domChanges,
     groupingInterval_for_DomMutations = 200; // millisecs
 // this function ensures that a set of closely spaced DOM mutation events triggers only one (slightly expensive)
-// getUnitsArray() call, as long each pair of successive events in this set is separated by less than
+// getCUsArray() call, as long each pair of successive events in this set is separated by less than
 // 'groupingInterval_for_DomMutations' millisecs.
 var onDomChange = function(mutations) {
 
@@ -1266,7 +1266,7 @@ function _onDomChange() {
         onUrlChange();
     }
     else {
-        updateUnitsAndRelatedState();
+        updateCUsAndRelatedState();
     }
 }
 
@@ -1274,66 +1274,66 @@ function onUrlChange() {
     initializeExtension(); // resets the extension
 }
 
-function updateUnitsAndRelatedState() {
+function updateCUsAndRelatedState() {
 
-    // Save the currently selected unit, to reselect it, if it is still present in the $unitsArray after the array is
-    // updated. This needs to be done before calling deselectUnit() and modifying the current $unitsArray
-    var $prevSelectedUnit = $unitsArray && $unitsArray[selectedUnitIndex];
-    dehoverUnit(); // to prevent a "ghost" hover overlay
-    deselectUnit({onDomChangeOrWindowResize: true});
-    $unitsArray = getUnitsArray();
+    // Save the currently selected CU, to reselect it, if it is still present in the $CUsArray after the array is
+    // updated. This needs to be done before calling deselectCU() and modifying the current $CUsArray
+    var $prevSelectedCU = $CUsArray && $CUsArray[selectedCUIndex];
+    dehoverCU(); // to prevent a "ghost" hover overlay
+    deselectCU({onDomChangeOrWindowResize: true});
+    $CUsArray = getCUsArray();
 
-    if ($unitsArray && $unitsArray.length) {
+    if ($CUsArray && $CUsArray.length) {
         if (parseInt($searchContainer.css('top')) >= 0) { // if search box is visible
 //    if ($searchContainer.offset().top >= 0) { // if search box is visible
-            filterUnitsArray($unitsArray);
+            filterCUsArray($CUsArray);
         }
 
-        if (globalSettings.selectUnitOnLoad && !selectUnit.invokedYet) {
+        if (globalSettings.selectCUOnLoad && !selectCU.invokedYet) {
             // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
-            selectFirstUnitInViewport(true, false);
+            selectFirstCUInViewport(true, false);
         }
 
-        // The following block ensures that a previously selected unit continues to remain selected
-        else if ($prevSelectedUnit) {
+        // The following block ensures that a previously selected CU continues to remain selected
+        else if ($prevSelectedCU) {
 
-            var newSelectedUnitIndex = findIndex_In_$unitsArray($prevSelectedUnit);
+            var newSelectedCUIndex = findIndex_In_$CUsArray($prevSelectedCU);
 
-            if (newSelectedUnitIndex >= 0) {
+            if (newSelectedCUIndex >= 0) {
                 // pass false to not change focus (because it is almost certainly is already where it should be,
                 // and we don't want to inadvertently change it)
-                selectUnit(newSelectedUnitIndex, false, false, {onDomChangeOrWindowResize: true});
+                selectCU(newSelectedCUIndex, false, false, {onDomChangeOrWindowResize: true});
             }
         }
     }
 }
 
-// Populates the units array based on the current contents of the DOM and returns it.
-// If search box is visibile, the returned units array is filtered accordingly.
-var getUnitsArray = function() {
+// Populates the CUs array based on the current contents of the DOM and returns it.
+// If search box is visibile, the returned CUs array is filtered accordingly.
+var getCUsArray = function() {
 
-    if (!urlData || !urlData.unitSpecifier) {
-        // returning an empty array instead of null means accessing $unitsArray[selectedUnitIndex] (which
+    if (!urlData || !urlData.CUSpecifier) {
+        // returning an empty array instead of null means accessing $CUsArray[selectedCUIndex] (which
         // is done a lot) doesn't need to be prepended with a check against null in each case.
         return [];
     }
 
-    var $unitsArr,   // this will be hold the array to return
-        unitSpecifier = urlData.unitSpecifier;
+    var $CUsArr,   // this will be hold the array to return
+        CUSpecifier = urlData.CUSpecifier;
 
-    if (typeof unitSpecifier === "string") {
-        $unitsArr = $.map($(unitSpecifier).get(), function(item, i) {
+    if (typeof CUSpecifier === "string") {
+        $CUsArr = $.map($(CUSpecifier).get(), function(item, i) {
             return $(item);
         });
     }
-    else if (typeof unitSpecifier.unit === "string"){
-        $unitsArr = $.map($(unitSpecifier.unit).get(), function(item, i) {
+    else if (typeof CUSpecifier.CU === "string"){
+        $CUsArr = $.map($(CUSpecifier.CU).get(), function(item, i) {
             return $(item);
         });
     }
-    else if (typeof unitSpecifier.first === "string" && typeof unitSpecifier.last === "string" ) {
-        $unitsArr = [];
-        var $firstsArray = $.map($(unitSpecifier.first).get(), function(item, i) {
+    else if (typeof CUSpecifier.first === "string" && typeof CUSpecifier.last === "string" ) {
+        $CUsArr = [];
+        var $firstsArray = $.map($(CUSpecifier.first).get(), function(item, i) {
             return $(item);
         });
 
@@ -1341,7 +1341,7 @@ var getUnitsArray = function() {
         // ancestors first_ancestor and last_ancestor that are siblings and use those)
         // selecting logically valid entities.)
         if ($firstsArray.length) {
-            var // these will correspond to unitSpecifier.first and unitSpecifier.last
+            var // these will correspond to CUSpecifier.first and CUSpecifier.last
                 $_first, $_last,
 
                 //these will be the closest ancestors (self included) of $_first and $_last respectively, which are
@@ -1353,7 +1353,7 @@ var getUnitsArray = function() {
 
             for (var i = 0; i < firstsArrLen; ++i) {
                 $_first = $firstsArray[i];
-                $_last = $_first.nextALL(unitSpecifier.last).first();
+                $_last = $_first.nextALL(CUSpecifier.last).first();
 
                 $closestCommonAncestor = $_first.parents().has($_last).first();
 
@@ -1375,24 +1375,24 @@ var getUnitsArray = function() {
                         return false;
                     }
                 });
-                $unitsArr[i] = $first.add($first.nextUntil($last)).add($last);
+                $CUsArr[i] = $first.add($first.nextUntil($last)).add($last);
             }
         }
     }
 
-    else if (typeof unitSpecifier.buildUnitAround === "string"){
+    else if (typeof CUSpecifier.buildCUAround === "string"){
 
-        $unitsArr = [];
+        $CUsArr = [];
         var currentGroupingIndex = 0;
 
-        var $container = closestCommonAncestor($(unitSpecifier.buildUnitAround));
+        var $container = closestCommonAncestor($(CUSpecifier.buildCUAround));
         // TODO: move the function below to a more apt place
         /**
          *
          * @param {DOM Node|JQuery Wrapper} $container
          */
 
-        function buildUnitsAroundCentralElement($container) {
+        function buildCUsAroundCentralElement($container) {
 //TODO: 1) rename child to sibling etc
 //            2) call currentGroupingIndex currentGroupingIndex etc.
             $container = $($container);
@@ -1408,7 +1408,7 @@ var getUnitsArray = function() {
             var $siblings = $container.children();
             var siblingsLength = $siblings.length;
 
-            var centralElementselector = unitSpecifier.buildUnitAround;
+            var centralElementselector = CUSpecifier.buildCUAround;
             if (siblingsLength) {
 
                 var $currentSibling,
@@ -1424,7 +1424,7 @@ var getUnitsArray = function() {
                         else {
                             ++currentGroupingIndex;
                         }
-                        $unitsArr[currentGroupingIndex] = $currentSibling.add($unitsArr[currentGroupingIndex]);
+                        $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
                     }
                     else if (num_centralElementsInCurrentSibling = $currentSibling.find(centralElementselector).length) {
                         if (num_centralElementsInCurrentSibling === 1) {
@@ -1434,7 +1434,7 @@ var getUnitsArray = function() {
                             else {
                                 ++currentGroupingIndex;
                             }
-                            $unitsArr[currentGroupingIndex] = $currentSibling.add($unitsArr[currentGroupingIndex]);
+                            $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
                         }
                         else { // >= 2
                             if (!firstCentralElementFound) {
@@ -1444,48 +1444,48 @@ var getUnitsArray = function() {
                                 ++currentGroupingIndex;
                             }
 
-                            buildUnitsAroundCentralElement($currentSibling);
+                            buildCUsAroundCentralElement($currentSibling);
                         }
                     }
                     else {
-                        $unitsArr[currentGroupingIndex] = $currentSibling.add($unitsArr[currentGroupingIndex]);
+                        $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
                     }
                 }
             }
         } // end of function definition
 
-        buildUnitsAroundCentralElement($container);
+        buildCUsAroundCentralElement($container);
     }
 
-    processUnitsArray($unitsArr);
+    processCUsArray($CUsArr);
 
 //    if (parseInt($searchContainer.css('top')) >= 0) { // if search box is visible
 //    ////if ($searchContainer.offset().top >= 0) { // if search box is visible
-//        filterUnitsArray($unitsArr);
+//        filterCUsArray($CUsArr);
 //    }
     
-//    if (!$unitsArr || !$unitsArr.length) {
-//        console.warn("Swiftly: No units were found based on the selector provided for this URL")
+//    if (!$CUsArr || !$CUsArr.length) {
+//        console.warn("Swiftly: No CUs were found based on the selector provided for this URL")
 //        return;
 //    }
 
-    return $unitsArr;
+    return $CUsArr;
 };
 
-/* Returns true if all constituent elements of $unit1 are contained within (the constituents) of $unit2, false
+/* Returns true if all constituent elements of $CU1 are contained within (the constituents) of $CU2, false
 otherwise. (An element is considered to 'contain' itself and all its descendants)
 */
-var unitContainedInAnother = function($unit1, $unit2) {
+var CUContainedInAnother = function($CU1, $CU2) {
 
-    var unit1Len = $unit1.length,
-        unit2Len = $unit2.length;
+    var CU1Len = $CU1.length,
+        CU2Len = $CU2.length;
 
-    for (var i = 0; i < unit1Len; ++i) {
+    for (var i = 0; i < CU1Len; ++i) {
 
         var isThisConstituentContained = false; // assume
 
-        for (var j = 0; j < unit2Len; ++j) {
-            if ($unit2[j].contains($unit1[i])) {
+        for (var j = 0; j < CU2Len; ++j) {
+            if ($CU2[j].contains($CU1[i])) {
                 isThisConstituentContained = true;
                 break;
             }
@@ -1499,36 +1499,36 @@ var unitContainedInAnother = function($unit1, $unit2) {
 };
 
 /**
- * process all units in $unitsArr does the following
-1) remove any unit that is not visible in the DOM
-2) remove any unit that is fully contained within another
+ * process all CUs in $CUsArr does the following
+1) remove any CU that is not visible in the DOM
+2) remove any CU that is fully contained within another
  */
-var processUnitsArray = function($unitsArr) {
+var processCUsArray = function($CUsArr) {
 
-    if (!$unitsArr || !$unitsArr.length) {
+    if (!$CUsArr || !$CUsArr.length) {
         return;
     }
 
-    var unitsArrLen = $unitsArr.length;
+    var CUsArrLen = $CUsArr.length;
 
-    for (var i = 0; i < unitsArrLen; ++i) {
-        var $unit = $unitsArr[i];
-        if ( (!$unit.is(':visible') && !$unit.hasClass('hiddenByUnitsExtn'))
-            || $unitIsInvisible($unit)) {
-            $unitsArr.splice(i, 1);
-            --unitsArrLen;
+    for (var i = 0; i < CUsArrLen; ++i) {
+        var $CU = $CUsArr[i];
+        if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByCUsExtn'))
+            || $CUIsInvisible($CU)) {
+            $CUsArr.splice(i, 1);
+            --CUsArrLen;
             --i;
             continue;
         }
 
-        for (var j = 0; j < unitsArrLen; ++j) {
+        for (var j = 0; j < CUsArrLen; ++j) {
             if (i === j) {
                 continue;
             }
 
-            if (unitContainedInAnother($unit, $unitsArr[j])) {
-                $unitsArr.splice(i, 1);
-                --unitsArrLen;
+            if (CUContainedInAnother($CU, $CUsArr[j])) {
+                $CUsArr.splice(i, 1);
+                --CUsArrLen;
                 --i;
                 break;
             }
@@ -1769,30 +1769,30 @@ function closeSearchBox() {
 
     // This function should be called before the search box is hidden, so that the call to filter() function is made
     // within it
-    updateUnitsAndRelatedState();
+    updateCUsAndRelatedState();
     $searchContainer.$searchBox.blur();
 
     $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
 
 }
 
-// filters $unitsArr based on the text in the search box
-function filterUnitsArray($unitsArr) {
+// filters $CUsArr based on the text in the search box
+function filterCUsArray($CUsArr) {
 
-    if (!$unitsArr || !$unitsArr.length) {
+    if (!$CUsArr || !$CUsArr.length) {
         return;
     }
 
     // ** --------- PRE FILTERING --------- **
-    var unitsNodes = [],
-        unitsArrLen = $unitsArr.length;
+    var CUsNodes = [],
+        CUsArrLen = $CUsArr.length;
 
-    for (var i = 0; i < unitsArrLen; ++i) {
-        var $unit = $unitsArr[i];
-        unitsNodes = unitsNodes.concat($unit.get());
+    for (var i = 0; i < CUsArrLen; ++i) {
+        var $CU = $CUsArr[i];
+        CUsNodes = CUsNodes.concat($CU.get());
     }
 
-    var $closestAncestor = $(closestCommonAncestor(unitsNodes));
+    var $closestAncestor = $(closestCommonAncestor(CUsNodes));
 
     mutationObserver.disconnect(); // ** stop monitoring mutations **
     $closestAncestor.hide();
@@ -1802,29 +1802,29 @@ function filterUnitsArray($unitsArr) {
     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
 
     if (!searchTextLowerCase) {
-        var $unitsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsExtn');
-        $unitsHiddenByPriorFiltering.removeClass('hiddenByUnitsExtn').show();
+        var $CUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByCUsExtn');
+        $CUsHiddenByPriorFiltering.removeClass('hiddenByCUsExtn').show();
 
     }
     else {
 
         console.log('filtering invoked...');
 
-        for (var i = 0, $unit; i < unitsArrLen; ++i) {
-            $unit = $unitsArr[i];
-            // if ($unit.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-            if (highlightInUnit($unit, searchTextLowerCase)) {
+        for (var i = 0, $CU; i < CUsArrLen; ++i) {
+            $CU = $CUsArr[i];
+            // if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
+            if (highlightInCU($CU, searchTextLowerCase)) {
 
-                //if ($unit.hasClass('hiddenByUnitsExtn')) {
+                //if ($CU.hasClass('hiddenByCUsExtn')) {
 
-                $unit.show().removeClass('hiddenByUnitsExtn');
+                $CU.show().removeClass('hiddenByCUsExtn');
                 //}
             }
             else {
-                //if ($unit.is(':visible')) {
-                $unit.hide().addClass('hiddenByUnitsExtn');
-                $unitsArr.splice(i, 1);
-                --unitsArrLen;
+                //if ($CU.is(':visible')) {
+                $CU.hide().addClass('hiddenByCUsExtn');
+                $CUsArr.splice(i, 1);
+                --CUsArrLen;
                 --i;
 
                 //}
@@ -1838,24 +1838,24 @@ function filterUnitsArray($unitsArr) {
 
 }
 
-// filters $unitsArr based on the text in the search box\
+// filters $CUsArr based on the text in the search box\
 /*
-function filterUnitsArray($unitsArr) {
+function filterCUsArray($CUsArr) {
 
-    if (!$unitsArr || !$unitsArr.length) {
+    if (!$CUsArr || !$CUsArr.length) {
         return;
     }
 
     // ** --------- PRE FILTERING --------- **
-    var unitsNodes = [],
-        unitsArrLen = $unitsArr.length;
+    var CUsNodes = [],
+        CUsArrLen = $CUsArr.length;
 
-    for (var i = 0; i < unitsArrLen; ++i) {
-        var $unit = $unitsArr[i];
-        unitsNodes = unitsNodes.concat($unit.get());
+    for (var i = 0; i < CUsArrLen; ++i) {
+        var $CU = $CUsArr[i];
+        CUsNodes = CUsNodes.concat($CU.get());
     }
 
-    var $closestAncestor = $(closestCommonAncestor(unitsNodes));
+    var $closestAncestor = $(closestCommonAncestor(CUsNodes));
 
     mutationObserver.disconnect(); // ** stop monitoring mutations **
 
@@ -1864,15 +1864,15 @@ function filterUnitsArray($unitsArr) {
     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
 
     if (!searchTextLowerCase) {
-//        var $unitsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsExtn');
-//        $unitsHiddenByPriorFiltering.removeClass('hiddenByUnitsExtn').show();
+//        var $CUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByCUsExtn');
+//        $CUsHiddenByPriorFiltering.removeClass('hiddenByCUsExtn').show();
 
         $closestAncestor.hide();  // for efficiency: remove from the render tree first
 
-        for (var i = 0; i < unitsArrLen; ++i) {
-            var $unit = $unitsArr[i];
-            if ($unit.data('hiddenByUnitsExtn')) {
-                $unit.show().data('hiddenByUnitsExtn', false);
+        for (var i = 0; i < CUsArrLen; ++i) {
+            var $CU = $CUsArr[i];
+            if ($CU.data('hiddenByCUsExtn')) {
+                $CU.show().data('hiddenByCUsExtn', false);
             }
         }
 
@@ -1885,21 +1885,21 @@ function filterUnitsArray($unitsArr) {
 
         console.log('filtering invoked...');
 
-        for (var i = 0, $unit; i < unitsArrLen; ++i) {
-            $unit = $unitsArr[i];
-//            if ($unit.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-            if (highlightInUnit($unit, searchTextLowerCase)) {
+        for (var i = 0, $CU; i < CUsArrLen; ++i) {
+            $CU = $CUsArr[i];
+//            if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
+            if (highlightInCU($CU, searchTextLowerCase)) {
 
-                //if ($unit.hasClass('hiddenByUnitsExtn')) {
+                //if ($CU.hasClass('hiddenByCUsExtn')) {
 
-//                $unit.removeClass('hiddenByUnitsExtn');
-                $unit.data('hiddenByUnitsExtn', false);
+//                $CU.removeClass('hiddenByCUsExtn');
+                $CU.data('hiddenByCUsExtn', false);
                 //}
             }
             else {
-                //if ($unit.is(':visible')) {
-//                $unit.addClass('hiddenByUnitsExtn');
-                $unit.data('hiddenByUnitsExtn', true);
+                //if ($CU.is(':visible')) {
+//                $CU.addClass('hiddenByCUsExtn');
+                $CU.data('hiddenByCUsExtn', true);
 
 
                 //}
@@ -1908,16 +1908,16 @@ function filterUnitsArray($unitsArr) {
     }
 
     $closestAncestor.hide();  // for efficiency: remove from the render tree first
-    for (var i = 0, $unit; i < unitsArrLen; ++i) {
-        $unit = $unitsArr[i];
-        if ($unit.data('hiddenByUnitsExtn')) {
-            $unit.hide();
-            $unitsArr.splice(i, 1);
-            --unitsArrLen;
+    for (var i = 0, $CU; i < CUsArrLen; ++i) {
+        $CU = $CUsArr[i];
+        if ($CU.data('hiddenByCUsExtn')) {
+            $CU.hide();
+            $CUsArr.splice(i, 1);
+            --CUsArrLen;
             --i;
         }
         else {
-            $unit.show();
+            $CU.show();
         }
     }
 
@@ -2109,11 +2109,11 @@ function _setupBrowserActionShortcuts() {
 var generalShortcuts = {
     // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
     // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-    nextUnit: ['j', '`', 'down'],
-    prevUnit: ['k', 'shift+`', 'up'],
+    nextCU: ['j', '`', 'down'],
+    prevCU: ['k', 'shift+`', 'up'],
     search: ['/', 'ctrl+shift+f', 'command+shift+f'],
-    firstUnit: ['^', 'alt+1'], // TODO: check if ding sound on alt can be zfixed
-    lastUnit: ['$', 'alt+9', 'alt+0'],
+    firstCU: ['^', 'alt+1'], // TODO: check if ding sound on alt can be zfixed
+    lastCU: ['$', 'alt+9', 'alt+0'],
     showHelp: ['alt+h', 'alt+?'],
     open: ['shift+o', 'alt+o'],  // alt+o allows invoking only with one hand (at least in windows)
     openInNewTab: ['o'],
@@ -2129,22 +2129,22 @@ var generalShortcuts = {
 };
 
 // Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
-// selecting next/prev unit, etc.
+// selecting next/prev CU, etc.
 function _setupGeneralShortcuts() {
 
     // true is redundant here; used only to illustrate this form of the function call
-    bind(generalShortcuts.nextUnit, selectNext, true);
+    bind(generalShortcuts.nextCU, selectNext, true);
 
-    bind(generalShortcuts.prevUnit, selectPrev);
+    bind(generalShortcuts.prevCU, selectPrev);
 
     bind(generalShortcuts.search, showSearchBox);
 
-    bind(generalShortcuts.firstUnit, function(e) {
-        selectUnit(0, true);
+    bind(generalShortcuts.firstCU, function(e) {
+        selectCU(0, true);
     });
 
-    bind(generalShortcuts.lastUnit, function(e) {
-        selectUnit($unitsArray.length - 1, true);
+    bind(generalShortcuts.lastCU, function(e) {
+        selectCU($CUsArray.length - 1, true);
     });
 
     bind(generalShortcuts.showHelp, showHelp);
@@ -2161,15 +2161,15 @@ function _setupGeneralShortcuts() {
 }
 
 /**
-* Sets up the shortcuts specified. Can be used to setup either page-specific or unit-specific shortcuts depending on
-* whether the 'type' passed is "page" or "unit".
+* Sets up the shortcuts specified. Can be used to setup either page-specific or CU-specific shortcuts depending on
+* whether the 'type' passed is "page" or "CU".
     * @param type
 */
 function _setupUrlDataShortcuts(type) {
 
     var shortcuts;
-    if (type === "unit") {
-        shortcuts = urlData && urlData.unit_shortcuts
+    if (type === "CU") {
+        shortcuts = urlData && urlData.CU_shortcuts
     }
     else {
         shortcuts = urlData && urlData.page_shortcuts
@@ -2189,23 +2189,23 @@ function _setupUrlDataShortcuts(type) {
 /**
  *
  * @param shortcut
- * @param {string} scope Can be either "page" or "unit"
+ * @param {string} scope Can be either "page" or "CU"
  */
 function invokeShortcut(shortcut, scope) {
     var fn,
         selectors,
-        $selectedUnit = $unitsArray[selectedUnitIndex];
+        $selectedCU = $CUsArray[selectedCUIndex];
 
-    // if shortcut has the 'fn' property specified, do the same thing whether scope is 'page' or 'unit'
+    // if shortcut has the 'fn' property specified, do the same thing whether scope is 'page' or 'CU'
     if (fn = shortcut.fn) {
-        fn($selectedUnit, document);
+        fn($selectedCU, document);
     }
 
     else if (selectors = shortcut.selectors || shortcut.selector ) {
         var $scope;
 
-        if (scope === 'unit') {
-            $scope =  $unitsArray[selectedUnitIndex];
+        if (scope === 'CU') {
+            $scope =  $CUsArray[selectedCUIndex];
         }
         else  {
             $scope = $document;
@@ -2244,7 +2244,7 @@ function invokeShortcut(shortcut, scope) {
 /**
  * Sets up the keyboard shortcuts.
  * Note: Because of the order in which shortcuts are set up, their priorities in case of a conflict are:
- * <browser action shortcuts> override <general shortcuts> override <page-specific shortcuts> override <unit-specific
+ * <browser action shortcuts> override <general shortcuts> override <page-specific shortcuts> override <CU-specific
  * shortcuts>
  * This order has been chosen since it favors consistency and hence minimizes confusion.
  */
@@ -2259,7 +2259,7 @@ function setupShortcuts() {
         $topLevelContainer.find('.' + class_usedForChromeAltHack).remove();
     }
 
-    _setupUrlDataShortcuts("unit"); // unit shortcuts
+    _setupUrlDataShortcuts("CU"); // CU shortcuts
     _setupUrlDataShortcuts("page"); // page shortcuts
     _setupGeneralShortcuts();   // general shortcuts
     _setupBrowserActionShortcuts(); // browser action shortcuts
@@ -2269,42 +2269,42 @@ var onKeydown = function (e) {
     var code = e.which || e.keyCode,
         hasNonShiftModifier = e.altKey || e.ctrlKey|| e.metaKey,
         hasModifier = hasNonShiftModifier || e.shiftKey,
-        $selectedUnit = $unitsArray[selectedUnitIndex],
+        $selectedCU = $CUsArray[selectedCUIndex],
         activeEl = document.activeElement || document.body;
 
     // On pressing TAB (or shift-tab): 
-    // If a unit is selected, and no element of the page has focus, focus the 'main' element of the unit.
+    // If a CU is selected, and no element of the page has focus, focus the 'main' element of the CU.
     if (code === 9 && !hasNonShiftModifier) { // TAB        
-        if ($selectedUnit && (activeEl === document.body))  {
-            focusMainElement($selectedUnit);
+        if ($selectedCU && (activeEl === document.body))  {
+            focusMainElement($selectedCU);
             suppressEvent(e);
         }
     }
     
     /* On pressing ESC:
-     - When no unit is selected, blur the active element and select the "most sensible" unit
-     - When a unit is selected
+     - When no CU is selected, blur the active element and select the "most sensible" CU
+     - When a CU is selected
         - if an editable element is active (and hence single key shortcuts can't be used), blur the active element
-        - else deselect the unit. (meaning that a selected unit will be deselected on at most a second 'Esc', if not
+        - else deselect the CU. (meaning that a selected CU will be deselected on at most a second 'Esc', if not
         the first)
     */
     else if (code === 27 && !hasModifier) { // ESC
-        if (!$selectedUnit) {
+        if (!$selectedCU) {
             activeEl.blur();
-            var index = getContainingUnitIndex(activeEl);
+            var index = getEnclosingCUIndex(activeEl);
             if (index >= 0) {
-                selectUnit(index, true, true);
+                selectCU(index, true, true);
             }
             else {
-                selectMostSensibleUnit(true, true);
+                selectMostSensibleCU(true, true);
             }
         }
         else if (isElementEditable(activeEl)) {
             activeEl.blur();
         }
         else {
-            deselectUnit();
-            dehoverUnit();
+            deselectCU();
+            dehoverCU();
         }
     }
 };
@@ -2316,13 +2316,13 @@ var onFocus = function(e) {
     var el = e.target, $el;
     elementToScroll = el; // update global variable used by scrollDown()/scrollUp()
 //
-//    if ( ($el = $(el)).data('containingUnitJustSelected') ) {
-//        $el.data('containingUnitJustSelected', false);
+//    if ( ($el = $(el)).data('enclosingCUJustSelected') ) {
+//        $el.data('enclosingCUJustSelected', false);
 //    }
 //    else {
-        var containingUnitIndex = getContainingUnitIndex(el);
-        if (containingUnitIndex >= 0 && containingUnitIndex !== selectedUnitIndex) {
-            selectUnit(containingUnitIndex, false);
+        var enclosingCUIndex = getEnclosingCUIndex(el);
+        if (enclosingCUIndex >= 0 && enclosingCUIndex !== selectedCUIndex) {
+            selectCU(enclosingCUIndex, false);
         }
 //    }
 };
@@ -2355,34 +2355,34 @@ var onLtMouseBtnDown = function(e) {
     elementToScroll = e.target;
 
     var point = {x: e.pageX, y: e.pageY},
-        $selectedUnit = $unitsArray[selectedUnitIndex],
-        $overlaySelected = $selectedUnit && $selectedUnit.data('$overlay'),
-        $hoveredUnit = $unitsArray[hoveredUnitIndex],
-        $overlayHovered = $hoveredUnit && $hoveredUnit.data('$overlay'),
-        containingUnitIndex,
+        $selectedCU = $CUsArray[selectedCUIndex],
+        $overlaySelected = $selectedCU && $selectedCU.data('$overlay'),
+        $hoveredCU = $CUsArray[hoveredCUIndex],
+        $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
+        enclosingCUIndex,
         indexToSelect;
 
     if ($overlaySelected && elementContainsPoint($overlaySelected, point)) {
         return;  // do nothing
     }
     else  if ($overlayHovered && elementContainsPoint($overlayHovered, point)) {
-        indexToSelect = hoveredUnitIndex;
+        indexToSelect = hoveredCUIndex;
     }
     else {
-        indexToSelect = getContainingUnitIndex(e.target);
+        indexToSelect = getEnclosingCUIndex(e.target);
     }
 
     if (indexToSelect >= 0) {
-        selectUnit(indexToSelect, false, false);
+        selectCU(indexToSelect, false, false);
         var activeEl = document.activeElement,
-            indexOf_unitContainingActiveEl = getContainingUnitIndex(activeEl);
+            indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
 
-        if (indexOf_unitContainingActiveEl !== selectedUnitIndex) {
+        if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
             activeEl.blur();
         }
     }
     else {
-        deselectUnit(); // since the user clicked at a point not lying inside any unit, deselect any selected unit
+        deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
     }
 
 };
@@ -2432,19 +2432,19 @@ var onMouseOverIntent = function(e) {
     var point = {x: e.pageX, y: e.pageY};
 
     var $overlayHovered;
-    if ($unitsArray[hoveredUnitIndex] &&
-        ($overlayHovered = $unitsArray[hoveredUnitIndex].data('$overlay')) &&
+    if ($CUsArray[hoveredCUIndex] &&
+        ($overlayHovered = $CUsArray[hoveredCUIndex].data('$overlay')) &&
         (elementContainsPoint($overlayHovered, point))) {
 
-        return ; // unit already has hovered overlay; don't need to do anything
+        return ; // CU already has hovered overlay; don't need to do anything
 
     }
 
-    var unitIndex = getContainingUnitIndex(e.target);
+    var CUIndex = getEnclosingCUIndex(e.target);
 
-    if (unitIndex >= 0) {
+    if (CUIndex >= 0) {
 
-        hoverUnit(unitIndex);
+        hoverCU(CUIndex);
     }
 
 };
@@ -2467,11 +2467,11 @@ var onMouseOut = function(e) {
     // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
     // contained within it, dehover it (set it as dehovered).
     var $overlayHovered;
-    if ($unitsArray[hoveredUnitIndex] &&
-        ($overlayHovered = $unitsArray[hoveredUnitIndex].data('$overlay')) &&
+    if ($CUsArray[hoveredCUIndex] &&
+        ($overlayHovered = $CUsArray[hoveredCUIndex].data('$overlay')) &&
         (!elementContainsPoint($overlayHovered, {x: e.pageX, y: e.pageY}))) {
 
-        dehoverUnit();
+        dehoverCU();
 
     }
 
@@ -2503,10 +2503,10 @@ mutationObserver = new MutationObserver (function(mutations) {
 
 var onWindowResize = function() {
 
-    dehoverUnit();
+    dehoverCU();
 
-    if (selectedUnitIndex >= 0) {
-        selectUnit(selectedUnitIndex, false, false, {onDomChangeOrWindowResize: true}); // to redraw the overlay
+    if (selectedCUIndex >= 0) {
+        selectCU(selectedCUIndex, false, false, {onDomChangeOrWindowResize: true}); // to redraw the overlay
     }
 };
 
@@ -2535,16 +2535,16 @@ var tryRecycleOverlay = function($overlay) {
     if (!$overlay.hasClass(class_overlayHovered) && !$overlay.hasClass(class_overlaySelected)) {
 
         $overlay.hide();
-        var $unit = $overlay.data('$unit');
+        var $CU = $overlay.data('$CU');
 
-        if ($unit) {
-            $unit.data('$overlay', null);
+        if ($CU) {
+            $CU.data('$overlay', null);
         }
         else {
-            console.warn("Swiftly: Unexpected - overlay's associated unit NOT found!");
+            console.warn("Swiftly: Unexpected - overlay's associated CU NOT found!");
         }
 
-        $overlay.data('$unit', null);
+        $overlay.data('$CU', null);
 
         $unusedOverlaysArray.push($overlay);
 
@@ -2603,12 +2603,12 @@ function onSearchBoxKeydown(e) {
             return false;
         }
         else  if (code === 13) { // Enter
-            updateUnitsAndRelatedState();
+            updateCUsAndRelatedState();
             return false;
         }
         else if (code === 9) { // Tab
-            if ($unitsArray.length) {
-                selectUnit(0, true, true);
+            if ($CUsArray.length) {
+                selectCU(0, true, true);
             }
             else {
                 var $focusables = $document.find(focusablesSelector);
@@ -2616,7 +2616,7 @@ function onSearchBoxKeydown(e) {
                     $focusables[0].focus();
                 }
             }
-            e.stopImmediatePropagation(); // otherwise the 'tab' is invoked on the unit, focusing the next element
+            e.stopImmediatePropagation(); // otherwise the 'tab' is invoked on the CU, focusing the next element
             return false;
         }
     }
@@ -2625,7 +2625,7 @@ function onSearchBoxKeydown(e) {
     // not executing the search related code multiple times while the user is typing the search string.
     timeout_search = setTimeout (function() {
 
-        updateUnitsAndRelatedState();
+        updateCUsAndRelatedState();
 
     }, 400);
 }
@@ -2657,19 +2657,19 @@ function setupExternalSearchEvents() {
 
 function onDomReady() {
 
-    if ( globalSettings.selectUnitOnLoad) {
+    if ( globalSettings.selectCUOnLoad) {
 
-        selectMostSensibleUnit(true, false);
+        selectMostSensibleCU(true, false);
     }
 }
 
 function disableExtension() {
 
-    dehoverUnit();
-    deselectUnit();
-    $unitsArray = [];
+    dehoverCU();
+    deselectCU();
+    $CUsArray = [];
     $topLevelContainer.empty().remove();
-    $lastSelectedUnit = null;
+    $lastSelectedCU = null;
 
     removeAllEventListeners();
 
@@ -2734,14 +2734,14 @@ function initializeForCurrentUrl() {
             if (urlData) {
                 destringifyFunctions(urlData);
             }
-            // the following line should remain outside the if condition so that the change from a url with units
+            // the following line should remain outside the if condition so that the change from a url with CUs
             // to one without any is correctly handled
-            updateUnitsAndRelatedState();
+            updateCUsAndRelatedState();
             setupShortcuts();
             setupHelpUIAndEvents();
 
-            if ( globalSettings.selectUnitOnLoad) {
-                selectMostSensibleUnit(true, false);
+            if ( globalSettings.selectCUOnLoad) {
+                selectMostSensibleCU(true, false);
             }
         }
     );

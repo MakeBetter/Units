@@ -9,13 +9,13 @@ var  exceptionSites = {
 
     // On these sites, only the "browser action" shortcuts are enabled, but the rest of the extension is disabled.
     partial: {
-        urlPatterns: ['mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'],
+        urlPatterns: [/* 'mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*' */],
         urlRegexps: []
     },
 
     // On these sites, the extension is completely disabled.
     full: {
-        urlPatterns: [],
+        urlPatterns: ['mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'],
         urlRegexps: []
     }
 

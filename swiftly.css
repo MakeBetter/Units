@@ -1,6 +1,6 @@
 .swiftly-highlight { background-color: yellow }
 
-.unit-scrolling-marker {
+.CU-scrolling-marker {
     position: absolute;
     pointer-events: none;
     background-color: #ff902b;
@@ -24,7 +24,7 @@
     border-bottom-right-radius: 15px;
 }
 
-.unit-overlay {
+.CU-overlay {
     position: absolute;
     /*padding: 10px;*/
     /*opacity: 0.3;*/
@@ -39,7 +39,7 @@
 
 }
 
-.unit-overlay-selected  {
+.CU-overlay-selected  {
 
     /*TODO: check and uncomment the following lines in release code*/
     /*-webkit-box-shadow: 2px 2px 20px 0px #999;*/
@@ -48,12 +48,12 @@
     /*background-color: rgba(100, 100, 100, 0.2) !important;*/
 }
 
-.unit-overlay-selected-minimal  {
+.CU-overlay-selected-minimal  {
     border-left: solid 4px #ccc !important;
     box-shadow: none !important;
 }
 
-.unit-overlay-hovered  {
+.CU-overlay-hovered  {
 
     /*TODO: check and uncomment the following lines in release code*/
     /*-webkit-box-shadow: 1px 1px 10px 0 #bbb;*/

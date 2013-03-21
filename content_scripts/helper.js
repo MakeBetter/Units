@@ -34,14 +34,14 @@ function destringifyFunctions(urlData) {
         return eval(stringifiedFn);
     }
 
-    if (urlData.fn_onUnitSelection) {
-        urlData.fn_onUnitSelection = destringifyFn(urlData.fn_onUnitSelection);
+    if (urlData.fn_onCUSelection) {
+        urlData.fn_onCUSelection = destringifyFn(urlData.fn_onCUSelection);
     }
-    if (urlData.fn_onUnitDeselection) {
-        urlData.fn_onUnitDeselection = destringifyFn(urlData.fn_onUnitDeselection);
+    if (urlData.fn_onCUDeselection) {
+        urlData.fn_onCUDeselection = destringifyFn(urlData.fn_onCUDeselection);
     }
 
-    // to destringify any functions within 'unit_shortcuts' and 'page_shortcuts' objects which have the same structure
+    // to destringify any functions within 'CU_shortcuts' and 'page_shortcuts' objects which have the same structure
     var destringifyShortcuts = function(shortcuts) {
 
         if (shortcuts) {
@@ -55,7 +55,7 @@ function destringifyFunctions(urlData) {
     };
 
     destringifyShortcuts(urlData.page_shortcuts);
-    destringifyShortcuts(urlData.unit_shortcuts);
+    destringifyShortcuts(urlData.CU_shortcuts);
 
 }
 
@@ -65,14 +65,14 @@ function suppressEvent(e) {
 }
 
 /**
- * Returns true if all (top most) constituents of $unit have css 'visibility' style equal to "hidden"
- * @param $unit
+ * Returns true if all (top most) constituents of $CU have css 'visibility' style equal to "hidden"
+ * @param $CU
  * @return {Boolean}
  */
-function $unitIsInvisible($unit) {
+function $CUIsInvisible($CU) {
 
-  for (var i = 0; i < $unit.length; ++i) {
-      if ($unit.eq(i).css('visibility') !== "hidden") {
+  for (var i = 0; i < $CU.length; ++i) {
+      if ($CU.eq(i).css('visibility') !== "hidden") {
           return false;
       }
   }
@@ -80,14 +80,14 @@ function $unitIsInvisible($unit) {
   return true;
 }
 
-// returns true if any part of $unit is in the viewport, false otherwise
-function isUnitInViewport($unit) {
+// returns true if any part of $CU is in the viewport, false otherwise
+function isCUInViewport($CU) {
 
-    // for the unit
-    var boundingRect = getBoundingRectangle($unit),
-        unitTop = boundingRect.top,
-        unitHeight = boundingRect.height,
-        unitBottom = unitTop + unitHeight;
+    // for the CU
+    var boundingRect = getBoundingRectangle($CU),
+        CUTop = boundingRect.top,
+        CUHeight = boundingRect.height,
+        CUBottom = CUTop + CUHeight;
 
     var // for the window:
         winTop = $document.scrollTop(),
@@ -96,8 +96,8 @@ function isUnitInViewport($unit) {
         winBottom = winTop + winHeight;
 
 
-    return ( (unitTop > winTop && unitTop < winBottom)
-        || (unitBottom > winTop && unitBottom < winBottom) );
+    return ( (CUTop > winTop && CUTop < winBottom)
+        || (CUBottom > winTop && CUBottom < winBottom) );
 }
 
 function changeFontSize($jQuerySet, isBeingIncreased) {
@@ -109,10 +109,10 @@ function changeFontSize($jQuerySet, isBeingIncreased) {
         var $el = $jQuerySet.eq(i);
         var font = $el.css('font-size');
         var numericVal = parseFloat(font);
-        var unit = font.substring(numericVal.toString().length);
+        var CU = font.substring(numericVal.toString().length);
 
         var newNumericVal = isBeingIncreased?(numericVal+2): (numericVal-2);
-        $el.css('font-size', newNumericVal+unit);
+        $el.css('font-size', newNumericVal+CU);
 
     }
 }
@@ -169,12 +169,12 @@ function checkOverlayCssHasTransition() {
  3) converted from jQuery plugin to a regular function; main since we want num of highlights made to be
  returned
  4) <removed> Only searches within visible elements. Since numHighlights is required by the calling function to
- detect if a unit should be counted as a match or not. Also helps with efficiency.
+ detect if a CU should be counted as a match or not. Also helps with efficiency.
  5) Other minor optimizations
  6) Added comments
  */
 
-function highlightInUnit($unit, pattern) {
+function highlightInCU($CU, pattern) {
 
     var numHighlighted = 0, // count of how many items were highlighted
         patternLowerCase = pattern && pattern.toLowerCase();
@@ -222,8 +222,8 @@ function highlightInUnit($unit, pattern) {
     };
 
 
-    if ($unit.length && patternLowerCase && patternLowerCase.length) {
-        $unit.each(function() {
+    if ($CU.length && patternLowerCase && patternLowerCase.length) {
+        $CU.each(function() {
             innerHighlight(this);
         });
     }
