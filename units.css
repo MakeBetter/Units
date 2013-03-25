@@ -1,4 +1,4 @@
-.swiftly-highlight { background-color: yellow }
+.UnitsProj-highlight { background-color: yellow }
 
 .CU-scrolling-marker {
     position: absolute;
@@ -78,7 +78,7 @@
 /* This class can be used for (re)setting properties of any text input element that we create using this extension, and want to give a
  consistent look across webpages. That is, applying this class will override any styles associated with the text input
  element that might be specified by the webpage */
-input.swiftly-reset-text-input {
+input.UnitsProj-reset-text-input {
 
     /********
     dimensions and float property of the input element
@@ -126,16 +126,16 @@ input.swiftly-reset-text-input {
     /*appearance: textfield !important;*/
 }
 
-input.swiftly-reset-text-input:focus {
+input.UnitsProj-reset-text-input:focus {
      /*show an outline around the element that is same as chrome's default. this needs to be set as it is turned off on
      some sites. */
      outline: 5px auto -webkit-focus-ring-color !important;
  }
 
 /* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
-margin of the #swiftly-search-box or #swiftly-search-close-icon is changed 2) padding property of this div (since we set its
+margin of the #UnitsProj-search-box or #UnitsProj-search-close-icon is changed 2) padding property of this div (since we set its
 box-sizing to border-box)*/
-div#swiftly-search-container {
+div#UnitsProj-search-container {
     /*padding: 4px !important;*/
     width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
     box-sizing: border-box !important; /*using border-box to make calculations easier.*/
@@ -164,10 +164,10 @@ div#swiftly-search-container {
 
 }
 
-input#swiftly-search-box {
+input#UnitsProj-search-box {
     position: absolute; top: 6px; left: 6px;
 
-    /*the following properties are also set for .swiftly-reset-text-input. we can override them here if need be*/
+    /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
 
     box-sizing: border-box !important; /*using box-sizing for easier calculations. make sure to specify this because
     it varies across sites, and changes the effective dimensions of the textbox*/
@@ -177,7 +177,7 @@ input#swiftly-search-box {
     height: 20px !important;
 }
 
-span#swiftly-search-close-icon {
+span#UnitsProj-search-close-icon {
     position: absolute !important; top: 8px !important; right: 6px !important;
     border: 1px solid transparent !important;
 
@@ -210,13 +210,13 @@ span#swiftly-search-close-icon {
     -moz-transition: all 0.1s ease-out !important;
 }
 
-span#swiftly-search-close-icon:hover {
+span#UnitsProj-search-close-icon:hover {
     background-color: #e38e83 !important;
     border: solid 1px #d1847b !important;
     color: #eee !important;
 }
 
-#swiftly-help-container {
+#UnitsProj-help-container {
     background-color: #222;
     opacity: 0.88;
     min-height: 400px;
@@ -228,20 +228,20 @@ span#swiftly-search-close-icon:hover {
     color: #fafafa;
 }
 
-#swiftly-help-container #heading>span{
+#UnitsProj-help-container #heading>span{
     font-size: 18px;
     padding: 20px;
     margin-left:auto;
     margin-right:auto;
 }
 
-#swiftly-help-container table {
+#UnitsProj-help-container table {
     font-size: 12px !important;
     margin: 20px;
     text-align: left;
     color: #eaeaea;
 }
 
-#swiftly-help-container table tr {
+#UnitsProj-help-container table tr {
     margin: 2px;
 }

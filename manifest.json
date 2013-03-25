@@ -1,5 +1,5 @@
 {
-    "name": "Swiftly",
+    "name": "Units",
     "version": "0.5",
     "manifest_version": 2,
     "description": "Keyboard navigation on web pages + better focus using units.",
@@ -25,7 +25,7 @@
                 "content_scripts/help.js", "content_scripts/selectFocusables.js",
                 "content_scripts/mainContentScript.js"],
 
-            "css": ["swiftly.css"],
+            "css": ["units.css"],
             "run_at": "document_start",
             "all_frames": false
         }

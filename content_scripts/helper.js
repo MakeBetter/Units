@@ -18,7 +18,7 @@ function executeWhenConditionMet(functionToExecute, testFunction, timeOutMillise
         setTimeout(executeWhenConditionMet.bind(null, functionToExecute, testFunction, timeOutMillisec-50),50);
     }
     else {
-        console.warn("swiftly extn: executeWhenConditionMet() timed out for function..:\n", functionToExecute, "\n... and testFunction:\n", testFunction);
+        console.warn("UnitsProj extn: executeWhenConditionMet() timed out for function..:\n", functionToExecute, "\n... and testFunction:\n", testFunction);
     }
 }
 
@@ -129,7 +129,7 @@ function checkOverlayCssHasTransition() {
     // create a short-lived element which is inserted into the DOM to allow determination of CSS transition property
     // on overlay elements, and then quickly removed.
     var $tempOverlay = $('<div></div>')
-        .addClass(class_addedBySwiftlyExtn)
+        .addClass(class_addedByUnitsProjExtn)
         .addClass(class_overlay)
         .hide()
         .appendTo(document.body);
@@ -193,7 +193,7 @@ function highlightInCU($CU, pattern) {
             var pos = node.data.toLowerCase().indexOf(patternLowerCase);
             if (pos >= 0) {
                 var spannode = document.createElement('span');
-                spannode.className = 'swiftly-highlight';
+                spannode.className = 'UnitsProj-highlight';
                 var middlebit = node.splitText(pos);
                 var endbit = middlebit.splitText(patternLowerCase.length);
                 var middleclone = middlebit.cloneNode(true);
@@ -234,7 +234,7 @@ function highlightInCU($CU, pattern) {
 function removeHighlighting (container) {
     var $container = $(container);
 
-    $container.find(".swiftly-highlight").each(function() {
+    $container.find(".UnitsProj-highlight").each(function() {
         var parentNode = this.parentNode;
 
         parentNode.replaceChild(this.firstChild, this);

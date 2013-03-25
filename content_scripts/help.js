@@ -18,7 +18,7 @@ function setupHelpUIAndEvents() {
 
 function setupHelpUI() {
 
-    var $heading = $("<div id='heading'><span>Swiftly Shortcuts</span></div>");
+    var $heading = $("<div id='heading'><span>UnitsProj Shortcuts</span></div>");
 
 //    var browserShortcuts = null;
     var pageShortcuts = urlData && urlData.page_shortcuts;
@@ -59,8 +59,8 @@ function setupHelpUI() {
         });
     }
 
-    $helpContainer = $('<div id = "swiftly-help-container">')
-        .addClass(class_addedBySwiftlyExtn)
+    $helpContainer = $('<div id = "UnitsProj-help-container">')
+        .addClass(class_addedByUnitsProjExtn)
         .hide()
         .appendTo($topLevelContainer)
         .append($heading)

@@ -76,13 +76,13 @@ var currentUrl = window.location.href,
     /* This class should be applied to all elements added by this extension. This is used to distinguish DOM mutation
     events caused by them from the those of the page's own elements. This is also a "responsible" thing since it marks
     out clearly elements added by this code to the DOM (for anyone looking at DOM, page source etc) */
-    class_addedBySwiftlyExtn = 'added-by-swiftly-extension',
+    class_addedByUnitsProjExtn = 'added-by-UnitsProj',
 
     /* This is used as a container for all elements created by this program that we add to the DOM (technically, this 
     applies only to elements that are outside the render flow of the page. As of 31 Dec 2012 these include all elements
     added by this extension).
     This allows keeping modifications to the DOM localized inside a single element. */
-    $topLevelContainer = $('<div></div>').addClass(class_addedBySwiftlyExtn),
+    $topLevelContainer = $('<div></div>').addClass(class_addedByUnitsProjExtn),
 
     class_overlay = "CU-overlay",                     // class applied to all CU overlays
     class_overlaySelected = "CU-overlay-selected",    // class applied to overlay on a selected CU
@@ -318,7 +318,7 @@ var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
     var $overlaySelected = showOverlay($CU, 'selected');
 
     if (!$overlaySelected) {
-        console.warn('swiftly: no $overlay returned by showOverlay');
+        console.warn('UnitsProj: no $overlay returned by showOverlay');
     }
 
     if (!options || !options.onDomChangeOrWindowResize) {
@@ -404,7 +404,7 @@ function removeOverlay ($CU, type) {
         }
     }
     else {
-        console.warn('swiftly: no $overlay found');
+        console.warn('UnitsProj: no $overlay found');
     }
 
 }
@@ -426,7 +426,7 @@ var showOverlay = function($CU, type) {
             $overlay = $unusedOverlaysArray.shift();
         }
         else {
-            $overlay = $('<div></div>').addClass(class_overlay).addClass(class_addedBySwiftlyExtn);
+            $overlay = $('<div></div>').addClass(class_overlay).addClass(class_addedByUnitsProjExtn);
         }
     }
 
@@ -1493,7 +1493,7 @@ var getCUsArray = function() {
 //    }
     
 //    if (!$CUsArr || !$CUsArr.length) {
-//        console.warn("Swiftly: No CUs were found based on the selector provided for this URL")
+//        console.warn("UnitsProj: No CUs were found based on the selector provided for this URL")
 //        return;
 //    }
 
@@ -1652,7 +1652,7 @@ var closestCommonAncestor = function(elements) {
 
 // returns boolean
 var canIgnoreMutation = function(mutationRecord) {
-    if (mutationRecord.type === "attributes" && mutationRecord.target.classList.contains(class_addedBySwiftlyExtn)) {
+    if (mutationRecord.type === "attributes" && mutationRecord.target.classList.contains(class_addedByUnitsProjExtn)) {
         return true;
     }
 
@@ -1666,7 +1666,7 @@ var canIgnoreMutation = function(mutationRecord) {
             if (nodes && nodes.length) {
                 for (var i = 0; i < nodes.length; ++i) {
                     var node = nodes[i];
-                    if(!  ((node.classList && node.classList.contains(class_addedBySwiftlyExtn))
+                    if(!  ((node.classList && node.classList.contains(class_addedByUnitsProjExtn))
                         || node.nodeType === document.TEXT_NODE)  ) {
                         canIgnore = false;
                         break;
@@ -2041,7 +2041,7 @@ function removeAllEventListeners() {
 
     mutationObserver.disconnect();
 
-//    console.log("Swiftly: all event handlers removed");
+//    console.log("UnitsProj: all event handlers removed");
 
 }
 
@@ -2112,7 +2112,7 @@ var browserActionShortcuts = {
  on a per website/webpage basis). This is helpful for pages like gmail, github, etc which often have good shortcuts
  implemented out of the box. Yet completely disabling the extension on such sites would lead to breaking of the user's
  "flow" when, for example, invoking sequentially invoking "left tab" to move through a bunch of tabs one of which had
- Swiftly completely  disabled.
+ UnitsProj completely  disabled.
  As a general recommendation, single letter keys are not used for this category of shortcuts, because that seems to be
  the most common type of shortcuts implemented on web apps, and so would result in a higher possibility of conflict.
 */
@@ -2556,7 +2556,7 @@ var onTransitionEnd = function(e) {
 var tryRecycleOverlay = function($overlay) {
 
     if (!$overlay.hasClass(class_overlay)) {
-        console.warn("swiftly: Unexpected - $overlay doesn't have class '" + class_overlay + "'");
+        console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_overlay + "'");
     }
 
     // check if the overlay is both in deselected and dehovered states
@@ -2569,7 +2569,7 @@ var tryRecycleOverlay = function($overlay) {
             $CU.data('$overlay', null);
         }
         else {
-            console.warn("Swiftly: Unexpected - overlay's associated CU NOT found!");
+            console.warn("UnitsProj: Unexpected - overlay's associated CU NOT found!");
         }
 
         $overlay.data('$CU', null);
@@ -2584,7 +2584,7 @@ function setupBasicUIComponents() {
 
     $scrollingMarker = $('<div></div>')
         .addClass(class_scrollingMarker)
-        .addClass(class_addedBySwiftlyExtn)
+        .addClass(class_addedByUnitsProjExtn)
         .hide()
         .appendTo($topLevelContainer);
 
@@ -2592,15 +2592,15 @@ function setupBasicUIComponents() {
 }
 function setupSearch() {
 
-    var $searchBox = $('<input id = "swiftly-search-box" class = "swiftly-reset-text-input" type = "text">')
-            .addClass(class_addedBySwiftlyExtn),
+    var $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
+            .addClass(class_addedByUnitsProjExtn),
 
         $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
-            .attr("id", "swiftly-search-close-icon")
-            .addClass(class_addedBySwiftlyExtn);
+            .attr("id", "UnitsProj-search-close-icon")
+            .addClass(class_addedByUnitsProjExtn);
 
-    $searchContainer = $('<div id = "swiftly-search-container">')
-        .addClass(class_addedBySwiftlyExtn)
+    $searchContainer = $('<div id = "UnitsProj-search-container">')
+        .addClass(class_addedByUnitsProjExtn)
         .append($searchBox)
         .append($closeButton)
         .hide()

@@ -4,7 +4,7 @@ var // used to reinstate the conflicting access key attributes that were removed
     // array of <key>'s that belonging to alt+<key> type shortcuts; used to detect conflicts on DOM changes
     altShortcutKeys = [],
 
-    class_usedForChromeAltHack = 'swiftly-usedForChromeAltHack';
+    class_usedForChromeAltHack = 'UnitsProj-usedForChromeAltHack';
 
 
 /**
@@ -40,7 +40,7 @@ function applyChromeAltHackIfNeeded(shortcutsArr) {
                     $('<div></div>')
                         .attr('accesskey', keyAfterAlt)
                         .addClass(class_usedForChromeAltHack)
-                        .addClass(class_addedBySwiftlyExtn)
+                        .addClass(class_addedByUnitsProjExtn)
                 );
             }
         }
