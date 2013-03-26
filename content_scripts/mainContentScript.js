@@ -160,7 +160,7 @@ var currentUrl = window.location.href,
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
 
-        pageScrollDelta: 100, // pixels to scroll on each key press
+        pageScrollDelta: 100 // pixels to scroll on each key press
 
     },
 
@@ -174,7 +174,7 @@ var currentUrl = window.location.href,
 // jQuery set ($CU) passed
 var $getContainedFocusables = function($CU) {
 
-    var $allElements = $CU.find('*').addBack()
+    var $allElements = $CU.find('*').addBack();
     var $containedFocusables = $allElements.filter(focusablesSelector);
     return $containedFocusables;
 
@@ -339,7 +339,7 @@ var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
             mutationObserver.disconnect();
             increaseFont($CU);
             mutationObserver.observe(document, mutationObserverConfig);
-            $CU.data('fontIncreasedOnSelection', true)
+            $CU.data('fontIncreasedOnSelection', true);
         }
 
         if (urlData.fn_onCUSelection) {
@@ -357,7 +357,7 @@ var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
 var deselectCU = function (options) {
 
     var $CU;
-    if ($CU = $CUsArray[selectedCUIndex]) {
+    if (!!($CU = $CUsArray[selectedCUIndex])) {
 
         // console.log('deselecting CU...');
         removeOverlay($CU, 'selected');
@@ -369,7 +369,7 @@ var deselectCU = function (options) {
                 mutationObserver.disconnect();
                 decreaseFont($CU);
                 mutationObserver.observe(document, mutationObserverConfig);
-                $CU.data('fontIncreasedOnSelection', false)
+                $CU.data('fontIncreasedOnSelection', false);
             }
 
             if (urlData.fn_onCUDeselection) {
@@ -449,11 +449,11 @@ var showOverlay = function($CU, type) {
 
     if (CUSpecifier && (overlayPadding = CUSpecifier["overlay-padding"])) {
         $overlay.css("padding", overlayPadding);
-        $overlay.css("top", parseFloat($overlay.css("top"))
-            -  parseFloat($overlay.css("padding-top")));
+        $overlay.css("top", parseFloat($overlay.css("top")) -
+            parseFloat($overlay.css("padding-top")));
 
-        $overlay.css("left", parseFloat($overlay.css("left"))
-            -  parseFloat($overlay.css("padding-left")));
+        $overlay.css("left", parseFloat($overlay.css("left")) -
+            parseFloat($overlay.css("padding-left")));
     }
 
     if (type === 'selected') {
@@ -517,8 +517,8 @@ var hoverCU = function(CUOrItsIndex) {
  * Dehovers the currently hovered (over) CU, if there is one
  */
 var dehoverCU = function () {
-    var $CU;
-    if ($CU = $CUsArray[hoveredCUIndex]) {
+    var $CU = $CUsArray[hoveredCUIndex];
+    if ($CU) {
         removeOverlay($CU, 'hovered');
     }
     hoveredCUIndex = -1;
@@ -543,7 +543,7 @@ var showScrollingMarker = function(x, y) {
  * @param {object} options
  * @return {Boolean} value indicating whether scroll took place
  */
-var scrollSelectedCUIfRequired = function(direction, options) {
+function scrollSelectedCUIfRequired (direction, options) {
 
     options = $.extend(true, {}, globalSettings, options);
 
@@ -564,10 +564,11 @@ var scrollSelectedCUIfRequired = function(direction, options) {
     var newWinTop, // new value of scrollTop
         sameCUScrollOverlap = 70,
         margin = 30;
+    
 
-    var direction = direction.toLowerCase();
-    if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight)
-        || (direction === 'down' && CUBottom > winBottom) ) {
+    direction = direction.toLowerCase();
+    if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight) ||
+        (direction === 'down' && CUBottom > winBottom) ) {
         if (direction === 'up' ) { // implies CUTop < winTop + pageHeaderHeight
             newWinTop = winTop - winHeight + sameCUScrollOverlap;
 
@@ -635,35 +636,25 @@ var selectPrev = function() {
         return;
     }
 
-    var options,
-        currentTime = new Date(),
-        lastInvocationTime = selectPrev.lastInvocationTime;
+    var options;
 
     // to handle quick repeated invocations...
     if (animationInProgress) {
-        return;
-    }
-    if (lastInvocationTime && currentTime - lastInvocationTime < 100) {
-        return;
-    }
-    else if (lastInvocationTime && currentTime - lastInvocationTime < 200) {
-        options = {
-            animatedCUScroll: false
-        }
         stopExistingScrollAnimation = true;
+        return;
     }
     else {
         stopExistingScrollAnimation = false;
     }
-    selectPrev.lastInvocationTime = currentTime;
+   
     options = $.extend(true, {}, globalSettings, options);
 
     $scrollingMarker.hide();
 
     var newIndex;
 
-    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex])
-        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
+        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
         if (options.sameCUScroll) {
              var scrolled = scrollSelectedCUIfRequired('up', options);
             if (scrolled) {
@@ -698,9 +689,7 @@ var selectNext = function() {
         return;
     }
 
-    var options,
-        currentTime = new Date(),
-        lastInvocationTime = selectNext.lastInvocationTime;
+    var options;
 
     // to handle quick repeated invocations...
     if (animationInProgress) {
@@ -710,20 +699,6 @@ var selectNext = function() {
     else {
         stopExistingScrollAnimation = false;
     }
-//    if (lastInvocationTime && currentTime - lastInvocationTime < 100) {
-//        return;
-//    }
-//    else if (lastInvocationTime && currentTime - lastInvocationTime < 200) {
-//        options = {
-//            animatedCUScroll: false
-//        }
-//        stopExistingScrollAnimation = true;
-//    }
-//    else {
-//        stopExistingScrollAnimation = false;
-//    }
-//
-//    selectNext.lastInvocationTime = currentTime;
 
     options = $.extend(true, {}, globalSettings, options);
 
@@ -731,8 +706,8 @@ var selectNext = function() {
 
     var newIndex;
 
-    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex])
-        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
+        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
         if (options.sameCUScroll) {
             var scrolled = scrollSelectedCUIfRequired('down', options);
@@ -765,9 +740,9 @@ function selectMostSensibleCU(setFocus, adjustScrolling) {
     var lastSelectedCUIndex;
 
     // if a CU is already selected AND (is present in the viewport OR was selected only recently)...
-    if (selectedCUIndex >= 0
-        && (isCUInViewport($CUsArray[selectedCUIndex])
-        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    if (selectedCUIndex >= 0 &&
+        (isCUInViewport($CUsArray[selectedCUIndex]) ||
+        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
 
         //...call selectCU() on it again passing on the provided parameters
@@ -775,9 +750,9 @@ function selectMostSensibleCU(setFocus, adjustScrolling) {
         return;
     }
     // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
-    else if( (lastSelectedCUIndex = findIndex_In_$CUsArray($lastSelectedCU)) >=0
-        && (isCUInViewport($lastSelectedCU)
-        || new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    else if( (lastSelectedCUIndex = findIndex_In_$CUsArray($lastSelectedCU)) >=0 &&
+        (isCUInViewport($lastSelectedCU) ||
+        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
         selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
        
@@ -848,7 +823,7 @@ var getEnclosingCUIndex = function(element) {
 // by nextALLUntil(selector), which might be more efficient
 $.fn.nextALL = function(filter) {
     var $all = $('*'); // equivalent to $document.find('*')
-    $all = $all.slice($all.index(this) + 1)
+    $all = $all.slice($all.index(this) + 1);
     if (filter)  {
         $all = $all.filter(filter);
     }
@@ -873,7 +848,7 @@ var findIndex_In_$CUsArray = function($CU)  {
         }
     }
 
-    return -1
+    return -1;
 };
 
 // returns a boolean indicating if the passed CUs (jQuery sets) have the same contents in the same order (for
@@ -968,23 +943,25 @@ var getBoundingRectangleForElements = function(elements) {
     // x1, y1 => top-left. x2, y2 => bottom-right.
     // for the bounding rectangle:
     var x1 = Infinity,
-        y1 = Infinity
+        y1 = Infinity,
         x2 = -Infinity,
         y2 = -Infinity;
 
 
     for (var i = 0; i < elements.length; i++) {
         var el = elements[i],
-            $el = $(el);
+            // Ignoring JSHint warning in the following line. Variable hoisting notwithstanding, I like having "logical/intended" variable scopes,
+            // and "defining" variables as close to where they are required. Helps me when code chunks need to be moved around.
+            $el = $(el);    
             elPosition = $(el).css('position');
         // ignore elements out of normal flow to calculate rectangle + hidden/invisible elements
-        if (elPosition === "fixed" || elPosition === "absolute" /*|| elPosition === "relative"*/
-            || !$el.is(':visible') || $el.css('visibility') === "hidden"
-            || !$el.innerWidth() || !$el.innerHeight()) {
+        if (elPosition === "fixed" || elPosition === "absolute" || /*|| elPosition === "relative"*/
+            !$el.is(':visible') || $el.css('visibility') === "hidden" ||
+            !$el.innerWidth() || !$el.innerHeight()) {
             continue;
         }
 
-        var offset = $el.offset();
+        var offset = $el.offset();  // Ingnoring JSHint warning, for the same reason as above
 
         // for the current element:
         var _x1, _y1, _x2, _y2;
@@ -1021,29 +998,29 @@ var getBoundingRectangleForElements = function(elements) {
 var animatedScroll = function(scrollTop, duration) {
 
     var current = $document.scrollTop();
-    var final = scrollTop;
+    var destination = scrollTop;
 
-    // ensure that final scrollTop position is within the possible range
-    if (final < 0) {
-        final = 0;
+    // ensure that destination scrollTop position is within the possible range
+    if (destination < 0) {
+        destination = 0;
     }
-    else if (final > $document.height() - $(window).height()) {
-        final = $document.height() - $(window).height();
+    else if (destination > $document.height() - $(window).height()) {
+        destination = $document.height() - $(window).height();
     }
 
     var scrollingDown;         
 
-    if (final > current) {
+    if (destination > current) {
         scrollingDown = true;
     }
-    else if (final < current) {
+    else if (destination < current) {
         scrollingDown = false;
     }
     else {
         return;
     }
 
-    var totalDisplacement = final - current,
+    var totalDisplacement = destination - current,
 
         speed = totalDisplacement/duration, // pixels per millisec
 
@@ -1061,9 +1038,9 @@ var animatedScroll = function(scrollTop, duration) {
     var invokeIncrementalScroll = function () {
 
         if (stopExistingScrollAnimation) {
-            console.log('interval CLEARED.')
+            console.log('interval CLEARED.');
             clearInterval(intervalId);
-            body.scrollTop = final;
+            body.scrollTop = destination;
             animationInProgress = false;
             return;
         }
@@ -1072,8 +1049,8 @@ var animatedScroll = function(scrollTop, duration) {
         var now = new Date();
         current += (now - lastInvocationTime) * speed;
         lastInvocationTime = now;
-        if (scrollingDown? (current >= final): (current <= final)) {
-            body.scrollTop = final;
+        if (scrollingDown? (current >= destination): (current <= destination)) {
+            body.scrollTop = destination;
             clearInterval(intervalId);
             animationInProgress = false;
         }
@@ -1138,8 +1115,8 @@ function scrollIntoView($element, options) {
     }
 */
 
-    if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) // CU is fully in viewport
-        && !scrollIntoView.tryCenteringCUOnEachScroll) {
+    if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) && // CU is fully in viewport
+        !scrollIntoView.tryCenteringCUOnEachScroll) {
 
         return false;
     }
@@ -1210,7 +1187,7 @@ function focusNextTextInput() {
             }
 
             $textInput[targetIndex].focus();  // this may not work in all cases (if the element is disabled etc), hence the loop
-            currentIndex = $textInput.index(document.activeElement)
+            currentIndex = $textInput.index(document.activeElement);
         } while (targetIndex !== currentIndex);   
     }
     else {
@@ -1234,7 +1211,7 @@ function focusPrevTextInput() {
             }
 
             $textInput[targetIndex].focus();  // this may not work in all cases (if the element is disabled etc), hence the loop
-            currentIndex = $textInput.index(document.activeElement)
+            currentIndex = $textInput.index(document.activeElement);
         } while (targetIndex !== currentIndex);   
     }
     else {
@@ -1261,7 +1238,7 @@ var onDomChange = function(mutations) {
         var mutationsLen = mutations.length,
             mutationRecord,
             addedNodes;
-        for (var i = 0, mutationRecord; i < mutationsLen; ++i) {
+        for (var i = 0; i < mutationsLen; ++i) {
             mutationRecord = mutations[i];
 
             if (addedNodes = mutationRecord.addedNodes ) {
@@ -1312,7 +1289,7 @@ function updateCUsAndRelatedState() {
     $CUsArray = getCUsArray();
 
     if ($CUsArray && $CUsArray.length) {
-        if (parseInt($searchContainer.css('top')) >= 0) { // if search box is visible
+        if (parseInt($searchContainer.css('top'), 10) >= 0) { // if search box is visible
 //    if ($searchContainer.offset().top >= 0) { // if search box is visible
             filterCUsArray($CUsArray);
         }
@@ -1379,30 +1356,34 @@ var getCUsArray = function() {
                 $closestCommonAncestor,
                 firstsArrLen = $firstsArray.length;
 
+            var filterFirst = function(){
+                var $el = $(this);
+                if ($el.is($_first) || $el.has($_first).length) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+
+            var filterLast = function(){
+                var $el = $(this);
+                if ($el.is($_last) || $el.has($_last).length) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+
             for (var i = 0; i < firstsArrLen; ++i) {
                 $_first = $firstsArray[i];
                 $_last = $_first.nextALL(CUSpecifier.last).first();
 
                 $closestCommonAncestor = $_first.parents().has($_last).first();
 
-                $first = $closestCommonAncestor.children().filter(function(){
-                    var $el = $(this);
-                    if ($el.is($_first) || $el.has($_first).length) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                });
-                $last = $closestCommonAncestor.children().filter(function(){
-                    var $el = $(this);
-                    if ($el.is($_last) || $el.has($_last).length) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                });
+                $first = $closestCommonAncestor.children().filter(filterFirst);
+                $last = $closestCommonAncestor.children().filter(filterLast);
                 $CUsArr[i] = $first.add($first.nextUntil($last)).add($last);
             }
         }
@@ -1420,7 +1401,7 @@ var getCUsArray = function() {
          * @param {DOM Node|JQuery Wrapper} $container
          */
 
-        function buildCUsAroundCentralElement($container) {
+        var buildCUsAroundCentralElement = function ($container) {
 //TODO: 1) rename child to sibling etc
 //            2) call currentGroupingIndex currentGroupingIndex etc.
             $container = $($container);
@@ -1480,7 +1461,7 @@ var getCUsArray = function() {
                     }
                 }
             }
-        } // end of function definition
+        }; // end of function definition
 
         buildCUsAroundCentralElement($container);
     }
