@@ -307,6 +307,8 @@ var urlToUrlDataMap = {
     // Sites included: "*.stackexchange.com", "stackoverflow.com", "superuser.com", "serverfault.com", "stackapps.com",
     // "askubuntu.com"
     // Also, "meta.stackoverflow.com", "meta.superuser.com","meta.stackoverflow.com", etc.
+    
+    //StackExchange powered sites included: "mathoverflow.net"
     "stackexchange.com": [
            {
                // Pages with lists of questions
@@ -316,7 +318,11 @@ var urlToUrlDataMap = {
                     "*.stackexchange.com\/"],
                 urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
                     /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
-                    /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/],
+                    /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
+
+                    /^(meta\.)?(mathoverflow\.net)\/questions$/,
+                    /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
+                    /^(meta\.)?(mathoverflow\.net)\/$/],
                 CUSpecifier: ".question-summary"
            },
            {
@@ -335,8 +341,27 @@ var urlToUrlDataMap = {
 
                CUSpecifier: {
                    CU: ".question, .answer",
+                   // .question
                    "overlay-padding": "0 5px 0 5px"
                }
+           },
+           {
+               urlRegexps: [/^(meta\.)?(mathoverflow\.net)\/questions\//],
+               CU_shortcuts: {
+                   //TODO: specify shortcuts for MathOverflow.
+//                   "upvote": {keys: ["u"],  selector: ".vote-up-off" },
+//                   "downvote": {keys: ["d"],  selector: ".vote-down-off" },
+//                   "share": {keys: ["s"],  selector: ".short-link" },
+//                   "edit": {keys: ["e"],  selector: ".suggest-edit-post" },
+//                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
+//                   "star": {keys: ["r"],  selector: ".star-off" }
+               },
+
+               CUSpecifier: {
+                   CU: "#question, .answer", // #question is specific to  mathoverflow.net
+                   "overlay-padding": "0 5px 0 5px"
+               }
+
            }
        ],
     "wikipedia.org": {
@@ -388,6 +413,10 @@ var specialDomain_masterDomain_map = [
     },
     {
         regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
+        masterDomainKey: "stackexchange.com"
+    },
+    {
+        regexp: /^(mathoverflow\.net)/,
         masterDomainKey: "stackexchange.com"
     }
 ];
