@@ -304,8 +304,9 @@ var urlToUrlDataMap = {
             }
     ],
 
-    // Sites included: "stackoverflow.com", "meta.stackoverflow.com", "superuser.com", "meta.superuser.com",
-    // "serverfault.com", "meta.serverfault.com", "serverfault.com", "meta.serverfault.com",
+    // Sites included: "*.stackexchange.com", "stackoverflow.com", "superuser.com", "serverfault.com", "stackapps.com",
+    // "askubuntu.com"
+    // Also, "meta.stackoverflow.com", "meta.superuser.com","meta.stackoverflow.com", etc.
     "stackexchange.com": [
            {
                // Pages with lists of questions
