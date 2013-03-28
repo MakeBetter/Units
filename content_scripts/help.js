@@ -68,13 +68,13 @@ function setupHelpUI() {
         .append($CUShortcutsSection)
         .append($generalShortcutsSection);
 
-};
+}
 
 function showHelp() {
     $helpContainer.show();
-};
+}
 
 function hideHelp() {
     $helpContainer.hide();
 
-};
+}

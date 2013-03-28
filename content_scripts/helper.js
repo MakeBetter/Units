@@ -95,8 +95,8 @@ function isCUInViewport($CU) {
         winBottom = winTop + winHeight;
 
 
-    return ( (CUTop > winTop && CUTop < winBottom)
-        || (CUBottom > winTop && CUBottom < winBottom) );
+    return ( (CUTop > winTop && CUTop < winBottom) ||
+        (CUBottom > winTop && CUBottom < winBottom) );
 }
 
 function changeFontSize($jQuerySet, isBeingIncreased) {
@@ -195,7 +195,7 @@ function highlightInCU($CU, pattern) {
                 var spannode = document.createElement('span');
                 spannode.className = 'UnitsProj-highlight';
                 var middlebit = node.splitText(pos);
-                var endbit = middlebit.splitText(patternLowerCase.length);
+                // var endbit = middlebit.splitText(patternLowerCase.length);
                 var middleclone = middlebit.cloneNode(true);
                 spannode.appendChild(middleclone);
                 middlebit.parentNode.replaceChild(spannode, middlebit);
@@ -206,7 +206,7 @@ function highlightInCU($CU, pattern) {
         // nodeType 1 - element node
         else if (node.nodeType == 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
 
-            var $node = $(node); // node is an element
+            // var $node = $(node); // node is an element
             // if (!$node.is(':visible') || $node.css('visibility') === 'hidden') {
             //     return;
             // }
@@ -228,7 +228,7 @@ function highlightInCU($CU, pattern) {
     }
 
     return numHighlighted;
-};
+}
 
 // container - dom node or jQuery set within which highlighting should be removed
 function removeHighlighting (container) {
@@ -241,4 +241,4 @@ function removeHighlighting (container) {
         parentNode.normalize();
 
     });
-};
+}

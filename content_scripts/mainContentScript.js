@@ -1549,7 +1549,7 @@ var processCUsArray = function($CUsArr) {
  * @param element
  * @return {Array of DOM elements}
  */
-var ancestorElements = function(element) {
+var ancestorElements = function(element, blah) {
     var ancestors = [];
     for (; element; element = element.parentElement) {
         ancestors.unshift(element);

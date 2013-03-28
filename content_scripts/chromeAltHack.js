@@ -29,7 +29,7 @@ function applyChromeAltHackIfNeeded(shortcutsArr) {
             keyAfterAlt = tokens[1];
 
             if (altShortcutKeys.indexOf(keyAfterAlt) === -1) {
-                altShortcutKeys.push(keyAfterAlt)
+                altShortcutKeys.push(keyAfterAlt);
             }
 
             removeAccessKey(keyAfterAlt, document);
@@ -61,8 +61,8 @@ function applyChromeAltHackIfNeeded(shortcutsArr) {
  */
 function removeAccessKey(accessKey, element) {
 
-    var $conflictingElements =  $(element).find('[accesskey="' + accessKey+ '"]:not(.'
-        + class_usedForChromeAltHack + ')');
+    var $conflictingElements =  $(element).find('[accesskey="' + accessKey+ '"]:not(.' +
+        class_usedForChromeAltHack + ')');
 
     $conflictingElements.each(
         function(index, element) {

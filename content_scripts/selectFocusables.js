@@ -58,8 +58,8 @@ function selectFocusable(nextOrPrev, beginningChar) {
             activeEl = document.activeElement;
 
         //if scope is the currently selected CU and the active element lies within it
-        if ( ($scope === $selectedCU && getEnclosingCUIndex(activeEl) === selectedCUIndex)
-            || ($scope === $document)) {
+        if ( ($scope === $selectedCU && getEnclosingCUIndex(activeEl) === selectedCUIndex) ||
+            ($scope === $document)) {
 
             focusedElementInScope = activeEl;
         }
@@ -83,7 +83,7 @@ function selectFocusable(nextOrPrev, beginningChar) {
             $matchedFocusables[index].focus();
         }
         else {
-            $matchedFocusables[0].focus()
+            $matchedFocusables[0].focus();
         }
 
 
