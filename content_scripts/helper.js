@@ -32,7 +32,7 @@ function destringifyFunctions(urlData) {
 
     var destringifyFn = function(stringifiedFn) {
         return eval(stringifiedFn);
-    }
+    };
 
     if (urlData.fn_onCUSelection) {
         urlData.fn_onCUSelection = destringifyFn(urlData.fn_onCUSelection);

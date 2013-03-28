@@ -19,7 +19,7 @@ var  exceptionSites = {
         urlRegexps: []
     }
 
-}
+};
 
 
 

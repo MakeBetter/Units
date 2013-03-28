@@ -137,7 +137,7 @@ var _getMainDomain = function(locationObj) {
     // Match the domain tokens decrementing the number of tokens to be matched in each iteration. Stop at the first match
     // found since that would be the match with the most tokens.
     for (var numTokensToMatch = domainTokensLen; numTokensToMatch >0; numTokensToMatch--) {
-        for (var i =0; i < suffixesArrLen; ++i) {
+        for (var i = 0; i < suffixesArrLen; ++i) {
             var suffixTokens = suffixesArr[i];
             if (numTokensToMatch !== suffixTokens.length || suffixTokens[0].charAt(0) === '!') {
                 continue;
@@ -221,7 +221,7 @@ function stringifyFunctions(urlData) {
 
     var stringifyFn = function(fn) {
         return "(" + fn.toString() + ")";
-    }
+    };
 
     if (urlData.fn_onCUSelection) {
         urlData.fn_onCUSelection = stringifyFn(urlData.fn_onCUSelection);
@@ -307,10 +307,11 @@ var getMasterDomainKey = function(domain) {
 // 1) regexps corresponding to the 'urlPatterns' property of the urlData object
 // 2) regexps directly specified using the 'urlRegexps' property of the urlData object
 var getCombinedRegexps = function(urlData) {
-    var urlPatterns, urlRegexps,
+    var urlPatterns = urlData.urlPatterns,
+        urlRegexps = urlData.urlRegexps,
         combinedRegexps = [];
 
-    if (urlPatterns = urlData.urlPatterns) {
+    if (urlPatterns) {
         if (!Array.isArray(urlPatterns)) {
             urlPatterns = [urlPatterns];
         }
@@ -324,7 +325,7 @@ var getCombinedRegexps = function(urlData) {
         }
     }
 
-    if (urlRegexps = urlData.urlRegexps) {
+    if (urlRegexps) {
 
         combinedRegexps = combinedRegexps.concat(urlRegexps);
     }

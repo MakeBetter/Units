@@ -7,4 +7,4 @@ var searchData = {
     "w": "http://en.wikipedia.org/w/index.php?search=<<_serach_str_>>",
     "m": "http://maps.google.com/maps?q=<<_serach_str_>>"
 
-}
+};

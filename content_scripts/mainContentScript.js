@@ -1166,8 +1166,7 @@ function $getVisibleTextInputElements() {
 }
 
 function focusFirstTextInput() {
-    var $textInput = $getVisibleTextInputElements(),
-        index;
+    var $textInput = $getVisibleTextInputElements();
     $textInput.length && $textInput[0].focus();
 }
 function focusNextTextInput() {
@@ -1241,7 +1240,7 @@ var onDomChange = function(mutations) {
         for (var i = 0; i < mutationsLen; ++i) {
             mutationRecord = mutations[i];
 
-            if (addedNodes = mutationRecord.addedNodes ) {
+            if ((addedNodes = mutationRecord.addedNodes)) {
 
                 var addedNodesLen = addedNodes.length,
                     node;
@@ -1435,7 +1434,7 @@ var getCUsArray = function() {
                         }
                         $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
                     }
-                    else if (num_centralElementsInCurrentSibling = $currentSibling.find(centralElementselector).length) {
+                    else if ((num_centralElementsInCurrentSibling = $currentSibling.find(centralElementselector).length)) {
                         if (num_centralElementsInCurrentSibling === 1) {
                             if (!firstCentralElementFound) {
                                 firstCentralElementFound = true;
@@ -1522,8 +1521,7 @@ var processCUsArray = function($CUsArr) {
 
     for (var i = 0; i < CUsArrLen; ++i) {
         var $CU = $CUsArr[i];
-        if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByCUsExtn'))
-            || $CUIsInvisible($CU)) {
+        if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByCUsExtn')) || $CUIsInvisible($CU)) {
             $CUsArr.splice(i, 1);
             --CUsArrLen;
             --i;
@@ -1552,9 +1550,9 @@ var processCUsArray = function($CUsArr) {
  * @return {Array of DOM elements}
  */
 var ancestorElements = function(element) {
-    var ancestors = []
+    var ancestors = [];
     for (; element; element = element.parentElement) {
-        ancestors.unshift(element)
+        ancestors.unshift(element);
     }
     return ancestors;
 };
@@ -1596,7 +1594,7 @@ var closestCommonAncestor = function(elements) {
 
         }
         return true;
-    }
+    };
 
     // check if all share the same topmost ancestor
     if (!isAncestorAtSpecifiedIndexCommon(0)) {
@@ -1605,7 +1603,7 @@ var closestCommonAncestor = function(elements) {
 
     // This will hold the index of the element in 'elements' with the smallest number of ancestors (in other words,  the element
     // that is highest in the DOM)
-    var highestElementIndex = 0,
+    var highestElementIndex = 0;
         
         
     ancestorsArrLen = ancestorsArray.length;
@@ -1647,8 +1645,8 @@ var canIgnoreMutation = function(mutationRecord) {
             if (nodes && nodes.length) {
                 for (var i = 0; i < nodes.length; ++i) {
                     var node = nodes[i];
-                    if(!  ((node.classList && node.classList.contains(class_addedByUnitsProjExtn))
-                        || node.nodeType === document.TEXT_NODE)  ) {
+                    if(!  ((node.classList && node.classList.contains(class_addedByUnitsProjExtn)) ||
+                        node.nodeType === document.TEXT_NODE)  ) {
                         canIgnore = false;
                         break;
                     }
@@ -1751,7 +1749,7 @@ function showSearchBox() {
         $searchContainer.show();
     }
 
-    if (parseInt($searchContainer.css('top')) < 0) {
+    if (parseInt($searchContainer.css('top'), 10) < 0) {
 
         $searchContainer.$searchBox.val('');
 
@@ -1998,12 +1996,12 @@ function addEventListener2(target, event, handler, useCapture) {
 
 function removeAllEventListeners() {
 
-    var i, len;
+    var i, len, ehInfo, target;
 
     len = addEventListener_eventHandlers.length;
     for (i = 0; i < len; i++) {
-        var ehInfo = addEventListener_eventHandlers[i],
-            target = ehInfo[0];
+        ehInfo = addEventListener_eventHandlers[i];
+        target = ehInfo[0];
         ehInfo.splice(0, 1);
         target.removeEventListener.apply(target, ehInfo);
     }
@@ -2011,8 +2009,8 @@ function removeAllEventListeners() {
 
     len = jQueryOn_eventHandlers.length;
     for (i = 0; i < len; i++) {
-        var ehInfo = jQueryOn_eventHandlers[i],
-            target = ehInfo[0];
+        ehInfo = jQueryOn_eventHandlers[i],
+        target = ehInfo[0];
         ehInfo.splice(0, 1);
         target.off.apply(target, ehInfo);
     }
@@ -2104,11 +2102,11 @@ function _setupBrowserActionShortcuts() {
     bind(browserActionShortcuts.scrollUp, scrollUp);
     bind(browserActionShortcuts.closeTab, closeTab);
 
-    bind(['alt+y'], function() {console.log(' alt y')}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
-    bind(['alt+q'], function() {console.log(' alt q')});
-    bind(['alt+4'], function() {console.log(' alt 4')});
-    bind(['alt+space+g'], function() {console.log(' alt space g')});
-    bind(['shift+q'], function() {console.log('shift q')});
+    bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
+    bind(['alt+q'], function() {console.log(' alt q');});
+    bind(['alt+4'], function() {console.log(' alt 4');});
+    bind(['alt+space+g'], function() {console.log(' alt space g');});
+    bind(['shift+q'], function() {console.log('shift q');});
 //    bind(['q'], function() {console.log('q')});
 
     // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke Mousetrap.reset()
@@ -2128,7 +2126,7 @@ var generalShortcuts = {
     openInNewTab: ['o'],
     focusFirstTextInput: ['g i', 'alt+i'],   // TODO: on google search results page, invoking 'g i' results in g getting typed into the search box
     focusNextTextInput: ['alt+o'],
-    focusPrevTextInput: ['alt+shift+o'],
+    focusPrevTextInput: ['alt+shift+o']
     /*
      <Note>:
      Esc is defined in the escapeHandler(), and is used for two actions. Should shortcuts for those be made
@@ -2178,10 +2176,10 @@ function _setupUrlDataShortcuts(type) {
 
     var shortcuts;
     if (type === "CU") {
-        shortcuts = urlData && urlData.CU_shortcuts
+        shortcuts = urlData && urlData.CU_shortcuts;
     }
     else {
-        shortcuts = urlData && urlData.page_shortcuts
+        shortcuts = urlData && urlData.page_shortcuts;
     }
 
     if (shortcuts) {
@@ -2201,16 +2199,16 @@ function _setupUrlDataShortcuts(type) {
  * @param {string} scope Can be either "page" or "CU"
  */
 function invokeShortcut(shortcut, scope) {
-    var fn,
+    var fn =  shortcut.fn,
         selectors,
         $selectedCU = $CUsArray[selectedCUIndex];
 
     // if shortcut has the 'fn' property specified, do the same thing whether scope is 'page' or 'CU'
-    if (fn = shortcut.fn) {
+    if (fn) {
         fn($selectedCU, document);
     }
 
-    else if (selectors = shortcut.selectors || shortcut.selector ) {
+    else if ((selectors = shortcut.selectors || shortcut.selector )) {
         var $scope;
 
         if (scope === 'CU') {
@@ -2368,7 +2366,6 @@ var onLtMouseBtnDown = function(e) {
         $overlaySelected = $selectedCU && $selectedCU.data('$overlay'),
         $hoveredCU = $CUsArray[hoveredCUIndex],
         $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
-        enclosingCUIndex,
         indexToSelect;
 
     if ($overlaySelected && elementContainsPoint($overlaySelected, point)) {
@@ -2489,9 +2486,7 @@ var onMouseOut = function(e) {
 var MutationObserver = MutationObserver? MutationObserver: WebKitMutationObserver;
 
 mutationObserver = new MutationObserver (function(mutations) {
-
-    var mutationRecord,
-        mutationsLen = mutations.length;
+    var mutationsLen = mutations.length;
     for (var i = 0; i < mutationsLen; ++i) {
 
         if (canIgnoreMutation(mutations[i])) {
