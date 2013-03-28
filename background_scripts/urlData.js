@@ -302,22 +302,34 @@ var urlToUrlDataMap = {
 
                 }
             }
-        ],
-    // // TODO: check for http://stackoverflow.com/questions
-    // "stackoverflow.com": [
-    //     {
-    //         urlPatterns: ["stackoverflow.com/questions/*"],
-    //         CUSpecifier: ".question, .answer"
-    //     },
-    //     {
-    //         urlPatterns: ["stackoverflow.com*"],
-    //         CUSpecifier: ".question-summary"
-    //     }
-    // ],
-    "stackoverflow.com": [
-           {
-               urlPatterns: ["stackoverflow.com/questions/*"],
+    ],
 
+    // Sites included: "*.stackexchange.com", "stackoverflow.com", "superuser.com", "serverfault.com", "stackapps.com",
+    // "askubuntu.com"
+    // Also, "meta.stackoverflow.com", "meta.superuser.com","meta.stackoverflow.com", etc.
+    
+    //StackExchange powered sites included: "mathoverflow.net"
+    "stackexchange.com": [
+           {
+               // Pages with lists of questions
+               // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
+               // http://stackoverflow.com/
+                urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
+                    "*.stackexchange.com\/"],
+                urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
+                    /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
+                    /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
+
+                    /^(meta\.)?(mathoverflow\.net)\/questions$/,
+                    /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
+                    /^(meta\.)?(mathoverflow\.net)\/$/],
+                CUSpecifier: ".question-summary"
+           },
+           {
+               // Pages with answers to a specific question
+               // Example: http://stackoverflow.com/questions/5874652/prop-vs-attr
+               urlPatterns: ["*.stackexchange.com/questions/*"],
+               urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\//],
                CU_shortcuts: {
                    "upvote": {keys: ["u"],  selector: ".vote-up-off" },
                    "downvote": {keys: ["d"],  selector: ".vote-down-off" },
@@ -329,12 +341,27 @@ var urlToUrlDataMap = {
 
                CUSpecifier: {
                    CU: ".question, .answer",
+                   // .question
                    "overlay-padding": "0 5px 0 5px"
                }
            },
            {
-               urlPatterns: ["stackoverflow.com*"],
-               CUSpecifier: ".question-summary"
+               urlRegexps: [/^(meta\.)?(mathoverflow\.net)\/questions\//],
+               CU_shortcuts: {
+                   //TODO: specify shortcuts for MathOverflow.
+//                   "upvote": {keys: ["u"],  selector: ".vote-up-off" },
+//                   "downvote": {keys: ["d"],  selector: ".vote-down-off" },
+//                   "share": {keys: ["s"],  selector: ".short-link" },
+//                   "edit": {keys: ["e"],  selector: ".suggest-edit-post" },
+//                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
+//                   "star": {keys: ["r"],  selector: ".star-off" }
+               },
+
+               CUSpecifier: {
+                   CU: "#question, .answer", // #question is specific to  mathoverflow.net
+                   "overlay-padding": "0 5px 0 5px"
+               }
+
            }
        ],
     "wikipedia.org": {
@@ -372,7 +399,7 @@ var urlToUrlDataMap = {
                buildCUAround: "td.title>a",
                useInnerElementsToGetOverlaySize: true,
                "overlay-padding": "3px 6px 3px 0"
-           },
+           }
        }
 };
 
@@ -383,5 +410,13 @@ var specialDomain_masterDomain_map = [
         // which is superfluous here as it is the "master domain" key.)
         regexp: /^google\.(?:com|((?:co\.)?[a-z]{2}))$/,
         masterDomainKey: "google.com"
+    },
+    {
+        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
+        masterDomainKey: "stackexchange.com"
+    },
+    {
+        regexp: /^(mathoverflow\.net)/,
+        masterDomainKey: "stackexchange.com"
     }
 ];
