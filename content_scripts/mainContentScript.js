@@ -1521,7 +1521,7 @@ var processCUsArray = function($CUsArr) {
 
     for (var i = 0; i < CUsArrLen; ++i) {
         var $CU = $CUsArr[i];
-        if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByCUsExtn')) || $CUIsInvisible($CU)) {
+        if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByCUsExtn')) || isCUInvisible($CU)) {
             $CUsArr.splice(i, 1);
             --CUsArrLen;
             --i;

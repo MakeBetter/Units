@@ -69,7 +69,7 @@ function suppressEvent(e) {
  * @param $CU
  * @return {Boolean}
  */
-function $CUIsInvisible($CU) {
+function isCUInvisible($CU) {
 
   for (var i = 0; i < $CU.length; ++i) {
       if ($CU.eq(i).css('visibility') !== "hidden") {
