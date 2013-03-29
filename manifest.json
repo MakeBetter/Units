@@ -12,7 +12,7 @@
     "background": {
         "scripts": ["common_scripts/commonHelper.js", "background_scripts/searchData.js",
             "background_scripts/searchExternalSite.js",
-            "background_scripts/urlData.js", "background_scripts/mainBackgroundScript.js"]
+            "background_scripts/unitsData.js", "background_scripts/mainBackgroundScript.js"]
     },
 
     "content_scripts": [
