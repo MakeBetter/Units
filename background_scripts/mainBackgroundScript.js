@@ -203,7 +203,7 @@ var  getUrlData = function(locationObj) {
         return urlData;
     }
     else {
-        // TODO: CUSpecifier not found; anything else to be done?
+        // TODO: Url data not found; anything else to be done?
         return null;
     }
 

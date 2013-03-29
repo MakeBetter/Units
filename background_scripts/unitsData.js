@@ -66,7 +66,7 @@ var unitsData = {
             urlPatterns: ["@.0000-example.com/images/*, www.example.com/archive/images/*"],
             // Use regexps for cases where a simple url-pattern using '*' and '@' won't suffice, for example:
             urlRegexps: [/^www\.000-example\.com\/image|images$/],
-            CUSpecifier: ".image, .post"  // NOTE: currently CUs within others CUs are removed
+            CUs: ".image, .post"  // NOTE: currently CUs within others CUs are removed
         },
 
         {
@@ -110,7 +110,7 @@ var unitsData = {
                     //do anything. like invoke some javascript, apply css to $selectedCU, etc
                 }}
             },
-            CUSpecifier: {
+            CUs: {
                 CU: ".foo .bar",
                 main: ".main-link",
                 "overlay-padding": "5px",
@@ -136,7 +136,7 @@ var unitsData = {
     ],
     "amazon.com": {
         urlPatterns: ["www.amazon.com*"],
-        CUSpecifier: "#center .prod"
+        CUs: "#center .prod"
     },
     "facebook.com": {
         urlPatterns: ["www.facebook.com*"],
@@ -146,7 +146,7 @@ var unitsData = {
             "share": {keys: ["s"],  selector: ".share_action_link" },
             "view_all_comments": {keys: ["v"],  selector: ".UFIPagerLink" }
         },
-        CUSpecifier: {
+        CUs: {
 //            CU: "li.genericStreamStory.uiUnifiedStory, .fbTimelineUnit, .escapeHatchUnit, .fbTimelineCompactSection",
 
             /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com
@@ -206,7 +206,7 @@ var unitsData = {
                     closePreviewBtn &&  closePreviewBtn.click();
                 }
             },
-            CUSpecifier: {
+            CUs: {
                 CU: "#res li.g, #foot, #brs",
                 main: "a.l",
                 "overlay-padding": "5px"
@@ -215,21 +215,21 @@ var unitsData = {
         {
             // for scholar.google.com etc.
             urlPatterns: ["scholar.google.@/*", "scholar.google.co.@/*"],
-            CUSpecifier: ".gs_r, .gs_ico_nav_next"
+            CUs: ".gs_r, .gs_ico_nav_next"
         }
     ],
     "guardian.co.uk": {
         urlPatterns: ["www.guardian.co.uk*"],
-        CUSpecifier:"#inner-wrapper li.b3, #inner-wrapper li.inline-pic, #inner-wrapper li.wide-image"
+        CUs:"#inner-wrapper li.b3, #inner-wrapper li.inline-pic, #inner-wrapper li.wide-image"
     },
     "nytimes.com": {
         urlPatterns: ["www.nytimes.com*"],
-        CUSpecifier: ".story:not(.clearfix,.advertisement), #wellRegion .column, .cColumn .columnGroup"
+        CUs: ".story:not(.clearfix,.advertisement), #wellRegion .column, .cColumn .columnGroup"
     },
     "quora.com": [
         {
             urlPatterns: ["www.quora.com"], // main quora feed page
-            CUSpecifier: {
+            CUs: {
                 CU: ".feed_item, .announcement, .pager_next.action_button",  //TODO: needs work
                 main: " a.question_link"
             }
@@ -237,7 +237,7 @@ var unitsData = {
         },
         {
             urlPatterns: ["www.quora.com/*"], // all other pages on quora (tested currently for question pages)
-            CUSpecifier: {
+            CUs: {
                 CU: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
                 main: ".answer_user>span>a.user",
 //                "overlay-padding": "5px"
@@ -247,7 +247,7 @@ var unitsData = {
     "reddit.com": [
             {
                 urlPatterns: ["www.reddit.com/*/comments/*"],
-                CUSpecifier: {
+                CUs: {
                     buildCUAround: ".arrow.up, .usertext-edit",
     //                exclude: ".panestack-title, .menuarea"
     //                main: ".title",
@@ -266,7 +266,7 @@ var unitsData = {
             },
             {
                 urlPatterns: ["www.reddit.com*"],
-                CUSpecifier: {
+                CUs: {
                     CU: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
                     main: ".title",
                     // style: "minimal",
@@ -323,7 +323,7 @@ var unitsData = {
                     /^(meta\.)?(mathoverflow\.net)\/questions$/,
                     /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
                     /^(meta\.)?(mathoverflow\.net)\/$/],
-                CUSpecifier: ".question-summary"
+                CUs: ".question-summary"
            },
            {
                // Pages with answers to a specific question
@@ -339,7 +339,7 @@ var unitsData = {
                    "star": {keys: ["r"],  selector: ".star-off" }
                },
 
-               CUSpecifier: {
+               CUs: {
                    CU: ".question, .answer",
                    // .question
                    "overlay-padding": "0 5px 0 5px"
@@ -357,7 +357,7 @@ var unitsData = {
 //                   "star": {keys: ["r"],  selector: ".star-off" }
                },
 
-               CUSpecifier: {
+               CUs: {
                    CU: "#question, .answer", // #question is specific to  mathoverflow.net
                    "overlay-padding": "0 5px 0 5px"
                }
@@ -366,7 +366,7 @@ var unitsData = {
        ],
     "wikipedia.org": {
         urlPatterns: ["@.wikipedia.org/wiki/*"],
-        CUSpecifier: {
+        CUs: {
             buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
             exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
         }
@@ -395,7 +395,7 @@ var unitsData = {
                    }
                }
            },
-           CUSpecifier: {
+           CUs: {
                buildCUAround: "td.title>a",
                useInnerElementsToGetOverlaySize: true,
                "overlay-padding": "3px 6px 3px 0"

@@ -183,7 +183,7 @@ var $getContainedFocusables = function($CU) {
 /**
  * Returns the "main" element in the specified CU, which is determined as follows:
  * 1) Return the first "focusable" element within $CU which matches the selector specified in any of these
- * properties in the urlData.CUSpecifier object (checked in order): 'main', 'buildCUAround', 'first'
+ * properties in the urlData.CUs object (checked in order): 'main', 'buildCUAround', 'first'
  * 2) If no such element is found, return the first focusable element contained in $CU, if one can be found
  *
  * @param $CU
@@ -196,7 +196,7 @@ var getMainElement = function($CU) {
     }
 
     var $containedFocusables = $getContainedFocusables($CU),
-        CUSpecifier = urlData.CUSpecifier;
+        CUsData = urlData.CUs;
 
     if (!$containedFocusables.length) {
         return null;
@@ -204,12 +204,12 @@ var getMainElement = function($CU) {
 
     var mainSelector,
         $filteredFocusables,
-    // we look for these keys in CUSpecifier, in order
+    // we look for these keys in CUsData, in order
         focusableSelectorKeys = ['main', 'buildCUAround', 'first'];
 
     for (var i = 0, focusableSelectorKey; i < focusableSelectorKeys.length; ++i) {
         focusableSelectorKey = focusableSelectorKeys[i];
-        if ((mainSelector = CUSpecifier[focusableSelectorKey]) &&
+        if ((mainSelector = CUsData[focusableSelectorKey]) &&
             ($filteredFocusables = $containedFocusables.filter(mainSelector)) &&
             $filteredFocusables.length) {
 
@@ -430,7 +430,7 @@ var showOverlay = function($CU, type) {
         }
     }
 
-    var overlayStyle = urlData && urlData.CUSpecifier && urlData.CUSpecifier.style;
+    var overlayStyle = urlData && urlData.CUs && urlData.CUs.style;
 
     if (overlayStyle && overlayStyle === "minimal") {
         $overlay.addClass("CU-overlay-selected-minimal");
@@ -444,10 +444,10 @@ var showOverlay = function($CU, type) {
 
     // position the overlay above the CU, and ensure that its visible
     $overlay.css(getBoundingRectangle($CU)).show();
-    var CUSpecifier = urlData.CUSpecifier,
+    var CUsData = urlData.CUs,
         overlayPadding;
 
-    if (CUSpecifier && (overlayPadding = CUSpecifier["overlay-padding"])) {
+    if (CUsData && (overlayPadding = CUsData["overlay-padding"])) {
         $overlay.css("padding", overlayPadding);
         $overlay.css("top", parseFloat($overlay.css("top")) -
             parseFloat($overlay.css("padding-top")));
@@ -902,9 +902,9 @@ var getBoundingRectangle = function($CU) {
     if (!$CU || !$CU.length)
         return;
 
-    var CUSpecifier = urlData.CUSpecifier,
+    var CUsData = urlData.CUs,
         elements = [];
-    if (CUSpecifier.useInnerElementsToGetOverlaySize) {
+    if (CUsData.useInnerElementsToGetOverlaySize) {
         var $innermostDescendants = $CU.find('*').filter(function() {
             if (!($(this).children().length)) {
                 return true;
@@ -1316,28 +1316,28 @@ function updateCUsAndRelatedState() {
 // If search box is visibile, the returned CUs array is filtered accordingly.
 var getCUsArray = function() {
 
-    if (!urlData || !urlData.CUSpecifier) {
+    if (!urlData || !urlData.CUs) {
         // returning an empty array instead of null means accessing $CUsArray[selectedCUIndex] (which
         // is done a lot) doesn't need to be prepended with a check against null in each case.
         return [];
     }
 
     var $CUsArr,   // this will be hold the array to return
-        CUSpecifier = urlData.CUSpecifier;
+        CUsData = urlData.CUs;
 
-    if (typeof CUSpecifier === "string") {
-        $CUsArr = $.map($(CUSpecifier).get(), function(item, i) {
+    if (typeof CUsData === "string") {
+        $CUsArr = $.map($(CUsData).get(), function(item, i) {
             return $(item);
         });
     }
-    else if (typeof CUSpecifier.CU === "string"){
-        $CUsArr = $.map($(CUSpecifier.CU).get(), function(item, i) {
+    else if (typeof CUsData.CU === "string"){
+        $CUsArr = $.map($(CUsData.CU).get(), function(item, i) {
             return $(item);
         });
     }
-    else if (typeof CUSpecifier.first === "string" && typeof CUSpecifier.last === "string" ) {
+    else if (typeof CUsData.first === "string" && typeof CUsData.last === "string" ) {
         $CUsArr = [];
-        var $firstsArray = $.map($(CUSpecifier.first).get(), function(item, i) {
+        var $firstsArray = $.map($(CUsData.first).get(), function(item, i) {
             return $(item);
         });
 
@@ -1345,7 +1345,7 @@ var getCUsArray = function() {
         // ancestors first_ancestor and last_ancestor that are siblings and use those)
         // selecting logically valid entities.)
         if ($firstsArray.length) {
-            var // these will correspond to CUSpecifier.first and CUSpecifier.last
+            var // these will correspond to CUsData.first and CUsData.last
                 $_first, $_last,
 
                 //these will be the closest ancestors (self included) of $_first and $_last respectively, which are
@@ -1377,7 +1377,7 @@ var getCUsArray = function() {
 
             for (var i = 0; i < firstsArrLen; ++i) {
                 $_first = $firstsArray[i];
-                $_last = $_first.nextALL(CUSpecifier.last).first();
+                $_last = $_first.nextALL(CUsData.last).first();
 
                 $closestCommonAncestor = $_first.parents().has($_last).first();
 
@@ -1388,12 +1388,12 @@ var getCUsArray = function() {
         }
     }
 
-    else if (typeof CUSpecifier.buildCUAround === "string"){
+    else if (typeof CUsData.buildCUAround === "string"){
 
         $CUsArr = [];
         var currentGroupingIndex = 0;
 
-        var $container = closestCommonAncestor($(CUSpecifier.buildCUAround));
+        var $container = closestCommonAncestor($(CUsData.buildCUAround));
         // TODO: move the function below to a more apt place
         /**
          *
@@ -1416,7 +1416,7 @@ var getCUsArray = function() {
             var $siblings = $container.children();
             var siblingsLength = $siblings.length;
 
-            var centralElementselector = CUSpecifier.buildCUAround;
+            var centralElementselector = CUsData.buildCUAround;
             if (siblingsLength) {
 
                 var $currentSibling,
