@@ -4,13 +4,13 @@
  Alternatively, we could continue to use this file, but have it generated based on another data-source
  */
 
-/* The 'urlToUrlDataMap' object (along with the 'specialDomain_masterDomain_map' object) provides a way to map a URL
+/* The 'unitsData' object (along with the 'specialDomain_masterDomain_map' object) provides a way to map a URL
  (stripped of http(s):// etc) to the data associated with that URL (called 'urlData'), which identifies elements of
   importance on the webpage, including any Container Units (CUs), and the  associated keyboard shortcuts. The 'urlData' also specifies
   any other information associated with the URL.
 
  Notes:
- 1) Each key of the urlToUrlDataMap object is called a domain-key, and is the "main domain" for the corresponding
+ 1) Each key of the unitsData object is called a domain-key, and is the "main domain" for the corresponding
  website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
 
  2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
@@ -55,7 +55,7 @@
 // TODO: maybe the formats can be explained at two levels - simple options and advanced ones
 // One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
 // in the content scripts
-var urlToUrlDataMap = {
+var unitsData = {
     // ** NOTE: domain-keys are listed alphabetically **
 
     // this domain key serves only as an example illustrating the structure of a domain-key and value pair. is named so to appear first among sorted keys

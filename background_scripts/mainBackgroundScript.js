@@ -250,14 +250,14 @@ function stringifyFunctions(urlData) {
 
 var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
 
-    var urlDataArr = urlToUrlDataMap[domainKey];
+    var urlDataArr = unitsData[domainKey];
 
     if (!urlDataArr) {
         return false;
     }
 
     while (typeof urlDataArr === "string") {
-        urlDataArr = urlToUrlDataMap[urlDataArr];
+        urlDataArr = unitsData[urlDataArr];
     }
 
     if (!Array.isArray(urlDataArr)) {
