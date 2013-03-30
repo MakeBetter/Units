@@ -111,7 +111,7 @@ var unitsData = {
                 }}
             },
             CUs: {
-                CU: ".foo .bar",
+                specifier: ".foo .bar",
                 main: ".main-link",
                 "overlay-padding": "5px",
                 useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
@@ -147,12 +147,12 @@ var unitsData = {
             "view_all_comments": {keys: ["v"],  selector: ".UFIPagerLink" }
         },
         CUs: {
-//            CU: "li.genericStreamStory.uiUnifiedStory, .fbTimelineUnit, .escapeHatchUnit, .fbTimelineCompactSection",
+//            specifier: "li.genericStreamStory.uiUnifiedStory, .fbTimelineUnit, .escapeHatchUnit, .fbTimelineCompactSection",
 
             /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com
              the rest -> timeline pages
              */
-            CU: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer"
+            specifier: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer"
         },
         header: "#headNav, .stickyHeaderWrap",
         nextOrMore: ".uiMorePagerPrimary"
@@ -207,7 +207,7 @@ var unitsData = {
                 }
             },
             CUs: {
-                CU: "#res li.g, #foot, #brs",
+                specifier: "#res li.g, #foot, #brs",
                 main: "a.l",
                 "overlay-padding": "5px"
             }
@@ -230,7 +230,7 @@ var unitsData = {
         {
             urlPatterns: ["www.quora.com"], // main quora feed page
             CUs: {
-                CU: ".feed_item, .announcement, .pager_next.action_button",  //TODO: needs work
+                specifier: ".feed_item, .announcement, .pager_next.action_button",  //TODO: needs work
                 main: " a.question_link"
             }
 
@@ -238,7 +238,7 @@ var unitsData = {
         {
             urlPatterns: ["www.quora.com/*"], // all other pages on quora (tested currently for question pages)
             CUs: {
-                CU: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
+                specifier: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
                 main: ".answer_user>span>a.user",
 //                "overlay-padding": "5px"
             }
@@ -267,7 +267,7 @@ var unitsData = {
             {
                 urlPatterns: ["www.reddit.com*"],
                 CUs: {
-                    CU: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
+                    specifier: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
                     main: ".title",
                     // style: "minimal",
                     useInnerElementsToGetOverlaySize: true,
@@ -340,7 +340,7 @@ var unitsData = {
                },
 
                CUs: {
-                   CU: ".question, .answer",
+                   specifier: ".question, .answer",
                    // .question
                    "overlay-padding": "0 5px 0 5px"
                }
@@ -358,7 +358,7 @@ var unitsData = {
                },
 
                CUs: {
-                   CU: "#question, .answer", // #question is specific to  mathoverflow.net
+                   specifier: "#question, .answer", // #question is specific to  mathoverflow.net
                    "overlay-padding": "0 5px 0 5px"
                }
 

@@ -1330,8 +1330,8 @@ var getCUsArray = function() {
             return $(item);
         });
     }
-    else if (typeof CUsData.CU === "string"){
-        $CUsArr = $.map($(CUsData.CU).get(), function(item, i) {
+    else if (typeof CUsData.specifier === "string"){
+        $CUsArr = $.map($(CUsData.specifier).get(), function(item, i) {
             return $(item);
         });
     }
