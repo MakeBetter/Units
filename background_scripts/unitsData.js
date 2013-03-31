@@ -73,7 +73,9 @@ var unitsData = {
             urlPatterns: ["www.0000-example.com/*"],
             urlRegexps: [], // since the array is empty this is redundant
 
-            /* There are two types of shortcuts that can be specified here: page-specific and CU-specific.
+            /*
+             --------** NOTE ** The following comments are outdated. UPDATE THEM!! ----------
+             There are two types of shortcuts that can be specified here: page-specific and CU-specific.
              Each shortcut is identified by a property that indicates its purpose, and has associated with it
              a set of keyboard shortcuts that invoke it. Each shortcut also has one of the  properties: 'selector'
               or 'fn'.
@@ -93,69 +95,129 @@ var unitsData = {
              are passed the same arguments, it doesn't technically matter if the shortcut is defined as page
              specific or CU specific, except as a matter of good practice.]
              */
-            page_shortcuts: {
-                "images": { keys: ["i"], selector: "#images"},
-
-                "messages": { keys: ["m"], fn: function(document, $selectedCU) {
-                    $(document).find('#messages').click();
-                }}
-            },
-            CU_shortcuts: {
-                "like": {keys: ["l", "u"],  selector: ".upvote" },
-
-                // if 'selector' specifies an array of selectors, clicks will be invoked on those elements in order
-                "foo": {keys: ["f"], selector: [".abc", "a.xyz"]},
-
-                "collapse-comments": {keys: ["-", "c"], fn: function(document, $selectedCU) {
-                    //do anything. like invoke some javascript, apply css to $selectedCU, etc
-                }}
-            },
             CUs: {
-                specifier: ".foo .bar",
-                main: ".main-link",
-                "overlay-padding": "5px",
-                useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
-            },
-            fn_onCUSelection: function($deselectedCU, document) {
-               // do anything here
-            },
-            fn_onCUDeselection: function($deselectedCU, document) {
-                // do anything here
-            },
-            // element that should be clicked to load "next" page in a paginated view or "more" content in an infinite
-            // scroll type page
-            nextOrMore: ".uiMorePagerPrimary",
-            searchField: "#search", // to a allow shortcut for focusing it
+                specifier:  {
+                    selector: ".foo .bar",
+                    main: ".user",
+                    exclude: ".advert",          // TODO: check if this is implemented
+                    buildCUAround: ".unit-title" // If specifying a selector for a CU is not straightforward or possible,
+                    // then specify this. TODO: complete this.
+                },
+                style: {
+                    "overlayPadding": "5px",
+                    useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
+                },
+                miniUnits: {
+                    std_upvote: {
+                        specifier: ".upvote",
+                        kbdShortcuts: ["u", "v"]
+                    },
+                    std_share: {
+                        specifier: ".share",
+//                        kbdShortcuts: ["u", "v"] // This is optional since its a "standard" sub-unit
+                    },
+                    markAsRead: {
+                        specifier: ".mark-read",
+                        kbdShortcuts: ["r"]
+                    },
 
-            // The header property needs to be specified only if the header element on the page "sticks" at the top
-            // of the page even as the page is scrolled. If there are multiple sticky headers, specify all of them
-            // separated with commas. [Though this is useful only for "sticky" headers, specifying non-sticky ones
-            // here won't harm. So if not sure, specify the header element(s)]
-            header: "#header",
+                },
+                actions: {
+
+                }
+
+            },
+
+            // the structure of this item matches that of CUs.miniUnits
+            page_miniUnits: {
+                std_searchBox: {
+                    specifier: "#search",
+                    kbdShortcuts: ["/"]
+                },
+                std_header: {
+                    // To scroll CUs correctly, it is helpful to specify a header if it exists, even if no shortcut is
+                    // assigned to it.
+                    specifier: "#header"
+                }
+            },
+            // the structure of this item matches that of CUs.actions
+            page_actions: {
+
+            }
+
+//            page_shortcuts: {
+//                "images": { keys: ["i"], selector: "#images"},
+//
+//                "messages": { keys: ["m"], fn: function(document, $selectedCU) {
+//                    $(document).find('#messages').click();
+//                }}
+//            },
+//            CU_shortcuts: {
+//                "like": {keys: ["l", "u"],  selector: ".upvote" },
+//
+//                // if 'selector' specifies an array of selectors, clicks will be invoked on those elements in order
+//                "foo": {keys: ["f"], selector: [".abc", "a.xyz"]},
+//
+//                "collapse-comments": {keys: ["-", "c"], fn: function(document, $selectedCU) {
+//                    //do anything. like invoke some javascript, apply css to $selectedCU, etc
+//                }}
+//            },
+//            CUs: {
+//                specifier: ".foo .bar",
+//                main: ".main-link",
+//                "overlayPadding": "5px",
+//                useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
+//            },
+//            fn_onCUSelection: function($deselectedCU, document) {
+//               // do anything here
+//            },
+//            fn_onCUDeselection: function($deselectedCU, document) {
+//                // do anything here
+//            },
+//            // element that should be clicked to load "next" page in a paginated view or "more" content in an infinite
+//            // scroll type page
+//            nextOrMore: ".uiMorePagerPrimary",
+//            searchField: "#search", // to a allow shortcut for focusing it
+//
+//            // The header property needs to be specified only if the header element on the page "sticks" at the top
+//            // of the page even as the page is scrolled. If there are multiple sticky headers, specify all of them
+//            // separated with commas. [Though this is useful only for "sticky" headers, specifying non-sticky ones
+//            // here won't harm. So if not sure, specify the header element(s)]
+//            header: "#header",
         }
     ],
     "amazon.com": {
         urlPatterns: ["www.amazon.com*"],
-        CUs: "#center .prod"
+        CUs: {
+            specifier: "#center .prod"
+        }
     },
     "facebook.com": {
         urlPatterns: ["www.facebook.com*"],
-        CU_shortcuts: {
-            "like": {keys: ["l", "u"],  selector: ".UFILikeLink" },
-            "comment": {keys: ["c"],  selector: ".comment_link" },
-            "share": {keys: ["s"],  selector: ".share_action_link" },
-            "view_all_comments": {keys: ["v"],  selector: ".UFIPagerLink" }
-        },
+        
         CUs: {
 //            specifier: "li.genericStreamStory.uiUnifiedStory, .fbTimelineUnit, .escapeHatchUnit, .fbTimelineCompactSection",
 
             /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com
              the rest -> timeline pages
              */
-            specifier: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer"
+            specifier: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer",
+            CU_miniUnits: {
+                "std_like": {kbdShortcuts: ["l", "u"],  specifier: ".UFILikeLink" },
+                "std_comment": {kbdShortcuts: ["c"],  specifier: ".comment_link" },
+                "std_share": {kbdShortcuts: ["s"],  specifier: ".share_action_link" },
+                "view_all_comments": {kbdShortcuts: ["v"],  specifier: ".UFIPagerLink" }
+            }
         },
-        header: "#headNav, .stickyHeaderWrap",
-        nextOrMore: ".uiMorePagerPrimary"
+        page_miniUnits: {
+            std_header: {
+                specifier: "#headNav, .stickyHeaderWrap"
+            },
+            std_nextOrMore: {
+                specifier: ".uiMorePagerPrimary"
+            }
+        }
+
     },
 
     // the following key is redundant due to specialDomain_masterDomain_map array, but is included currently to serve
@@ -167,49 +229,55 @@ var unitsData = {
             // google search results page
             urlPatterns: ["www.google.@/*", "www.google.co.@/*"],
             urlRegexps: [], // since the array is empty this is redundant
-            page_shortcuts: {
-              "within-last-year": {
-                  keys: ["y"],
-                  selector: ["#hdtb_tls", ".hdtb-mn-hd:contains('Any time')", ".q.qs:contains('Past year')"]
-              }
-            },
-            CU_shortcuts: {
-                "toggle-preview": {
-                    keys: ["p"],
-                    // this function is meant to work in conjunction with fn_onCUDeselection (see below)
-                    fn: function($selectedCU, document) {
-                        var $previewPane = $('#nycp');
-                        // Closes any open preview on the page.
-                        var closePreview = function() {
-                            if ($previewPane.is(':visible')) { // if the preview pane is already visible
-                                var closePreviewBtn = document.getElementById("nycx");
-                                closePreviewBtn &&  closePreviewBtn.click();
+            CUs: {
+                specifier: {
+                    selector: "#res li.g, #foot, #brs",
+                    main: "a.l"
+                },
+                style: {
+                    "overlayPadding": "5px"
+                },
+                actions: {
+                    "toggle-preview": {
+                        kbdShortcuts: ["p"],
+                        // this function is meant to work in conjunction with fn_onCUDeselection (see below)
+                        fn: function($selectedCU, document) {
+                            var $previewPane = $('#nycp');
+                            // Closes any open preview on the page.
+                            var closePreview = function() {
+                                if ($previewPane.is(':visible')) { // if the preview pane is already visible
+                                    var closePreviewBtn = document.getElementById("nycx");
+                                    closePreviewBtn &&  closePreviewBtn.click();
+                                }
+                            };
+                            // Shows preview associated with currently selected CU ($selectedCU)
+                            var showPreview = function() {
+                                var $previewButton = $selectedCU.find(".vspib");
+                                $previewButton.length && $previewButton[0].click();
+                            };
+                            if ($previewPane.is(':visible')) {
+                                closePreview();
                             }
-                        };
-                        // Shows preview associated with currently selected CU ($selectedCU)
-                        var showPreview = function() {
-                            var $previewButton = $selectedCU.find(".vspib");
-                            $previewButton.length && $previewButton[0].click();
-                        };
-                        if ($previewPane.is(':visible')) {
-                            closePreview();
-                        }
-                        else {
-                            showPreview();
+                            else {
+                                showPreview();
+                            }
                         }
                     }
                 }
             },
-            fn_onCUDeselection: function($deselectedCU, document) {
-                if ($('#nycp').is(':visible')) { // if the preview pane is already visible
-                    var closePreviewBtn = document.getElementById("nycx");
-                    closePreviewBtn &&  closePreviewBtn.click();
+            page_miniUnits: {
+                "within-last-year": {
+                    kbdShortcuts: ["y"],
+                    specifier: ["#hdtb_tls", ".hdtb-mn-hd:contains('Any time')", ".q.qs:contains('Past year')"]
                 }
             },
-            CUs: {
-                specifier: "#res li.g, #foot, #brs",
-                main: "a.l",
-                "overlay-padding": "5px"
+            actions: {
+                fn_onCUDeselection: function($deselectedCU, document) {
+                    if ($('#nycp').is(':visible')) { // if the preview pane is already visible
+                        var closePreviewBtn = document.getElementById("nycx");
+                        closePreviewBtn &&  closePreviewBtn.click();
+                    }
+                }
             }
         },
         {
@@ -230,17 +298,19 @@ var unitsData = {
         {
             urlPatterns: ["www.quora.com"], // main quora feed page
             CUs: {
-                specifier: ".feed_item, .announcement, .pager_next.action_button",  //TODO: needs work
-                main: " a.question_link"
+                specifier: {
+                    selector: ".feed_item, .announcement, .pager_next.action_button", //TODO: needs work
+                    main: " a.question_link"
+                }
             }
-
         },
         {
             urlPatterns: ["www.quora.com/*"], // all other pages on quora (tested currently for question pages)
             CUs: {
-                specifier: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
-                main: ".answer_user>span>a.user",
-//                "overlay-padding": "5px"
+                specifier: {
+                    selector: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",  //TODO: needs work
+                    main: ".answer_user>span>a.user"
+                }
             }
         }
     ],
@@ -248,58 +318,64 @@ var unitsData = {
             {
                 urlPatterns: ["www.reddit.com/*/comments/*"],
                 CUs: {
-                    buildCUAround: ".arrow.up, .usertext-edit",
-    //                exclude: ".panestack-title, .menuarea"
-    //                main: ".title",
-    //                style: "minimal"
-                },
-                CU_shortcuts: {
-                    "upvote": {keys: ["u"],  selector: ".arrow.up, .arrow.upmod" },
-                    "downvote": {keys: ["d"],  selector: ".arrow.down, .arrow.downmod" },
-                    "share": {keys: ["s"],  selector: ".share-button .active" },
-                    "edit": {keys: ["c"],  selector: ".comments" },
-                    "hide": {keys: ["h"],  selector: ".hide-button" },
-                    "report": {keys: ["r"],  selector: ".report-button" },
-                    "minimize": {keys: ["m"],  selector: ".noncollapsed .expand" }
-
+                    specifier: {
+                        buildCUAround: ".arrow.up, .usertext-edit",
+                        //                exclude: ".panestack-title, .menuarea"
+                        //                main: ".title",
+                    },
+                    miniUnits: {
+                        "upvote": {kbdShortcuts: ["u"],  specifier: ".arrow.up, .arrow.upmod" },
+                        "downvote": {kbdShortcuts: ["d"],  specifier: ".arrow.down, .arrow.downmod" },
+                        "share": {kbdShortcuts: ["s"],  specifier: ".share-button .active" },
+                        "edit": {kbdShortcuts: ["c"],  specifier: ".comments" },
+                        "hide": {kbdShortcuts: ["h"],  specifier: ".hide-button" },
+                        "report": {kbdShortcuts: ["r"],  specifier: ".report-button" },
+                        "minimize": {kbdShortcuts: ["m"],  specifier: ".noncollapsed .expand" }
+                    }
                 }
             },
             {
                 urlPatterns: ["www.reddit.com*"],
                 CUs: {
-                    specifier: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
-                    main: ".title",
-                    // style: "minimal",
-                    useInnerElementsToGetOverlaySize: true,
-                    "overlay-padding": "5px 10px 5px 0"
-                },
-                CU_shortcuts: {
-                    "upvote": {keys: ["u"],  selector: ".arrow.up, .arrow.upmod" },
-                    "downvote": {keys: ["d"],  selector: ".arrow.down, .arrow.downmod" },
-                    "share": {keys: ["s"],  selector: ".share-button .active" },
-                    "edit": {keys: ["c"],
-                        fn: function($selectedCU, document) {
-                            var $el = $selectedCU.find(".flat-list.buttons .comments");
-                            var ctrlClickEvent = document.createEvent("MouseEvents");
-
-                            // detecting OS detection based on:
-                            // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
-                            if (isMac) {
-                                ctrlClickEvent.initMouseEvent("click", true, true, null,
-                                    0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
-                            }
-                            else {
-                                ctrlClickEvent.initMouseEvent("click", true, true, null,
-                                    0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
-                            }
-
-                            $el[0].dispatchEvent(ctrlClickEvent);
-                        }
+                    specifier: {
+                        selector: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
+                        main: ".title"
                     },
-                    "hide": {keys: ["h"],  selector: ".hide-button" },
-                    "report": {keys: ["r"],  selector: ".report-button" },
-                    "save": {keys: ["v"], selector: ".save-button a, .unsave-button a.togglebutton"}
+                    style: {
+                        useInnerElementsToGetOverlaySize: true,
+                        "overlayPadding": "5px 10px 5px 0"
+                    },
+                    miniUnits: {
+                        "upvote": {kbdShortcuts: ["u"],  specifier: ".arrow.up, .arrow.upmod" },
+                        "downvote": {kbdShortcuts: ["d"],  specifier: ".arrow.down, .arrow.downmod" },
+                        "share": {kbdShortcuts: ["s"],  specifier: ".share-button .active" },
+                        "edit": {kbdShortcuts: ["c"],
+                            fn: function($selectedCU, document) {
+                                var $el = $selectedCU.find(".flat-list.buttons .comments");
+                                var ctrlClickEvent = document.createEvent("MouseEvents");
 
+                                // detecting OS detection based on:
+                                // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
+                                if (isMac) {
+                                    ctrlClickEvent.initMouseEvent("click", true, true, null,
+                                        0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
+                                }
+                                else {
+                                    ctrlClickEvent.initMouseEvent("click", true, true, null,
+                                        0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
+                                }
+
+                                $el[0].dispatchEvent(ctrlClickEvent);
+                            }
+                        },
+                        "hide": {kbdShortcuts: ["h"],  specifier: ".hide-button" },
+                        "report": {kbdShortcuts: ["r"],  specifier: ".report-button" },
+                        "save": {kbdShortcuts: ["v"], specifier: ".save-button a, .unsave-button a.togglebutton"}
+
+                    },
+                    actions: {
+
+                    }
                 }
             }
     ],
@@ -310,44 +386,54 @@ var unitsData = {
     
     //StackExchange powered sites included: "mathoverflow.net"
     "stackexchange.com": [
-           {
-               // Pages with lists of questions
-               // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
-               // http://stackoverflow.com/
-                urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
-                    "*.stackexchange.com\/"],
-                urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
-                    /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
-                    /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
+       {
+           // Pages with lists of questions
+           // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
+           // http://stackoverflow.com/
+            urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
+                "*.stackexchange.com\/"],
+            urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
+                /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
+                /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
 
-                    /^(meta\.)?(mathoverflow\.net)\/questions$/,
-                    /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
-                    /^(meta\.)?(mathoverflow\.net)\/$/],
-                CUs: ".question-summary"
-           },
-           {
-               // Pages with answers to a specific question
-               // Example: http://stackoverflow.com/questions/5874652/prop-vs-attr
-               urlPatterns: ["*.stackexchange.com/questions/*"],
-               urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\//],
-               CU_shortcuts: {
-                   "upvote": {keys: ["u"],  selector: ".vote-up-off" },
-                   "downvote": {keys: ["d"],  selector: ".vote-down-off" },
-                   "share": {keys: ["s"],  selector: ".short-link" },
-                   "edit": {keys: ["e"],  selector: ".suggest-edit-post" },
-                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
-                   "star": {keys: ["r"],  selector: ".star-off" }
+                /^(meta\.)?(mathoverflow\.net)\/questions$/,
+                /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
+                /^(meta\.)?(mathoverflow\.net)\/$/],
+            CUs: ".question-summary"
+       },
+       {
+           // Pages with answers to a specific question
+           // Example: http://stackoverflow.com/questions/5874652/prop-vs-attr
+           urlPatterns: ["*.stackexchange.com/questions/*"],
+           urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\//],
+           CUs: {
+
+               specifier: ".question, .answer",
+               style: {
+                   "overlayPadding": "0 5px 0 5px"
                },
+               miniUnits: {
+                   "std_upvote": {kbdShortcuts: ["u"],  specifier: ".vote-up-off" },
+                   "std_downvote": {kbdShortcuts: ["d"],  specifier: ".vote-down-off" },
+                   "std_share": {kbdShortcuts: ["s"],  specifier: ".short-link" },
+                   "std_edit": {kbdShortcuts: ["e"],  specifier: ".suggest-edit-post" },
+                   "add_comment": {kbdShortcuts: ["c"],  specifier: ".comments-link" },
+                   "star": {kbdShortcuts: ["r"],  specifier: ".star-off" }
 
-               CUs: {
-                   specifier: ".question, .answer",
-                   // .question
-                   "overlay-padding": "0 5px 0 5px"
+               },
+               actions: {
+
                }
-           },
-           {
-               urlRegexps: [/^(meta\.)?(mathoverflow\.net)\/questions\//],
-               CU_shortcuts: {
+           }
+       },
+       {
+           urlRegexps: [/^(meta\.)?(mathoverflow\.net)\/questions\//],
+           CUs: {
+               specifier: "#question, .answer", // #question is specific to  mathoverflow.net
+               style: {
+                   "overlayPadding": "0 5px 0 5px"
+               },
+               miniUnits: {
                    //TODO: specify shortcuts for MathOverflow.
 //                   "upvote": {keys: ["u"],  selector: ".vote-up-off" },
 //                   "downvote": {keys: ["d"],  selector: ".vote-down-off" },
@@ -356,49 +442,57 @@ var unitsData = {
 //                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
 //                   "star": {keys: ["r"],  selector: ".star-off" }
                },
+               actions: {
 
-               CUs: {
-                   specifier: "#question, .answer", // #question is specific to  mathoverflow.net
-                   "overlay-padding": "0 5px 0 5px"
                }
-
            }
-       ],
+
+       }
+    ],
     "wikipedia.org": {
         urlPatterns: ["@.wikipedia.org/wiki/*"],
         CUs: {
-            buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
-            exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
+            specifier: {
+                buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
+                exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
+            }
         }
     },
     "ycombinator.com": {
            urlPatterns: ["news.ycombinator.com*"],
-           CU_shortcuts: {
-               "comment": {
-                   keys: ["c"],
-                   fn: function($selectedCU, document) {
-                       var $el = $selectedCU.find("a:contains('comment'), a:contains('discuss')");
-                       var ctrlClickEvent = document.createEvent("MouseEvents");
+           CUs: {
+               specifier: {
+                   buildCUAround: "td.title>a",
+               },
+               style: {
+                   useInnerElementsToGetOverlaySize: true,
+                   "overlayPadding": "3px 6px 3px 0"
+               },
+               actions: {
 
-                       // detecting OS detection based on:
-                       // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
-                       if (isMac) {
-                           ctrlClickEvent.initMouseEvent("click", true, true, null,
-                               0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
-                       }
-                       else {
-                           ctrlClickEvent.initMouseEvent("click", true, true, null,
-                               0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
-                       }
+               },
+               miniUnits: {
+                   "comment": {
+                       kbdShortcuts: ["c"],
+                       fn: function($selectedCU, document) {
+                           var $el = $selectedCU.find("a:contains('comment'), a:contains('discuss')");
+                           var ctrlClickEvent = document.createEvent("MouseEvents");
 
-                       $el[0].dispatchEvent(ctrlClickEvent);
+                           // detecting OS detection based on:
+                           // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
+                           if (isMac) {
+                               ctrlClickEvent.initMouseEvent("click", true, true, null,
+                                   0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
+                           }
+                           else {
+                               ctrlClickEvent.initMouseEvent("click", true, true, null,
+                                   0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
+                           }
+
+                           $el[0].dispatchEvent(ctrlClickEvent);
+                       }
                    }
                }
-           },
-           CUs: {
-               buildCUAround: "td.title>a",
-               useInnerElementsToGetOverlaySize: true,
-               "overlay-padding": "3px 6px 3px 0"
            }
        }
 };

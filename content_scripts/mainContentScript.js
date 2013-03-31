@@ -196,7 +196,7 @@ var getMainElement = function($CU) {
     }
 
     var $containedFocusables = $getContainedFocusables($CU),
-        CUsData = urlData.CUs;
+        CUSpecifier = urlData.CUs.specifier;
 
     if (!$containedFocusables.length) {
         return null;
@@ -209,7 +209,7 @@ var getMainElement = function($CU) {
 
     for (var i = 0, focusableSelectorKey; i < focusableSelectorKeys.length; ++i) {
         focusableSelectorKey = focusableSelectorKeys[i];
-        if ((mainSelector = CUsData[focusableSelectorKey]) &&
+        if ((mainSelector = CUSpecifier[focusableSelectorKey]) &&
             ($filteredFocusables = $containedFocusables.filter(mainSelector)) &&
             $filteredFocusables.length) {
 
@@ -421,6 +421,7 @@ var showOverlay = function($CU, type) {
     }
 
     var $overlay = $CU.data('$overlay');
+
     if (!$overlay || !$overlay.length) {
         if ($unusedOverlaysArray.length) {
             $overlay = $unusedOverlaysArray.shift();
@@ -430,24 +431,17 @@ var showOverlay = function($CU, type) {
         }
     }
 
-    var overlayStyle = urlData && urlData.CUs && urlData.CUs.style;
+    var CUsData = urlData.CUs,
+        CUStyleData = CUsData.style,
+        overlayPadding;
 
-    if (overlayStyle && overlayStyle === "minimal") {
-        $overlay.addClass("CU-overlay-selected-minimal");
-    }
-    else {
-        $overlay.removeClass("CU-overlay-selected-minimal");
-    }
-        
     $overlay.data('$CU', $CU);
     $CU.data('$overlay', $overlay);
 
     // position the overlay above the CU, and ensure that its visible
     $overlay.css(getBoundingRectangle($CU)).show();
-    var CUsData = urlData.CUs,
-        overlayPadding;
 
-    if (CUsData && (overlayPadding = CUsData["overlay-padding"])) {
+    if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
         $overlay.css("padding", overlayPadding);
         $overlay.css("top", parseFloat($overlay.css("top")) -
             parseFloat($overlay.css("padding-top")));
@@ -524,7 +518,7 @@ var dehoverCU = function () {
     hoveredCUIndex = -1;
 };
 
-var showScrollingMarker = function(x, y) {
+var showScrollingMarker = function(x, y, height) {
 
     clearTimeout($scrollingMarker.timeoutId); // clear a previously set timeout out, if one exists...
 
@@ -532,7 +526,7 @@ var showScrollingMarker = function(x, y) {
         $scrollingMarker.hide();
     }, 3000);
 
-    $scrollingMarker.css({top: y, left: x-$scrollingMarker.width()-5}).show();
+    $scrollingMarker.css({top: y, left: x-$scrollingMarker.width()-5, height: height}).show();
 
 };
 
@@ -562,9 +556,8 @@ function scrollSelectedCUIfRequired (direction, options) {
         CUBottom = CUTop + CUHeight;
 
     var newWinTop, // new value of scrollTop
-        sameCUScrollOverlap = 70,
+        sameCUScrollOverlap = 40,
         margin = 30;
-    
 
     direction = direction.toLowerCase();
     if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight) ||
@@ -581,8 +574,6 @@ function scrollSelectedCUIfRequired (direction, options) {
             if (newWinTop < 0) {
                 newWinTop = 0;
             }
-
-//            showScrollingMarker($CU.offset().left, winTop + 25);
         }
 
         else  { //direction === 'down' && CUBottom > winBottom
@@ -600,7 +591,7 @@ function scrollSelectedCUIfRequired (direction, options) {
                 newWinTop = $document.height() - winHeight;
             }
 
-            showScrollingMarker($CU.offset().left, winBottom - 25);
+            showScrollingMarker($CU.offset().left, winBottom - sameCUScrollOverlap, sameCUScrollOverlap);
         }
 
         if (options.animatedCUScroll) {
@@ -618,7 +609,6 @@ function scrollSelectedCUIfRequired (direction, options) {
             console.log('NON animated SAME CU scroll');
             $document.scrollTop(newWinTop);
         }
-
 
         return true;
     }
@@ -903,8 +893,10 @@ var getBoundingRectangle = function($CU) {
         return;
 
     var CUsData = urlData.CUs,
+        CUStyleData = CUsData.style,
         elements = [];
-    if (CUsData.useInnerElementsToGetOverlaySize) {
+
+    if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize) {
         var $innermostDescendants = $CU.find('*').filter(function() {
             if (!($(this).children().length)) {
                 return true;
@@ -1278,6 +1270,7 @@ function onUrlChange() {
     initializeExtension(); // resets the extension
 }
 
+// Sets/updates the global variable $CUsArray and other state associated with it
 function updateCUsAndRelatedState() {
 
     // Save the currently selected CU, to reselect it, if it is still present in the $CUsArray after the array is
@@ -1323,21 +1316,21 @@ var getCUsArray = function() {
     }
 
     var $CUsArr,   // this will be hold the array to return
-        CUsData = urlData.CUs;
+        CUsData = urlData.CUs,
+        selector,
+        CUsSpecifier = CUsData.specifier;
 
-    if (typeof CUsData === "string") {
-        $CUsArr = $.map($(CUsData).get(), function(item, i) {
+    if (typeof (selector = CUsData) === "string" ||
+        typeof (selector = CUsData.specifier) === "string" ||
+        typeof (selector = CUsData.specifier.selector) === "string" ) {
+        $CUsArr = $.map($(selector).get(), function(item, i) {
             return $(item);
         });
     }
-    else if (typeof CUsData.specifier === "string"){
-        $CUsArr = $.map($(CUsData.specifier).get(), function(item, i) {
-            return $(item);
-        });
-    }
-    else if (typeof CUsData.first === "string" && typeof CUsData.last === "string" ) {
+
+    else if (typeof CUsSpecifier.first === "string" && typeof CUsSpecifier.last === "string" ) {
         $CUsArr = [];
-        var $firstsArray = $.map($(CUsData.first).get(), function(item, i) {
+        var $firstsArray = $.map($(CUsSpecifier.first).get(), function(item, i) {
             return $(item);
         });
 
@@ -1345,7 +1338,7 @@ var getCUsArray = function() {
         // ancestors first_ancestor and last_ancestor that are siblings and use those)
         // selecting logically valid entities.)
         if ($firstsArray.length) {
-            var // these will correspond to CUsData.first and CUsData.last
+            var // these will correspond to CUsSpecifier.first and CUsSpecifier.last
                 $_first, $_last,
 
                 //these will be the closest ancestors (self included) of $_first and $_last respectively, which are
@@ -1377,7 +1370,7 @@ var getCUsArray = function() {
 
             for (var i = 0; i < firstsArrLen; ++i) {
                 $_first = $firstsArray[i];
-                $_last = $_first.nextALL(CUsData.last).first();
+                $_last = $_first.nextALL(CUsSpecifier.last).first();
 
                 $closestCommonAncestor = $_first.parents().has($_last).first();
 
@@ -1388,12 +1381,12 @@ var getCUsArray = function() {
         }
     }
 
-    else if (typeof CUsData.buildCUAround === "string"){
+    else if (typeof CUsSpecifier.buildCUAround === "string"){
 
         $CUsArr = [];
         var currentGroupingIndex = 0;
 
-        var $container = closestCommonAncestor($(CUsData.buildCUAround));
+        var $container = closestCommonAncestor($(CUsSpecifier.buildCUAround));
         // TODO: move the function below to a more apt place
         /**
          *
@@ -1416,7 +1409,7 @@ var getCUsArray = function() {
             var $siblings = $container.children();
             var siblingsLength = $siblings.length;
 
-            var centralElementselector = CUsData.buildCUAround;
+            var centralElementselector = CUsSpecifier.buildCUAround;
             if (siblingsLength) {
 
                 var $currentSibling,
@@ -1704,8 +1697,14 @@ var elementContainsPoint = function(element, point) {
 // header element, we do the same thing, but for the bottommost one.
 var getEffectiveHeaderHeight = function() {
 
-    var headerSelector = urlData.header;
-    if (headerSelector) {
+    var headerData = urlData && urlData.page_miniUnits && urlData.page_miniUnits.std_header;
+    if (!headerData) {
+        return 0;
+    }
+
+    var headerSelector;
+
+    if (typeof (headerSelector = headerData) === "string" || typeof (headerSelector = headerData.specifier) === "string") {
         var $headers = $(headerSelector).filter(':visible'),
             headersLen;
 
@@ -2255,8 +2254,8 @@ function invokeShortcut(shortcut, scope) {
  * shortcuts>
  * This order has been chosen since it favors consistency and hence minimizes confusion.
  */
-function setupShortcuts() {
-    // since setupShortcuts() is invoked every time URL changes, first reset shortcuts and any state associated with
+function setupKbdShortcuts() {
+    // since setupKbdShortcuts() is invoked every time URL changes, first reset shortcuts and any state associated with
     // "chrome alt hack"
     Mousetrap.reset();
 
@@ -2741,7 +2740,7 @@ function initializeForCurrentUrl() {
             // the following line should remain outside the if condition so that the change from a url with CUs
             // to one without any is correctly handled
             updateCUsAndRelatedState();
-            setupShortcuts();
+            setupKbdShortcuts();
             setupHelpUIAndEvents();
 
             if ( globalSettings.selectCUOnLoad) {

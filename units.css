@@ -4,8 +4,8 @@
     position: absolute;
     pointer-events: none;
     background-color: #ff902b;
-    width: 15px;
-    height: 6px;
+    width: 5px;
+    /*height: 6px;*/
     opacity:  0.6;
     /*TODO: specify property name(s) below instead of all*/
     /*-o-transition: box-shadow 0.2s linear;*/
@@ -46,11 +46,6 @@
     /*-moz-box-shadow: 2px 2px 20px 0px #999;*/
     box-shadow: 2px 2px 12px 0px #777 !important;
     /*background-color: rgba(100, 100, 100, 0.2) !important;*/
-}
-
-.CU-overlay-selected-minimal  {
-    border-left: solid 4px #ccc !important;
-    box-shadow: none !important;
 }
 
 .CU-overlay-hovered  {
