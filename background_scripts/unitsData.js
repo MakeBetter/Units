@@ -107,7 +107,7 @@ var unitsData = {
                     "overlayPadding": "5px",
                     useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
                 },
-                miscUnits: {
+                MU_miscUnits: {
                     std_upvote: {
                         specifier: ".upvote",
                         kbdShortcuts: ["u", "v"]
@@ -121,12 +121,12 @@ var unitsData = {
                         kbdShortcuts: ["r"]
                     },
                 },
-                actions: {
+                MU_actions: {
 
                 }
             },
 
-            // the structure of this item matches that of MUs.miscUnits
+            // the structure of this item matches that of MUs.MU_miscUnits
             page_miscUnits: {
                 std_searchField: {
                     specifier: "#search",
@@ -146,7 +146,7 @@ var unitsData = {
                     kbdShortcuts: ["alt+down"]
                 }
             },
-            // the structure of this item matches that of MUs.actions
+            // the structure of this item matches that of MUs.MU_actions
             page_actions: {
                 "std_onMUSelection": {
                     fn: function($selectedMU, document) {
@@ -213,7 +213,7 @@ var unitsData = {
                 style: {
                     "overlayPadding": "5px"
                 },
-                actions: {
+                MU_actions: {
                     "toggle-preview": {
                         kbdShortcuts: ["p"],
                         // this function is meant to work in conjunction with std_onMUDeselection (see below)
@@ -247,14 +247,14 @@ var unitsData = {
                     specifier: ".q.qs:contains('Past year')"    // jQuery extensions to CSS selector syntax are supported
                 }
             },
-            actions: {
+            page_actions: {
                 "std_onMUDeselection": {
-                  fn: function($deselectedMU, document) {
-                      if ($('#nycp').is(':visible')) { // if the preview pane is already visible
-                          var closePreviewBtn = document.getElementById("nycx");
-                          closePreviewBtn &&  closePreviewBtn.click();
-                      }
-                  }
+                    fn: function($deselectedMU, document) {
+                        if ($('#nycp').is(':visible')) { // if the preview pane is already visible
+                            var closePreviewBtn = document.getElementById("nycx");
+                            closePreviewBtn &&  closePreviewBtn.click();
+                        }
+                    }
                 }
             }
         },
@@ -301,7 +301,7 @@ var unitsData = {
                     //                exclude: ".panestack-title, .menuarea"
                     //                main: ".title",
                 },
-                miscUnits: {
+                MU_miscUnits: {
                     "upvote": {kbdShortcuts: ["u"],  specifier: ".arrow.up, .arrow.upmod" },
                     "downvote": {kbdShortcuts: ["d"],  specifier: ".arrow.down, .arrow.downmod" },
                     "share": {kbdShortcuts: ["s"],  specifier: ".share-button .active" },
@@ -323,7 +323,7 @@ var unitsData = {
                     useInnerElementsToGetOverlaySize: true,
                     "overlayPadding": "5px 10px 5px 0"
                 },
-                miscUnits: {
+                MU_miscUnits: {
                     "upvote": {kbdShortcuts: ["u"],  specifier: ".arrow.up, .arrow.upmod" },
                     "downvote": {kbdShortcuts: ["d"],  specifier: ".arrow.down, .arrow.downmod" },
                     "share": {kbdShortcuts: ["s"],  specifier: ".share-button .active" },
@@ -351,7 +351,7 @@ var unitsData = {
                     "save": {kbdShortcuts: ["v"], specifier: ".save-button a, .unsave-button a.togglebutton"}
 
                 },
-                actions: {
+                MU_actions: {
 
                 }
             }
@@ -390,7 +390,7 @@ var unitsData = {
                 style: {
                     "overlayPadding": "0 5px 0 5px"
                 },
-                miscUnits: {
+                MU_miscUnits: {
                     "std_upvote": {kbdShortcuts: ["u"],  specifier: ".vote-up-off" },
                     "std_downvote": {kbdShortcuts: ["d"],  specifier: ".vote-down-off" },
                     "std_share": {kbdShortcuts: ["s"],  specifier: ".short-link" },
@@ -399,7 +399,7 @@ var unitsData = {
                     "star": {kbdShortcuts: ["r"],  specifier: ".star-off" }
 
                 },
-                actions: {
+                MU_actions: {
 
                 }
             }
@@ -411,7 +411,7 @@ var unitsData = {
                 style: {
                     "overlayPadding": "0 5px 0 5px"
                 },
-                miscUnits: {
+                MU_miscUnits: {
                     //TODO: specify shortcuts for MathOverflow.
 //                   "upvote": {keys: ["u"],  selector: ".vote-up-off" },
 //                   "downvote": {keys: ["d"],  selector: ".vote-down-off" },
@@ -420,7 +420,7 @@ var unitsData = {
 //                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
 //                   "star": {keys: ["r"],  selector: ".star-off" }
                 },
-                actions: {
+                MU_actions: {
 
                 }
             }
@@ -458,10 +458,10 @@ var unitsData = {
                 useInnerElementsToGetOverlaySize: true,
                 "overlayPadding": "3px 6px 3px 0"
             },
-            actions: {
+            MU_actions: {
 
             },
-            miscUnits: {
+            MU_miscUnits: {
                 "comment": {
                     kbdShortcuts: ["c"],
                     fn: function($selectedMU, document) {

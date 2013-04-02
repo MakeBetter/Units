@@ -196,26 +196,29 @@ var getMainElement = function($MU) {
         return null;
     }
 
-    var $containedFocusables = $getContainedFocusables($MU),
-        MUSpecifier = urlData.MUs.specifier;
+    var $containedFocusables = $getContainedFocusables($MU);
 
     if (!$containedFocusables.length) {
         return null;
     }
 
-    var mainSelector,
-        $filteredFocusables,
-    // we look for these keys in MUsData, in order
-        focusableSelectorKeys = ['main', 'buildMUAround', 'first'];
+    var MUSpecifier = urlData.MUs.specifier;
+    if (MUSpecifier) {
 
-    for (var i = 0, focusableSelectorKey; i < focusableSelectorKeys.length; ++i) {
-        focusableSelectorKey = focusableSelectorKeys[i];
-        if ((mainSelector = MUSpecifier[focusableSelectorKey]) &&
-            ($filteredFocusables = $containedFocusables.filter(mainSelector)) &&
-            $filteredFocusables.length) {
+        var mainSelector,
+            $filteredFocusables,
+        // we look for these keys in MUsData, in order
+            focusableSelectorKeys = ['main', 'buildMUAround', 'first'];
 
-            return $filteredFocusables[0];
+        for (var i = 0, focusableSelectorKey; i < focusableSelectorKeys.length; ++i) {
+            focusableSelectorKey = focusableSelectorKeys[i];
+            if ((mainSelector = MUSpecifier[focusableSelectorKey]) &&
+                ($filteredFocusables = $containedFocusables.filter(mainSelector)) &&
+                $filteredFocusables.length) {
 
+                return $filteredFocusables[0];
+
+            }
         }
     }
 
@@ -2202,10 +2205,10 @@ function _setupMiscUnitsShortcuts(scope) {
 function _setupActionShortcuts(scope) {
     var actions;
     if (scope === "MU") {
-        actions = urlData.MUs.actions;
+        actions = urlData.MUs.MU_actions;
     }
     else {
-        actions = urlData.actions;
+        actions = urlData.page_actions;
     }
     if (actions) {
         for (var key in actions) {
