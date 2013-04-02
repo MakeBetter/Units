@@ -209,43 +209,26 @@ var  getUrlData = function(locationObj) {
 
 };
 
+// Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
+// (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
+// allowed between the background and content scripts)
+function stringifyFunctions(obj) {
 
-/**
- * Stringifies the functions in the urlData object passed to it. (Functions must be stringified before they can be
- * passed to the content script, because only JSON type messages are allowed between the background and content scripts)
- * <<NOTE>>: Any changes in this function should be kept consistent with the function destringifyFunctions() in (one of)
- * the content scripts.
- * @param urlData
- */
-function stringifyFunctions(urlData) {
-
-    var stringifyFn = function(fn) {
+    // retruns the strigified version of the function passed
+    var _stringifyFn = function(fn) {
         return "(" + fn.toString() + ")";
     };
 
-    if (urlData.fn_onCUSelection) {
-        urlData.fn_onCUSelection = stringifyFn(urlData.fn_onCUSelection);
-    }
-    if (urlData.fn_onCUDeselection) {
-        urlData.fn_onCUDeselection = stringifyFn(urlData.fn_onCUDeselection);
-    }
-
-    // to stringify any functions within 'CU_shortcuts' and 'page_shortcuts' objects which have the same structure
-    var stringifyShortcuts = function(shortcuts) {
-
-        if (shortcuts) {
-            for (var id in shortcuts) {
-                if (shortcuts[id].fn) {
-                    shortcuts[id].fn = stringifyFn(shortcuts[id].fn);
-                }
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === "object") {
+                stringifyFunctions(obj[key]);
+            }
+            else if (typeof obj[key] === "function") {
+                obj[key] = _stringifyFn(obj[key])
             }
         }
-
-    };
-
-    stringifyShortcuts(urlData.page_shortcuts);
-    stringifyShortcuts(urlData.CU_shortcuts);
-
+    }
 }
 
 var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
@@ -284,9 +267,7 @@ var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
             }
 
     }
-    
     return false;
-
 };
 
 // returns the master domain-key for the specified domain, if one can be found

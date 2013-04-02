@@ -1,6 +1,6 @@
 .UnitsProj-highlight { background-color: yellow }
 
-.CU-scrolling-marker {
+.MU-scrolling-marker {
     position: absolute;
     pointer-events: none;
     background-color: #ff902b;
@@ -24,7 +24,7 @@
     border-bottom-right-radius: 15px;
 }
 
-.CU-overlay {
+.MU-overlay {
     position: absolute;
     /*padding: 10px;*/
     /*opacity: 0.3;*/
@@ -39,7 +39,7 @@
 
 }
 
-.CU-overlay-selected  {
+.MU-overlay-selected  {
 
     /*TODO: check and uncomment the following lines in release code*/
     /*-webkit-box-shadow: 2px 2px 20px 0px #999;*/
@@ -48,7 +48,7 @@
     /*background-color: rgba(100, 100, 100, 0.2) !important;*/
 }
 
-.CU-overlay-hovered  {
+.MU-overlay-hovered  {
 
     /*TODO: check and uncomment the following lines in release code*/
     /*-webkit-box-shadow: 1px 1px 10px 0 #bbb;*/

@@ -22,10 +22,10 @@ function setupHelpUI() {
 
 //    var browserShortcuts = null;
     var pageShortcuts = urlData && urlData.page_shortcuts;
-    var CUShortcuts = urlData && urlData.CU_shortcuts;
+    var MUShortcuts = urlData && urlData.MU_shortcuts;
 
     var $pageShortcutsSection = $("<div></div>");
-    var $CUShortcutsSection = $("<div></div>");
+    var $MUShortcutsSection = $("<div></div>");
     var $generalShortcutsSection = $("<div></div>");
 
     if (pageShortcuts) {
@@ -39,11 +39,11 @@ function setupHelpUI() {
         });
     }
 
-    if (CUShortcuts) {
-        var $CUShortcutsTable = $("<table></table>").appendTo($CUShortcutsSection);
-        $.each(CUShortcuts, function(key, value) {
+    if (MUShortcuts) {
+        var $MUShortcutsTable = $("<table></table>").appendTo($MUShortcutsSection);
+        $.each(MUShortcuts, function(key, value) {
             $("<tr></tr>")
-                .appendTo($CUShortcutsTable)
+                .appendTo($MUShortcutsTable)
                 .append($("<td></td>").text(value.keys.toString().replace(",", ", ")))
                 .append($("<td></td>").text(key));
 
@@ -65,7 +65,7 @@ function setupHelpUI() {
         .appendTo($topLevelContainer)
         .append($heading)
         .append($pageShortcutsSection)
-        .append($CUShortcutsSection)
+        .append($MUShortcutsSection)
         .append($generalShortcutsSection);
 
 }

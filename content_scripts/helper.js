@@ -22,41 +22,41 @@ function executeWhenConditionMet(functionToExecute, testFunction, timeOutMillise
     }
 }
 
-/**
- * De-stringifies the stringified functions in the urlData object passed to it.
- * <<NOTE>>: Any changes in this function should be kept consistent with the function stringifyFunctions() in the
- * background scripts.
- * @param urlData
- */
-function destringifyFunctions(urlData) {
+// De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
+// Note: stringification assumed to have been done by stringifyFunctions() function called in the background script
+function destringifyFunctions(obj) {
 
-    var destringifyFn = function(stringifiedFn) {
-        return eval(stringifiedFn);
+    // Returns the de-stringifed version of the function passed. If something other than a stringified function is passed in,
+    // it is returned back unmodified.
+    var _destringifyFn = function(stringifiedFn) {
+        var returnVal;
+        try {
+            returnVal = eval(stringifiedFn);
+            if (typeof returnVal === "function") {
+                return returnVal;
+            }
+            else {
+                return stringifiedFn; // return the input back unmodified
+            }
+        } catch (e) {
+            return stringifiedFn; // return the input back unmodified
+        }
     };
 
-    if (urlData.fn_onCUSelection) {
-        urlData.fn_onCUSelection = destringifyFn(urlData.fn_onCUSelection);
-    }
-    if (urlData.fn_onCUDeselection) {
-        urlData.fn_onCUDeselection = destringifyFn(urlData.fn_onCUDeselection);
-    }
+    var stringifiedFn,
+        initialSubstr = "(function"; // this would be the initial part of any function stringified by us.
 
-    // to destringify any functions within 'CU_shortcuts' and 'page_shortcuts' objects which have the same structure
-    var destringifyShortcuts = function(shortcuts) {
-
-        if (shortcuts) {
-            for (var id in shortcuts) {
-                if (shortcuts[id].fn) {
-                    shortcuts[id].fn = destringifyFn(shortcuts[id].fn);
-                }
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === "object") {
+                destringifyFunctions(obj[key]);
+            }
+            else if (typeof (stringifiedFn = obj[key]) === "string" &&
+                stringifiedFn.slice(0, initialSubstr.length) === initialSubstr) {
+                obj[key] = _destringifyFn(obj[key]);
             }
         }
-
-    };
-
-    destringifyShortcuts(urlData.page_shortcuts);
-    destringifyShortcuts(urlData.CU_shortcuts);
-
+    }
 }
 
 function suppressEvent(e) {
@@ -65,28 +65,28 @@ function suppressEvent(e) {
 }
 
 /**
- * Returns true if all (top most) constituents of $CU have css 'visibility' style equal to "hidden"
- * @param $CU
+ * Returns true if all (top most) constituents of $MU have css 'visibility' style equal to "hidden"
+ * @param $MU
  * @return {Boolean}
  */
-function isCUInvisible($CU) {
+function isMUInvisible($MU) {
 
-  for (var i = 0; i < $CU.length; ++i) {
-      if ($CU.eq(i).css('visibility') !== "hidden") {
+  for (var i = 0; i < $MU.length; ++i) {
+      if ($MU.eq(i).css('visibility') !== "hidden") {
           return false;
       }
   }
   return true;
 }
 
-// returns true if any part of $CU is in the viewport, false otherwise
-function isCUInViewport($CU) {
+// returns true if any part of $MU is in the viewport, false otherwise
+function isMUInViewport($MU) {
 
-    // for the CU
-    var boundingRect = getBoundingRectangle($CU),
-        CUTop = boundingRect.top,
-        CUHeight = boundingRect.height,
-        CUBottom = CUTop + CUHeight;
+    // for the MU
+    var boundingRect = getBoundingRectangle($MU),
+        MUTop = boundingRect.top,
+        MUHeight = boundingRect.height,
+        MUBottom = MUTop + MUHeight;
 
     var // for the window:
         winTop = $document.scrollTop(),
@@ -95,8 +95,8 @@ function isCUInViewport($CU) {
         winBottom = winTop + winHeight;
 
 
-    return ( (CUTop > winTop && CUTop < winBottom) ||
-        (CUBottom > winTop && CUBottom < winBottom) );
+    return ( (MUTop > winTop && MUTop < winBottom) ||
+        (MUBottom > winTop && MUBottom < winBottom) );
 }
 
 function changeFontSize($jQuerySet, isBeingIncreased) {
@@ -108,10 +108,10 @@ function changeFontSize($jQuerySet, isBeingIncreased) {
         var $el = $jQuerySet.eq(i);
         var font = $el.css('font-size');
         var numericVal = parseFloat(font);
-        var CU = font.substring(numericVal.toString().length);
+        var MU = font.substring(numericVal.toString().length);
 
         var newNumericVal = isBeingIncreased?(numericVal+2): (numericVal-2);
-        $el.css('font-size', newNumericVal+CU);
+        $el.css('font-size', newNumericVal+MU);
 
     }
 }
@@ -168,12 +168,12 @@ function checkOverlayCssHasTransition() {
  3) converted from jQuery plugin to a regular function; main since we want num of highlights made to be
  returned
  4) <removed> Only searches within visible elements. Since numHighlights is required by the calling function to
- detect if a CU should be counted as a match or not. Also helps with efficiency.
+ detect if a MU should be counted as a match or not. Also helps with efficiency.
  5) Other minor optimizations
  6) Added comments
  */
 
-function highlightInCU($CU, pattern) {
+function highlightInMU($MU, pattern) {
 
     var numHighlighted = 0, // count of how many items were highlighted
         patternLowerCase = pattern && pattern.toLowerCase();
@@ -221,8 +221,8 @@ function highlightInCU($CU, pattern) {
     };
 
 
-    if ($CU.length && patternLowerCase && patternLowerCase.length) {
-        $CU.each(function() {
+    if ($MU.length && patternLowerCase && patternLowerCase.length) {
+        $MU.each(function() {
             innerHighlight(this);
         });
     }

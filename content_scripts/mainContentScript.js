@@ -1,6 +1,7 @@
 /* NOTES
-1)  A 'Container Unit' is set of DOM elements that together consitute an logical unit of attention/navigation/access. 
-    The set of all the important container units on the page is called CUs. Each CU consists of one or more DOM elements.
+1)  A lot of modern web pages are comprised of a set of units that we refer to as the "main units" (MUs) of the page.
+    E.g. on google search results page the MUs would be the set of results. The each individual MU is a logical unit of 
+    attention/navigation/access. Each MU can consist of one or more DOM elements.
 
 2)  Elements that can receive focus on the current page are called the "focusables"
 
@@ -27,10 +28,10 @@
 
 /* TODOs:
 
-- on quora etc, clicking an a CU scrolls suddenly
+- on quora etc, clicking an a MU scrolls suddenly
 
 - exclude images from rect if affecting both dimensions (including single child ancestors)
-- on stackoverflow / questions page: clicking a CU, messes with
+- on stackoverflow / questions page: clicking a MU, messes with
  text selection etc in some weird way. doesn't happen every time.
 
 - add padding to the overlay(s) (see wikipedia pages for why)
@@ -40,38 +41,38 @@
 - override scroll animation when cycling from last to first or first to last
 - quora: click doesnt focus
 - stackoverflow: clicking doesn't focus main element/etc
-- exclude display:none when populating $CUs
+- exclude display:none when populating $MUs
 
 - implement exclude
 
 - animate hovering/unhovering and selection/unselection
 
-check where all deselectCU() is being called, and if that needs any modifying/placing a check around the call
+check where all deselectMU() is being called, and if that needs any modifying/placing a check around the call
 
 remove prevALL etc if not using
 
 */
 
 var currentUrl = window.location.href,
-    urlData,    // Data that identifies elements and  CU and specifies shortcuts and other information for the
+    urlData,    // Data that identifies elements and  MU and specifies shortcuts and other information for the
                         // current url. This is updated whenever the current url changes.
 
-    $CUsArray = [], /* An array of jQuery sets. The array represents the *sequence* of CUs on the current page.
+    $MUsArray = [], /* An array of jQuery sets. The array represents the *sequence* of MUs on the current page.
     Each constituent element (which is a jQuery set) represents the set of DOM elements that constitute a single
-    CU for the current page.
-    Most web pages will allow writing simple selectors such that each CU can be represented as a jQuery set
+    MU for the current page.
+    Most web pages will allow writing simple selectors such that each MU can be represented as a jQuery set
     consisting of a single DOM element.(Because these web pages group related logical entities in a single container,
     for which the selector can be specified.)
-    However, some web pages (like news.ycombinator.com, wikipedia.org, etc) require writing selectors such each CU
+    However, some web pages (like news.ycombinator.com, wikipedia.org, etc) require writing selectors such each MU
     has to be represented as a jQuery set comprising of multiple DOM elements.
     (For more details, see the documentation on how to specify selectors for webpages.)
 
-    Note: If the search feature has been invoked, this contains only the filtered CUs that are visible on the page.
+    Note: If the search feature has been invoked, this contains only the filtered MUs that are visible on the page.
     This helps keep things simple.
     */
 
-    selectedCUIndex  = -1, // Index of the selected CU in $CUsArray
-    hoveredCUIndex  = -1, // Index of the hovered CU in $CUsArray
+    selectedMUIndex  = -1, // Index of the selected MU in $MUsArray
+    hoveredMUIndex  = -1, // Index of the hovered MU in $MUsArray
 
     /* This class should be applied to all elements added by this extension. This is used to distinguish DOM mutation
     events caused by them from the those of the page's own elements. This is also a "responsible" thing since it marks
@@ -84,9 +85,9 @@ var currentUrl = window.location.href,
     This allows keeping modifications to the DOM localized inside a single element. */
     $topLevelContainer = $('<div></div>').addClass(class_addedByUnitsProjExtn),
 
-    class_overlay = "CU-overlay",                     // class applied to all CU overlays
-    class_overlaySelected = "CU-overlay-selected",    // class applied to overlay on a selected CU
-    class_overlayHovered = "CU-overlay-hovered",      // class applied to overlay on a hovered CU
+    class_overlay = "MU-overlay",                     // class applied to all MU overlays
+    class_overlaySelected = "MU-overlay-selected",    // class applied to overlay on a selected MU
+    class_overlayHovered = "MU-overlay-hovered",      // class applied to overlay on a hovered MU
     $unusedOverlaysArray = [],   // to enable reusing existing unused overlays
 
     // boolean, holds a value indicating where the css specifies a transition style for overlays
@@ -100,20 +101,20 @@ var currentUrl = window.location.href,
     ltMouseBtnDown,         // boolean holding the state of the left mouse button
     scrolledWithRtMouseBtn, // boolean indicating if right mouse button was used to modify scrolling
 
-    class_scrollingMarker = 'CU-scrolling-marker',
+    class_scrollingMarker = 'MU-scrolling-marker',
     $scrollingMarker,
 
     $searchContainer,
     $helpContainer,
     timeout_search,
 
-    $lastSelectedCU = null,   // to store a reference to the last selected CU
+    $lastSelectedMU = null,   // to store a reference to the last selected MU
 
-    // If a CU is currently selected, this stores the time it was selected, else this stores the time the last
-    // selected CU was deselected.
-    lastSelectedCUTime,
+    // If a MU is currently selected, this stores the time it was selected, else this stores the time the last
+    // selected MU was deselected.
+    lastSelectedMUTime,
 
-    // number of milliseconds since its last selection/deselection after which a CU is no longer deemed to be
+    // number of milliseconds since its last selection/deselection after which a MU is no longer deemed to be
     // selected/last-selected, IF it is not in the viewport
     selectionTimeoutPeriod = 60000,
 
@@ -146,19 +147,19 @@ var currentUrl = window.location.href,
     // values for those properties.
     globalSettings = {
 
-        selectCUOnLoad: true, // whether the first CU should be selected when the page loads
-        animatedCUScroll: true,
-        animatedCUScroll_Speed: 2, // pixels per millisecond
-        animatedCUScroll_MaxDuration: 300, // milliseconds
+        selectMUOnLoad: true, // whether the first MU should be selected when the page loads
+        animatedMUScroll: true,
+        animatedMUScroll_Speed: 2, // pixels per millisecond
+        animatedMUScroll_MaxDuration: 300, // milliseconds
 
-        increaseFontInSelectedCU: false,
+        increaseFontInSelectedMU: false,
 
-        // determines if while scrolling a CU should always be centered (whenever possitble) or only if it lies
+        // determines if while scrolling a MU should always be centered (whenever possitble) or only if it lies
         // outside the view port
-        tryCenteringCUOnEachScroll: false,
+        tryCenteringMUOnEachScroll: false,
 
-        // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
-        sameCUScroll: true,
+        // if true, scrollNext() and scrollPrev() will scroll more of the current MU, if it is not in view
+        sameMUScroll: true,
 
         pageScrollDelta: 100 // pixels to scroll on each key press
 
@@ -171,32 +172,32 @@ var currentUrl = window.location.href,
 
 
 // returns a jQuery set composed of all focusable DOM elements contained in the
-// jQuery set ($CU) passed
-var $getContainedFocusables = function($CU) {
+// jQuery set ($MU) passed
+var $getContainedFocusables = function($MU) {
 
-    var $allElements = $CU.find('*').addBack();
+    var $allElements = $MU.find('*').addBack();
     var $containedFocusables = $allElements.filter(focusablesSelector);
     return $containedFocusables;
 
 };
 
 /**
- * Returns the "main" element in the specified CU, which is determined as follows:
- * 1) Return the first "focusable" element within $CU which matches the selector specified in any of these
- * properties in the urlData.CUs object (checked in order): 'main', 'buildCUAround', 'first'
- * 2) If no such element is found, return the first focusable element contained in $CU, if one can be found
+ * Returns the "main" element in the specified MU, which is determined as follows:
+ * 1) Return the first "focusable" element within $MU which matches the selector specified in any of these
+ * properties in the urlData.MUs object (checked in order): 'main', 'buildMUAround', 'first'
+ * 2) If no such element is found, return the first focusable element contained in $MU, if one can be found
  *
- * @param $CU
+ * @param $MU
  * @return {DOM element} Returns the "main" element, if one was found, else null.
  */
-var getMainElement = function($CU) {
+var getMainElement = function($MU) {
 
-    if (!$CU || !$CU.length) {
+    if (!$MU || !$MU.length) {
         return null;
     }
 
-    var $containedFocusables = $getContainedFocusables($CU),
-        CUSpecifier = urlData.CUs.specifier;
+    var $containedFocusables = $getContainedFocusables($MU),
+        MUSpecifier = urlData.MUs.specifier;
 
     if (!$containedFocusables.length) {
         return null;
@@ -204,12 +205,12 @@ var getMainElement = function($CU) {
 
     var mainSelector,
         $filteredFocusables,
-    // we look for these keys in CUsData, in order
-        focusableSelectorKeys = ['main', 'buildCUAround', 'first'];
+    // we look for these keys in MUsData, in order
+        focusableSelectorKeys = ['main', 'buildMUAround', 'first'];
 
     for (var i = 0, focusableSelectorKey; i < focusableSelectorKeys.length; ++i) {
         focusableSelectorKey = focusableSelectorKeys[i];
-        if ((mainSelector = CUSpecifier[focusableSelectorKey]) &&
+        if ((mainSelector = MUSpecifier[focusableSelectorKey]) &&
             ($filteredFocusables = $containedFocusables.filter(mainSelector)) &&
             $filteredFocusables.length) {
 
@@ -222,18 +223,18 @@ var getMainElement = function($CU) {
     return $containedFocusables[0];
 };
 
-// Focuses the "main" focusable element in a CU, if one can be found.
+// Focuses the "main" focusable element in a MU, if one can be found.
 // See function "getMainElement" for more details.
-function focusMainElement($CU) {
-    var mainEl = getMainElement($CU);
+function focusMainElement($MU) {
+    var mainEl = getMainElement($MU);
     if (mainEl) {
-//        $(mainEl).data('enclosingCUJustSelected', true);
+//        $(mainEl).data('enclosingMUJustSelected', true);
         mainEl.focus();
     }
 }
 
 /**
- * Invokes a click on the active element (see getMainElement()) of the selected CU. Passing true for
+ * Invokes a click on the active element (see getMainElement()) of the selected MU. Passing true for
  * 'newTab' invokes "ctrl+click", which has the effect of opening the link in a new tab (if the "main" element is
  * a link)
  * @param {boolean} newTab {Determines whether to invoke ctrl+click or simply a click)
@@ -260,9 +261,9 @@ function openActiveElement(newTab) {
         document.activeElement.click();
     }
 
-//    var $CU = $CUsArray[selectedCUIndex];
-//    if ($CU) {
-//        var element = getMainElement($CU)
+//    var $MU = $MUsArray[selectedMUIndex];
+//    if ($MU) {
+//        var element = getMainElement($MU)
 //        if (element) {
 //            if (newTab) {
 //                var ctrlClickEvent = document.createEvent("MouseEvents");
@@ -280,121 +281,122 @@ function openActiveElement(newTab) {
 }
 
 /**
- * Selects the CU specified.
- * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
- * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
+ * Selects the MU specified.
+ * @param {number|DOMElement (or jQuery wrapper)} MUOrItsIndex Specifies the MU.
+ * Can be an integer that specifies the index in $MUsArray or a jQuery object representing the MU.
  * (While performance isn't a major concern here,) passing the index is preferable if it is already known,
- * otherwise the function will determine it itself (in order to set the selectedCUIndex variable).
- * @param {boolean} setFocus If true, the "main" element for this CU, if one is found, is
+ * otherwise the function will determine it itself (in order to set the selectedMUIndex variable).
+ * @param {boolean} setFocus If true, the "main" element for this MU, if one is found, is
  * focused.
  * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
- * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
+ * all (or such much as is possible) of the selected MU is in the viewport. Defaults to false.
  * This parameter is currently passed as true only from selectPrev() and selectNext()
  * @param {object} options
  */
-var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
-    console.log('selectCU() called');
-    var $CU,
-        indexOf$CU; // index in $CUsArray
+var selectMU = function(MUOrItsIndex, setFocus, adjustScrolling, options) {
+    console.log('selectMU() called');
+    var $MU,
+        indexOf$MU; // index in $MUsArray
 
-    if (typeof CUOrItsIndex === "number" || CUOrItsIndex instanceof Number) {
-        indexOf$CU = CUOrItsIndex;
-        $CU = $CUsArray[indexOf$CU];
+    if (typeof MUOrItsIndex === "number" || MUOrItsIndex instanceof Number) {
+        indexOf$MU = MUOrItsIndex;
+        $MU = $MUsArray[indexOf$MU];
     }
     else {
-        $CU = $(CUOrItsIndex);
-        indexOf$CU = findIndex_In_$CUsArray($CU);
+        $MU = $(MUOrItsIndex);
+        indexOf$MU = findIndex_In_$MUsArray($MU);
     }
 
-    if (!$CU || !$CU.length || indexOf$CU < 0) {
+    if (!$MU || !$MU.length || indexOf$MU < 0) {
         return;
     }
 
     options = $.extend(true, {}, globalSettings, options);
 
-    deselectCU(options); // before proceeding, deselect currently selected CU, if any
+    deselectMU(options); // before proceeding, deselect currently selected MU, if any
 
-    selectedCUIndex = indexOf$CU;
-    var $overlaySelected = showOverlay($CU, 'selected');
+    selectedMUIndex = indexOf$MU;
+    var $overlaySelected = showOverlay($MU, 'selected');
 
     if (!$overlaySelected) {
         console.warn('UnitsProj: no $overlay returned by showOverlay');
     }
 
     if (!options || !options.onDomChangeOrWindowResize) {
-        selectCU.invokedYet = true; // to indicate that now this function (selectCU) has been invoked at least once
+        selectMU.invokedYet = true; // to indicate that now this function (selectMU) has been invoked at least once
 
-        $lastSelectedCU = $CU;
-        lastSelectedCUTime = new Date();
+        $lastSelectedMU = $MU;
+        lastSelectedMUTime = new Date();
 
         if (adjustScrolling) {
             scrollIntoView($overlaySelected, options);
         }
 
         if (setFocus) {
-            focusMainElement($CU);
+            focusMainElement($MU);
         }
 
-        if (options.increaseFontInSelectedCU && !$CU.data('fontIncreasedOnSelection')) {
+        if (options.increaseFontInSelectedMU && !$MU.data('fontIncreasedOnSelection')) {
             mutationObserver.disconnect();
-            increaseFont($CU);
+            increaseFont($MU);
             mutationObserver.observe(document, mutationObserverConfig);
-            $CU.data('fontIncreasedOnSelection', true);
+            $MU.data('fontIncreasedOnSelection', true);
         }
 
-        if (urlData.fn_onCUSelection) {
+        var fn_onMUSelection;
+        if (urlData.actions && urlData.actions.std_onMUSelection && (fn_onMUSelection = urlData.actions.std_onMUSelection.fn)) {
             mutationObserver.disconnect();
-            urlData.fn_onCUSelection($CUsArray[selectedCUIndex], document);
+            fn_onMUSelection($MU, document);
             mutationObserver.observe(document, mutationObserverConfig);
-
         }
     }
 };
 
 /**
- * Deselects the currently selected CU, if there is one
+ * Deselects the currently selected MU, if there is one
  */
-var deselectCU = function (options) {
+var deselectMU = function (options) {
 
-    var $CU;
-    if (!!($CU = $CUsArray[selectedCUIndex])) {
+    var $MU = $MUsArray[selectedMUIndex];
+    if ($MU) {
 
-        // console.log('deselecting CU...');
-        removeOverlay($CU, 'selected');
+        // console.log('deselecting MU...');
+        removeOverlay($MU, 'selected');
 
         if (!options || !options.onDomChangeOrWindowResize) {
-            lastSelectedCUTime = new Date();
+            lastSelectedMUTime = new Date();
 
-            if ($CU.data('fontIncreasedOnSelection')) {
+            if ($MU.data('fontIncreasedOnSelection')) {
                 mutationObserver.disconnect();
-                decreaseFont($CU);
+                decreaseFont($MU);
                 mutationObserver.observe(document, mutationObserverConfig);
-                $CU.data('fontIncreasedOnSelection', false);
+                $MU.data('fontIncreasedOnSelection', false);
             }
 
-            if (urlData.fn_onCUDeselection) {
+            var fn_onMUDeselection;
+            if (urlData.actions && urlData.actions.std_onMUDeselection && (fn_onMUDeselection = urlData.actions.std_onMUDeselection.fn)) {
                 mutationObserver.disconnect();
-                urlData.fn_onCUDeselection($CU, document);
+                fn_onMUDeselection($MU, document);
                 mutationObserver.observe(document, mutationObserverConfig);
             }
         }
 
     }
-    selectedCUIndex = -1;
+    selectedMUIndex = -1;
 };
 
 /**
- * Removes the 'selected' or 'hovered' css class from the CU, as specified by 'type'
- * @param $CU
+ * Removes the 'selected' or 'hovered' css class from the MU, as specified by 'type'
+ * @param $MU
  * @param {string} type Can be 'selected' or 'hovered'
  * @return {*} Returns $overlay (the jQuery wrapper overlay element)
  */
-function removeOverlay ($CU, type) {
-    if (!$CU || !$CU.length) {
+function removeOverlay ($MU, type) {
+    if (!$MU || !$MU.length) {
         return null;
     }
 
-    var $overlay = $CU.data('$overlay');
+    var $overlay = $MU.data('$overlay');
 
     if ($overlay) {
         $overlay.removeClass(type === 'selected'? class_overlaySelected: class_overlayHovered);
@@ -411,16 +413,16 @@ function removeOverlay ($CU, type) {
 
 /**
  *
- * @param $CU
+ * @param $MU
  * @param {string} type Can be 'selected' or 'hovered'
  * @return {*} Displays and returns $overlay (i.e. a jQuery wrapped overlay element)
  */
-var showOverlay = function($CU, type) {
-    if (!$CU || !$CU.length) {
+var showOverlay = function($MU, type) {
+    if (!$MU || !$MU.length) {
         return null;
     }
 
-    var $overlay = $CU.data('$overlay');
+    var $overlay = $MU.data('$overlay');
 
     if (!$overlay || !$overlay.length) {
         if ($unusedOverlaysArray.length) {
@@ -431,17 +433,17 @@ var showOverlay = function($CU, type) {
         }
     }
 
-    var CUsData = urlData.CUs,
-        CUStyleData = CUsData.style,
+    var MUsData = urlData.MUs,
+        MUStyleData = MUsData.style,
         overlayPadding;
 
-    $overlay.data('$CU', $CU);
-    $CU.data('$overlay', $overlay);
+    $overlay.data('$MU', $MU);
+    $MU.data('$overlay', $overlay);
 
-    // position the overlay above the CU, and ensure that its visible
-    $overlay.css(getBoundingRectangle($CU)).show();
+    // position the overlay above the MU, and ensure that its visible
+    $overlay.css(getBoundingRectangle($MU)).show();
 
-    if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
+    if (MUStyleData && (overlayPadding = MUStyleData.overlayPadding)) {
         $overlay.css("padding", overlayPadding);
         $overlay.css("top", parseFloat($overlay.css("top")) -
             parseFloat($overlay.css("padding-top")));
@@ -477,45 +479,45 @@ function ensureTopLevelContainerIsInDom() {
 }
 
 /**
- * Shows as hovered the CU specified.
- * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
- * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
+ * Shows as hovered the MU specified.
+ * @param {number|DOMElement (or jQuery wrapper)} MUOrItsIndex Specifies the MU.
+ * Can be an integer that specifies the index in $MUsArray or a jQuery object representing the MU.
  * (While performance isn't a major concern,) passing the index is preferable if it is already known.
  */
-var hoverCU = function(CUOrItsIndex) {
+var hoverMU = function(MUOrItsIndex) {
 
-    var $CU,
-        indexOf$CU; // index in $CUsArray
+    var $MU,
+        indexOf$MU; // index in $MUsArray
 
-    if (typeof CUOrItsIndex === "number" || CUOrItsIndex instanceof Number) {
-        indexOf$CU = CUOrItsIndex;
-        $CU = $CUsArray[indexOf$CU];
+    if (typeof MUOrItsIndex === "number" || MUOrItsIndex instanceof Number) {
+        indexOf$MU = MUOrItsIndex;
+        $MU = $MUsArray[indexOf$MU];
     }
     else {
-        $CU = $(CUOrItsIndex);
-        indexOf$CU = findIndex_In_$CUsArray($CU);
+        $MU = $(MUOrItsIndex);
+        indexOf$MU = findIndex_In_$MUsArray($MU);
     }
 
-    if (!$CU || !$CU.length || indexOf$CU < 0) {
+    if (!$MU || !$MU.length || indexOf$MU < 0) {
         return;
     }
 
-    dehoverCU(); // before proceeding, dehover currently hovered-over CU, if any
+    dehoverMU(); // before proceeding, dehover currently hovered-over MU, if any
 
-    hoveredCUIndex = indexOf$CU;
-    showOverlay($CU, 'hovered');
+    hoveredMUIndex = indexOf$MU;
+    showOverlay($MU, 'hovered');
 
 };
 
 /**
- * Dehovers the currently hovered (over) CU, if there is one
+ * Dehovers the currently hovered (over) MU, if there is one
  */
-var dehoverCU = function () {
-    var $CU = $CUsArray[hoveredCUIndex];
-    if ($CU) {
-        removeOverlay($CU, 'hovered');
+var dehoverMU = function () {
+    var $MU = $MUsArray[hoveredMUIndex];
+    if ($MU) {
+        removeOverlay($MU, 'hovered');
     }
-    hoveredCUIndex = -1;
+    hoveredMUIndex = -1;
 };
 
 var showScrollingMarker = function(x, y, height) {
@@ -531,17 +533,17 @@ var showScrollingMarker = function(x, y, height) {
 };
 
 /**
- * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
+ * Scrolls more of the currently selected MU into view if required (i.e. if the MU is too large),
  * in the direction specified.
  * @param {string} direction Can be either 'up' or 'down'
  * @param {object} options
  * @return {Boolean} value indicating whether scroll took place
  */
-function scrollSelectedCUIfRequired (direction, options) {
+function scrollSelectedMUIfRequired (direction, options) {
 
     options = $.extend(true, {}, globalSettings, options);
 
-    var $CU = $CUsArray[selectedCUIndex];
+    var $MU = $MUsArray[selectedMUIndex];
 
     var pageHeaderHeight = getEffectiveHeaderHeight();
 
@@ -550,25 +552,25 @@ function scrollSelectedCUIfRequired (direction, options) {
         winHeight = $(window).height(),
         winBottom = winTop + winHeight,
 
-    // for the CU:
-        CUTop = $CU.offset().top,
-        CUHeight = $CU.height(),
-        CUBottom = CUTop + CUHeight;
+    // for the MU:
+        MUTop = $MU.offset().top,
+        MUHeight = $MU.height(),
+        MUBottom = MUTop + MUHeight;
 
     var newWinTop, // new value of scrollTop
-        sameCUScrollOverlap = 40,
+        sameMUScrollOverlap = 40,
         margin = 30;
 
     direction = direction.toLowerCase();
-    if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight) ||
-        (direction === 'down' && CUBottom > winBottom) ) {
-        if (direction === 'up' ) { // implies CUTop < winTop + pageHeaderHeight
-            newWinTop = winTop - winHeight + sameCUScrollOverlap;
+    if ( (direction === 'up' && MUTop < winTop + pageHeaderHeight) ||
+        (direction === 'down' && MUBottom > winBottom) ) {
+        if (direction === 'up' ) { // implies MUTop < winTop + pageHeaderHeight
+            newWinTop = winTop - winHeight + sameMUScrollOverlap;
 
-            // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
-            // increase it to the max value required to show the entire CU with some margin left.
-            if (newWinTop + pageHeaderHeight < CUTop) {
-                newWinTop = CUTop - pageHeaderHeight - margin;
+            // if newWinTop calculated would scroll the MU more than required for it to get completely in the view,
+            // increase it to the max value required to show the entire MU with some margin left.
+            if (newWinTop + pageHeaderHeight < MUTop) {
+                newWinTop = MUTop - pageHeaderHeight - margin;
             }
 
             if (newWinTop < 0) {
@@ -576,14 +578,14 @@ function scrollSelectedCUIfRequired (direction, options) {
             }
         }
 
-        else  { //direction === 'down' && CUBottom > winBottom
+        else  { //direction === 'down' && MUBottom > winBottom
             
-            newWinTop = winBottom - sameCUScrollOverlap;
+            newWinTop = winBottom - sameMUScrollOverlap;
 
-            // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
-            // reduce it to the min value required to show the entire CU with some margin left.
-            if (newWinTop + winHeight > CUBottom) {
-                newWinTop = CUBottom - winHeight + margin;
+            // if newWinTop calculated would scroll the MU more than required for it to get completely in the view,
+            // reduce it to the min value required to show the entire MU with some margin left.
+            if (newWinTop + winHeight > MUBottom) {
+                newWinTop = MUBottom - winHeight + margin;
             }
 
             // ensure value is not more then the max possible
@@ -591,22 +593,22 @@ function scrollSelectedCUIfRequired (direction, options) {
                 newWinTop = $document.height() - winHeight;
             }
 
-            showScrollingMarker($CU.offset().left, winBottom - sameCUScrollOverlap, sameCUScrollOverlap);
+            showScrollingMarker($MU.offset().left, winBottom - sameMUScrollOverlap, sameMUScrollOverlap);
         }
 
-        if (options.animatedCUScroll) {
+        if (options.animatedMUScroll) {
 
-            console.log('animated SAME CU scroll');
+            console.log('animated SAME MU scroll');
 
-            var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
-                Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
+            var animationDuration = Math.min(options.animatedMUScroll_MaxDuration,
+                Math.abs(newWinTop-winTop) / options.animatedMUScroll_Speed);
 
             animatedScroll(newWinTop, animationDuration);
 
 //            $('html, body').animate({scrollTop: newWinTop}, animatedScroll);
         }
         else {
-            console.log('NON animated SAME CU scroll');
+            console.log('NON animated SAME MU scroll');
             $document.scrollTop(newWinTop);
         }
 
@@ -617,11 +619,11 @@ function scrollSelectedCUIfRequired (direction, options) {
 }
 
 /**
- * Selects the previous CU to the currently selected one.
+ * Selects the previous MU to the currently selected one.
  */
 var selectPrev = function() {
 
-    if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
+    if (!$MUsArray || !$MUsArray.length || $MUsArray.length == 1) {
         scrollUp();
         return;
     }
@@ -643,38 +645,38 @@ var selectPrev = function() {
 
     var newIndex;
 
-    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
-        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
-        if (options.sameCUScroll) {
-             var scrolled = scrollSelectedCUIfRequired('up', options);
+    if (selectedMUIndex >=0 && (isMUInViewport($MUsArray[selectedMUIndex]) ||
+        new Date() - lastSelectedMUTime < selectionTimeoutPeriod)) {
+        if (options.sameMUScroll) {
+             var scrolled = scrollSelectedMUIfRequired('up', options);
             if (scrolled) {
                 return;
             }
-            else if (selectedCUIndex === 0) { // special case for first CU
+            else if (selectedMUIndex === 0) { // special case for first MU
                 scrollUp();
             }
         }
 
-        newIndex = selectedCUIndex - 1;
+        newIndex = selectedMUIndex - 1;
         if (newIndex >= 0) {
-            selectCU(newIndex, true, true, options);
+            selectMU(newIndex, true, true, options);
         }
         // else do nothing
 
     }
     else {
-        selectMostSensibleCU(true, true);
+        selectMostSensibleMU(true, true);
     }
 
 
 };
 
 /**
- * Selects the next CU to the currently selected one.
+ * Selects the next MU to the currently selected one.
  */
 var selectNext = function() {
 
-    if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
+    if (!$MUsArray || !$MUsArray.length || $MUsArray.length == 1) {
         scrollDown();
         return;
     }
@@ -696,89 +698,89 @@ var selectNext = function() {
 
     var newIndex;
 
-    if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
-        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    if (selectedMUIndex >=0 && (isMUInViewport($MUsArray[selectedMUIndex]) ||
+        new Date() - lastSelectedMUTime < selectionTimeoutPeriod)) {
 
-        if (options.sameCUScroll) {
-            var scrolled = scrollSelectedCUIfRequired('down', options);
+        if (options.sameMUScroll) {
+            var scrolled = scrollSelectedMUIfRequired('down', options);
             if (scrolled) {
                 return;
             }
-            else  if (selectedCUIndex === $CUsArray.length-1) { // special case for last CU
+            else  if (selectedMUIndex === $MUsArray.length-1) { // special case for last MU
                 scrollDown();
             }
         }
 
-        newIndex = selectedCUIndex + 1;
-        if (newIndex < $CUsArray.length) {
-            selectCU(newIndex, true, true);
+        newIndex = selectedMUIndex + 1;
+        if (newIndex < $MUsArray.length) {
+            selectMU(newIndex, true, true);
         }
         // else do nothing
 
     }
     else {
-        selectMostSensibleCU(true, true);
+        selectMostSensibleMU(true, true);
     }
 };
 
 /**
- * Called typically when there is no currently selected CU, and we need to select the CU that makes most sense
+ * Called typically when there is no currently selected MU, and we need to select the MU that makes most sense
  * to select in this situation.
  */
-function selectMostSensibleCU(setFocus, adjustScrolling) {
+function selectMostSensibleMU(setFocus, adjustScrolling) {
 
-    var lastSelectedCUIndex;
+    var lastSelectedMUIndex;
 
-    // if a CU is already selected AND (is present in the viewport OR was selected only recently)...
-    if (selectedCUIndex >= 0 &&
-        (isCUInViewport($CUsArray[selectedCUIndex]) ||
-        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    // if a MU is already selected AND (is present in the viewport OR was selected only recently)...
+    if (selectedMUIndex >= 0 &&
+        (isMUInViewport($MUsArray[selectedMUIndex]) ||
+        new Date() - lastSelectedMUTime < selectionTimeoutPeriod)) {
 
 
-        //...call selectCU() on it again passing on the provided parameters
-        selectCU(selectedCUIndex, setFocus, adjustScrolling);
+        //...call selectMU() on it again passing on the provided parameters
+        selectMU(selectedMUIndex, setFocus, adjustScrolling);
         return;
     }
-    // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
-    else if( (lastSelectedCUIndex = findIndex_In_$CUsArray($lastSelectedCU)) >=0 &&
-        (isCUInViewport($lastSelectedCU) ||
-        new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
+    // if last selected MU exists AND (is present in the viewport OR was deselected only recently)...
+    else if( (lastSelectedMUIndex = findIndex_In_$MUsArray($lastSelectedMU)) >=0 &&
+        (isMUInViewport($lastSelectedMU) ||
+        new Date() - lastSelectedMUTime < selectionTimeoutPeriod)) {
 
-        selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
+        selectMU(lastSelectedMUIndex, setFocus, adjustScrolling);
        
     }
   
     else {
-        // Selects first CU in the viewport; if none is found, this selects the first CU on the page
-        selectFirstCUInViewport(setFocus, adjustScrolling);
+        // Selects first MU in the viewport; if none is found, this selects the first MU on the page
+        selectFirstMUInViewport(setFocus, adjustScrolling);
     }
 }
 
 /**
- * Selects first (topmost) CU in the visible part of the page. If none is found, selects the first CU on the page
+ * Selects first (topmost) MU in the visible part of the page. If none is found, selects the first MU on the page
  * @param {boolean} setFocus
  * @param {boolean} adjustScrolling
  */
 
-function selectFirstCUInViewport (setFocus, adjustScrolling) {
+function selectFirstMUInViewport (setFocus, adjustScrolling) {
 
-    if ($CUsArray && $CUsArray.length) {
+    if ($MUsArray && $MUsArray.length) {
         var winTop = $document.scrollTop(),
-            CUsArrLen = $CUsArray.length;
+            MUsArrLen = $MUsArray.length;
 
-        for (var i = 0; i < CUsArrLen; ++i) {
-            var $CU = $CUsArray[i];
-            var offset = $CU.offset();
+        for (var i = 0; i < MUsArrLen; ++i) {
+            var $MU = $MUsArray[i];
+            var offset = $MU.offset();
             if (offset.top > winTop) {
                 break;
             }
         }
 
-        if (i < CUsArrLen) {
-            selectCU(i, setFocus, adjustScrolling);
+        if (i < MUsArrLen) {
+            selectMU(i, setFocus, adjustScrolling);
         }
         else {
-            selectCU(0, setFocus, adjustScrolling);
+            selectMU(0, setFocus, adjustScrolling);
         }
 
     }
@@ -786,17 +788,17 @@ function selectFirstCUInViewport (setFocus, adjustScrolling) {
 }
 
 /**
- * If the specified element exists within a CU, the index of that CU in $CUsArray is 
+ * If the specified element exists within a MU, the index of that MU in $MUsArray is 
  * returned, else -1 is returned.
  * @param {DOM element|jQuery wrapper} element
- * @return {number} If containing CU was found, its index, else -1
+ * @return {number} If containing MU was found, its index, else -1
  */
-var getEnclosingCUIndex = function(element) {
+var getEnclosingMUIndex = function(element) {
     var $element = $(element),
-        CUsArrLen = $CUsArray.length;
+        MUsArrLen = $MUsArray.length;
 
-    for (var i = 0; i < CUsArrLen; ++i) {
-        if ($CUsArray[i].is($element) || $CUsArray[i].find($element).length) {
+    for (var i = 0; i < MUsArrLen; ++i) {
+        if ($MUsArray[i].is($element) || $MUsArray[i].find($element).length) {
             return i;
         }
     }
@@ -821,18 +823,18 @@ $.fn.nextALL = function(filter) {
 };
 
 
-// this will find index of the passed jQuery set ($CU) in the $CUsArray. However, unlike JavaScript's
+// this will find index of the passed jQuery set ($MU) in the $MUsArray. However, unlike JavaScript's
 // Array#indexOf() method, a match will be found even if the passed jQuery set is "equivalent" (i.e has the same
-// contents as a member of $CUsArray, even if they are not the *same* object.
+// contents as a member of $MUsArray, even if they are not the *same* object.
 // Returns -1 if not found.
-var findIndex_In_$CUsArray = function($CU)  {
+var findIndex_In_$MUsArray = function($MU)  {
 
-    var CUsArrLen;
+    var MUsArrLen;
 
-    if ($CUsArray && (CUsArrLen = $CUsArray.length)) {
+    if ($MUsArray && (MUsArrLen = $MUsArray.length)) {
 
-        for (var i = 0; i < CUsArrLen; ++i) {
-            if (areCUsSame($CU, $CUsArray[i])) {
+        for (var i = 0; i < MUsArrLen; ++i) {
+            if (areMUsSame($MU, $MUsArray[i])) {
                 return i;
             }
         }
@@ -841,16 +843,16 @@ var findIndex_In_$CUsArray = function($CU)  {
     return -1;
 };
 
-// returns a boolean indicating if the passed CUs (jQuery sets) have the same contents in the same order (for
+// returns a boolean indicating if the passed MUs (jQuery sets) have the same contents in the same order (for
 // instances where we use this function, the order of elements is always the document order)
 /**
- * returns a boolean indicating if the passed CUs (jQuery sets) have the same contents in the same order (for
+ * returns a boolean indicating if the passed MUs (jQuery sets) have the same contents in the same order (for
  * instances where we use this function, the order of elements is always the document order)
- * @param $1 A CU
- * @param $2 Another CU to compare with the first one.
+ * @param $1 A MU
+ * @param $2 Another MU to compare with the first one.
  * @return {Boolean}
  */
-var areCUsSame = function($1, $2) {
+var areMUsSame = function($1, $2) {
 
     // if each jQuery set is either empty or nonexistent, their "contents" are "same".
     if (!$1 && (!$2 || !$2.length)) {
@@ -884,20 +886,20 @@ var areCUsSame = function($1, $2) {
 
 };
 
-// returns a bounding rectangle for $CU
+// returns a bounding rectangle for $MU
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
-var getBoundingRectangle = function($CU) {
+var getBoundingRectangle = function($MU) {
 
-    if (!$CU || !$CU.length)
+    if (!$MU || !$MU.length)
         return;
 
-    var CUsData = urlData.CUs,
-        CUStyleData = CUsData.style,
+    var MUsData = urlData.MUs,
+        MUStyleData = MUsData.style,
         elements = [];
 
-    if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize) {
-        var $innermostDescendants = $CU.find('*').filter(function() {
+    if (MUStyleData && MUStyleData.useInnerElementsToGetOverlaySize) {
+        var $innermostDescendants = $MU.find('*').filter(function() {
             if (!($(this).children().length)) {
                 return true;
             }
@@ -905,7 +907,7 @@ var getBoundingRectangle = function($CU) {
         elements = $innermostDescendants.get();
     }
     else {
-        elements = $CU.get();
+        elements = $MU.get();
     }
     return getBoundingRectangleForElements(elements);
 };
@@ -1019,7 +1021,7 @@ var animatedScroll = function(scrollTop, duration) {
         // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
         // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
         // This is  handled by calculating the time diff. between invocations. See later.)
-        intervalPeriod = Math.min(100, globalSettings.animatedCUScroll_MaxDuration/4),
+        intervalPeriod = Math.min(100, globalSettings.animatedMUScroll_MaxDuration/4),
 
         lastInvocationTime, // will contain the time of the last invocation (of invokeIncrementalScroll)
 
@@ -1067,7 +1069,7 @@ var animatedScroll = function(scrollTop, duration) {
  * Scrolls the window such the specified element lies fully in the viewport (or as much as is
  * possible if the element is too large).
  * //TODO3: consider if horizontal scrolling should be adjusted as well (some, very few, sites sites might, like an
- * image gallery, might have CUs laid out horizontally)
+ * image gallery, might have MUs laid out horizontally)
  * @param {DOM element|JQuery wrapper} $element
  * @param {object} options
  */
@@ -1107,8 +1109,8 @@ function scrollIntoView($element, options) {
     }
 */
 
-    if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) && // CU is fully in viewport
-        !scrollIntoView.tryCenteringCUOnEachScroll) {
+    if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) && // MU is fully in viewport
+        !scrollIntoView.tryCenteringMUOnEachScroll) {
 
         return false;
     }
@@ -1126,12 +1128,12 @@ function scrollIntoView($element, options) {
         }
     }
 
-    if (options.animatedCUScroll) {
+    if (options.animatedMUScroll) {
 
-        console.log('animated CU scroll');
+        console.log('animated MU scroll');
 
-        var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
-            Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
+        var animationDuration = Math.min(options.animatedMUScroll_MaxDuration,
+            Math.abs(newWinTop-winTop) / options.animatedMUScroll_Speed);
 
         animatedScroll(newWinTop, animationDuration);
 
@@ -1139,7 +1141,7 @@ function scrollIntoView($element, options) {
 
     }
     else {
-        console.log('NON animated CU scroll');
+        console.log('NON animated MU scroll');
         $document.scrollTop(newWinTop);
 
     }
@@ -1213,7 +1215,7 @@ function focusPrevTextInput() {
 var timeout_domChanges,
     groupingInterval_for_DomMutations = 200; // millisecs
 // this function ensures that a set of closely spaced DOM mutation events triggers only one (slightly expensive)
-// getCUsArray() call, as long each pair of successive events in this set is separated by less than
+// getMUsArray() call, as long each pair of successive events in this set is separated by less than
 // 'groupingInterval_for_DomMutations' millisecs.
 var onDomChange = function(mutations) {
 
@@ -1262,7 +1264,7 @@ function _onDomChange() {
         onUrlChange();
     }
     else {
-        updateCUsAndRelatedState();
+        updateMUsAndRelatedState();
     }
 }
 
@@ -1270,67 +1272,67 @@ function onUrlChange() {
     initializeExtension(); // resets the extension
 }
 
-// Sets/updates the global variable $CUsArray and other state associated with it
-function updateCUsAndRelatedState() {
+// Sets/updates the global variable $MUsArray and other state associated with it
+function updateMUsAndRelatedState() {
 
-    // Save the currently selected CU, to reselect it, if it is still present in the $CUsArray after the array is
-    // updated. This needs to be done before calling deselectCU() and modifying the current $CUsArray
-    var $prevSelectedCU = $CUsArray && $CUsArray[selectedCUIndex];
-    dehoverCU(); // to prevent a "ghost" hover overlay
-    deselectCU({onDomChangeOrWindowResize: true});
-    $CUsArray = getCUsArray();
+    // Save the currently selected MU, to reselect it, if it is still present in the $MUsArray after the array is
+    // updated. This needs to be done before calling deselectMU() and modifying the current $MUsArray
+    var $prevSelectedMU = $MUsArray && $MUsArray[selectedMUIndex];
+    dehoverMU(); // to prevent a "ghost" hover overlay
+    deselectMU({onDomChangeOrWindowResize: true});
+    $MUsArray = getMUsArray();
 
-    if ($CUsArray && $CUsArray.length) {
+    if ($MUsArray && $MUsArray.length) {
         if (parseInt($searchContainer.css('top'), 10) >= 0) { // if search box is visible
 //    if ($searchContainer.offset().top >= 0) { // if search box is visible
-            filterCUsArray($CUsArray);
+            filterMUsArray($MUsArray);
         }
 
-        if (globalSettings.selectCUOnLoad && !selectCU.invokedYet) {
+        if (globalSettings.selectMUOnLoad && !selectMU.invokedYet) {
             // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
-            selectFirstCUInViewport(true, false);
+            selectFirstMUInViewport(true, false);
         }
 
-        // The following block ensures that a previously selected CU continues to remain selected
-        else if ($prevSelectedCU) {
+        // The following block ensures that a previously selected MU continues to remain selected
+        else if ($prevSelectedMU) {
 
-            var newSelectedCUIndex = findIndex_In_$CUsArray($prevSelectedCU);
+            var newSelectedMUIndex = findIndex_In_$MUsArray($prevSelectedMU);
 
-            if (newSelectedCUIndex >= 0) {
+            if (newSelectedMUIndex >= 0) {
                 // pass false to not change focus (because it is almost certainly is already where it should be,
                 // and we don't want to inadvertently change it)
-                selectCU(newSelectedCUIndex, false, false, {onDomChangeOrWindowResize: true});
+                selectMU(newSelectedMUIndex, false, false, {onDomChangeOrWindowResize: true});
             }
         }
     }
 }
 
-// Populates the CUs array based on the current contents of the DOM and returns it.
-// If search box is visibile, the returned CUs array is filtered accordingly.
-var getCUsArray = function() {
+// Populates the MUs array based on the current contents of the DOM and returns it.
+// If search box is visibile, the returned MUs array is filtered accordingly.
+var getMUsArray = function() {
 
-    if (!urlData || !urlData.CUs) {
-        // returning an empty array instead of null means accessing $CUsArray[selectedCUIndex] (which
+    if (!urlData || !urlData.MUs) {
+        // returning an empty array instead of null means accessing $MUsArray[selectedMUIndex] (which
         // is done a lot) doesn't need to be prepended with a check against null in each case.
         return [];
     }
 
-    var $CUsArr,   // this will be hold the array to return
-        CUsData = urlData.CUs,
+    var $MUsArr,   // this will be hold the array to return
+        MUsData = urlData.MUs,
         selector,
-        CUsSpecifier = CUsData.specifier;
+        MUsSpecifier = MUsData.specifier;
 
-    if (typeof (selector = CUsData) === "string" ||
-        typeof (selector = CUsData.specifier) === "string" ||
-        typeof (selector = CUsData.specifier.selector) === "string" ) {
-        $CUsArr = $.map($(selector).get(), function(item, i) {
+    if (typeof (selector = MUsData) === "string" ||
+        typeof (selector = MUsData.specifier) === "string" ||
+        typeof (selector = MUsData.specifier.selector) === "string" ) {
+        $MUsArr = $.map($(selector).get(), function(item, i) {
             return $(item);
         });
     }
 
-    else if (typeof CUsSpecifier.first === "string" && typeof CUsSpecifier.last === "string" ) {
-        $CUsArr = [];
-        var $firstsArray = $.map($(CUsSpecifier.first).get(), function(item, i) {
+    else if (typeof MUsSpecifier.first === "string" && typeof MUsSpecifier.last === "string" ) {
+        $MUsArr = [];
+        var $firstsArray = $.map($(MUsSpecifier.first).get(), function(item, i) {
             return $(item);
         });
 
@@ -1338,7 +1340,7 @@ var getCUsArray = function() {
         // ancestors first_ancestor and last_ancestor that are siblings and use those)
         // selecting logically valid entities.)
         if ($firstsArray.length) {
-            var // these will correspond to CUsSpecifier.first and CUsSpecifier.last
+            var // these will correspond to MUsSpecifier.first and MUsSpecifier.last
                 $_first, $_last,
 
                 //these will be the closest ancestors (self included) of $_first and $_last respectively, which are
@@ -1370,30 +1372,30 @@ var getCUsArray = function() {
 
             for (var i = 0; i < firstsArrLen; ++i) {
                 $_first = $firstsArray[i];
-                $_last = $_first.nextALL(CUsSpecifier.last).first();
+                $_last = $_first.nextALL(MUsSpecifier.last).first();
 
                 $closestCommonAncestor = $_first.parents().has($_last).first();
 
                 $first = $closestCommonAncestor.children().filter(filterFirst);
                 $last = $closestCommonAncestor.children().filter(filterLast);
-                $CUsArr[i] = $first.add($first.nextUntil($last)).add($last);
+                $MUsArr[i] = $first.add($first.nextUntil($last)).add($last);
             }
         }
     }
 
-    else if (typeof CUsSpecifier.buildCUAround === "string"){
+    else if (typeof MUsSpecifier.buildMUAround === "string"){
 
-        $CUsArr = [];
+        $MUsArr = [];
         var currentGroupingIndex = 0;
 
-        var $container = closestCommonAncestor($(CUsSpecifier.buildCUAround));
+        var $container = closestCommonAncestor($(MUsSpecifier.buildMUAround));
         // TODO: move the function below to a more apt place
         /**
          *
          * @param {DOM Node|JQuery Wrapper} $container
          */
 
-        var buildCUsAroundCentralElement = function ($container) {
+        var buildMUsAroundCentralElement = function ($container) {
 //TODO: 1) rename child to sibling etc
 //            2) call currentGroupingIndex currentGroupingIndex etc.
             $container = $($container);
@@ -1409,7 +1411,7 @@ var getCUsArray = function() {
             var $siblings = $container.children();
             var siblingsLength = $siblings.length;
 
-            var centralElementselector = CUsSpecifier.buildCUAround;
+            var centralElementselector = MUsSpecifier.buildMUAround;
             if (siblingsLength) {
 
                 var $currentSibling,
@@ -1425,7 +1427,7 @@ var getCUsArray = function() {
                         else {
                             ++currentGroupingIndex;
                         }
-                        $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
+                        $MUsArr[currentGroupingIndex] = $currentSibling.add($MUsArr[currentGroupingIndex]);
                     }
                     else if ((num_centralElementsInCurrentSibling = $currentSibling.find(centralElementselector).length)) {
                         if (num_centralElementsInCurrentSibling === 1) {
@@ -1435,7 +1437,7 @@ var getCUsArray = function() {
                             else {
                                 ++currentGroupingIndex;
                             }
-                            $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
+                            $MUsArr[currentGroupingIndex] = $currentSibling.add($MUsArr[currentGroupingIndex]);
                         }
                         else { // >= 2
                             if (!firstCentralElementFound) {
@@ -1445,48 +1447,48 @@ var getCUsArray = function() {
                                 ++currentGroupingIndex;
                             }
 
-                            buildCUsAroundCentralElement($currentSibling);
+                            buildMUsAroundCentralElement($currentSibling);
                         }
                     }
                     else {
-                        $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
+                        $MUsArr[currentGroupingIndex] = $currentSibling.add($MUsArr[currentGroupingIndex]);
                     }
                 }
             }
         }; // end of function definition
 
-        buildCUsAroundCentralElement($container);
+        buildMUsAroundCentralElement($container);
     }
 
-    processCUsArray($CUsArr);
+    processMUsArray($MUsArr);
 
 //    if (parseInt($searchContainer.css('top')) >= 0) { // if search box is visible
 //    ////if ($searchContainer.offset().top >= 0) { // if search box is visible
-//        filterCUsArray($CUsArr);
+//        filterMUsArray($MUsArr);
 //    }
     
-//    if (!$CUsArr || !$CUsArr.length) {
-//        console.warn("UnitsProj: No CUs were found based on the selector provided for this URL")
+//    if (!$MUsArr || !$MUsArr.length) {
+//        console.warn("UnitsProj: No MUs were found based on the selector provided for this URL")
 //        return;
 //    }
 
-    return $CUsArr;
+    return $MUsArr;
 };
 
-/* Returns true if all constituent elements of $CU1 are contained within (the constituents) of $CU2, false
+/* Returns true if all constituent elements of $MU1 are contained within (the constituents) of $MU2, false
 otherwise. (An element is considered to 'contain' itself and all its descendants)
 */
-var CUContainedInAnother = function($CU1, $CU2) {
+var MUContainedInAnother = function($MU1, $MU2) {
 
-    var CU1Len = $CU1.length,
-        CU2Len = $CU2.length;
+    var MU1Len = $MU1.length,
+        MU2Len = $MU2.length;
 
-    for (var i = 0; i < CU1Len; ++i) {
+    for (var i = 0; i < MU1Len; ++i) {
 
         var isThisConstituentContained = false; // assume
 
-        for (var j = 0; j < CU2Len; ++j) {
-            if ($CU2[j].contains($CU1[i])) {
+        for (var j = 0; j < MU2Len; ++j) {
+            if ($MU2[j].contains($MU1[i])) {
                 isThisConstituentContained = true;
                 break;
             }
@@ -1500,35 +1502,35 @@ var CUContainedInAnother = function($CU1, $CU2) {
 };
 
 /**
- * process all CUs in $CUsArr does the following
-1) remove any CU that is not visible in the DOM
-2) remove any CU that is fully contained within another
+ * process all MUs in $MUsArr does the following
+1) remove any MU that is not visible in the DOM
+2) remove any MU that is fully contained within another
  */
-var processCUsArray = function($CUsArr) {
+var processMUsArray = function($MUsArr) {
 
-    if (!$CUsArr || !$CUsArr.length) {
+    if (!$MUsArr || !$MUsArr.length) {
         return;
     }
 
-    var CUsArrLen = $CUsArr.length;
+    var MUsArrLen = $MUsArr.length;
 
-    for (var i = 0; i < CUsArrLen; ++i) {
-        var $CU = $CUsArr[i];
-        if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByCUsExtn')) || isCUInvisible($CU)) {
-            $CUsArr.splice(i, 1);
-            --CUsArrLen;
+    for (var i = 0; i < MUsArrLen; ++i) {
+        var $MU = $MUsArr[i];
+        if ( (!$MU.is(':visible') && !$MU.hasClass('hiddenByMUsExtn')) || isMUInvisible($MU)) {
+            $MUsArr.splice(i, 1);
+            --MUsArrLen;
             --i;
             continue;
         }
 
-        for (var j = 0; j < CUsArrLen; ++j) {
+        for (var j = 0; j < MUsArrLen; ++j) {
             if (i === j) {
                 continue;
             }
 
-            if (CUContainedInAnother($CU, $CUsArr[j])) {
-                $CUsArr.splice(i, 1);
-                --CUsArrLen;
+            if (MUContainedInAnother($MU, $MUsArr[j])) {
+                $MUsArr.splice(i, 1);
+                --MUsArrLen;
                 --i;
                 break;
             }
@@ -1697,7 +1699,7 @@ var elementContainsPoint = function(element, point) {
 // header element, we do the same thing, but for the bottommost one.
 var getEffectiveHeaderHeight = function() {
 
-    var headerData = urlData && urlData.page_miniUnits && urlData.page_miniUnits.std_header;
+    var headerData = urlData && urlData.page_miscUnits && urlData.page_miscUnits.std_header;
     if (!headerData) {
         return 0;
     }
@@ -1775,30 +1777,30 @@ function closeSearchBox() {
 
     // This function should be called before the search box is hidden, so that the call to filter() function is made
     // within it
-    updateCUsAndRelatedState();
+    updateMUsAndRelatedState();
     $searchContainer.$searchBox.blur();
 
     $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
 
 }
 
-// filters $CUsArr based on the text in the search box
-function filterCUsArray($CUsArr) {
+// filters $MUsArr based on the text in the search box
+function filterMUsArray($MUsArr) {
 
-    if (!$CUsArr || !$CUsArr.length) {
+    if (!$MUsArr || !$MUsArr.length) {
         return;
     }
 
     // ** --------- PRE FILTERING --------- **
-    var CUsNodes = [],
-        CUsArrLen = $CUsArr.length;
+    var MUsNodes = [],
+        MUsArrLen = $MUsArr.length;
 
-    for (var i = 0; i < CUsArrLen; ++i) {
-        var $CU = $CUsArr[i];
-        CUsNodes = CUsNodes.concat($CU.get());
+    for (var i = 0; i < MUsArrLen; ++i) {
+        var $MU = $MUsArr[i];
+        MUsNodes = MUsNodes.concat($MU.get());
     }
 
-    var $closestAncestor = $(closestCommonAncestor(CUsNodes));
+    var $closestAncestor = $(closestCommonAncestor(MUsNodes));
 
     mutationObserver.disconnect(); // ** stop monitoring mutations **
     $closestAncestor.hide();
@@ -1808,29 +1810,29 @@ function filterCUsArray($CUsArr) {
     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
 
     if (!searchTextLowerCase) {
-        var $CUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByCUsExtn');
-        $CUsHiddenByPriorFiltering.removeClass('hiddenByCUsExtn').show();
+        var $MUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByMUsExtn');
+        $MUsHiddenByPriorFiltering.removeClass('hiddenByMUsExtn').show();
 
     }
     else {
 
         console.log('filtering invoked...');
 
-        for (var i = 0, $CU; i < CUsArrLen; ++i) {
-            $CU = $CUsArr[i];
-            // if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-            if (highlightInCU($CU, searchTextLowerCase)) {
+        for (var i = 0, $MU; i < MUsArrLen; ++i) {
+            $MU = $MUsArr[i];
+            // if ($MU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
+            if (highlightInMU($MU, searchTextLowerCase)) {
 
-                //if ($CU.hasClass('hiddenByCUsExtn')) {
+                //if ($MU.hasClass('hiddenByMUsExtn')) {
 
-                $CU.show().removeClass('hiddenByCUsExtn');
+                $MU.show().removeClass('hiddenByMUsExtn');
                 //}
             }
             else {
-                //if ($CU.is(':visible')) {
-                $CU.hide().addClass('hiddenByCUsExtn');
-                $CUsArr.splice(i, 1);
-                --CUsArrLen;
+                //if ($MU.is(':visible')) {
+                $MU.hide().addClass('hiddenByMUsExtn');
+                $MUsArr.splice(i, 1);
+                --MUsArrLen;
                 --i;
 
                 //}
@@ -1844,24 +1846,24 @@ function filterCUsArray($CUsArr) {
 
 }
 
-// filters $CUsArr based on the text in the search box\
+// filters $MUsArr based on the text in the search box\
 /*
-function filterCUsArray($CUsArr) {
+function filterMUsArray($MUsArr) {
 
-    if (!$CUsArr || !$CUsArr.length) {
+    if (!$MUsArr || !$MUsArr.length) {
         return;
     }
 
     // ** --------- PRE FILTERING --------- **
-    var CUsNodes = [],
-        CUsArrLen = $CUsArr.length;
+    var MUsNodes = [],
+        MUsArrLen = $MUsArr.length;
 
-    for (var i = 0; i < CUsArrLen; ++i) {
-        var $CU = $CUsArr[i];
-        CUsNodes = CUsNodes.concat($CU.get());
+    for (var i = 0; i < MUsArrLen; ++i) {
+        var $MU = $MUsArr[i];
+        MUsNodes = MUsNodes.concat($MU.get());
     }
 
-    var $closestAncestor = $(closestCommonAncestor(CUsNodes));
+    var $closestAncestor = $(closestCommonAncestor(MUsNodes));
 
     mutationObserver.disconnect(); // ** stop monitoring mutations **
 
@@ -1870,15 +1872,15 @@ function filterCUsArray($CUsArr) {
     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
 
     if (!searchTextLowerCase) {
-//        var $CUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByCUsExtn');
-//        $CUsHiddenByPriorFiltering.removeClass('hiddenByCUsExtn').show();
+//        var $MUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByMUsExtn');
+//        $MUsHiddenByPriorFiltering.removeClass('hiddenByMUsExtn').show();
 
         $closestAncestor.hide();  // for efficiency: remove from the render tree first
 
-        for (var i = 0; i < CUsArrLen; ++i) {
-            var $CU = $CUsArr[i];
-            if ($CU.data('hiddenByCUsExtn')) {
-                $CU.show().data('hiddenByCUsExtn', false);
+        for (var i = 0; i < MUsArrLen; ++i) {
+            var $MU = $MUsArr[i];
+            if ($MU.data('hiddenByMUsExtn')) {
+                $MU.show().data('hiddenByMUsExtn', false);
             }
         }
 
@@ -1891,21 +1893,21 @@ function filterCUsArray($CUsArr) {
 
         console.log('filtering invoked...');
 
-        for (var i = 0, $CU; i < CUsArrLen; ++i) {
-            $CU = $CUsArr[i];
-//            if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-            if (highlightInCU($CU, searchTextLowerCase)) {
+        for (var i = 0, $MU; i < MUsArrLen; ++i) {
+            $MU = $MUsArr[i];
+//            if ($MU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
+            if (highlightInMU($MU, searchTextLowerCase)) {
 
-                //if ($CU.hasClass('hiddenByCUsExtn')) {
+                //if ($MU.hasClass('hiddenByMUsExtn')) {
 
-//                $CU.removeClass('hiddenByCUsExtn');
-                $CU.data('hiddenByCUsExtn', false);
+//                $MU.removeClass('hiddenByMUsExtn');
+                $MU.data('hiddenByMUsExtn', false);
                 //}
             }
             else {
-                //if ($CU.is(':visible')) {
-//                $CU.addClass('hiddenByCUsExtn');
-                $CU.data('hiddenByCUsExtn', true);
+                //if ($MU.is(':visible')) {
+//                $MU.addClass('hiddenByMUsExtn');
+                $MU.data('hiddenByMUsExtn', true);
 
 
                 //}
@@ -1914,16 +1916,16 @@ function filterCUsArray($CUsArr) {
     }
 
     $closestAncestor.hide();  // for efficiency: remove from the render tree first
-    for (var i = 0, $CU; i < CUsArrLen; ++i) {
-        $CU = $CUsArr[i];
-        if ($CU.data('hiddenByCUsExtn')) {
-            $CU.hide();
-            $CUsArr.splice(i, 1);
-            --CUsArrLen;
+    for (var i = 0, $MU; i < MUsArrLen; ++i) {
+        $MU = $MUsArr[i];
+        if ($MU.data('hiddenByMUsExtn')) {
+            $MU.hide();
+            $MUsArr.splice(i, 1);
+            --MUsArrLen;
             --i;
         }
         else {
-            $CU.show();
+            $MU.show();
         }
     }
 
@@ -2115,11 +2117,11 @@ function _setupBrowserActionShortcuts() {
 var generalShortcuts = {
     // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
     // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-    nextCU: ['j', '`', 'down'],
-    prevCU: ['k', 'shift+`', 'up'],
+    nextMU: ['j', '`', 'down'],
+    prevMU: ['k', 'shift+`', 'up'],
     search: ['/', 'ctrl+shift+f', 'command+shift+f'],
-    firstCU: ['^', 'alt+1'], // TODO: check if ding sound on alt can be zfixed
-    lastCU: ['$', 'alt+9', 'alt+0'],
+    firstMU: ['^', 'alt+1'], // TODO: check if ding sound on alt can be zfixed
+    lastMU: ['$', 'alt+9', 'alt+0'],
     showHelp: ['alt+h', 'alt+?'],
     open: ['shift+o', 'alt+o'],  // alt+o allows invoking only with one hand (at least in windows)
     openInNewTab: ['o'],
@@ -2135,22 +2137,22 @@ var generalShortcuts = {
 };
 
 // Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
-// selecting next/prev CU, etc.
+// selecting next/prev MU, etc.
 function _setupGeneralShortcuts() {
 
     // true is redundant here; used only to illustrate this form of the function call
-    bind(generalShortcuts.nextCU, selectNext, true);
+    bind(generalShortcuts.nextMU, selectNext, true);
 
-    bind(generalShortcuts.prevCU, selectPrev);
+    bind(generalShortcuts.prevMU, selectPrev);
 
     bind(generalShortcuts.search, showSearchBox);
 
-    bind(generalShortcuts.firstCU, function(e) {
-        selectCU(0, true);
+    bind(generalShortcuts.firstMU, function(e) {
+        selectMU(0, true);
     });
 
-    bind(generalShortcuts.lastCU, function(e) {
-        selectCU($CUsArray.length - 1, true);
+    bind(generalShortcuts.lastMU, function(e) {
+        selectMU($MUsArray.length - 1, true);
     });
 
     bind(generalShortcuts.showHelp, showHelp);
@@ -2167,95 +2169,109 @@ function _setupGeneralShortcuts() {
 }
 
 /**
-* Sets up the shortcuts specified. Can be used to setup either page-specific or CU-specific shortcuts depending on
-* whether the 'type' passed is "page" or "CU".
-    * @param type
+* Sets up the shortcuts specified. Can be used to setup either page-specific or MU-specific shortcuts depending on
+* whether the 'scope' passed is "page" or "MU".
+    * @param scope
 */
-function _setupUrlDataShortcuts(type) {
+function _setupUrlDataShortcuts(scope) {
+    _setupMiscUnitsShortcuts(scope);
+    _setupActionShortcuts(scope);
+}
 
-    var shortcuts;
-    if (type === "CU") {
-        shortcuts = urlData && urlData.CU_shortcuts;
+function _setupMiscUnitsShortcuts(scope) {
+    var miscUnits;
+    if (scope === "MU") {
+        miscUnits = urlData.MUs.MU_miscUnits;
     }
     else {
-        shortcuts = urlData && urlData.page_shortcuts;
+        miscUnits = urlData.page_miscUnits;
     }
+    if (miscUnits) {
+        for (var key in miscUnits) {
+            var miscUnit = miscUnits[key],
+                kbdShortcuts = miscUnit.kbdShortcuts,
+                selectors = miscUnit.specifier;
 
-    if (shortcuts) {
-
-        for (var key in shortcuts) {
-            var shortcut = shortcuts[key];
-
-            bind(shortcut.keys, invokeShortcut.bind(null, shortcut, type));
-
+            if (selectors && kbdShortcuts) {
+                bind(kbdShortcuts, _accessMiscUnit.bind(null, selectors, scope));
+            }
         }
     }
 }
 
-/**
- *
- * @param shortcut
- * @param {string} scope Can be either "page" or "CU"
- */
-function invokeShortcut(shortcut, scope) {
-    var fn =  shortcut.fn,
-        selectors,
-        $selectedCU = $CUsArray[selectedCUIndex];
-
-    // if shortcut has the 'fn' property specified, do the same thing whether scope is 'page' or 'CU'
-    if (fn) {
-        fn($selectedCU, document);
+function _setupActionShortcuts(scope) {
+    var actions;
+    if (scope === "MU") {
+        actions = urlData.MUs.actions;
     }
-
-    else if ((selectors = shortcut.selectors || shortcut.selector )) {
-        var $scope;
-
-        if (scope === 'CU') {
-            $scope =  $CUsArray[selectedCUIndex];
-        }
-        else  {
-            $scope = $document;
-        }
-
-        if ($scope) {
-
-            if (typeof selectors === 'string' ) {
-                selectors = [selectors];
+    else {
+        actions = urlData.actions;
+    }
+    if (actions) {
+        for (var key in actions) {
+            var action = actions[key],
+                fn = action.fn,
+                kbdShortcuts = action.kbdShortcuts;
+            if (typeof fn === "function" && kbdShortcuts) {
+                bind(kbdShortcuts, _invokeAction.bind(null, fn, scope));
             }
 
-            (function invokeSequentialClicks (selectorsArr) {
-
-                if (selectorsArr.length) {
-                    executeWhenConditionMet(
-
-                        function() {
-                            // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
-                            $scope.find(selectorsArr[0])[0].click();
-                            selectorsArr.splice(0, 1);
-                            invokeSequentialClicks(selectorsArr);
-                        },
-                        function() {
-                            return $scope.find(selectorsArr[0]).length;
-                        },
-                        2000
-                    );
-
-                }
-
-            })(selectors);
         }
+    }
+}
+function _invokeAction (fn, scope) {
+    var $selectedMU = $MUsArray[selectedMUIndex];
+    if (scope === "MU" && !$selectedMU) {
+        return;
+    }
+    fn($selectedMU, document);
+}
+
+/**
+ *
+ * @param selectors
+ * @param {string} scope Can be either "page" or "MU"
+ */
+function _accessMiscUnit(selectors, scope) {
+    var $scope;
+
+    if (scope === 'MU') {
+        $scope =  $MUsArray[selectedMUIndex];
+    }
+    else  {
+        $scope = $document;
+    }
+    if ($scope) {
+        if (typeof selectors === 'string' ) {
+            selectors = [selectors];
+        }
+        (function invokeSequentialClicks (selectorsArr) {
+            if (selectorsArr.length) {
+                executeWhenConditionMet(
+                    function() {
+                        // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
+                        $scope.find(selectorsArr[0])[0].click();
+                        selectorsArr.splice(0, 1);
+                        invokeSequentialClicks(selectorsArr);
+                    },
+                    function() {
+                        return $scope.find(selectorsArr[0]).length;
+                    },
+                    2000
+                );
+            }
+        })(selectors);
     }
 }
 
 /**
  * Sets up the keyboard shortcuts.
  * Note: Because of the order in which shortcuts are set up, their priorities in case of a conflict are:
- * <browser action shortcuts> override <general shortcuts> override <page-specific shortcuts> override <CU-specific
- * shortcuts>
+ * <browser-action-shortcuts> override <general-shortcuts> override <page-specific-shortcuts> override <MU-specific-shortcuts>
  * This order has been chosen since it favors consistency and hence minimizes confusion.
  */
-function setupKbdShortcuts() {
-    // since setupKbdShortcuts() is invoked every time URL changes, first reset shortcuts and any state associated with
+function setupShortcuts() {
+    // since setupShortcuts() is invoked every time URL changes, first reset shortcuts and any state associated with
     // "chrome alt hack"
     Mousetrap.reset();
 
@@ -2265,8 +2281,10 @@ function setupKbdShortcuts() {
         $topLevelContainer.find('.' + class_usedForChromeAltHack).remove();
     }
 
-    _setupUrlDataShortcuts("CU"); // CU shortcuts
-    _setupUrlDataShortcuts("page"); // page shortcuts
+    if (urlData) {
+        urlData.MUs && _setupUrlDataShortcuts("MU"); // MU shortcuts
+        _setupUrlDataShortcuts("page"); // page shortcuts
+    }
     _setupGeneralShortcuts();   // general shortcuts
     _setupBrowserActionShortcuts(); // browser action shortcuts
 }
@@ -2275,42 +2293,42 @@ var onKeydown = function (e) {
     var code = e.which || e.keyCode,
         hasNonShiftModifier = e.altKey || e.ctrlKey|| e.metaKey,
         hasModifier = hasNonShiftModifier || e.shiftKey,
-        $selectedCU = $CUsArray[selectedCUIndex],
+        $selectedMU = $MUsArray[selectedMUIndex],
         activeEl = document.activeElement || document.body;
 
     // On pressing TAB (or shift-tab): 
-    // If a CU is selected, and no element of the page has focus, focus the 'main' element of the CU.
+    // If a MU is selected, and no element of the page has focus, focus the 'main' element of the MU.
     if (code === 9 && !hasNonShiftModifier) { // TAB        
-        if ($selectedCU && (activeEl === document.body))  {
-            focusMainElement($selectedCU);
+        if ($selectedMU && (activeEl === document.body))  {
+            focusMainElement($selectedMU);
             suppressEvent(e);
         }
     }
     
     /* On pressing ESC:
-     - When no CU is selected, blur the active element and select the "most sensible" CU
-     - When a CU is selected
+     - When no MU is selected, blur the active element and select the "most sensible" MU
+     - When a MU is selected
         - if an editable element is active (and hence single key shortcuts can't be used), blur the active element
-        - else deselect the CU. (meaning that a selected CU will be deselected on at most a second 'Esc', if not
+        - else deselect the MU. (meaning that a selected MU will be deselected on at most a second 'Esc', if not
         the first)
     */
     else if (code === 27 && !hasModifier) { // ESC
-        if (!$selectedCU) {
+        if (!$selectedMU) {
             activeEl.blur();
-            var index = getEnclosingCUIndex(activeEl);
+            var index = getEnclosingMUIndex(activeEl);
             if (index >= 0) {
-                selectCU(index, true, true);
+                selectMU(index, true, true);
             }
             else {
-                selectMostSensibleCU(true, true);
+                selectMostSensibleMU(true, true);
             }
         }
         else if (isElementEditable(activeEl)) {
             activeEl.blur();
         }
         else {
-            deselectCU();
-            dehoverCU();
+            deselectMU();
+            dehoverMU();
         }
     }
 };
@@ -2322,13 +2340,13 @@ var onFocus = function(e) {
     var el = e.target, $el;
     elementToScroll = el; // update global variable used by scrollDown()/scrollUp()
 //
-//    if ( ($el = $(el)).data('enclosingCUJustSelected') ) {
-//        $el.data('enclosingCUJustSelected', false);
+//    if ( ($el = $(el)).data('enclosingMUJustSelected') ) {
+//        $el.data('enclosingMUJustSelected', false);
 //    }
 //    else {
-        var enclosingCUIndex = getEnclosingCUIndex(el);
-        if (enclosingCUIndex >= 0 && enclosingCUIndex !== selectedCUIndex) {
-            selectCU(enclosingCUIndex, false);
+        var enclosingMUIndex = getEnclosingMUIndex(el);
+        if (enclosingMUIndex >= 0 && enclosingMUIndex !== selectedMUIndex) {
+            selectMU(enclosingMUIndex, false);
         }
 //    }
 };
@@ -2361,33 +2379,33 @@ var onLtMouseBtnDown = function(e) {
     elementToScroll = e.target;
 
     var point = {x: e.pageX, y: e.pageY},
-        $selectedCU = $CUsArray[selectedCUIndex],
-        $overlaySelected = $selectedCU && $selectedCU.data('$overlay'),
-        $hoveredCU = $CUsArray[hoveredCUIndex],
-        $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
+        $selectedMU = $MUsArray[selectedMUIndex],
+        $overlaySelected = $selectedMU && $selectedMU.data('$overlay'),
+        $hoveredMU = $MUsArray[hoveredMUIndex],
+        $overlayHovered = $hoveredMU && $hoveredMU.data('$overlay'),
         indexToSelect;
 
     if ($overlaySelected && elementContainsPoint($overlaySelected, point)) {
         return;  // do nothing
     }
     else  if ($overlayHovered && elementContainsPoint($overlayHovered, point)) {
-        indexToSelect = hoveredCUIndex;
+        indexToSelect = hoveredMUIndex;
     }
     else {
-        indexToSelect = getEnclosingCUIndex(e.target);
+        indexToSelect = getEnclosingMUIndex(e.target);
     }
 
     if (indexToSelect >= 0) {
-        selectCU(indexToSelect, false, false);
+        selectMU(indexToSelect, false, false);
         var activeEl = document.activeElement,
-            indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
+            indexOf_MUContainingActiveEl = getEnclosingMUIndex(activeEl);
 
-        if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
+        if (indexOf_MUContainingActiveEl !== selectedMUIndex) {
             activeEl.blur();
         }
     }
     else {
-        deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
+        deselectMU(); // since the user clicked at a point not lying inside any MU, deselect any selected MU
     }
 
 };
@@ -2437,19 +2455,19 @@ var onMouseOverIntent = function(e) {
     var point = {x: e.pageX, y: e.pageY};
 
     var $overlayHovered;
-    if ($CUsArray[hoveredCUIndex] &&
-        ($overlayHovered = $CUsArray[hoveredCUIndex].data('$overlay')) &&
+    if ($MUsArray[hoveredMUIndex] &&
+        ($overlayHovered = $MUsArray[hoveredMUIndex].data('$overlay')) &&
         (elementContainsPoint($overlayHovered, point))) {
 
-        return ; // CU already has hovered overlay; don't need to do anything
+        return ; // MU already has hovered overlay; don't need to do anything
 
     }
 
-    var CUIndex = getEnclosingCUIndex(e.target);
+    var MUIndex = getEnclosingMUIndex(e.target);
 
-    if (CUIndex >= 0) {
+    if (MUIndex >= 0) {
 
-        hoverCU(CUIndex);
+        hoverMU(MUIndex);
     }
 
 };
@@ -2472,11 +2490,11 @@ var onMouseOut = function(e) {
     // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
     // contained within it, dehover it (set it as dehovered).
     var $overlayHovered;
-    if ($CUsArray[hoveredCUIndex] &&
-        ($overlayHovered = $CUsArray[hoveredCUIndex].data('$overlay')) &&
+    if ($MUsArray[hoveredMUIndex] &&
+        ($overlayHovered = $MUsArray[hoveredMUIndex].data('$overlay')) &&
         (!elementContainsPoint($overlayHovered, {x: e.pageX, y: e.pageY}))) {
 
-        dehoverCU();
+        dehoverMU();
 
     }
 
@@ -2506,10 +2524,10 @@ mutationObserver = new MutationObserver (function(mutations) {
 
 var onWindowResize = function() {
 
-    dehoverCU();
+    dehoverMU();
 
-    if (selectedCUIndex >= 0) {
-        selectCU(selectedCUIndex, false, false, {onDomChangeOrWindowResize: true}); // to redraw the overlay
+    if (selectedMUIndex >= 0) {
+        selectMU(selectedMUIndex, false, false, {onDomChangeOrWindowResize: true}); // to redraw the overlay
     }
 };
 
@@ -2538,16 +2556,16 @@ var tryRecycleOverlay = function($overlay) {
     if (!$overlay.hasClass(class_overlayHovered) && !$overlay.hasClass(class_overlaySelected)) {
 
         $overlay.hide();
-        var $CU = $overlay.data('$CU');
+        var $MU = $overlay.data('$MU');
 
-        if ($CU) {
-            $CU.data('$overlay', null);
+        if ($MU) {
+            $MU.data('$overlay', null);
         }
         else {
-            console.warn("UnitsProj: Unexpected - overlay's associated CU NOT found!");
+            console.warn("UnitsProj: Unexpected - overlay's associated MU NOT found!");
         }
 
-        $overlay.data('$CU', null);
+        $overlay.data('$MU', null);
 
         $unusedOverlaysArray.push($overlay);
 
@@ -2606,12 +2624,12 @@ function onSearchBoxKeydown(e) {
             return false;
         }
         else  if (code === 13) { // Enter
-            updateCUsAndRelatedState();
+            updateMUsAndRelatedState();
             return false;
         }
         else if (code === 9) { // Tab
-            if ($CUsArray.length) {
-                selectCU(0, true, true);
+            if ($MUsArray.length) {
+                selectMU(0, true, true);
             }
             else {
                 var $focusables = $document.find(focusablesSelector);
@@ -2619,7 +2637,7 @@ function onSearchBoxKeydown(e) {
                     $focusables[0].focus();
                 }
             }
-            e.stopImmediatePropagation(); // otherwise the 'tab' is invoked on the CU, focusing the next element
+            e.stopImmediatePropagation(); // otherwise the 'tab' is invoked on the MU, focusing the next element
             return false;
         }
     }
@@ -2628,7 +2646,7 @@ function onSearchBoxKeydown(e) {
     // not executing the search related code multiple times while the user is typing the search string.
     timeout_search = setTimeout (function() {
 
-        updateCUsAndRelatedState();
+        updateMUsAndRelatedState();
 
     }, 400);
 }
@@ -2660,19 +2678,19 @@ function setupExternalSearchEvents() {
 
 function onDomReady() {
 
-    if ( globalSettings.selectCUOnLoad) {
+    if ( globalSettings.selectMUOnLoad) {
 
-        selectMostSensibleCU(true, false);
+        selectMostSensibleMU(true, false);
     }
 }
 
 function disableExtension() {
 
-    dehoverCU();
-    deselectCU();
-    $CUsArray = [];
+    dehoverMU();
+    deselectMU();
+    $MUsArray = [];
     $topLevelContainer.empty().remove();
-    $lastSelectedCU = null;
+    $lastSelectedMU = null;
 
     removeAllEventListeners();
 
@@ -2737,14 +2755,14 @@ function initializeForCurrentUrl() {
             if (urlData) {
                 destringifyFunctions(urlData);
             }
-            // the following line should remain outside the if condition so that the change from a url with CUs
+            // the following line should remain outside the if condition so that the change from a url with MUs
             // to one without any is correctly handled
-            updateCUsAndRelatedState();
-            setupKbdShortcuts();
+            updateMUsAndRelatedState();
+            setupShortcuts();
             setupHelpUIAndEvents();
 
-            if ( globalSettings.selectCUOnLoad) {
-                selectMostSensibleCU(true, false);
+            if ( globalSettings.selectMUOnLoad) {
+                selectMostSensibleMU(true, false);
             }
         }
     );
