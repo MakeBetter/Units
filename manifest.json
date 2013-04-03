@@ -10,7 +10,7 @@
     },
 
     "background": {
-        "scripts": ["common_scripts/commonHelper.js", "background_scripts/data/searchData.js",
+        "scripts": ["common/commonHelper.js", "background_scripts/data/searchData.js",
             "background_scripts/searchExternalSite.js",
             "background_scripts/data/unitsData.js", "background_scripts/mainBackgroundScript.js"]
     },
@@ -19,7 +19,7 @@
         {
             "matches": ["<all_urls>"],
 
-            "js": ["vendor/jquery-1.9.0.min.js", "vendor/mousetrap-modified.js", "common_scripts/commonHelper.js",
+            "js": ["vendor/jquery-1.9.0.min.js", "vendor/mousetrap-modified.js", "common/commonHelper.js",
                 "content_scripts/helper.js",
                 "content_scripts/mousetrapExtensions.js", "content_scripts/chromeAltHack.js",
                 "content_scripts/help.js", "content_scripts/selectFocusables.js",
