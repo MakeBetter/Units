@@ -149,13 +149,14 @@ var unitsData = {
             // the structure of this item matches that of MUs.MU_actions
             page_actions: {
                 "std_onMUSelection": {
-                    fn: function($selectedMU, document) {
+                    // NOTE: the urlData paratmenter is a deep clone the original
+                    fn: function($selectedMU, document, urlData) {
                         // this code will execute whenever a MU is selected
                     },
                     kbdShortcuts: null  // this is optional for standard items (i.e. ones prefixed with "std_")
                 },
                 "std_onMUDeselection": {
-                    fn: function($deselectedMU, document) {
+                    fn: function($deselectedMU, document, urlData) {
                         // this code will execute whenever a MU is deselected
                     }
                 }
@@ -217,7 +218,7 @@ var unitsData = {
                     "toggle-preview": {
                         kbdShortcuts: ["p"],
                         // this function is meant to work in conjunction with std_onMUDeselection (see below)
-                        fn: function($selectedMU, document) {
+                        fn: function($selectedMU, document, urlData) {
                             var $previewPane = $('#nycp');
                             // Closes any open preview on the page.
                             var closePreview = function() {
@@ -249,7 +250,7 @@ var unitsData = {
             },
             page_actions: {
                 "std_onMUDeselection": {
-                    fn: function($deselectedMU, document) {
+                    fn: function($deselectedMU, document, urlData) {
                         if ($('#nycp').is(':visible')) { // if the preview pane is already visible
                             var closePreviewBtn = document.getElementById("nycx");
                             closePreviewBtn &&  closePreviewBtn.click();
@@ -305,7 +306,7 @@ var unitsData = {
                     "upvote": {kbdShortcuts: ["u"],  specifier: ".arrow.up, .arrow.upmod" },
                     "downvote": {kbdShortcuts: ["d"],  specifier: ".arrow.down, .arrow.downmod" },
                     "share": {kbdShortcuts: ["s"],  specifier: ".share-button .active" },
-                    "edit": {kbdShortcuts: ["c"],  specifier: ".comments" },
+                    "comments": {kbdShortcuts: ["c"],  specifier: ".comments" },
                     "hide": {kbdShortcuts: ["h"],  specifier: ".hide-button" },
                     "report": {kbdShortcuts: ["r"],  specifier: ".report-button" },
                     "minimize": {kbdShortcuts: ["m"],  specifier: ".noncollapsed .expand" }
@@ -327,25 +328,7 @@ var unitsData = {
                     "upvote": {kbdShortcuts: ["u"],  specifier: ".arrow.up, .arrow.upmod" },
                     "downvote": {kbdShortcuts: ["d"],  specifier: ".arrow.down, .arrow.downmod" },
                     "share": {kbdShortcuts: ["s"],  specifier: ".share-button .active" },
-                    "edit": {kbdShortcuts: ["c"],
-                        fn: function($selectedMU, document) {
-                            var $el = $selectedMU.find(".flat-list.buttons .comments");
-                            var ctrlClickEvent = document.createEvent("MouseEvents");
-
-                            // detecting OS detection based on:
-                            // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
-                            if (isMac) {
-                                ctrlClickEvent.initMouseEvent("click", true, true, null,
-                                    0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
-                            }
-                            else {
-                                ctrlClickEvent.initMouseEvent("click", true, true, null,
-                                    0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
-                            }
-
-                            $el[0].dispatchEvent(ctrlClickEvent);
-                        }
-                    },
+                    "comments": {kbdShortcuts: ["c"], specifier: ".flat-list.buttons .comments"},
                     "hide": {kbdShortcuts: ["h"],  specifier: ".hide-button" },
                     "report": {kbdShortcuts: ["r"],  specifier: ".report-button" },
                     "save": {kbdShortcuts: ["v"], specifier: ".save-button a, .unsave-button a.togglebutton"}
@@ -462,26 +445,7 @@ var unitsData = {
 
             },
             MU_miscUnits: {
-                "comment": {
-                    kbdShortcuts: ["c"],
-                    fn: function($selectedMU, document) {
-                        var $el = $selectedMU.find("a:contains('comment'), a:contains('discuss')");
-                        var ctrlClickEvent = document.createEvent("MouseEvents");
-
-                        // detecting OS detection based on:
-                        // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
-                        if (isMac) {
-                            ctrlClickEvent.initMouseEvent("click", true, true, null,
-                                0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
-                        }
-                        else {
-                            ctrlClickEvent.initMouseEvent("click", true, true, null,
-                                0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
-                        }
-
-                        $el[0].dispatchEvent(ctrlClickEvent);
-                    }
-                }
+                "comments": {kbdShortcuts: ["c"], specifier: "a:contains('comment'), a:contains('discuss')"}
             }
         }
     }

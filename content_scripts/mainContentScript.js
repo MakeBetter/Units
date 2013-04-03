@@ -349,7 +349,7 @@ var selectMU = function(MUOrItsIndex, setFocus, adjustScrolling, options) {
         var fn_onMUSelection;
         if (urlData.actions && urlData.actions.std_onMUSelection && (fn_onMUSelection = urlData.actions.std_onMUSelection.fn)) {
             mutationObserver.disconnect();
-            fn_onMUSelection($MU, document);
+            fn_onMUSelection($MU, document, $.extend(true, {}, urlData)); // third param is a deep clone
             mutationObserver.observe(document, mutationObserverConfig);
         }
     }
@@ -379,7 +379,7 @@ var deselectMU = function (options) {
             var fn_onMUDeselection;
             if (urlData.actions && urlData.actions.std_onMUDeselection && (fn_onMUDeselection = urlData.actions.std_onMUDeselection.fn)) {
                 mutationObserver.disconnect();
-                fn_onMUDeselection($MU, document);
+                fn_onMUDeselection($MU, document, $.extend(true, {}, urlData)); // third param is a deep clone
                 mutationObserver.observe(document, mutationObserverConfig);
             }
         }
@@ -2227,7 +2227,8 @@ function _invokeAction (fn, scope) {
     if (scope === "MU" && !$selectedMU) {
         return;
     }
-    fn($selectedMU, document);
+    var urlDataDeepCopy =  $.extend(true, {}, urlData);
+    fn($selectedMU, document, urlDataDeepCopy);
 }
 
 /**
