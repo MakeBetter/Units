@@ -10,9 +10,9 @@
     },
 
     "background": {
-        "scripts": ["common_scripts/commonHelper.js", "background_scripts/searchData.js",
+        "scripts": ["common_scripts/commonHelper.js", "background_scripts/data/searchData.js",
             "background_scripts/searchExternalSite.js",
-            "background_scripts/unitsData.js", "background_scripts/mainBackgroundScript.js"]
+            "background_scripts/data/unitsData.js", "background_scripts/mainBackgroundScript.js"]
     },
 
     "content_scripts": [

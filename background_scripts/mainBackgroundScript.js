@@ -76,7 +76,7 @@ xhr.onload = function(e) {
     publicSuffixMap =  getPublicSuffixMap(xhr.response);
 };
 
-xhr.open('GET', 'data/public_suffix_list.txt', true);
+xhr.open('GET', 'background_scripts/data/public_suffix_list.txt', true);
 xhr.send();
 
 
