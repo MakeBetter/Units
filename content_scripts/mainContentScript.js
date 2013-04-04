@@ -1,7 +1,7 @@
 /* NOTES
-1)  A lot of modern web pages are comprised of a set of units that we refer to as the "main units" (MUs) of the page.
-    E.g. on google search results page the MUs would be the set of results. The each individual MU is a logical unit of 
-    attention/navigation/access. Each MU can consist of one or more DOM elements.
+1)  A lot of web pages, especially the modern ones, are comprised of a set of units that we refer to as the "main units"
+    (MUs) of the page. E.g. on a google search results page the MUs would be the set of results. The each individual MU is
+    a logical unit of attention/navigation/access. Each MU can consist of one or more DOM elements.
 
 2)  Elements that can receive focus on the current page are called the "focusables"
 
@@ -1519,7 +1519,7 @@ var processMUsArray = function($MUsArr) {
 
     for (var i = 0; i < MUsArrLen; ++i) {
         var $MU = $MUsArr[i];
-        if ( (!$MU.is(':visible') && !$MU.hasClass('hiddenByMUsExtn')) || isMUInvisible($MU)) {
+        if ( (!$MU.is(':visible') && !$MU.hasClass('hiddenByUnitsProj')) || isMUInvisible($MU)) {
             $MUsArr.splice(i, 1);
             --MUsArrLen;
             --i;
@@ -1813,8 +1813,8 @@ function filterMUsArray($MUsArr) {
     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
 
     if (!searchTextLowerCase) {
-        var $MUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByMUsExtn');
-        $MUsHiddenByPriorFiltering.removeClass('hiddenByMUsExtn').show();
+        var $MUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
+        $MUsHiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
 
     }
     else {
@@ -1826,14 +1826,14 @@ function filterMUsArray($MUsArr) {
             // if ($MU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
             if (highlightInMU($MU, searchTextLowerCase)) {
 
-                //if ($MU.hasClass('hiddenByMUsExtn')) {
+                //if ($MU.hasClass('hiddenByUnitsProj')) {
 
-                $MU.show().removeClass('hiddenByMUsExtn');
+                $MU.show().removeClass('hiddenByUnitsProj');
                 //}
             }
             else {
                 //if ($MU.is(':visible')) {
-                $MU.hide().addClass('hiddenByMUsExtn');
+                $MU.hide().addClass('hiddenByUnitsProj');
                 $MUsArr.splice(i, 1);
                 --MUsArrLen;
                 --i;
@@ -1875,15 +1875,15 @@ function filterMUsArray($MUsArr) {
     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
 
     if (!searchTextLowerCase) {
-//        var $MUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByMUsExtn');
-//        $MUsHiddenByPriorFiltering.removeClass('hiddenByMUsExtn').show();
+//        var $MUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
+//        $MUsHiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
 
         $closestAncestor.hide();  // for efficiency: remove from the render tree first
 
         for (var i = 0; i < MUsArrLen; ++i) {
             var $MU = $MUsArr[i];
-            if ($MU.data('hiddenByMUsExtn')) {
-                $MU.show().data('hiddenByMUsExtn', false);
+            if ($MU.data('hiddenByUnitsProj')) {
+                $MU.show().data('hiddenByUnitsProj', false);
             }
         }
 
@@ -1901,16 +1901,16 @@ function filterMUsArray($MUsArr) {
 //            if ($MU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
             if (highlightInMU($MU, searchTextLowerCase)) {
 
-                //if ($MU.hasClass('hiddenByMUsExtn')) {
+                //if ($MU.hasClass('hiddenByUnitsProj')) {
 
-//                $MU.removeClass('hiddenByMUsExtn');
-                $MU.data('hiddenByMUsExtn', false);
+//                $MU.removeClass('hiddenByUnitsProj');
+                $MU.data('hiddenByUnitsProj', false);
                 //}
             }
             else {
                 //if ($MU.is(':visible')) {
-//                $MU.addClass('hiddenByMUsExtn');
-                $MU.data('hiddenByMUsExtn', true);
+//                $MU.addClass('hiddenByUnitsProj');
+                $MU.data('hiddenByUnitsProj', true);
 
 
                 //}
@@ -1921,7 +1921,7 @@ function filterMUsArray($MUsArr) {
     $closestAncestor.hide();  // for efficiency: remove from the render tree first
     for (var i = 0, $MU; i < MUsArrLen; ++i) {
         $MU = $MUsArr[i];
-        if ($MU.data('hiddenByMUsExtn')) {
+        if ($MU.data('hiddenByUnitsProj')) {
             $MU.hide();
             $MUsArr.splice(i, 1);
             --MUsArrLen;
@@ -2106,11 +2106,11 @@ function _setupBrowserActionShortcuts() {
     bind(browserActionShortcuts.scrollUp, scrollUp);
     bind(browserActionShortcuts.closeTab, closeTab);
 
-    bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
-    bind(['alt+q'], function() {console.log(' alt q');});
-    bind(['alt+4'], function() {console.log(' alt 4');});
-    bind(['alt+space+g'], function() {console.log(' alt space g');});
-    bind(['shift+q'], function() {console.log('shift q');});
+//    bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
+//    bind(['alt+q'], function() {console.log(' alt q');});
+//    bind(['alt+4'], function() {console.log(' alt 4');});
+//    bind(['alt+space+g'], function() {console.log(' alt space g');});
+//    bind(['shift+q'], function() {console.log('shift q');});
 //    bind(['q'], function() {console.log('q')});
 
     // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke Mousetrap.reset()
@@ -2123,7 +2123,7 @@ var generalShortcuts = {
     nextMU: ['j', '`', 'down'],
     prevMU: ['k', 'shift+`', 'up'],
     search: ['/', 'ctrl+shift+f', 'command+shift+f'],
-    firstMU: ['^', 'alt+1'], // TODO: check if ding sound on alt can be zfixed
+    firstMU: ['^', 'alt+1'],
     lastMU: ['$', 'alt+9', 'alt+0'],
     showHelp: ['alt+h', 'alt+?'],
     open: ['shift+o', 'alt+o'],  // alt+o allows invoking only with one hand (at least in windows)
@@ -2748,15 +2748,16 @@ function initializeExtension() {
     initializeForCurrentUrl();
 }
 
+// initializes parts of the program that are based on unitsData/urlData
 function initializeForCurrentUrl() {
     chrome.extension.sendMessage({
             message: "getUrlData",
             locationObj: window.location
 
         },
-        function(response) {
-            urlData = response;
-            if (urlData) {
+        function(urlDataResponse) {
+            if (urlDataResponse) {
+                urlData = urlDataResponse; // assign to global var
                 destringifyFunctions(urlData);
             }
             // the following line should remain outside the if condition so that the change from a url with MUs
