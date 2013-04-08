@@ -15,7 +15,6 @@ function setupHelpUIAndEvents() {
     document.addEventListener('keydown', onEscapeKeyDownOnHelp, true);
 
 }
-//TODO: !!NOTE!! !!!!!@#@#@$#% When implementing the Help Page, remember to use the global object overriddenValuesFor_stdUrlDataItems !#$$$$$$$$$$$$$$
 
 function setupHelpUI() {
 
