@@ -59,34 +59,87 @@ function destringifyFunctions(obj) {
     }
 }
 
+// Converts any "shorthand" notations within the UrlData to their "expanded" forms.
+// Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in UrlData
+function expandUrlData(UrlData) {
+
+    // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
+    // 'selector' that points to the string instead.
+    var expandPropertyToObjIfString = function(obj, key) {
+        var str;
+        if (typeof (str = obj[key]) === "string") {
+            obj[key] = {
+                selector: str
+            };
+        }
+    };
+
+    // uses defaultValuesFor_stdUrlDataItems to supplement values in the MU/action (specified using the first two params)
+    // 'scope' can be either "page" or "CUs"
+    var supplementWithDefaultValues = function(MUorAction, MUOrAction_Name, scope) {
+
+        var temp;
+        if (!MUorAction.kbdShortcuts && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
+            MUorAction.kbdShortcuts = temp.kbdShortcuts;
+        }
+        if (!MUorAction.miniDescr && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
+            MUorAction.miniDescr = temp.miniDescr;
+        }
+    };
+
+    // scope can be either "page" or "CUs"
+    var expandMUsOrActions = function(MUsOrActions, scope) {
+        if (typeof MUsOrActions === "object") {
+            for (var MUOrAction_Name in MUsOrActions) {
+                expandPropertyToObjIfString(MUsOrActions, MUOrAction_Name);
+                supplementWithDefaultValues(MUsOrActions[MUOrAction_Name], MUOrAction_Name, scope);
+            }
+        }
+    };
+
+    expandPropertyToObjIfString(UrlData, 'CUs_specifier');
+
+    expandMUsOrActions(UrlData.CUs_MUs, "CUs");
+    expandMUsOrActions(UrlData.CUs_actions, "CUs");
+
+    expandMUsOrActions(UrlData.page_MUs, "page");
+    expandMUsOrActions(UrlData.page_actions, "page");
+
+}
+
+function processUrlData(UrlData) {
+    expandUrlData(UrlData);
+    destringifyFunctions(UrlData);
+}
+
 function suppressEvent(e) {
     e.stopImmediatePropagation();
     e.preventDefault();
 }
 
 /**
- * Returns true if all (top most) constituents of $MU have css 'visibility' style equal to "hidden"
- * @param $MU
+ * Returns true if all (top most) constituents of $CU have css 'visibility' style equal to "hidden"
+ * @param $CU
  * @return {Boolean}
  */
-function isMUInvisible($MU) {
+function isCUInvisible($CU) {
 
-  for (var i = 0; i < $MU.length; ++i) {
-      if ($MU.eq(i).css('visibility') !== "hidden") {
+  for (var i = 0; i < $CU.length; ++i) {
+      if ($CU.eq(i).css('visibility') !== "hidden") {
           return false;
       }
   }
   return true;
 }
 
-// returns true if any part of $MU is in the viewport, false otherwise
-function isMUInViewport($MU) {
+// returns true if any part of $CU is in the viewport, false otherwise
+function isCUInViewport($CU) {
 
-    // for the MU
-    var boundingRect = getBoundingRectangle($MU),
-        MUTop = boundingRect.top,
-        MUHeight = boundingRect.height,
-        MUBottom = MUTop + MUHeight;
+    // for the CU
+    var boundingRect = getBoundingRectangle($CU),
+        CUTop = boundingRect.top,
+        CUHeight = boundingRect.height,
+        CUBottom = CUTop + CUHeight;
 
     var // for the window:
         winTop = $document.scrollTop(),
@@ -95,8 +148,8 @@ function isMUInViewport($MU) {
         winBottom = winTop + winHeight;
 
 
-    return ( (MUTop > winTop && MUTop < winBottom) ||
-        (MUBottom > winTop && MUBottom < winBottom) );
+    return ( (CUTop > winTop && CUTop < winBottom) ||
+        (CUBottom > winTop && CUBottom < winBottom) );
 }
 
 function changeFontSize($jQuerySet, isBeingIncreased) {
@@ -108,10 +161,10 @@ function changeFontSize($jQuerySet, isBeingIncreased) {
         var $el = $jQuerySet.eq(i);
         var font = $el.css('font-size');
         var numericVal = parseFloat(font);
-        var MU = font.substring(numericVal.toString().length);
+        var CU = font.substring(numericVal.toString().length);
 
         var newNumericVal = isBeingIncreased?(numericVal+2): (numericVal-2);
-        $el.css('font-size', newNumericVal+MU);
+        $el.css('font-size', newNumericVal+CU);
 
     }
 }
@@ -168,12 +221,12 @@ function checkOverlayCssHasTransition() {
  3) converted from jQuery plugin to a regular function; main since we want num of highlights made to be
  returned
  4) <removed> Only searches within visible elements. Since numHighlights is required by the calling function to
- detect if a MU should be counted as a match or not. Also helps with efficiency.
+ detect if a CU should be counted as a match or not. Also helps with efficiency.
  5) Other minor optimizations
  6) Added comments
  */
 
-function highlightInMU($MU, pattern) {
+function highlightInCU($CU, pattern) {
 
     var numHighlighted = 0, // count of how many items were highlighted
         patternLowerCase = pattern && pattern.toLowerCase();
@@ -221,8 +274,8 @@ function highlightInMU($MU, pattern) {
     };
 
 
-    if ($MU.length && patternLowerCase && patternLowerCase.length) {
-        $MU.each(function() {
+    if ($CU.length && patternLowerCase && patternLowerCase.length) {
+        $CU.each(function() {
             innerHighlight(this);
         });
     }

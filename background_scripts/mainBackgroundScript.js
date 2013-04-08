@@ -5,8 +5,8 @@ chrome.extension.onMessage.addListener(
 
             var sendResponseWhenReady = function() {
                 if (publicSuffixMap) {
-                    var urlData = getUrlData(request.locationObj);
-                    sendResponse(urlData);
+                    var UrlData = getUrlData(request.locationObj);
+                    sendResponse(UrlData);
                 }
                 else {
                     setTimeout(sendResponseWhenReady, 100);
@@ -189,18 +189,18 @@ var  getUrlData = function(locationObj) {
     }
 
     var domain = getMainDomain(locationObj);
-    var urlData = getUrlDataUsingDomainKey(domain, locationObj);
+    var UrlData = getUrlDataUsingDomainKey(domain, locationObj);
 
-    if (!urlData) {
+    if (!UrlData) {
         var masterDomainKey = getMasterDomainKey(domain);
         if (masterDomainKey) {
-            urlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
+            UrlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
         }
     }
 
-    if (urlData) {
-        stringifyFunctions(urlData);
-        return urlData;
+    if (UrlData) {
+        stringifyFunctions(UrlData);
+        return UrlData;
     }
     else {
         // TODO: Url data not found; anything else to be done?
@@ -233,25 +233,25 @@ function stringifyFunctions(obj) {
 
 var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
 
-    var urlDataArr = unitsData[domainKey];
+    var UrlDataArr = unitsData[domainKey];
 
-    if (!urlDataArr) {
+    if (!UrlDataArr) {
         return false;
     }
 
-    while (typeof urlDataArr === "string") {
-        urlDataArr = unitsData[urlDataArr];
+    while (typeof UrlDataArr === "string") {
+        UrlDataArr = unitsData[UrlDataArr];
     }
 
-    if (!Array.isArray(urlDataArr)) {
-        urlDataArr = [urlDataArr];
+    if (!Array.isArray(UrlDataArr)) {
+        UrlDataArr = [UrlDataArr];
     }
 
-    var urlDataArrLen = urlDataArr.length;
-    for (var i = 0; i < urlDataArrLen; ++i) {
+    var UrlDataArrLen = UrlDataArr.length;
+    for (var i = 0; i < UrlDataArrLen; ++i) {
 
-        var urlData = urlDataArr[i],
-            regexpsToTest = getCombinedRegexps(urlData),
+        var UrlData = UrlDataArr[i],
+            regexpsToTest = getCombinedRegexps(UrlData),
             currentUrl = locationObj.href,
             protocolSeparator = "://", // to strip the leading http:// or https:// etc.
             strippedUrlBeginIndex = currentUrl.indexOf(protocolSeparator) + protocolSeparator.length,
@@ -262,7 +262,7 @@ var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
 
                 regexp = regexpsToTest[j];
                 if (regexp.test(strippedUrl)) {
-                    return urlData;
+                    return UrlData;
                 }
             }
 
@@ -285,11 +285,11 @@ var getMasterDomainKey = function(domain) {
 
 
 // returns an array combining these two sets of regexps:
-// 1) regexps corresponding to the 'urlPatterns' property of the urlData object
-// 2) regexps directly specified using the 'urlRegexps' property of the urlData object
-var getCombinedRegexps = function(urlData) {
-    var urlPatterns = urlData.urlPatterns,
-        urlRegexps = urlData.urlRegexps,
+// 1) regexps corresponding to the 'urlPatterns' property of the UrlData object
+// 2) regexps directly specified using the 'urlRegexps' property of the UrlData object
+var getCombinedRegexps = function(UrlData) {
+    var urlPatterns = UrlData.urlPatterns,
+        urlRegexps = UrlData.urlRegexps,
         combinedRegexps = [];
 
     if (urlPatterns) {

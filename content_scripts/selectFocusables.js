@@ -22,11 +22,11 @@ function onKeydown_selectFocusable (e) {
 
 // Focuses next/prev focusable beginning with the specified char. If beginningChar is not specified/null, it selects
 // the next/prev focusable WITHOUT any text (useful for cycling through non-textual links, buttons etc)
-// If a MU is selected, this is applies only within it, else on the whole page
+// If a CU is selected, this is applies only within it, else on the whole page
 function selectFocusable(nextOrPrev, beginningChar) {
 
-    var $selectedMU = $MUsArray[selectedMUIndex];
-    var $scope =  $selectedMU || $document;
+    var $selectedCU = $CUsArray[selectedCUIndex];
+    var $scope =  $selectedCU || $document;
 
     
     var elementMatches = function(element) {
@@ -57,8 +57,8 @@ function selectFocusable(nextOrPrev, beginningChar) {
 
             activeEl = document.activeElement;
 
-        //if scope is the currently selected MU and the active element lies within it
-        if ( ($scope === $selectedMU && getEnclosingMUIndex(activeEl) === selectedMUIndex) ||
+        //if scope is the currently selected CU and the active element lies within it
+        if ( ($scope === $selectedCU && getEnclosingCUIndex(activeEl) === selectedCUIndex) ||
             ($scope === $document)) {
 
             focusedElementInScope = activeEl;
