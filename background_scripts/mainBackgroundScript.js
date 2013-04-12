@@ -38,7 +38,7 @@ function closeCurrentTab() {
 var xhr = new XMLHttpRequest();
 var publicSuffixMap;
 
-var getPublicSuffixMap = function(publicSuffixStr) {
+function getPublicSuffixMap(publicSuffixStr) {
 
     var publicSuffixMap = {};
 
@@ -69,7 +69,7 @@ var getPublicSuffixMap = function(publicSuffixStr) {
     }
 //    console.log(publicSuffixMap);
     return publicSuffixMap;
-};
+}
 
 
 xhr.onload = function(e) {
@@ -83,7 +83,7 @@ xhr.send();
 
 // Returns the topmost "registrable" domain, based on the public suffix list, converted to all lowercase
 // letters for the sake of consistency, since domain names are case insensitive
-var getMainDomain = function(locationObj) {
+function getMainDomain(locationObj) {
     var mainDomain = _getMainDomain(locationObj);
     if (typeof mainDomain === "string") {
         return mainDomain.toLowerCase();
@@ -91,7 +91,7 @@ var getMainDomain = function(locationObj) {
     else {
         return mainDomain;
     }
-};
+}
 
 /**
  * Returns the topmost "registrable" domain, based on the public suffix list
@@ -105,7 +105,7 @@ var getMainDomain = function(locationObj) {
  * Similarly, for the domain, "en.wikipedia.org", "wikipedia.org" is the registrable domain
  *
  */
-var _getMainDomain = function(locationObj) {
+function _getMainDomain(locationObj) {
     var domain = locationObj.hostname,
         domainTokens = domain.split("."),   // "data.gov.ac" -> ["data", "gov", "ac"]
         domainTokensLen = domainTokens.length,
@@ -151,12 +151,12 @@ var _getMainDomain = function(locationObj) {
         }
     }
 
-};
+}
 
 // Returns true if domain tokens match all the suffix tokens, else false.
 // The rules regarding tokens containing "*" or "!" are followed as applicable to the public suffix list specification.
 // E.g. domain tokens ["images", "google", "co", "in"] will match the suffix tokens ["co", "in"], but not ["com", "in"]
-var domainMatchesSuffix = function(domainTokens, suffixTokens) {
+function domainMatchesSuffix(domainTokens, suffixTokens) {
     suffixTokens = suffixTokens.slice(0); //clone array because we don't want to change original array
 
     var suffixTokensLen = suffixTokens.length,
@@ -180,9 +180,9 @@ var domainMatchesSuffix = function(domainTokens, suffixTokens) {
     }
 
     return true;
-};
+}
 
-var  getUrlData = function(locationObj) {
+function getUrlData(locationObj) {
 
     if (!locationObj) {
         return null;
@@ -207,7 +207,7 @@ var  getUrlData = function(locationObj) {
         return null;
     }
 
-};
+}
 
 // Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
 // (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
@@ -231,7 +231,7 @@ function stringifyFunctions(obj) {
     }
 }
 
-var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
+function getUrlDataUsingDomainKey(domainKey, locationObj) {
 
     var UrlDataArr = unitsData[domainKey];
 
@@ -268,10 +268,10 @@ var getUrlDataUsingDomainKey = function(domainKey, locationObj) {
 
     }
     return false;
-};
+}
 
 // returns the master domain-key for the specified domain, if one can be found
-var getMasterDomainKey = function(domain) {
+function getMasterDomainKey(domain) {
 
     var len = specialDomain_masterDomain_map.length;
     for (var i = 0, currentObj; i < len; ++i) {
@@ -281,13 +281,12 @@ var getMasterDomainKey = function(domain) {
 
         }
     }
-};
-
+}
 
 // returns an array combining these two sets of regexps:
 // 1) regexps corresponding to the 'urlPatterns' property of the UrlData object
 // 2) regexps directly specified using the 'urlRegexps' property of the UrlData object
-var getCombinedRegexps = function(UrlData) {
+function getCombinedRegexps(UrlData) {
     var urlPatterns = UrlData.urlPatterns,
         urlRegexps = UrlData.urlRegexps,
         combinedRegexps = [];
@@ -313,7 +312,34 @@ var getCombinedRegexps = function(UrlData) {
 
     return combinedRegexps;
 
-};
+}
+
+
+/**
+ * Returns the regexp object corresponding the to the url pattern supplied.
+ * @param {String} urlPattern This is a string that can contain '*'s and @'s as "wildcards":
+ - A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
+ - A '*' matches any combination of *one or more* characters of *ANY* type.)
+ * @return {RegExp}
+ */
+function urlPatternToRegexp(urlPattern) {
+
+    // get the corresponding "regular expression escaped" string.
+    var regexpStr = urlPattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    // replacing all instances of '\*' (to which '*'s would have been converted above) by the regexp equivalent
+    // to match any combination of zero or more characters of any type
+    regexpStr = regexpStr.replace(/\\\*/g, '.+');
+
+    // replacing all instances of '@' by the regexp equivalent to match any combination of one or more
+    // alphanumeric characters,  dashes, underscores and commas.
+    regexpStr = regexpStr.replace(/@/g, '[a-z\\-_,]+');
+
+    regexpStr = "^" + regexpStr + "$";
+
+    return new RegExp(regexpStr);
+
+}
 
 chrome.commands.onCommand.addListener(function(command) {
     console.log('Command:', command);
