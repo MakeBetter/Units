@@ -1,4 +1,4 @@
-_u.mod_core = (function($, CONSTS, mod_mutationObserver) {
+_u.mod_core = (function($, mod_mutationObserver, CONSTS) {
     "use strict";
 
     var thisModule = $.extend({}, _u.mod_events, {
@@ -23,6 +23,6 @@ _u.mod_core = (function($, CONSTS, mod_mutationObserver) {
     thisModule.listenTo(mod_mutationObserver, 'dom-mutations', eh_ensureTopLevelContainerIsInDom);
 
     return thisModule;
-})(jQuery, _u.CONSTS, _u.mod_mutationObserver);
+})(jQuery, _u.mod_mutationObserver, _u.CONSTS);
 
 

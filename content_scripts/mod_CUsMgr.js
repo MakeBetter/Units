@@ -2,14 +2,14 @@
 
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) {
+_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, CONSTS) {
     "use strict";
 
     var thisModule = $.extend({}, _u.mod_events, {
 
+        $selectedCU: null,
 //        selectNext: selectNext,
 //        selectPrev: selectPrev,
-//        //updateCUs: updateCUs,
 
     });
 
@@ -55,11 +55,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
         $topLevelContainer = mod_core.$topLevelContainer,
 
         // This class should be applied to all elements added by this extension.
-        class_addedByUnitsProj = _u.CONSTS.class_addedByUnitsProj,
+        class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
 
-        class_overlay = "CU-overlay",                     // class applied to all CU overlays
-        class_overlaySelected = "CU-overlay-selected",    // class applied to overlay on a selected CU
-        class_overlayHovered = "CU-overlay-hovered",      // class applied to overlay on a hovered CU
+        class_CUoverlay = "CU-overlay",                     // class applied to all CU overlays
+        class_CUSelectedOverlay = "CU-overlay-selected",    // class applied to overlay on a selected CU
+        class_CUHoveredOverlay = "CU-overlay-hovered",      // class applied to overlay on a hovered CU
         $unusedOverlaysArray = [],   // to enable reusing existing unused overlays
 
         expandedUrlData,
@@ -246,7 +246,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
      * @param {object} options
      */
     var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
-        console.log('selectCU() called');
+//        console.log('selectCU() called');
         var $CU,
             indexOf$CU; // index in $CUsArray
 
@@ -351,7 +351,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
         var $overlay = $CU.data('$overlay');
 
         if ($overlay) {
-            $overlay.removeClass(type === 'selected'? class_overlaySelected: class_overlayHovered);
+            $overlay.removeClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay);
 
             if (!overlayCssHasTransition) {
                 tryRecycleOverlay($overlay);
@@ -381,7 +381,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
                 $overlay = $unusedOverlaysArray.shift();
             }
             else {
-                $overlay = $('<div></div>').addClass(class_overlay).addClass(class_addedByUnitsProj);
+                $overlay = $('<div></div>').addClass(class_CUoverlay).addClass(class_addedByUnitsProj);
             }
         }
 
@@ -404,12 +404,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
         }
 
         if (type === 'selected') {
-            $overlay.addClass(class_overlaySelected);
+            $overlay.addClass(class_CUSelectedOverlay);
 //        $overlay.css('box-shadow', '2px 2px 20px 0px #999');
 
         }
         else { // 'hovered'
-            $overlay.addClass(class_overlayHovered);
+            $overlay.addClass(class_CUHoveredOverlay);
 //        $overlay.css('box-shadow', '1px 1px 10px 0px #bbb');
         }
 
@@ -1555,7 +1555,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
         // on overlay elements, and then quickly removed.
         var $tempOverlay = $('<div></div>')
             .addClass(class_addedByUnitsProj)
-            .addClass(class_overlay)
+            .addClass(class_CUoverlay)
             .hide()
             .appendTo(document.body);
         var properties = ['transition-duration', '-webkit-transition-duration', '-moz-transition-duration',
@@ -2319,7 +2319,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
 // handler for whenever an element on the page receives focus
 // (and thereby a handler for focus-change events)
     var onFocus = function(e) {
-        console.log('!!!!!on focus called');
+        //console.log('on focus called');
         var el = e.target, $el;
         elementToScroll = el; // update global variable used by scrollDown()/scrollUp()
 //
@@ -2497,7 +2497,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
 
         var $overlay = $(e.target);
 
-//  console.log('overlay transition ended. total overlays = ', $('.' + class_overlay).length);
+//  console.log('overlay transition ended. total overlays = ', $('.' + class_CUoverlay).length);
         tryRecycleOverlay($overlay);
 
     };
@@ -2509,12 +2509,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
      */
     var tryRecycleOverlay = function($overlay) {
 
-        if (!$overlay.hasClass(class_overlay)) {
-            console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_overlay + "'");
+        if (!$overlay.hasClass(class_CUoverlay)) {
+            console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_CUoverlay + "'");
         }
 
         // check if the overlay is both in deselected and dehovered states
-        if (!$overlay.hasClass(class_overlayHovered) && !$overlay.hasClass(class_overlaySelected)) {
+        if (!$overlay.hasClass(class_CUHoveredOverlay) && !$overlay.hasClass(class_CUSelectedOverlay)) {
 
             $overlay.hide();
             var $CU = $overlay.data('$CU');
@@ -2690,7 +2690,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
 
         if (overlayCssHasTransition) {
             $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
-                '.' + class_overlay, onTransitionEnd);
+                '.' + class_CUoverlay, onTransitionEnd);
         }
 
         mod_mutationObserver.start();
@@ -3024,7 +3024,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
         // on overlay elements, and then quickly removed.
         var $tempOverlay = $('<div></div>')
             .addClass(class_addedByUnitsProj)
-            .addClass(class_overlay)
+            .addClass(class_CUoverlay)
             .hide()
             .appendTo(document.body);
         var properties = ['transition-duration', '-webkit-transition-duration', '-moz-transition-duration',
@@ -3237,6 +3237,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack) 
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_chromeAltHack);
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_chromeAltHack, _u.CONSTS);
 
 

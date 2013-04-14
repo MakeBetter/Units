@@ -22,7 +22,7 @@
  */
 
 if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-    _u.mod_chromeAltHack = (function($, mod_core, CONSTS, mod_mutationObserver) {
+    _u.mod_chromeAltHack = (function($, mod_core, mod_mutationObserver, CONSTS) {
         "use strict";
 
         var thisModule = $.extend({}, _u.mod_events, {
@@ -179,6 +179,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
         return thisModule;
 
-    })(jQuery, _u.mod_core, _u.CONSTS, _u.mod_mutationObserver);
+    })(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.CONSTS);
 }
 

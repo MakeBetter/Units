@@ -5,9 +5,9 @@ _u.CONSTS = {};
     // properties defined in this object will be set as read-only properties of the global _u.CONSTS object
     var CONSTS = {
 
-        /* This class should be applied to all elements added by this extension. This is used to distinguish DOM mutation
-        events caused by them from the those of the page's own elements. This is also a "responsible" thing since it marks
-        out clearly elements added by this code to the DOM (for anyone looking at DOM, page source etc) */
+        /* This class should be applied to all elements added by this extension. Apart from generally being a sensible/
+        responsible thing to do, we need to do this to distinguish DOM changes due to these elements (which we don't usually care about) from the other DOM changes on the page.
+        */
         class_addedByUnitsProj: 'added-by-UnitsProj',
 
     };

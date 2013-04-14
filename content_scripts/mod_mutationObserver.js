@@ -15,7 +15,7 @@
  * calls to it as well. Remove those and communicate using events instead. Remove this note, when this is done.
  * ////////////////////
  */
-_u.mod_mutationObserver = (function($, mod_core, CONSTS, mod_chromeAltHack) {
+_u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
     "use strict";
 
     var thisModule = $.extend({}, _u.mod_events, {
@@ -157,4 +157,4 @@ _u.mod_mutationObserver = (function($, mod_core, CONSTS, mod_chromeAltHack) {
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.CONSTS, _u.mod_chromeAltHack);
+})(jQuery, _u.mod_core, _u.mod_chromeAltHack, _u.CONSTS);
