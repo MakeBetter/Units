@@ -32,38 +32,44 @@
     foo() instead of  thisModule.foo()). This makes it easier to change a function's type (from private to public, or
     vice-versa) when required.
  - Event handlers
-    * Any functions (even if technically "private") that are event handlers should be prefixed with 'eh_'
-    * These will be invoked by external code (indirectly) and will be passed a specific number and type of arguments
-    depending on the type of the external event they handle. So, they should be considered a part of the "public
-    interface" of the module, along with the `thisModule` object. (And anything that is part of the public interface
-    should stand out clearly, so that it can be handled properly while refactoring.)
+    Each module can have event handlers for external events. For the sake of better organization, as well as self
+    documenting code, all event bindings should be done near top of the module's definition (when possible).
  */
 
 // A template for modules in this project
-_u.mod_moduleName = (function($) {
+_u.mod_moduleName = (function($/*, mod_1*/) {
     "use strict";
 
+    /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_events, {
-
-        // public methods:
-        // func_foo: func_foo,
-        // func_bar: func_bar
-
+        func_foo: func_foo
     });
 
-//    var value = 5; // private
+//  /*-- Event bindings --*/
+//  thisModule.listenTo(mod_1, "eventA", _onEventA);
+//  thisModule.listenTo(mod_1, "eventA", _onEventA);
+
+    /*-- Module implementation --*/
+    var value = 5; // private
+
+    // public function
+    function func_foo() {
+        //_func1();
+    }
+
+    // private function
+    function _func1() {
+      value++;
+      console.log(value);
+    }
+
+//  function _onEventA() {
 //
-//    // public function
-//    function func_foo() {
-//        _func1();
-//    }
+//  }
+//  function _onEventB() {
 //
-//    // private function
-//    function _func1() {
-//        value++;
-//        console.log(value);
-//    }
+//  }
 
     return thisModule;
 
-})(jQuery);
+})(jQuery/*, mod_1*/);    // pass as input external modules that this modules depends on

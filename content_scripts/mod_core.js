@@ -1,6 +1,7 @@
 _u.mod_core = (function($, mod_mutationObserver, CONSTS) {
     "use strict";
 
+    /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_events, {
 
         /* This is used as a container for elements created by this program that we add to the page's DOM. (Technically,
@@ -10,17 +11,21 @@ _u.mod_core = (function($, mod_mutationObserver, CONSTS) {
         $topLevelContainer: $('<div></div>').addClass(CONSTS.class_addedByUnitsProj),
     });
 
+    /*-- Event bindings --*/
+    // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
+    // time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutation', _ensureTopLevelContainerIsInDom);
+
+    /*-- Module implementation --*/
     // Checks if document.body contains the $topLevelContainer element, and appends it to the body if it doesn't.
-    function eh_ensureTopLevelContainerIsInDom() {
+    function _ensureTopLevelContainerIsInDom() {
         if (!document.body.contains(thisModule.$topLevelContainer[0])) {
 //        console.log('appending $topLevelContainer to body');
             thisModule.$topLevelContainer.appendTo(document.body);
 
         }
     }
-    // the following code has been put in because ,in theory, JS code on a page can replace the body element with a new one
-    // at run time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutations', eh_ensureTopLevelContainerIsInDom);
+
 
     return thisModule;
 })(jQuery, _u.mod_mutationObserver, _u.CONSTS);

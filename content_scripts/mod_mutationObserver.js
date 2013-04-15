@@ -3,8 +3,8 @@
  * Detects changes in the DOM/url and triggers events in response.
  *
  * Events triggered:
- * 'dom-mutations' args passed: mutations
- * 'grouped-dom-mutations' args passed: mutations
+ * 'dom-mutation' args passed: mutations
+ * 'dom-mutations-grouped' args passed: mutations
  * 'url-change' args passed: new-url, old-url
  *
  * Dependencies:
@@ -18,21 +18,17 @@
 _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
     "use strict";
 
+    /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_events, {
-
         start: start,    // start observing DOM mutations
         stop: stop      // stop observing DOM mutations
-
     });
 
-    var events = {
-
-    }
-
+    /*-- Module implementation --*/
     var timeout_domChanges,
 
-    // millisecs. A sequence of DOM changes in which consecutive ones are separated by less than this period, will get
-    // grouped for the "dom-mutations-grouped" event.
+        // millisecs. A sequence of DOM changes in which consecutive ones are separated by less than this period, will get
+        // grouped for the "dom-mutations-grouped" event.
         groupingInterval_for_DomMutations = 100,
         currentUrl = window.location.href;
 
@@ -83,11 +79,11 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
 
     var groupedMutations = [];
 
-    // Monitors dom changes. Responsible for triggering the events 'url-change', 'dom-mutations' and
+    // Monitors dom changes. Responsible for triggering the events 'url-change', 'dom-mutation' and
     // 'dom-mutations-grouped'.
     var _onDomChange = function(mutations) {
 
-        thisModule.trigger("dom-mutations", mutations);
+        thisModule.trigger("dom-mutation", mutations);
 
         var newUrl = window.location.href;
         if (newUrl !== currentUrl) {
@@ -99,7 +95,7 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
 
         // The following ensures that a set of closely spaced DOM mutation events triggers only one
         // "dom-mutations-grouped" event. Expensive operations can subscribe to this event instead of the
-        // "dom-mutations" event.
+        // "dom-mutation" event.
         clearTimeout(timeout_domChanges);
         groupedMutations.push(mutations);
         timeout_domChanges = setTimeout( function () {

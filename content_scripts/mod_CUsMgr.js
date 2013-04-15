@@ -5,6 +5,7 @@
 _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, CONSTS) {
     "use strict";
 
+    /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_events, {
 
         $selectedCU: null,
@@ -13,7 +14,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
     });
 
+    /*-- Event bindings --*/
+    thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', updateCUsAndRelatedState);
 
+    /*-- Module implementation --*/
     //////////////////////////////////
 
     /* NOTES
@@ -298,8 +303,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             var fn_onCUSelection, temp;
             if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUSelection) && (fn_onCUSelection = temp.fn)) {
                 mod_mutationObserver.stop();
-                fn_onCUSelection($CU, document, $.extend(true, {}, expandedUrlData)); // third param is a deep clone
-                mod_mutationObserver.start();
+                fn_onCUSelection($CU, document, $.extend(true, {}, expandedUrlData));
             }
         }
     };
@@ -328,7 +332,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                 var fn_onCUDeselection, temp;
                 if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUDeselection) && (fn_onCUDeselection = temp.fn)) {
                     mod_mutationObserver.stop();
-                    fn_onCUDeselection($CU, document, $.extend(true, {}, expandedUrlData)); // third param is a deep clone
+                    fn_onCUDeselection($CU, document, $.extend(true, {}, expandedUrlData));
                     mod_mutationObserver.start();
                 }
             }
@@ -1070,16 +1074,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         }
 
         if (options.animatedCUScroll) {
-
             console.log('animated CU scroll');
-
             var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
                 Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
-
             animatedScroll(newWinTop, animationDuration);
-
 //        $('html, body').animate({scrollTop: newWinTop}, animatedScroll);
-
         }
         else {
             console.log('NON animated CU scroll');
@@ -1154,10 +1153,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
     }
 
 
-    function onUrlChange() {
+    function _onUrlChange() {
         initializeExtension(); // resets the extension
     }
-    thisModule.listenTo(mod_mutationObserver, 'url-change', onUrlChange);
 
 // Sets/updates the global variable $CUsArray and other state associated with it
     function updateCUsAndRelatedState() {
@@ -1193,11 +1191,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             }
         }
     }
-
-    function eh_domMutations() {
-        updateCUsAndRelatedState();
-    }
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', eh_domMutations);
 
 // Populates the CUs array based on the current contents of the DOM and returns it.
 // If search box is visibile, the returned CUs array is filtered accordingly.
@@ -2062,12 +2055,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                 kbdShortcuts: ["e"]
             }
         }
-    };
-
-// Will hold overridden values specified in the expandedUrlData for standard ("std_") MUs and actions
-// The object formed by extending defaultValuesFor_stdUrlDataItems with this object will contain
-// the effective values, and should be used for displaying the Help page etc.
-    var overriddenValuesFor_stdUrlDataItems = {
     };
 
     var generalShortcuts = {

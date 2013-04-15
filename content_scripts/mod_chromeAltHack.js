@@ -25,12 +25,17 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
     _u.mod_chromeAltHack = (function($, mod_core, mod_mutationObserver, CONSTS) {
         "use strict";
 
+       /*-- Public interface --*/
         var thisModule = $.extend({}, _u.mod_events, {
             applyHack: applyHack,
             undoAndDisableHack: undoAndDisableHack
-            //eh_domMutations: eh_domMutations, //to  apply the hack for conflicting accesskeys that come into existence later
+            //_onDomMutation: _onDomMutation, //to  apply the hack for conflicting accesskeys that come into existence later
         });
 
+        /*-- Event bindings --*/
+        thisModule.listenTo(mod_mutationObserver, 'dom-mutation', _onDomMutation);
+
+        /*-- Module implementation --*/
         var isEnabled,
 
             // when the extension is (temporarily) disabled, this is used to reinstate the conflicting access key attributes
@@ -113,7 +118,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
          * stored list of keyboard shortcuts active on the page.
          * @param mutations
          */
-        function eh_domMutations(mutations) {
+        function _onDomMutation(mutations) {
 
             if (isEnabled) {
                 var mutationsLen = mutations.length,
@@ -141,7 +146,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             }
         }
 
-        thisModule.listenTo(mod_mutationObserver, 'dom-mutations', eh_domMutations);
 
         /**
          * Removes  conflicting accesskeys from the specified element and all its children
