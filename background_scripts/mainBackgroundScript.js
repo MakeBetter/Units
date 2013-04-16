@@ -1,262 +1,263 @@
-chrome.extension.onMessage.addListener(
-    function(request, sender, sendResponse) {
+(function(helper) {
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
 
-        if (request.message === 'getUrlData') {
+            if (request.message === 'getUrlData') {
 
-            var sendResponseWhenReady = function() {
-                if (publicSuffixMap) {
-                    var UrlData = getUrlData(request.locationObj);
-                    sendResponse(UrlData);
-                }
-                else {
-                    setTimeout(sendResponseWhenReady, 100);
-                }
-            };
+                var sendResponseWhenReady = function() {
+                    if (publicSuffixMap) {
+                        var UrlData = getUrlData(request.locationObj);
+                        sendResponse(UrlData);
+                    }
+                    else {
+                        setTimeout(sendResponseWhenReady, 100);
+                    }
+                };
 
-            sendResponseWhenReady();
+                sendResponseWhenReady();
 
-        }
-        else if (request.message === 'closeTab') {
-            closeCurrentTab();
-        }
-
-    }
-);
-
-function closeCurrentTab() {
-    chrome.tabs.query(
-        {currentWindow: true, active : true},
-        function(tabArray){
-            if (tabArray && tabArray[0]) {
-                chrome.tabs.remove(tabArray[0].id);
+            }
+            else if (request.message === 'closeTab') {
+                closeCurrentTab();
             }
 
         }
     );
-}
 
-var xhr = new XMLHttpRequest();
-var publicSuffixMap;
+    function closeCurrentTab() {
+        chrome.tabs.query(
+            {currentWindow: true, active : true},
+            function(tabArray){
+                if (tabArray && tabArray[0]) {
+                    chrome.tabs.remove(tabArray[0].id);
+                }
 
-function getPublicSuffixMap(publicSuffixStr) {
-
-    var publicSuffixMap = {};
-
-    var lines = publicSuffixStr.split('\n'),
-        linesLen = lines.length;
-    for (var i = 0, line; i < linesLen; ++i) {
-        line = lines[i];
-
-        if (line.indexOf('//') === 0) {
-            continue;
-        }
-
-        line = line.trim();
-        if (line) {
-            var indexOfLastDot = line.lastIndexOf('.');
-            var tld = (indexOfLastDot >= 0)? line.substr(indexOfLastDot+1): line;
-
-            var subdomainsArray = line.split('.');
-            if (publicSuffixMap[tld]) {
-                publicSuffixMap[tld].push(subdomainsArray);
             }
-            else {
-                publicSuffixMap[tld] = [subdomainsArray];
-            }
-
-        }
-
+        );
     }
+
+    var xhr = new XMLHttpRequest();
+    var publicSuffixMap;
+
+    function getPublicSuffixMap(publicSuffixStr) {
+
+        var publicSuffixMap = {};
+
+        var lines = publicSuffixStr.split('\n'),
+            linesLen = lines.length;
+        for (var i = 0, line; i < linesLen; ++i) {
+            line = lines[i];
+
+            if (line.indexOf('//') === 0) {
+                continue;
+            }
+
+            line = line.trim();
+            if (line) {
+                var indexOfLastDot = line.lastIndexOf('.');
+                var tld = (indexOfLastDot >= 0)? line.substr(indexOfLastDot+1): line;
+
+                var subdomainsArray = line.split('.');
+                if (publicSuffixMap[tld]) {
+                    publicSuffixMap[tld].push(subdomainsArray);
+                }
+                else {
+                    publicSuffixMap[tld] = [subdomainsArray];
+                }
+
+            }
+
+        }
 //    console.log(publicSuffixMap);
-    return publicSuffixMap;
-}
+        return publicSuffixMap;
+    }
 
 
-xhr.onload = function(e) {
-    publicSuffixMap =  getPublicSuffixMap(xhr.response);
-};
+    xhr.onload = function(e) {
+        publicSuffixMap =  getPublicSuffixMap(xhr.response);
+    };
 
-xhr.open('GET', 'background_scripts/data/public_suffix_list.txt', true);
-xhr.send();
+    xhr.open('GET', 'background_scripts/data/public_suffix_list.txt', true);
+    xhr.send();
 
 
 
 // Returns the topmost "registrable" domain, based on the public suffix list, converted to all lowercase
 // letters for the sake of consistency, since domain names are case insensitive
-function getMainDomain(locationObj) {
-    var mainDomain = _getMainDomain(locationObj);
-    if (typeof mainDomain === "string") {
-        return mainDomain.toLowerCase();
-    }
-    else {
-        return mainDomain;
-    }
-}
-
-/**
- * Returns the topmost "registrable" domain, based on the public suffix list
- * Algorithm:
- * 1. Split the domain name into tokens.
- * 2. Get the top level domain (tld) from the domain name.
- * 3. Using the tld as the key, get the suffixes array for that tld from publicSuffixMap
- * 4. Now based on the rules of the public suffix list (reference: http://publicsuffix.org/list/), get the public suffix
- * for this domain. The main/ registrable domain is the public suffix plus the next label/ token in the domain name.
- * For example, for "images.google.co.in", "co.in" is the public suffix and "google.co.in" is the registrable domain.
- * Similarly, for the domain, "en.wikipedia.org", "wikipedia.org" is the registrable domain
- *
- */
-function _getMainDomain(locationObj) {
-    var domain = locationObj.hostname,
-        domainTokens = domain.split("."),   // "data.gov.ac" -> ["data", "gov", "ac"]
-        domainTokensLen = domainTokens.length,
-        tld = domainTokens[domainTokensLen -1],
-        suffixesArr = publicSuffixMap[tld]; // this will be an array of arrays.  e.g: for the tld "ac", this will be:
-                                            //  [["ac"], ["com", "ac"], ["edu", "ac"], ["gov", "ac"],...]
-
-    if (!suffixesArr) {
-        //TODO: see if this needs to be handled in any other way
-        return domain;
-    }
-
-    var mainDomain = null,
-        suffixesArrLen = suffixesArr.length;
-
-    // first check for the "exception rules" i.e. rules starting with "!" because they have the highest precedence
-    for (var i = 0; i < suffixesArrLen; ++i) {
-        var suffixTokens = suffixesArr[i];
-
-        if (suffixTokens[0].charAt(0) === "!") {
-            if (domainMatchesSuffix(domainTokens, suffixTokens)) {
-                mainDomain = domainTokens.slice(domainTokensLen - suffixTokens.length).join('.'); // for exception rules, the public suffix is obtained by removing the leftmost label/ token.
-                return mainDomain;
-            }
+    function getMainDomain(locationObj) {
+        var mainDomain = _getMainDomain(locationObj);
+        if (typeof mainDomain === "string") {
+            return mainDomain.toLowerCase();
+        }
+        else {
+            return mainDomain;
         }
     }
 
-    // Now check for all the other rules (except the exception rules)
-    // Match the domain tokens decrementing the number of tokens to be matched in each iteration. Stop at the first match
-    // found since that would be the match with the most tokens.
-    for (var numTokensToMatch = domainTokensLen; numTokensToMatch >0; numTokensToMatch--) {
+    /**
+     * Returns the topmost "registrable" domain, based on the public suffix list
+     * Algorithm:
+     * 1. Split the domain name into tokens.
+     * 2. Get the top level domain (tld) from the domain name.
+     * 3. Using the tld as the key, get the suffixes array for that tld from publicSuffixMap
+     * 4. Now based on the rules of the public suffix list (reference: http://publicsuffix.org/list/), get the public suffix
+     * for this domain. The main/ registrable domain is the public suffix plus the next label/ token in the domain name.
+     * For example, for "images.google.co.in", "co.in" is the public suffix and "google.co.in" is the registrable domain.
+     * Similarly, for the domain, "en.wikipedia.org", "wikipedia.org" is the registrable domain
+     *
+     */
+    function _getMainDomain(locationObj) {
+        var domain = locationObj.hostname,
+            domainTokens = domain.split("."),   // "data.gov.ac" -> ["data", "gov", "ac"]
+            domainTokensLen = domainTokens.length,
+            tld = domainTokens[domainTokensLen -1],
+            suffixesArr = publicSuffixMap[tld]; // this will be an array of arrays.  e.g: for the tld "ac", this will be:
+        //  [["ac"], ["com", "ac"], ["edu", "ac"], ["gov", "ac"],...]
+
+        if (!suffixesArr) {
+            //TODO: see if this needs to be handled in any other way
+            return domain;
+        }
+
+        var mainDomain = null,
+            suffixesArrLen = suffixesArr.length;
+
+        // first check for the "exception rules" i.e. rules starting with "!" because they have the highest precedence
         for (var i = 0; i < suffixesArrLen; ++i) {
             var suffixTokens = suffixesArr[i];
-            if (numTokensToMatch !== suffixTokens.length || suffixTokens[0].charAt(0) === '!') {
-                continue;
-            }
 
-            // check if suffixArray[i] matches the last numTokensToMatch tokens of the domain
-            if (domainMatchesSuffix(domainTokens, suffixTokens)) {
-                mainDomain = domainTokens.slice(domainTokensLen - numTokensToMatch - 1).join('.');
-                return mainDomain;
+            if (suffixTokens[0].charAt(0) === "!") {
+                if (domainMatchesSuffix(domainTokens, suffixTokens)) {
+                    mainDomain = domainTokens.slice(domainTokensLen - suffixTokens.length).join('.'); // for exception rules, the public suffix is obtained by removing the leftmost label/ token.
+                    return mainDomain;
+                }
             }
         }
-    }
 
-}
+        // Now check for all the other rules (except the exception rules)
+        // Match the domain tokens decrementing the number of tokens to be matched in each iteration. Stop at the first match
+        // found since that would be the match with the most tokens.
+        for (var numTokensToMatch = domainTokensLen; numTokensToMatch >0; numTokensToMatch--) {
+            for (var i = 0; i < suffixesArrLen; ++i) {
+                var suffixTokens = suffixesArr[i];
+                if (numTokensToMatch !== suffixTokens.length || suffixTokens[0].charAt(0) === '!') {
+                    continue;
+                }
+
+                // check if suffixArray[i] matches the last numTokensToMatch tokens of the domain
+                if (domainMatchesSuffix(domainTokens, suffixTokens)) {
+                    mainDomain = domainTokens.slice(domainTokensLen - numTokensToMatch - 1).join('.');
+                    return mainDomain;
+                }
+            }
+        }
+
+    }
 
 // Returns true if domain tokens match all the suffix tokens, else false.
 // The rules regarding tokens containing "*" or "!" are followed as applicable to the public suffix list specification.
 // E.g. domain tokens ["images", "google", "co", "in"] will match the suffix tokens ["co", "in"], but not ["com", "in"]
-function domainMatchesSuffix(domainTokens, suffixTokens) {
-    suffixTokens = suffixTokens.slice(0); //clone array because we don't want to change original array
+    function domainMatchesSuffix(domainTokens, suffixTokens) {
+        suffixTokens = suffixTokens.slice(0); //clone array because we don't want to change original array
 
-    var suffixTokensLen = suffixTokens.length,
-        domainTokensLen = domainTokens.length;
+        var suffixTokensLen = suffixTokens.length,
+            domainTokensLen = domainTokens.length;
 
-    // if suffix at 0th position starts with "!", remove the "!" (and then match normally)
-    if (suffixTokens[0].charAt(0) === "!") {
-        suffixTokens[0] = suffixTokens[0].substring(1);
-    }
-
-    // start matching tokens from the end of both arrays
-    for (var i = suffixTokensLen - 1; i >= 0; --i) {
-        if (suffixTokens[i] === "*") {
-            continue;
+        // if suffix at 0th position starts with "!", remove the "!" (and then match normally)
+        if (suffixTokens[0].charAt(0) === "!") {
+            suffixTokens[0] = suffixTokens[0].substring(1);
         }
 
-        //if any token in the domain does not match its corresponding suffix token, then return false
-        if (domainTokens[i + domainTokensLen - suffixTokensLen] !== suffixTokens[i]) {
-            return false;
+        // start matching tokens from the end of both arrays
+        for (var i = suffixTokensLen - 1; i >= 0; --i) {
+            if (suffixTokens[i] === "*") {
+                continue;
+            }
+
+            //if any token in the domain does not match its corresponding suffix token, then return false
+            if (domainTokens[i + domainTokensLen - suffixTokensLen] !== suffixTokens[i]) {
+                return false;
+            }
         }
+
+        return true;
     }
 
-    return true;
-}
+    function getUrlData(locationObj) {
 
-function getUrlData(locationObj) {
-
-    if (!locationObj) {
-        return null;
-    }
-
-    var domain = getMainDomain(locationObj);
-    var UrlData = getUrlDataUsingDomainKey(domain, locationObj);
-
-    if (!UrlData) {
-        var masterDomainKey = getMasterDomainKey(domain);
-        if (masterDomainKey) {
-            UrlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
+        if (!locationObj) {
+            return null;
         }
-    }
 
-    if (UrlData) {
-        stringifyFunctions(UrlData);
-        return UrlData;
-    }
-    else {
-        // TODO: Url data not found; anything else to be done?
-        return null;
-    }
+        var domain = getMainDomain(locationObj);
+        var UrlData = getUrlDataUsingDomainKey(domain, locationObj);
 
-}
+        if (!UrlData) {
+            var masterDomainKey = getMasterDomainKey(domain);
+            if (masterDomainKey) {
+                UrlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
+            }
+        }
+
+        if (UrlData) {
+            stringifyFunctions(UrlData);
+            return UrlData;
+        }
+        else {
+            // TODO: Url data not found; anything else to be done?
+            return null;
+        }
+
+    }
 
 // Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
 // (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
 // allowed between the background and content scripts)
-function stringifyFunctions(obj) {
+    function stringifyFunctions(obj) {
 
-    // retruns the strigified version of the function passed
-    var _stringifyFn = function(fn) {
-        return "(" + fn.toString() + ")";
-    };
+        // retruns the strigified version of the function passed
+        var _stringifyFn = function(fn) {
+            return "(" + fn.toString() + ")";
+        };
 
-    for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            if (typeof obj[key] === "object") {
-                stringifyFunctions(obj[key]);
-            }
-            else if (typeof obj[key] === "function") {
-                obj[key] = _stringifyFn(obj[key])
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (typeof obj[key] === "object") {
+                    stringifyFunctions(obj[key]);
+                }
+                else if (typeof obj[key] === "function") {
+                    obj[key] = _stringifyFn(obj[key])
+                }
             }
         }
     }
-}
 
-function getUrlDataUsingDomainKey(domainKey, locationObj) {
+    function getUrlDataUsingDomainKey(domainKey, locationObj) {
 
-    var UrlDataArr = unitsData[domainKey];
+        var UrlDataArr = unitsData[domainKey];
 
-    if (!UrlDataArr) {
-        return false;
-    }
+        if (!UrlDataArr) {
+            return false;
+        }
 
-    while (typeof UrlDataArr === "string") {
-        UrlDataArr = unitsData[UrlDataArr];
-    }
+        while (typeof UrlDataArr === "string") {
+            UrlDataArr = unitsData[UrlDataArr];
+        }
 
-    if (!Array.isArray(UrlDataArr)) {
-        UrlDataArr = [UrlDataArr];
-    }
+        if (!Array.isArray(UrlDataArr)) {
+            UrlDataArr = [UrlDataArr];
+        }
 
-    var UrlDataArrLen = UrlDataArr.length;
-    for (var i = 0; i < UrlDataArrLen; ++i) {
+        var UrlDataArrLen = UrlDataArr.length;
+        for (var i = 0; i < UrlDataArrLen; ++i) {
 
-        var UrlData = UrlDataArr[i],
-            regexpsToTest = getCombinedRegexps(UrlData),
-            currentUrl = locationObj.href,
-            protocolSeparator = "://", // to strip the leading http:// or https:// etc.
-            strippedUrlBeginIndex = currentUrl.indexOf(protocolSeparator) + protocolSeparator.length,
-            strippedUrl = currentUrl.substring(strippedUrlBeginIndex),
-            regexpsLen =  regexpsToTest.length;
+            var UrlData = UrlDataArr[i],
+                regexpsToTest = getCombinedRegexps(UrlData),
+                currentUrl = locationObj.href,
+                protocolSeparator = "://", // to strip the leading http:// or https:// etc.
+                strippedUrlBeginIndex = currentUrl.indexOf(protocolSeparator) + protocolSeparator.length,
+                strippedUrl = currentUrl.substring(strippedUrlBeginIndex),
+                regexpsLen =  regexpsToTest.length;
 
             for (var j = 0, regexp; j < regexpsLen; ++j) {
 
@@ -266,81 +267,82 @@ function getUrlDataUsingDomainKey(domainKey, locationObj) {
                 }
             }
 
+        }
+        return false;
     }
-    return false;
-}
 
 // returns the master domain-key for the specified domain, if one can be found
-function getMasterDomainKey(domain) {
+    function getMasterDomainKey(domain) {
 
-    var len = specialDomain_masterDomain_map.length;
-    for (var i = 0, currentObj; i < len; ++i) {
-        currentObj = specialDomain_masterDomain_map[i];
-        if (currentObj.regexp.test(domain)) {
-            return currentObj.masterDomainKey;
+        var len = specialDomain_masterDomain_map.length;
+        for (var i = 0, currentObj; i < len; ++i) {
+            currentObj = specialDomain_masterDomain_map[i];
+            if (currentObj.regexp.test(domain)) {
+                return currentObj.masterDomainKey;
 
+            }
         }
     }
-}
 
 // returns an array combining these two sets of regexps:
 // 1) regexps corresponding to the 'urlPatterns' property of the UrlData object
 // 2) regexps directly specified using the 'urlRegexps' property of the UrlData object
-function getCombinedRegexps(UrlData) {
-    var urlPatterns = UrlData.urlPatterns,
-        urlRegexps = UrlData.urlRegexps,
-        combinedRegexps = [];
+    function getCombinedRegexps(UrlData) {
+        var urlPatterns = UrlData.urlPatterns,
+            urlRegexps = UrlData.urlRegexps,
+            combinedRegexps = [];
 
-    if (urlPatterns) {
-        if (!Array.isArray(urlPatterns)) {
-            urlPatterns = [urlPatterns];
+        if (urlPatterns) {
+            if (!Array.isArray(urlPatterns)) {
+                urlPatterns = [urlPatterns];
+            }
+
+            var urlPatternsLen = urlPatterns.length;
+            for (var i = 0, regexp; i < urlPatternsLen; ++i) {
+
+                regexp = urlPatternToRegexp(urlPatterns[i]);
+                combinedRegexps.push(regexp);
+
+            }
         }
 
-        var urlPatternsLen = urlPatterns.length;
-        for (var i = 0, regexp; i < urlPatternsLen; ++i) {
+        if (urlRegexps) {
 
-            regexp = urlPatternToRegexp(urlPatterns[i]);
-            combinedRegexps.push(regexp);
-
+            combinedRegexps = combinedRegexps.concat(urlRegexps);
         }
+
+        return combinedRegexps;
+
     }
 
-    if (urlRegexps) {
 
-        combinedRegexps = combinedRegexps.concat(urlRegexps);
+    /**
+     * Returns the regexp object corresponding the to the url pattern supplied.
+     * @param {String} urlPattern This is a string that can contain '*'s and @'s as "wildcards":
+     - A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
+     - A '*' matches any combination of *one or more* characters of *ANY* type.)
+     * @return {RegExp}
+     */
+    function urlPatternToRegexp(urlPattern) {
+
+        // get the corresponding "regular expression escaped" string.
+        var regexpStr = urlPattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+        // replacing all instances of '\*' (to which '*'s would have been converted above) by the regexp equivalent
+        // to match any combination of zero or more characters of any type
+        regexpStr = regexpStr.replace(/\\\*/g, '.+');
+
+        // replacing all instances of '@' by the regexp equivalent to match any combination of one or more
+        // alphanumeric characters,  dashes, underscores and commas.
+        regexpStr = regexpStr.replace(/@/g, '[a-z\\-_,]+');
+
+        regexpStr = "^" + regexpStr + "$";
+
+        return new RegExp(regexpStr);
+
     }
 
-    return combinedRegexps;
-
-}
-
-
-/**
- * Returns the regexp object corresponding the to the url pattern supplied.
- * @param {String} urlPattern This is a string that can contain '*'s and @'s as "wildcards":
- - A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
- - A '*' matches any combination of *one or more* characters of *ANY* type.)
- * @return {RegExp}
- */
-function urlPatternToRegexp(urlPattern) {
-
-    // get the corresponding "regular expression escaped" string.
-    var regexpStr = urlPattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-
-    // replacing all instances of '\*' (to which '*'s would have been converted above) by the regexp equivalent
-    // to match any combination of zero or more characters of any type
-    regexpStr = regexpStr.replace(/\\\*/g, '.+');
-
-    // replacing all instances of '@' by the regexp equivalent to match any combination of one or more
-    // alphanumeric characters,  dashes, underscores and commas.
-    regexpStr = regexpStr.replace(/@/g, '[a-z\\-_,]+');
-
-    regexpStr = "^" + regexpStr + "$";
-
-    return new RegExp(regexpStr);
-
-}
-
-chrome.commands.onCommand.addListener(function(command) {
-    console.log('Command:', command);
-});
+    chrome.commands.onCommand.addListener(function(command) {
+        console.log('Command:', command);
+    });
+})(_u.helper);

@@ -29,7 +29,7 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
 
         // millisecs. A sequence of DOM changes in which consecutive ones are separated by less than this period, will get
         // grouped for the "dom-mutations-grouped" event.
-        groupingInterval_for_DomMutations = 100,
+        groupingInterval_for_DomMutations = 150,
         currentUrl = window.location.href;
 
     var mutationObserver = new MutationObserver (_processMutations),

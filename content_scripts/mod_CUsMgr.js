@@ -1,5 +1,4 @@
-// See _template.js for module conventions
-
+// See _readme_module_template.js for module conventions
 
 
 _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, CONSTS) {
@@ -7,11 +6,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_events, {
-
         $selectedCU: null,
 //        selectNext: selectNext,
 //        selectPrev: selectPrev,
-
     });
 
     /*-- Event bindings --*/
@@ -62,9 +59,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         // This class should be applied to all elements added by this extension.
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
 
-        class_CUoverlay = "CU-overlay",                     // class applied to all CU overlays
-        class_CUSelectedOverlay = "CU-overlay-selected",    // class applied to overlay on a selected CU
-        class_CUHoveredOverlay = "CU-overlay-hovered",      // class applied to overlay on a hovered CU
+        class_CUOverlay = CONSTS.class_CUOverlay,                     // class applied to all CU overlays
+        class_CUSelectedOverlay = CONSTS.class_CUSelectedOverlay,    // class applied to overlay on a selected CU
+        class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered CU
         $unusedOverlaysArray = [],   // to enable reusing existing unused overlays
 
         expandedUrlData,
@@ -385,7 +382,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                 $overlay = $unusedOverlaysArray.shift();
             }
             else {
-                $overlay = $('<div></div>').addClass(class_CUoverlay).addClass(class_addedByUnitsProj);
+                $overlay = $('<div></div>').addClass(class_CUOverlay).addClass(class_addedByUnitsProj);
             }
         }
 
@@ -1548,7 +1545,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         // on overlay elements, and then quickly removed.
         var $tempOverlay = $('<div></div>')
             .addClass(class_addedByUnitsProj)
-            .addClass(class_CUoverlay)
+            .addClass(class_CUOverlay)
             .hide()
             .appendTo(document.body);
         var properties = ['transition-duration', '-webkit-transition-duration', '-moz-transition-duration',
@@ -1847,7 +1844,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
     }
 
     function closeTab() {
-        chrome.extension.sendMessage({message: "closeTab"});
+        chrome.runtime.sendMessage({message: "closeTab"});
     }
 
 // *----------code related to setting up and handling events follows---------------
@@ -2484,7 +2481,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         var $overlay = $(e.target);
 
-//  console.log('overlay transition ended. total overlays = ', $('.' + class_CUoverlay).length);
+//  console.log('overlay transition ended. total overlays = ', $('.' + class_CUOverlay).length);
         tryRecycleOverlay($overlay);
 
     };
@@ -2496,8 +2493,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      */
     var tryRecycleOverlay = function($overlay) {
 
-        if (!$overlay.hasClass(class_CUoverlay)) {
-            console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_CUoverlay + "'");
+        if (!$overlay.hasClass(class_CUOverlay)) {
+            console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_CUOverlay + "'");
         }
 
         // check if the overlay is both in deselected and dehovered states
@@ -2611,7 +2608,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                     var code = e.which || e.keyCode;
 
                     // the background script will determine which site to search on based
-                    chrome.extension.sendMessage({message: "searchExternalSite", selection: selection, keyCode: code});
+                    chrome.runtime.sendMessage({message: "searchExternalSite", selection: selection, keyCode: code});
                 }
 
                 suppressEvent(e); // for all types - keypress, keydown, keyup
@@ -2677,7 +2674,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         if (overlayCssHasTransition) {
             $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
-                '.' + class_CUoverlay, onTransitionEnd);
+                '.' + class_CUOverlay, onTransitionEnd);
         }
 
         mod_mutationObserver.start();
@@ -2686,7 +2683,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
 // initializes parts of the program that are based on unitsData/expandedUrlData
     function initializeForCurrentUrl() {
-        chrome.extension.sendMessage({
+        chrome.runtime.sendMessage({
                 message: "getUrlData",
                 locationObj: window.location
 
@@ -3011,7 +3008,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         // on overlay elements, and then quickly removed.
         var $tempOverlay = $('<div></div>')
             .addClass(class_addedByUnitsProj)
-            .addClass(class_CUoverlay)
+            .addClass(class_CUOverlay)
             .hide()
             .appendTo(document.body);
         var properties = ['transition-duration', '-webkit-transition-duration', '-moz-transition-duration',

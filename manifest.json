@@ -10,9 +10,11 @@
     },
 
     "background": {
-        "scripts": ["background_scripts/data/searchData.js",
+        "scripts": ["common/helper.js",
+            "background_scripts/data/searchData.js",
             "background_scripts/searchExternalSite.js",
-            "background_scripts/data/unitsData.js", "background_scripts/mainBackgroundScript.js"]
+            "background_scripts/data/unitsData.js",
+            "background_scripts/mainBackgroundScript.js"]
     },
 
     "content_scripts": [
@@ -28,6 +30,7 @@
 
                 "content_scripts/initializeNamespace.js",
 
+                "common/helper.js",
                 "content_scripts/CONSTS.js",
                 "content_scripts/mod_events.js",
                 "content_scripts/mod_mutationObserver.js",
