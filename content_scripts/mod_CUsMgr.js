@@ -2678,39 +2678,42 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         }
 
         mod_mutationObserver.start();
-        initializeForCurrentUrl();
-    }
 
-// initializes parts of the program that are based on unitsData/expandedUrlData
-    function initializeForCurrentUrl() {
-        chrome.runtime.sendMessage({
-                message: "getUrlData",
-                locationObj: window.location
+        /**
+         * Initializes parts of the program that are based on unitsData/expandedUrlData
+         * Defined as an inner function since its not meant to be called directly (even within this module)
+         */
+        var _initializeForCurrentUrl = function() {
+            chrome.runtime.sendMessage({
+                    message: "getUrlData",
+                    locationObj: window.location
 
-            },
-            function(UrlDataResponse) {
-                if (UrlDataResponse) {
+                },
+                function(UrlDataResponse) {
+                    if (UrlDataResponse) {
 
-                    // 1) Converts any "shorthand" notations within the expandedUrlData to their "expanded" forms.
-                    // 2) Adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in expandedUrlData
-                    // 3) destringifies functions in expandedUrlData
-                    processUrlData(UrlDataResponse);
+                        // 1) Converts any "shorthand" notations within the expandedUrlData to their "expanded" forms.
+                        // 2) Adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in expandedUrlData
+                        // 3) destringifies functions in expandedUrlData
+                        processUrlData(UrlDataResponse);
 
-                    expandedUrlData = UrlDataResponse; // assign to module level var
+                        expandedUrlData = UrlDataResponse; // assign to module level var
+                    }
+                    // the following line should remain outside the if condition so that the change from a url with CUs
+                    // to one without any is correctly handled
+                    updateCUsAndRelatedState();
+                    setupShortcuts();
+                    setupHelpUIAndEvents();
+
+                    if ( globalSettings.selectCUOnLoad) {
+                        selectMostSensibleCU(true, false);
+                    }
                 }
-                // the following line should remain outside the if condition so that the change from a url with CUs
-                // to one without any is correctly handled
-                updateCUsAndRelatedState();
-                setupShortcuts();
-                setupHelpUIAndEvents();
+            );
+        };
 
-                if ( globalSettings.selectCUOnLoad) {
-                    selectMostSensibleCU(true, false);
-                }
-            }
-        );
+        _initializeForCurrentUrl();
     }
-
 
 // don't need to wait till dom-ready. allows faster starting up of the extension's features
 // (in certain sites at least. e.g. guardian.co.uk)
