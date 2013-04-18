@@ -16,5 +16,5 @@ _u.CONSTS = (function(helper){
         class_CUHoveredOverlay : "CU-overlay-hovered",      // class applied to overlay on a hovered CU
 
     };
-    return helper.constantize(CONSTS);
+    return helper.getImmutableCopy(CONSTS);
 })(_u.helper);
