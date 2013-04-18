@@ -1958,7 +1958,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      In addition to the usual modifier keys, 'space' can be used (and will only work) as a modifier key. This was done
      by modifying the MouseTrap library.
      */
-    var browserActionShortcuts = {
+    var browserShortcuts = {
         scrollDown: ['alt+j'],
         scrollUp: ['alt+k'],
         closeTab: ['alt+x'],
@@ -1977,12 +1977,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      As a general recommendation, single letter keys are not used for this category of shortcuts, because that seems to be
      the most common type of shortcuts implemented on web apps, and so would result in a higher possibility of conflict.
      */
-    function _setupBrowserActionShortcuts() {
+    function _setupBrowserShortcuts() {
 
         // true is redundant here; used only to illustrate this form of the function call
-        bind(browserActionShortcuts.scrollDown, scrollDown, true);
-        bind(browserActionShortcuts.scrollUp, scrollUp);
-        bind(browserActionShortcuts.closeTab, closeTab);
+        bind(browserShortcuts.scrollDown, scrollDown, true);
+        bind(browserShortcuts.scrollUp, scrollUp);
+        bind(browserShortcuts.closeTab, closeTab);
 
 //    bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
 //    bind(['alt+q'], function() {console.log(' alt q');});
@@ -1992,7 +1992,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 //    bind(['q'], function() {console.log('q')});
 
         // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke Mousetrap.reset()
-        bind(browserActionShortcuts.toggleExtension, disableExtension);
+        bind(browserShortcuts.toggleExtension, disableExtension);
     }
 
 
@@ -2243,7 +2243,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
     /**
      * Sets up the keyboard shortcuts.
      * Note: Because of the order in which shortcuts are set up, their priorities in case of a conflict are:
-     * <browser-action-shortcuts> override <general-shortcuts> override <page-specific-shortcuts> override <CU-specific-shortcuts>
+     * <browser-shortcuts> override <general-shortcuts> override <page-specific-shortcuts> override <CU-specific-shortcuts>
      * This order has been chosen since it favors consistency and hence minimizes confusion.
      */
     function setupShortcuts() {
@@ -2253,7 +2253,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             _setupUrlDataShortcuts('page'); // shortcuts for the rest of the page
         }
         _setupGeneralShortcuts();   // general shortcuts
-        _setupBrowserActionShortcuts(); // browser action shortcuts
+        _setupBrowserShortcuts(); // browser action shortcuts
     }
 
     var onKeydown = function (e) {
@@ -2643,7 +2643,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         if (mod_chromeAltHack) {
             mod_chromeAltHack.undoAndDisableHack();
         }
-        bind(browserActionShortcuts.toggleExtension, initializeExtension);
+        bind(browserShortcuts.toggleExtension, initializeExtension);
 
     }
 

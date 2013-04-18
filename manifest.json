@@ -46,29 +46,5 @@
 
     "permissions": [
         "tabs"
-    ],
-
-    "commands": {
-        "toggle-feature-foo": {
-            "suggested_key": {
-                "default": "Alt+Shift+Y",
-                "mac": "Alt+Shift+Y"
-            },
-            "description": "Toggle feature foo"
-        },
-        "test": {
-            "suggested_key": {
-                "default": "Alt+Y",
-                "mac": "Alt+Y"
-            },
-            "description": "Toggle feature foo"
-        },
-
-        "toggle-feature-bar": {
-            "suggested_key": {
-                "default": "Alt+Shift+P"
-            },
-            "description": "Toggle feature bar"
-        }
-    }
+    ]
 }
