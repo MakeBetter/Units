@@ -1,8 +1,8 @@
 /*
 A note on the terms 'CU' and 'MU' that occur multiple times throughout this file:
- Often the most important content of a webpage is composed of a set of similar units. We call such a unit a Content
- Unit (CU). E.g. on the Google Search results page, each search result is a CU. Each CU is a logical unit of content,
- attention and navigation/access.
+ Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
+ adverts) is composed of a set of repeating units. We call such a unit a Content Unit (CU). E.g. on the Google Search
+ results page, each search result is a CU. Each CU is a logical unit of content, attention and navigation/access.
  In addition to these CUs, there can be many other types of important units on the page. We call them 'MU's (misc. units).
  MUs can generally be of two types:
  - ones occurring within each CU (e.g: 'like', 'share', etc links/buttons)
@@ -306,7 +306,8 @@ var unitsData = {
                 last: ".item_action_bar",
             },
             CUs_MUs: {
-                std_mainEl: ".answer_user>span>a.user"
+                std_mainEl: ".answer_user>span>a.user",
+                std_header: ".header"
             }
         }
     ],
