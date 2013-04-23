@@ -12,38 +12,47 @@ if (!window._u) window._u = {}; // useful for when this code is running as part 
 _u.helper = {
 
     /**
-     * Returns a immutable or "read-only" copy of the object passed in (i.e. all its properties are read-only.
-     * By default, the returned object is "deeply immutable", i.e. any sub-objects are immutable as well.)
-     * @param {object} input Input object
-     * @param {boolean} [shallow] Specify `true` to create a "shallow immutable" object. Defaults to false.
+     * Make the the specified object (deeply) immutable or "read-only", so that none of its properties (or
+     * sub-properties) can be modified. The converted object is returned.
+     * @param {object} obj Input object
      */
-    getImmutableCopy: function getImmutableCopy(input, shallow) {
+    makeImmutable: function makeImmutable (obj) {
+        if ((typeof obj === "object") ||
+            (Array.isArray? Array.isArray(obj): obj instanceof Array) ||
+            (typeof obj === "function")) {
 
-        var output;
+            Object.freeze(obj);
 
-        if (typeof input === "object") {
-            output = {};
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    makeImmutable(obj[key]);
+                }
+            }
         }
-        //functions are objects too and can have properties
-        else if (typeof input === "function") {
-            // `eval` is not good in general. But it seems the best option in the given case. Also, what is being
-            // eval'd is *not* a string with a random origin, and so is not really dangerous. (Using `bind` or `apply`
-            // would make the created function have a preset `this` which is not desirable. Additionally, it would
-            // make the function lose its name, if it had one.)
-            output = eval('(' + input.toString() + ')');
+        return obj;
+    },
+
+    /**
+     * This function allows a passed function to be executed only after a specific condition is satisfied.
+     * @param {function} functionToExecute The function to execute after a certain condition has been met
+     * @param {function} testFunction This function should is a wrapper for the logic to test whether the condition for
+     * functionToExecute has been met. It should return false till the condition is unmet, and true once it is met.
+     * @param {int|undefined} timeOutMillisec Optional time out value. Default is 1 minute.
+     *  If this value is zero or negative, functionToExecute won't be executed at all
+     */
+    executeWhenConditionMet: function (functionToExecute, testFunction, timeOutMillisec) {
+        if (typeof(timeOutMillisec) === "undefined") {
+            timeOutMillisec = 60000; //1 min
+        }
+
+        if (testFunction()){
+            functionToExecute();
+        }
+        else if (timeOutMillisec > 0){
+            setTimeout(executeWhenConditionMet.bind(null, functionToExecute, testFunction, timeOutMillisec-50),50);
         }
         else {
-            return input;
+            console.warn("UnitsProj: executeWhenConditionMet() timed out for function..:\n", functionToExecute, "\n... and testFunction:\n", testFunction);
         }
-
-        for (var key in input) {
-            var value = input[key];
-            if (!shallow) {
-                value = getImmutableCopy(value);
-            }
-            Object.defineProperty(output, key, {value: value, writable: false, enumerable: true});
-        }
-        Object.freeze(output); // to prevent addition of new properties
-        return output;
     }
 };

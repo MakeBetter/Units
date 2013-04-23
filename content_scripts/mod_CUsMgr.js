@@ -1,7 +1,7 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, CONSTS) {
+_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, helper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -64,7 +64,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered CU
         $unusedOverlaysArray = [],   // to enable reusing existing unused overlays
 
-        expandedUrlData,
     // boolean, holds a value indicating where the css specifies a transition style for overlays
         overlayCssHasTransition,
 
@@ -105,30 +104,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
-
-    // Specifies options used by the program. Functions that use this object might also accept a 'options' object as
-    // argument. In addition to providing additional options for the function, the 'options' argument can also be
-    // to override any properties of the 'globalSettings' object (for that specific invocation) by providing different
-    // values for those properties.
-        globalSettings = {
-
-            selectCUOnLoad: true, // whether the first CU should be selected when the page loads
-            animatedCUScroll: true,
-            animatedCUScroll_Speed: 2, // pixels per millisecond
-            animatedCUScroll_MaxDuration: 300, // milliseconds
-
-            increaseFontInSelectedCU: false,
-
-            // determines if while scrolling a CU should always be centered (whenever possitble) or only if it lies
-            // outside the view port
-            tryCenteringCUOnEachScroll: false,
-
-            // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
-            sameCUScroll: true,
-
-            pageScrollDelta: 100 // pixels to scroll on each key press
-
-        },
+        // the following objects are retrieved from the background script
+        globalMiscSettings,
+        browserShortcuts,
+        generalShortcuts,
+        expandedUrlData,
 
         addEventListener_eventHandlers = [],
         jQueryOn_eventHandlers = [];
@@ -245,7 +225,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
      * This parameter is currently passed as true only from selectPrev() and selectNext()
-     * @param {object} options
+     * @param {object} options Misc options. Can also be used to override globalMiscSettings
      */
     var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
 //        console.log('selectCU() called');
@@ -265,7 +245,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             return;
         }
 
-        options = $.extend(true, {}, globalSettings, options);
+        options = $.extend(true, {}, globalMiscSettings, options);
 
         deselectCU(options); // before proceeding, deselect currently selected CU, if any
 
@@ -478,12 +458,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
      * in the direction specified.
      * @param {string} direction Can be either 'up' or 'down'
-     * @param {object} options
+     * @param {object} options Misc options. Can also be used to override globalMiscSettings
      * @return {Boolean} value indicating whether scroll took place
      */
     function scrollSelectedCUIfRequired (direction, options) {
 
-        options = $.extend(true, {}, globalSettings, options);
+        options = $.extend(true, {}, globalMiscSettings, options);
 
         var $CU = $CUsArray[selectedCUIndex];
 
@@ -581,7 +561,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             stopExistingScrollAnimation = false;
         }
 
-        options = $.extend(true, {}, globalSettings, options);
+        options = $.extend(true, {}, globalMiscSettings, options);
 
         $scrollingMarker.hide();
 
@@ -634,7 +614,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             stopExistingScrollAnimation = false;
         }
 
-        options = $.extend(true, {}, globalSettings, options);
+        options = $.extend(true, {}, globalMiscSettings, options);
 
         $scrollingMarker.hide();
 
@@ -963,7 +943,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
         // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
         // This is  handled by calculating the time diff. between invocations. See later.)
-            intervalPeriod = Math.min(100, globalSettings.animatedCUScroll_MaxDuration/4),
+            intervalPeriod = Math.min(100, globalMiscSettings.animatedCUScroll_MaxDuration/4),
 
             lastInvocationTime, // will contain the time of the last invocation (of invokeIncrementalScroll)
 
@@ -1013,7 +993,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      * //TODO3: consider if horizontal scrolling should be adjusted as well (some, very few, sites sites might, like an
      * image gallery, might have CUs laid out horizontally)
      * @param {DOM element|JQuery wrapper} $element
-     * @param {object} options
+     * @param {object} options Misc options. Can also be used to override globalMiscSettings
      */
     function scrollIntoView($element, options) {
 
@@ -1022,7 +1002,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             return;
         }
 
-        options = $.extend(true, {}, globalSettings, options);
+        options = $.extend(true, {}, globalMiscSettings, options);
 
         var // for the window:
             winTop = $document.scrollTop(),
@@ -1170,7 +1150,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                 filterCUsArray($CUsArray);
             }
 
-            if (globalSettings.selectCUOnLoad && !selectCU.invokedYet) {
+            if (globalMiscSettings.selectCUOnLoad && !selectCU.invokedYet) {
                 // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
                 selectFirstCUInViewport(true, false);
             }
@@ -1836,11 +1816,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
     }
 
     function scrollDown() {
-        scroll(globalSettings.pageScrollDelta);
+        scroll(globalMiscSettings.pageScrollDelta);
     }
 
     function scrollUp() {
-        scroll(-globalSettings.pageScrollDelta);
+        scroll(-globalMiscSettings.pageScrollDelta);
     }
 
     function closeTab() {
@@ -1953,21 +1933,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         }
     }
 
-    /* In the two objects specified below, each action is mapped to an array of keyboard shortcuts that will trigger it
-     (allowing multiple shortcuts for the same action).
-     In addition to the usual modifier keys, 'space' can be used (and will only work) as a modifier key. This was done
-     by modifying the MouseTrap library.
-     */
-    var browserShortcuts = {
-        scrollDown: ['alt+j'],
-        scrollUp: ['alt+k'],
-        closeTab: ['alt+x'],
-
-        // Special shortcut. Is made part of "browser action" shortcuts since it should be available even when
-        // extension is only partially enabled.
-        toggleExtension: ['ctrl+`']
-    };
-
     /* Sets up "browser action" shortcuts. That is ones that (generally) correspond to browser actions. This extension can
      be run in special mode  in which only this category of shortcuts is enabled (and this can be configured
      on a per website/webpage basis). This is helpful for pages like gmail, github, etc which often have good shortcuts
@@ -1994,122 +1959,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke Mousetrap.reset()
         bind(browserShortcuts.toggleExtension, disableExtension);
     }
-
-
-// Default values for the description and kbdShortcuts associated with the standard ("std_") MUs and actions
-// defined in the expandedUrlData for a page.
-// In most cases, the expandedUrlData will not specify values for these. However,if  the expandedUrlData specifies any of these
-// values for any of the "std_" items, they will be used instead.
-    var defaultValuesFor_stdUrlDataItems = {
-        page: {
-            std_searchField: {
-                miniDescr: "Focus search box",
-                kbdShortcuts: ["/"]
-            },
-            std_header: {
-                miniDescr: "Focus (the first item on the) header",
-                kbdShortcuts: ["alt+h"]
-            },
-            std_nextOrMore: {
-                miniDescr: "Show next or more content",
-                kbdShortcuts: ["g down"]
-            },
-            std_comment: {
-                miniDescr: "Add comment",
-                kbdShortcuts: ["c"]
-            },
-            std_viewComments: {
-                miniDescr: "View comments",
-                kbdShortcuts: ["g c"]
-            }
-        },
-        CUs: {
-            std_main: {
-                miniDescr: ""
-            },
-            std_upvote: {
-                miniDescr: "Upvote (or 'like'/'+1'/etc).",
-                kbdShortcuts: ["u"]
-            },
-            std_downvote: {
-                miniDescr: "Downvote (or '-1'/etc).",
-                kbdShortcuts: ["d"]
-            },
-            std_share: {
-                miniDescr: "Share",
-                kbdShortcuts: ["s"]
-            },
-            std_comment: {
-                miniDescr: "Add comment",
-                kbdShortcuts: ["c"]
-            },
-            std_viewComments: {
-                miniDescr: "View comments",
-                kbdShortcuts: ["v c"]
-            },
-            std_edit: {
-                miniDescr: "Edit",
-                kbdShortcuts: ["e"]
-            }
-        }
-    };
-
-    var generalShortcuts = {
-        // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
-        // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-        nextCU: {
-            miniDescr: "Select next CU",
-            kbdShortcuts: ['j', '`', 'down']
-        },
-        prevCU: {
-            miniDescr: "Select previous CU",
-            kbdShortcuts: ['k', 'shift+`', 'up']
-        },
-        // TODO: rename this to filter
-        search: {
-            miniDescr: "Search and filter CUs ",
-            kbdShortcuts: ['alt+f']
-        },
-        firstCU: {
-            miniDescr: "Select first CU",
-            kbdShortcuts: ['^', 'alt+1']
-        },
-        lastCU: {
-            miniDescr: "Select last CU",
-            kbdShortcuts: ['$', 'alt+9', 'alt+0']
-        },
-        showHelp: {
-            miniDescr: "Show the help page",
-            kbdShortcuts: ['alt+h', 'alt+?']
-        },
-        open: { //TODO: should 'enter' be spcified here
-            miniDescr: "Open/invoke focused item",
-            kbdShortcuts: ['shift+o', 'alt+o']  // alt+o allows invoking only with one hand (at least in windows)
-        },
-        openInNewTab: {
-            miniDescr: "Open focused item in new tab",
-            kbdShortcuts: ['o']
-        },
-        focusFirstTextInput: {
-            miniDescr: "Focus first text input element",
-            kbdShortcuts: ['g i', 'alt+i']   // TODO: on google search results page, invoking 'g i' results in g getting typed into the search box
-        },
-        focusNextTextInput: {
-            miniDescr: "Focus next text input element",
-            kbdShortcuts: ['alt+o']
-        },
-        focusPrevTextInput: {
-            miniDescr: "Focus previous text input element",
-            kbdShortcuts: ['alt+shift+o']
-        }
-
-        /*
-         <Note>:
-         Esc is defined in the escapeHandler(), and is used for two actions. Should shortcuts for those be made
-         changeable. Possibly we won't allow Esc to be removed but allow adding alternatives for them?
-         */
-
-    };
 
 // Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
 // selecting next/prev CU, etc.
@@ -2223,7 +2072,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
             }
             (function invokeSequentialClicks (selectorsArr) {
                 if (selectorsArr.length) {
-                    executeWhenConditionMet(
+                    helper.executeWhenConditionMet(
                         function() {
                             // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
                             $scope.find(selectorsArr[0])[0].click();
@@ -2623,7 +2472,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
     function onDomReady() {
 
-        if ( globalSettings.selectCUOnLoad) {
+        // if settings have been obtained from background script before dom ready takes place
+        if (globalMiscSettings && globalMiscSettings.selectCUOnLoad) {
 
             selectMostSensibleCU(true, false);
         }
@@ -2643,7 +2493,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         if (mod_chromeAltHack) {
             mod_chromeAltHack.undoAndDisableHack();
         }
-        bind(browserShortcuts.toggleExtension, initializeExtension);
+
+        if (browserShortcuts) {  // need this check since since the obj wouldn't be defined the first time
+            bind(browserShortcuts.toggleExtension, initializeExtension);
+        }
 
     }
 
@@ -2679,40 +2532,36 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         mod_mutationObserver.start();
 
-        /**
-         * Initializes parts of the program that are based on unitsData/expandedUrlData
-         * Defined as an inner function since its not meant to be called directly (even within this module)
-         */
-        var _initializeForCurrentUrl = function() {
-            chrome.runtime.sendMessage({
-                    message: "getUrlData",
-                    locationObj: window.location
+        chrome.runtime.sendMessage({
+                message: "getSettings",
+                locationObj: window.location
+            },
+            function(settings) {
 
-                },
-                function(UrlDataResponse) {
-                    if (UrlDataResponse) {
-
-                        // 1) Converts any "shorthand" notations within the expandedUrlData to their "expanded" forms.
-                        // 2) Adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in expandedUrlData
-                        // 3) destringifies functions in expandedUrlData
-                        processUrlData(UrlDataResponse);
-
-                        expandedUrlData = UrlDataResponse; // assign to module level var
-                    }
-                    // the following line should remain outside the if condition so that the change from a url with CUs
-                    // to one without any is correctly handled
-                    updateCUsAndRelatedState();
-                    setupShortcuts();
-                    setupHelpUIAndEvents();
-
-                    if ( globalSettings.selectCUOnLoad) {
-                        selectMostSensibleCU(true, false);
-                    }
+                // has to be done before the the call to makeImmutable :)
+                if (settings.expandedUrlData) {
+                    destringifyFunctions(settings.expandedUrlData);
                 }
-            );
-        };
 
-        _initializeForCurrentUrl();
+                helper.makeImmutable(settings);
+
+                // assign references to module level variables
+                globalMiscSettings = settings.globalMiscSettings;
+                browserShortcuts = settings.browserShortcuts;
+                generalShortcuts = settings.generalShortcuts;
+                expandedUrlData = settings.expandedUrlData;
+
+                // the following line should remain outside the if condition so that the change from a url with CUs
+                // to one without any is correctly handled
+                updateCUsAndRelatedState();
+                setupShortcuts();
+                setupHelpUIAndEvents();
+
+                if ( globalMiscSettings.selectCUOnLoad) {
+                    selectMostSensibleCU(true, false);
+                }
+            }
+        );
     }
 
 // don't need to wait till dom-ready. allows faster starting up of the extension's features
@@ -2764,7 +2613,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         var $heading = $("<div id='heading'><span>UnitsProj Shortcuts</span></div>");
 
-//    var browserShortcuts = null;
         var pageShortcuts = expandedUrlData && expandedUrlData.page_shortcuts;
         var CUShortcuts = expandedUrlData && expandedUrlData.CU_shortcuts;
 
@@ -2826,29 +2674,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 ///////////////////////////////////////////
 //helper.js
 
-    /**
-     * This function allows a passed function to be executed only after a specific condition is satisfied.
-     * @param {function} functionToExecute The function to execute after a certain condition has been met
-     * @param {function} testFunction This function should is a wrapper for the logic to test whether the condition for
-     * functionToExecute has been met. It should return false till the condition is unmet, and true once it is met.
-     * @param {int|undefined} timeOutMillisec Optional time out value. Default is 1 minute.
-     *  If this value is zero or negative, functionToExecute won't be executed at all
-     */
-    function executeWhenConditionMet(functionToExecute, testFunction, timeOutMillisec) {
-        if (typeof(timeOutMillisec) === "undefined") {
-            timeOutMillisec = 60000; //1 min
-        }
-
-        if (testFunction()){
-            functionToExecute();
-        }
-        else if (timeOutMillisec > 0){
-            setTimeout(executeWhenConditionMet.bind(null, functionToExecute, testFunction, timeOutMillisec-50),50);
-        }
-        else {
-            console.warn("UnitsProj extn: executeWhenConditionMet() timed out for function..:\n", functionToExecute, "\n... and testFunction:\n", testFunction);
-        }
-    }
 
 // De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
 // Note: stringification assumed to have been done by stringifyFunctions() function called in the background script
@@ -2885,59 +2710,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                 }
             }
         }
-    }
-
-// Converts any "shorthand" notations within the UrlData to their "expanded" forms.
-// Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in UrlData
-    function expandUrlData(UrlData) {
-
-        // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
-        // 'selector' that points to the string instead.
-        var expandPropertyToObjIfString = function(obj, key) {
-            var str;
-            if (typeof (str = obj[key]) === "string") {
-                obj[key] = {
-                    selector: str
-                };
-            }
-        };
-
-        // uses defaultValuesFor_stdUrlDataItems to supplement values in the MU/action (specified using the first two params)
-        // 'scope' can be either "page" or "CUs"
-        var supplementWithDefaultValues = function(MUorAction, MUOrAction_Name, scope) {
-
-            var temp;
-            if (!MUorAction.kbdShortcuts && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
-                MUorAction.kbdShortcuts = temp.kbdShortcuts;
-            }
-            if (!MUorAction.miniDescr && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
-                MUorAction.miniDescr = temp.miniDescr;
-            }
-        };
-
-        // scope can be either "page" or "CUs"
-        var expandMUsOrActions = function(MUsOrActions, scope) {
-            if (typeof MUsOrActions === "object") {
-                for (var MUOrAction_Name in MUsOrActions) {
-                    expandPropertyToObjIfString(MUsOrActions, MUOrAction_Name);
-                    supplementWithDefaultValues(MUsOrActions[MUOrAction_Name], MUOrAction_Name, scope);
-                }
-            }
-        };
-
-        expandPropertyToObjIfString(UrlData, 'CUs_specifier');
-
-        expandMUsOrActions(UrlData.CUs_MUs, "CUs");
-        expandMUsOrActions(UrlData.CUs_actions, "CUs");
-
-        expandMUsOrActions(UrlData.page_MUs, "page");
-        expandMUsOrActions(UrlData.page_actions, "page");
-
-    }
-
-    function processUrlData(UrlData) {
-        expandUrlData(UrlData);
-        destringifyFunctions(UrlData);
     }
 
     function suppressEvent(e) {
@@ -3224,6 +2996,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_chromeAltHack, _u.CONSTS);
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
 
 

@@ -2,12 +2,12 @@
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
 
-            if (request.message === 'getUrlData') {
+            if (request.message === 'getSettings') {
 
                 var sendResponseWhenReady = function() {
                     if (publicSuffixMap) {
-                        var UrlData = getUrlData(request.locationObj);
-                        sendResponse(UrlData);
+                        var settings = getSettings(request.locationObj);
+                        sendResponse(settings);
                     }
                     else {
                         setTimeout(sendResponseWhenReady, 100);
@@ -183,7 +183,15 @@
         return true;
     }
 
-    function getUrlData(locationObj) {
+    function getSettings(locationObj) {
+        return {
+            globalMiscSettings: globalMiscSettings,
+            browserShortcuts: browserShortcuts,
+            generalShortcuts: generalShortcuts,
+            expandedUrlData: getExpandedUrlData(locationObj)
+        };
+    }
+    function getExpandedUrlData(locationObj) {
 
         if (!locationObj) {
             return null;
@@ -201,12 +209,62 @@
 
         if (UrlData) {
             stringifyFunctions(UrlData);
+            expandUrlData(UrlData);
             return UrlData;
         }
         else {
             // TODO: Url data not found; anything else to be done?
             return null;
         }
+
+    }
+
+
+// Converts any "shorthand" notations within the UrlData to their "expanded" forms.
+// Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in UrlData
+    function expandUrlData(UrlData) {
+
+        // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
+        // 'selector' that points to the string instead.
+        var expandPropertyToObjIfString = function(obj, key) {
+            var str;
+            if (typeof (str = obj[key]) === "string") {
+                obj[key] = {
+                    selector: str
+                };
+            }
+        };
+
+        // uses defaultValuesFor_stdUrlDataItems to supplement values in the MU/action (specified using the first two params)
+        // 'scope' can be either "page" or "CUs"
+        var supplementWithDefaultValues = function(MUorAction, MUOrAction_Name, scope) {
+
+            var temp;
+            if (!MUorAction.kbdShortcuts && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
+                MUorAction.kbdShortcuts = temp.kbdShortcuts;
+            }
+            if (!MUorAction.miniDescr && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
+                MUorAction.miniDescr = temp.miniDescr;
+            }
+        };
+
+        // scope can be either "page" or "CUs"
+        var expandMUsOrActions = function(MUsOrActions, scope) {
+            if (typeof MUsOrActions === "object") {
+                for (var MUOrAction_Name in MUsOrActions) {
+                    expandPropertyToObjIfString(MUsOrActions, MUOrAction_Name);
+                    supplementWithDefaultValues(MUsOrActions[MUOrAction_Name], MUOrAction_Name, scope);
+                }
+            }
+        };
+
+        expandPropertyToObjIfString(UrlData, 'CUs_specifier');
+
+        expandMUsOrActions(UrlData.CUs_MUs, "CUs");
+        expandMUsOrActions(UrlData.CUs_actions, "CUs");
+
+        expandMUsOrActions(UrlData.page_MUs, "page");
+        expandMUsOrActions(UrlData.page_actions, "page");
 
     }
 
@@ -342,7 +400,4 @@
 
     }
 
-    chrome.commands.onCommand.addListener(function(command) {
-        console.log('Command:', command);
-    });
 })(_u.helper);

@@ -13,8 +13,8 @@ _u.CONSTS = (function(helper){
         /* -- Used by mod_CUsMgr -- */
         class_CUOverlay : "CU-overlay",                     // class applied to all CU overlays
         class_CUSelectedOverlay : "CU-overlay-selected",    // class applied to overlay on a selected CU
-        class_CUHoveredOverlay : "CU-overlay-hovered",      // class applied to overlay on a hovered CU
+        class_CUHoveredOverlay : "CU-overlay-hovered"      // class applied to overlay on a hovered CU
 
     };
-    return helper.getImmutableCopy(CONSTS);
+    return helper.makeImmutable(CONSTS);
 })(_u.helper);
