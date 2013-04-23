@@ -19,20 +19,19 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     //////////////////////////////////
 
     /* NOTES
-     1)  Often the most important content of a webpage is composed of a set of similar units. We call such a unit a Content
-     Unit (CU). E.g. on the Google Search results page, each search result is a CU. Each CU is a logical unit of content,
-     attention and navigation/access.
+     1) Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
+     adverts) is composed of a set of repeating units. We call such a unit a Content Unit (CU). E.g. on the Google Search
+     results page, each search result is a CU. Each CU is a logical unit of content, attention and navigation/access.
 
      Often a CU corresponds to single DOM element, like a <div> (and its contents). But this isn't always the case, and
      a CU might consist of multiple top level DOM elements (e.g: pages on Hacker News, Urban Dictionary, etc). To cater
      to the most general case, this program represents a CU as a jQuery set consisting of one or more DOM elements.
 
-     2)  DOM elements that can receive focus are called the "focusables"
+     2) DOM elements that can receive focus are called the "focusables"
 
-     3)  In the comments, including JSDoc ones, the term "JQuery *set*" is used to mean a JQuery object that can contain
+     3) In the comments, including JSDoc ones, the term "JQuery *set*" is used to mean a JQuery object that can contain
      *one or more* DOM elements; the term "JQuery *wrapper*" is used to denote one which is expected be a JQuery wrapper
      on a *single* DOM node.
-
 
      */
 
@@ -225,7 +224,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
      * This parameter is currently passed as true only from selectPrev() and selectNext()
-     * @param {object} options Misc options. Can also be used to override globalMiscSettings
+     * @param {object} [options] Misc options. Can also be used to override globalMiscSettings
      */
     var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
 //        console.log('selectCU() called');
@@ -458,7 +457,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
      * in the direction specified.
      * @param {string} direction Can be either 'up' or 'down'
-     * @param {object} options Misc options. Can also be used to override globalMiscSettings
+     * @param {object} [options] Misc options. Can also be used to override globalMiscSettings
      * @return {Boolean} value indicating whether scroll took place
      */
     function scrollSelectedCUIfRequired (direction, options) {
@@ -472,11 +471,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         var // for the window:
             winTop = $document.scrollTop(),
             winHeight = $(window).height(),
-            winBottom = winTop + winHeight,
+            winBottom = winTop + winHeight;
 
-        // for the CU:
-            CUTop = $CU.offset().top,
-            CUHeight = $CU.height(),
+        // for the CU
+        var boundingRect = getBoundingRectangle($CU),
+            CUTop = boundingRect.top,
+            CUHeight = boundingRect.height,
             CUBottom = CUTop + CUHeight;
 
         var newWinTop, // new value of scrollTop
@@ -515,7 +515,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     newWinTop = $document.height() - winHeight;
                 }
 
-                showScrollingMarker($CU.offset().left, winBottom - sameCUScrollOverlap, sameCUScrollOverlap);
+                showScrollingMarker(boundingRect.left, winBottom - sameCUScrollOverlap, sameCUScrollOverlap);
             }
 
             if (options.animatedCUScroll) {
@@ -550,8 +550,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             return;
         }
 
-        var options;
-
         // to handle quick repeated invocations...
         if (animationInProgress) {
             stopExistingScrollAnimation = true;
@@ -561,16 +559,14 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             stopExistingScrollAnimation = false;
         }
 
-        options = $.extend(true, {}, globalMiscSettings, options);
-
         $scrollingMarker.hide();
 
         var newIndex;
 
         if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
             new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
-            if (options.sameCUScroll) {
-                var scrolled = scrollSelectedCUIfRequired('up', options);
+            if (globalMiscSettings.sameCUScroll) {
+                var scrolled = scrollSelectedCUIfRequired('up');
                 if (scrolled) {
                     return;
                 }
@@ -581,10 +577,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
             newIndex = selectedCUIndex - 1;
             if (newIndex >= 0) {
-                selectCU(newIndex, true, true, options);
+                selectCU(newIndex, true, true);
             }
             // else do nothing
-
         }
         else {
             selectMostSensibleCU(true, true);
@@ -603,8 +598,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             return;
         }
 
-        var options;
-
         // to handle quick repeated invocations...
         if (animationInProgress) {
             stopExistingScrollAnimation = true;
@@ -614,8 +607,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             stopExistingScrollAnimation = false;
         }
 
-        options = $.extend(true, {}, globalMiscSettings, options);
-
         $scrollingMarker.hide();
 
         var newIndex;
@@ -623,8 +614,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
             new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
-            if (options.sameCUScroll) {
-                var scrolled = scrollSelectedCUIfRequired('down', options);
+            if (globalMiscSettings.sameCUScroll) {
+                var scrolled = scrollSelectedCUIfRequired('down');
                 if (scrolled) {
                     return;
                 }
