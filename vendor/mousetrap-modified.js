@@ -1,16 +1,17 @@
 /* Note (by Himanshu):
 The following modifications have been made to the original mousetrap.js code
-1. Changes to allow using 'space' key as a modifier. (These changes depend on the code in mousetrapExtensions.js)
-- added the following 'or condition'at the end of existing function _isModifier():
+1. Changes to allow using 'space' key as a modifier. (These changes depend on the code in mod_keyboardLib.js)
+- added the following 'or condition' at the end of existing function _isModifier():
  " || key == 'space'"
 
 - added the lines
-    if (isSpaceDown) {
+    if (Mousetrap.isSpaceDown) {
         modifiers.push('space');
     }
   just before the end of the existing function _eventModifiers()
 
-2. The call to addEventListener has been modified to set the 3rd param to true.
+2. Changed library to add event handlers in capturing phase. For this, the call to addEventListener has been modified
+to set the 3rd param to true.
 
 */
 
@@ -382,7 +383,7 @@ The following modifications have been made to the original mousetrap.js code
             modifiers.push('meta');
         }
 
-        if (isSpaceDown) {
+        if (Mousetrap.isSpaceDown) {
             modifiers.push('space');
         }
         return modifiers;

@@ -30,8 +30,7 @@ var globalMiscSettings = {
 
 /* Note for specifying keyboard shortcuts (Applies to the following three objects, as well as other shortcuts
  * specified in the urlData for a webpage):
- * In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key. This was done
- * by modifying the MouseTrap library.
+ * In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key.
  */
 
 var browserShortcuts = {

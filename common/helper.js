@@ -54,5 +54,35 @@ _u.helper = {
         else {
             console.warn("UnitsProj: executeWhenConditionMet() timed out for function..:\n", functionToExecute, "\n... and testFunction:\n", testFunction);
         }
+    },
+
+    /**
+     * returns true if the specified DOM element is editable (e.g: textbox), else false
+     * @param {DomElement} element
+     * @returns {boolean}
+     */
+    isElementEditable: function isElementEditable(element) {
+
+        var tagName_lowerCase = element.tagName.toLowerCase(),
+            typeProp_lowerCase = element.type && element.type.toLowerCase(),
+
+            editableInputTypes = ['text', 'date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
+                'range', 'search', 'tel', 'time', 'url', 'week'];
+
+        // if 'input' element with an unspecified type or an explicitly specified editable one
+        if (tagName_lowerCase === 'input' && ( !typeProp_lowerCase || editableInputTypes.indexOf(typeProp_lowerCase) >= 0)) {
+
+            return true;
+        }
+
+        if (tagName_lowerCase == 'textarea' || tagName_lowerCase == 'select') {
+            return true;
+        }
+
+        if (element.isContentEditable) {
+            return true;
+        }
+
+        return false;
     }
 };

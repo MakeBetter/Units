@@ -1,7 +1,7 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, helper, CONSTS) {
+_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_chromeAltHack, helper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -1878,7 +1878,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         }
         jQueryOn_eventHandlers = [];
 
-        Mousetrap.reset();
+        mod_keyboardLib.reset();
 
         mod_mutationObserver.stop();
 
@@ -1901,7 +1901,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
      keyboard input even when a "typable" element is not focused. The main example of this we encountered was the google
      search results page, which starts typing into the search box even when pressing keys when the search box doesn't
      have focus.
-     [This is done in addition to modifying the Mousetrap library to attach events in the capturing phase.]
+     [This is done in addition to having the keyboared library attach events in the capturing phase.]
 
      In the future, if required, we could consider doing these only for google search pages/sites where it is required.
      */
@@ -1913,19 +1913,15 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
         }
 
         if (suppressPropagation) {
-
-            Mousetrap.bind(shortcuts, suppressEvent, 'keypress');
-            Mousetrap.bind(shortcuts, suppressEvent, 'keyup');
+            mod_keyboardLib.bind(shortcuts, suppressEvent, 'keypress');
+            mod_keyboardLib.bind(shortcuts, suppressEvent, 'keyup');
         }
 
-        Mousetrap.bind(shortcuts, function(e) {
-
+        mod_keyboardLib.bind(shortcuts, function(e) {
             handler();
-
             if (suppressPropagation) {
                 suppressEvent(e);
             }
-
         }, 'keydown');
 
         if (mod_chromeAltHack) {
@@ -1956,7 +1952,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 //    bind(['shift+q'], function() {console.log('shift q');});
 //    bind(['q'], function() {console.log('q')});
 
-        // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke Mousetrap.reset()
+        // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke mod_keyboardLib.reset()
         bind(browserShortcuts.toggleExtension, disableExtension);
     }
 
@@ -2139,7 +2135,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
                     selectMostSensibleCU(true, true);
                 }
             }
-            else if (isElementEditable(activeEl)) {
+            else if (helper.isElementEditable(activeEl)) {
                 activeEl.blur();
             }
             else {
@@ -2507,8 +2503,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         setupBasicUIComponents(); // also set up their associated event handlers
 
-        // this should be done  before binding any keydown/keypress/keyup events (including Mousetrap binds)
-        // so that these event handlers get preference ([left-mouse-button+<key>] should get preference over <key>)
+        // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
+        // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
         setupExternalSearchEvents();
 
         addEventListener2(document, 'keydown', onKeydown, true);
@@ -2906,7 +2902,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
         var code = e.which || e.keycode;
 
-        if (isSpaceDown && code !== 32 && code !== 16) { // 32 is space, 16 shift
+        if (mod_keyboardLib.isSpaceDown() && code !== 32 && code !== 16) { // 32 is space, 16 shift
 
             if (code === 190) { // code for '.'
                 selectFocusable(e.shiftKey? "prev": "next", null);
@@ -2996,6 +2992,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_chromeAltHack, 
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
 
 
