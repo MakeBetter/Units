@@ -312,7 +312,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     mod_mutationObserver.start();
                 }
             }
-
         }
         selectedCUIndex = -1;
     };
@@ -450,7 +449,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }, 3000);
 
         $scrollingMarker.css({top: y, left: x-$scrollingMarker.width()-5, height: height}).show();
-
     };
 
     /**
@@ -480,14 +478,14 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             CUBottom = CUTop + CUHeight;
 
         var newWinTop, // new value of scrollTop
-            sameCUScrollOverlap = 40,
+            overlapAfterScroll = 40,
             margin = 30;
 
         direction = direction.toLowerCase();
         if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight) ||
             (direction === 'down' && CUBottom > winBottom) ) {
             if (direction === 'up' ) { // implies CUTop < winTop + pageHeaderHeight
-                newWinTop = winTop - winHeight + sameCUScrollOverlap;
+                newWinTop = winTop - (winHeight - pageHeaderHeight) + overlapAfterScroll; //TODO: verify the math
 
                 // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
                 // increase it to the max value required to show the entire CU with some margin left.
@@ -498,11 +496,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 if (newWinTop < 0) {
                     newWinTop = 0;
                 }
+                showScrollingMarker(boundingRect.left, winTop+pageHeaderHeight, overlapAfterScroll);
             }
 
             else  { //direction === 'down' && CUBottom > winBottom
 
-                newWinTop = winBottom - sameCUScrollOverlap;
+                newWinTop = winBottom - overlapAfterScroll - pageHeaderHeight;
 
                 // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
                 // reduce it to the min value required to show the entire CU with some margin left.
@@ -515,7 +514,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     newWinTop = $document.height() - winHeight;
                 }
 
-                showScrollingMarker(boundingRect.left, winBottom - sameCUScrollOverlap, sameCUScrollOverlap);
+                showScrollingMarker(boundingRect.left, winBottom - overlapAfterScroll, overlapAfterScroll);
             }
 
             if (options.animatedCUScroll) {
@@ -1549,42 +1548,38 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 // top of the current view.
 // Only the part of the header below the view's top is considered, and its size returned. If there is more than one
 // header element, we do the same thing, but for the bottommost one.
-    var getEffectiveHeaderHeight = function() {
+    function getEffectiveHeaderHeight() {
 
-        var headerData = expandedUrlData && expandedUrlData.page_MUs && expandedUrlData.page_MUs.std_header;
-        if (!headerData) {
+        var tmp;
+        var headerSelector = (tmp = expandedUrlData) && (tmp = tmp.CUs_MUs) && (tmp = tmp.std_header) && tmp.selector;
+        if (!headerSelector) {
             return 0;
         }
 
-        var headerSelector;
+        var $headers = $(headerSelector).filter(':visible'),
+            headersLen;
 
-        if (typeof (headerSelector = headerData) === "string" || typeof (headerSelector = headerData.specifier) === "string") {
-            var $headers = $(headerSelector).filter(':visible'),
-                headersLen;
+        if ($headers && (headersLen = $headers.length)) {
 
-            if ($headers && (headersLen = $headers.length)) {
+            var maxHeaderBottom = 0;
 
-                var maxHeaderBottom = 0;
+            for (var i = 0; i < headersLen; ++i) {
+                var $header = $headers.eq(i),
+                    headerTop = $header.offset().top,
+                    headerBottom = headerTop + $header.height();
 
-                for (var i = 0; i < headersLen; ++i) {
-                    var $header = $headers.eq(i),
-                        headerTop = $header.offset().top,
-                        headerBottom = headerTop + $header.height();
-
-                    if (headerBottom > maxHeaderBottom) {
-                        maxHeaderBottom = headerBottom;
-                    }
-
+                if (headerBottom > maxHeaderBottom) {
+                    maxHeaderBottom = headerBottom;
                 }
 
-                var  winTop = $document.scrollTop();
-
-                return Math.max(0, maxHeaderBottom-winTop);
-
             }
+            var  winTop = $document.scrollTop();
+            return Math.max(0, maxHeaderBottom-winTop);
         }
-        return 0;
-    };
+        else {
+            return 0;
+        }
+    }
 
     var isRtMouseButton = function(e) {
         // following right code mostly taken from http://www.quirksmode.org/js/events_properties.html
