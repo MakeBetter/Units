@@ -9,66 +9,68 @@ A note on the terms 'CU' and 'MU' that occur multiple times throughout this file
  - ones outside any CU, and generally applicable to the whole page itself (e.g: 'logout' link, search field, etc).
  */
 
-/* The 'unitsData' object (along with the 'specialDomain_masterDomain_map' object) provides a way to map a URL
- (stripped of http(s):// etc) to the data associated with that URL (called 'UrlData'), which identifies elements of
- importance on the webpage, including any "main units" (CUs), and the  associated keyboard shortcuts. The 'UrlData' also specifies
- any other information associated with the URL.
+/*
+The object `defaultSettings.urlData_combined` (along with the 'specialDomain_masterDomain_map' object) provides a way to
+map each URl to the data associated with it (which is called the `urlData` corresponding to that URL). [Currently, the
+term "URL" is used to mean the part of the URL that is stripped of "http(s)://", etc].
+Each `urlData` object identifies elements of importance on the webpage, including any "content units" (CUs), and the
+associated keyboard shortcuts. The 'UrlData' also specifies any other information associated with the URL.
 
- Notes:
- 1) Each key of the unitsData object is called a domain-key, and is the "main domain" for the corresponding
- website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
+Notes:
+1) Each key of the urlData_combined object is called a domain-key, and is the "main domain" for the corresponding
+website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
 
- 2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
- domain-key is called a "master domain". For example, google.com may be used as the master domain for google.co.in etc)
+2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
+domain-key is called a "master domain". For example, google.com may be used as the master domain for google.co.in etc)
 
- The value mapped to any master domain-key is generally an array. Each object of the array is a 'UrlData' type
- object, and it contains data associated with one or more URLs. Which URLs match a 'UrlData' object depends on the
- 'urlRegexps' (regular expressions) and 'urlPatterns' (explained below) properties of that object, and a single
- "UrlData" key.
- For an array with only one 'UrlData' object, the object may directly be specified instead of the array.
+The value mapped to any master domain-key is generally an array. Each object of the array is a 'UrlData' type
+object, and it contains data associated with one or more URLs. Which URLs match a 'UrlData' object depends on the
+'urlRegexps' (regular expressions) and 'urlPatterns' (explained below) properties of that object, and a single
+"UrlData" key.
+For an array with only one 'UrlData' object, the object may directly be specified instead of the array.
 
- So how exactly is a URL mapped to a 'UrlData' object? For any url, from among the array of 'UrlData' objects mapped
- to its domain/master domain, the 'UrlData' object containing the first matching pattern/regexp is used. Hence the
- "UrlData" objects should be ordered accordingly.
- Eg: The UrlData associated with a default/catch-all regexp should be the last one specified.
+So how exactly is a URL mapped to a 'UrlData' object? For any url, from among the array of 'UrlData' objects mapped
+to its domain/master domain, the 'UrlData' object containing the first matching pattern/regexp is used. Hence the
+"UrlData" objects should be ordered accordingly.
+Eg: The UrlData associated with a default/catch-all regexp should be the last one specified.
 
- (The aforementioned "urlPatterns" offer a simpler alternative to regexps, in case a  full regexp is not required.
- They allow using *'s and @'s as "wildcards":
- - A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
- - A '*' matches any combination of *one or more* characters of *ANY* type.)
+(The aforementioned "urlPatterns" offer a simpler alternative to regexps, in case a  full regexp is not required.
+They allow using *'s and @'s as "wildcards":
+- A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
+- A '*' matches any combination of *one or more* characters of *ANY* type.)
 
- 3) Only the part of the url after http(s):// is considered for matching with the provided patterns/regexps.
+3) Only the part of the url after http(s):// is considered for matching with the provided patterns/regexps.
 
- 4) As is convention, a domain name is considered case insensitive, but the rest of the URL isn't
+4) As is convention, a domain name is considered case insensitive, but the rest of the URL isn't
 
- 5) Regarding functions specified in the object:
- i) They will run in the context of the content script
- ii) Most functions will have access to a $CU type variable. If for any reason, the function needs to modify any
- properties on it, it must be done indirectly using the jQuery data() function (so that it stays associated with
- underlying DOM element(s), rather  than the jQuery set which changes whenever the CUs array is recalculated,
- for instance on dom change. E.g: $CU.data('foo', bar) instead of $CU.foo = bar.
+5) Regarding functions specified in the object:
+i) They will run in the context of the content script
+ii) Most functions will have access to a $CU type variable. If for any reason, the function needs to modify any
+properties on it, it must be done indirectly using the jQuery data() function (so that it stays associated with
+underlying DOM element(s), rather  than the jQuery set which changes whenever the CUs array is recalculated,
+for instance on dom change. E.g: $CU.data('foo', bar) instead of $CU.foo = bar.
 
- The data is structured this way because:
- i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
- UrlData objects associated with a URL's domain takes O(1) time, and search for the specific UrlData object matching
- the URL is then restricted to the (very small) array.
- ii) it results in better structure/organization compared to having arrays of regexps at the top level.
+The data is structured this way because:
+i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
+UrlData objects associated with a URL's domain takes O(1) time, and search for the specific UrlData object matching
+the URL is then restricted to the (very small) array.
+ii) it results in better structure/organization compared to having arrays of regexps at the top level.
 
- 6) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
+6) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
 
- 7) // Guide for standard ("std_") items in UrlData:
- This applies to MUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
- These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('miniDescr' property).
- This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
- to these items. However, if it specifically makes sense in a given case, these values (one or both) should be provided
- and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
- opposed to supplementing them.) This allows complete control over what keyboard shortcuts are applied to a page.
+7) // Guide for standard ("std_") items in UrlData:
+This applies to MUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
+These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('miniDescr' property).
+This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
+to these items. However, if it specifically makes sense in a given case, these values (one or both) should be provided
+and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
+opposed to supplementing them.) This allows complete control over what keyboard shortcuts are applied to a page.
  */
 // TODO: format of each UrlData to be explained along with various ways of specifying, and the various keys etc.
 // TODO: maybe the formats can be explained at two levels - simple options and advanced ones
 // One way of finding out all the properties that can be supplied to this object, is to search for UrlData variable
 // in the content scripts
-var unitsData = {
+defaultSettings.urlData_combined = {
     // ** NOTE: domain-keys are listed alphabetically **
 
     // this domain key serves only as an example illustrating the structure of a domain-key and value pair. is named so to appear first among sorted keys

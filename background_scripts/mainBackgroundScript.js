@@ -178,12 +178,19 @@
     }
 
     function getSettings(locationObj) {
-        return {
+        var settings = {
             miscGlobalSettings: defaultSettings.miscGlobalSettings,
             browserShortcuts: defaultSettings.browserShortcuts,
             generalShortcuts: defaultSettings.generalShortcuts,
             expandedUrlData: getExpandedUrlData(locationObj)
         };
+        var userSettings = getUserSettings();
+        return $.extend(true, settings, userSettings);
+    }
+
+    function getUserSettings() {
+        // TODO: implement this
+        return {};
     }
 
     function getExpandedUrlData(locationObj) {
@@ -285,14 +292,14 @@
 
     function getUrlDataUsingDomainKey(domainKey, locationObj) {
 
-        var UrlDataArr = unitsData[domainKey];
+        var UrlDataArr = defaultSettings.urlData_combined[domainKey];
 
         if (!UrlDataArr) {
             return false;
         }
 
         while (typeof UrlDataArr === "string") {
-            UrlDataArr = unitsData[UrlDataArr];
+            UrlDataArr = defaultSettings.urlData_combined[UrlDataArr];
         }
 
         if (!Array.isArray(UrlDataArr)) {

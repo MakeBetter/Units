@@ -11,11 +11,14 @@
     },
 
     "background": {
+        "__comment": "*Note:* jQuery is being used only for .extend() here. Consider implementing it yourself/other alternatives",
         "scripts": [
+            "vendor/jquery-1.9.0.min.js",
+
             "common/helper.js",
 
             "background_scripts/data/defaultSettings.js",
-            "background_scripts/data/unitsData.js",
+            "background_scripts/data/urlData_combined.js",
             "background_scripts/data/searchData.js",
 
             "background_scripts/searchExternalSite.js",
@@ -52,6 +55,7 @@
     ],
 
     "permissions": [
-        "tabs"
+        "tabs",
+        "storage"
     ]
 }
