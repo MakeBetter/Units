@@ -4,7 +4,7 @@ mod_keyboardLib
 This module provides a wrapper around, and extension to, the MouseTrap library for the rest of the module. If the MouseTrap
 library can be replaced with something else, this is the only module that will have to be changed.
 
-The following extensions are made to the original Mousetrap liberary:
+The following extensions are made to the original Mousetrap library:
 1) Add code which enables the use of 'space' key as a modifier (working in conjunction with the mousetrap-modified.js
 code)
 2) Override Mousetrap.stopCallback according to our specific logic, which:
@@ -13,7 +13,6 @@ code)
     ii) prevents shortcuts without one of the keys listed above from getting invoked ONLY within an text editable
      input element (see code for details), and NOT all input elements (which is mousetrap's default behavior)
  */
-
 
 _u.mod_keyboardLib = (function(helper) {
     "use strict";
