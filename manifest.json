@@ -13,7 +13,7 @@
     "background": {
         "__comment": "*Note:* jQuery is being used only for .extend() here. Consider implementing it yourself/other alternatives",
         "scripts": [
-            "vendor/jquery-1.9.0.min.js",
+            "vendor/jquery-2.0.0.min.js",
 
             "common/helper.js",
 
@@ -31,7 +31,7 @@
             "matches": ["<all_urls>"],
 
             "js": [
-                "vendor/jquery-1.9.0.min.js",
+                "vendor/jquery-2.0.0.min.js",
                 "vendor/underscore-dependencies.js",
                 "vendor/backbone-events.js",
                 "vendor/mousetrap-modified.js",
