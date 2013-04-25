@@ -429,33 +429,33 @@ var unitsData = {
 //                "overlayPadding": "3px 6px 3px 0"
         }
     },
-    "wikipedia.org": {
-        urlPatterns: ["@.wikipedia.org/wiki/*"],
-        CUs_specifier: {
-            buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
-            exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
-        }
-    },
-    "ycombinator.com": {
-        urlPatterns: ["news.ycombinator.com*"],
-        CUs_specifier: {
-            buildCUAround: "td.title>a"
-        },
-        CUs_style: {
-            useInnerElementsToGetOverlaySize: true,
-            "overlayPadding": "3px 6px 3px 0"
-        },
-        CUs_actions: {
-
-        },
-        CUs_MUs: {
-            "std_mainEl": "td.title>a",
-            "std_viewComments": {
-                kbdShortcuts: ["c", "g c"], // overridden to add additional shortcut
-                selector: "a:contains('comment'), a:contains('discuss')"
-            }
-        }
-    }
+//    "wikipedia.org": {
+//        urlPatterns: ["@.wikipedia.org/wiki/*"],
+//        CUs_specifier: {
+//            buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
+//            exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
+//        }
+//    },
+//    "ycombinator.com": {
+//        urlPatterns: ["news.ycombinator.com*"],
+//        CUs_specifier: {
+//            buildCUAround: "td.title>a"
+//        },
+//        CUs_style: {
+//            useInnerElementsToGetOverlaySize: true,
+//            "overlayPadding": "3px 6px 3px 0"
+//        },
+//        CUs_actions: {
+//
+//        },
+//        CUs_MUs: {
+//            "std_mainEl": "td.title>a",
+//            "std_viewComments": {
+//                kbdShortcuts: ["c", "g c"], // overridden to add additional shortcut
+//                selector: "a:contains('comment'), a:contains('discuss')"
+//            }
+//        }
+//    }
 };
 
 // this array allows mapping a special domain to the corresponding "master domain"
