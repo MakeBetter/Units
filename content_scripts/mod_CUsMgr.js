@@ -2030,8 +2030,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         if (scope === 'CUs' && !$selectedCU) {
             return;
         }
-        var UrlDataDeepCopy =  $.extend(true, {}, expandedUrlData);
-        fn($selectedCU, document, UrlDataDeepCopy);
+        var urlDataDeepCopy =  $.extend(true, {}, expandedUrlData);
+        fn($selectedCU, document, urlDataDeepCopy);
     }
 
     /**

@@ -14,7 +14,7 @@ The object `defaultSettings.urlData_combined` (along with the 'specialDomain_mas
 map each URl to the data associated with it (which is called the `urlData` corresponding to that URL). [Currently, the
 term "URL" is used to mean the part of the URL that is stripped of "http(s)://", etc].
 Each `urlData` object identifies elements of importance on the webpage, including any "content units" (CUs), and the
-associated keyboard shortcuts. The 'UrlData' also specifies any other information associated with the URL.
+associated keyboard shortcuts. The `urlData` also specifies any other information associated with the URL.
 
 Notes:
 1) Each key of the urlData_combined object is called a domain-key, and is the "main domain" for the corresponding
@@ -23,18 +23,17 @@ website, i.e. the topmost "registrable" domain based on the public suffix list (
 2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
 domain-key is called a "master domain". For example, google.com may be used as the master domain for google.co.in etc)
 
-The value mapped to any master domain-key is generally an array. Each object of the array is a 'UrlData' type
-object, and it contains data associated with one or more URLs. Which URLs match a 'UrlData' object depends on the
-'urlRegexps' (regular expressions) and 'urlPatterns' (explained below) properties of that object, and a single
-"UrlData" key.
-For an array with only one 'UrlData' object, the object may directly be specified instead of the array.
+The value mapped to any master domain-key is an array. For an array with only one `urlData` object, the object may
+directly be specified instead of the array.
 
-So how exactly is a URL mapped to a 'UrlData' object? For any url, from among the array of 'UrlData' objects mapped
-to its domain/master domain, the 'UrlData' object containing the first matching pattern/regexp is used. Hence the
-"UrlData" objects should be ordered accordingly.
-Eg: The UrlData associated with a default/catch-all regexp should be the last one specified.
+A URL is mapped to a `urlData` object as follows. For any url, from among the array of `urlData` objects mapped
+to its domain/master domain, the `urlData` object containing the first matching wildcard pattern/regexp is used.
+(And so the "urlData" objects should be ordered accordingly. Eg: The urlData associated with a default/catch-all regexp
+should be the last one specified.)
 
-(The aforementioned "urlPatterns" offer a simpler alternative to regexps, in case a  full regexp is not required.
+The regexps associated with a `urlData` object are specified using the `urlRegexp` property. Wildcard-like patterns
+can also be specified using the `urlPatterns` property, as explained below:
+TODO: use '*' with the consistent meaning of *zero or more*. Use '+' instead for "one or more" if required.
 They allow using *'s and @'s as "wildcards":
 - A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
 - A '*' matches any combination of *one or more* characters of *ANY* type.)
@@ -52,13 +51,13 @@ for instance on dom change. E.g: $CU.data('foo', bar) instead of $CU.foo = bar.
 
 The data is structured this way because:
 i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
-UrlData objects associated with a URL's domain takes O(1) time, and search for the specific UrlData object matching
+urlData objects associated with a URL's domain takes O(1) time, and search for the specific urlData object matching
 the URL is then restricted to the (very small) array.
 ii) it results in better structure/organization compared to having arrays of regexps at the top level.
 
 6) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
 
-7) // Guide for standard ("std_") items in UrlData:
+7) // Guide for standard ("std_") items in urlData:
 This applies to MUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
 These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('miniDescr' property).
 This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
@@ -66,9 +65,9 @@ to these items. However, if it specifically makes sense in a given case, these v
 and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
 opposed to supplementing them.) This allows complete control over what keyboard shortcuts are applied to a page.
  */
-// TODO: format of each UrlData to be explained along with various ways of specifying, and the various keys etc.
+// TODO: format of each urlData to be explained along with various ways of specifying, and the various keys etc.
 // TODO: maybe the formats can be explained at two levels - simple options and advanced ones
-// One way of finding out all the properties that can be supplied to this object, is to search for UrlData variable
+// One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
 // in the content scripts
 defaultSettings.urlData_combined = {
     // ** NOTE: domain-keys are listed alphabetically **
@@ -176,14 +175,14 @@ defaultSettings.urlData_combined = {
             // the structure of this item matches that of CUs_actions
             page_actions: {
                 "std_onCUSelection": {
-                    // NOTE: the UrlData paratmenter is a deep clone the original
-                    fn: function($selectedCU, document, UrlData) {
+                    // NOTE: the urlData paratmenter is a deep clone the original
+                    fn: function($selectedCU, document, urlData) {
                         // this code will execute whenever a CU is selected
                     }
                     //kbdShortcuts: null  // this is optional for standard items (i.e. ones prefixed with "std_")
                 },
                 "std_onCUDeselection": {
-                    fn: function($deselectedCU, document, UrlData) {
+                    fn: function($deselectedCU, document, urlData) {
                         // this code will execute whenever a CU is deselected
                     }
                 }
@@ -235,7 +234,7 @@ defaultSettings.urlData_combined = {
                 "toggle-preview": {
                     kbdShortcuts: ["p"],
                     // this function is meant to work in conjunction with std_onCUDeselection (see below)
-                    fn: function($selectedCU, document, UrlData) {
+                    fn: function($selectedCU, document, urlData) {
                         var $previewPane = $('#nycp');
                         // Closes any open preview on the page.
                         var closePreview = function() {
@@ -266,7 +265,7 @@ defaultSettings.urlData_combined = {
             },
             page_actions: {
                 "std_onCUDeselection": {
-                    fn: function($deselectedCU, document, UrlData) {
+                    fn: function($deselectedCU, document, urlData) {
                         if ($('#nycp').is(':visible')) { // if the preview pane is already visible
                             var closePreviewBtn = document.getElementById("nycx");
                             closePreviewBtn &&  closePreviewBtn.click();

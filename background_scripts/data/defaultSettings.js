@@ -10,7 +10,7 @@ var defaultSettings = {
     /*
      The data in this file specifies sites where the extension should not run/run in partial mode.
      Patterns for matching urls can be specified using either the 'url pattern' format allowing '@' and '*' wildcards,
-     or regexp objects the aforementioned patterns don't suffice. Details about the 'url pattern' format can be found
+     or regexp objects where the aforementioned patterns don't suffice. Details about the 'url pattern' format can be found
      in the urlData_combined.js file.
      */
     disabledSites: {

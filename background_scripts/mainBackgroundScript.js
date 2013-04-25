@@ -200,19 +200,19 @@
         }
 
         var domain = getMainDomain(locationObj);
-        var UrlData = getUrlDataUsingDomainKey(domain, locationObj);
+        var urlData = getUrlDataUsingDomainKey(domain, locationObj);
 
-        if (!UrlData) {
+        if (!urlData) {
             var masterDomainKey = getMasterDomainKey(domain);
             if (masterDomainKey) {
-                UrlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
+                urlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
             }
         }
 
-        if (UrlData) {
-            stringifyFunctions(UrlData);
-            expandUrlData(UrlData);
-            return UrlData;
+        if (urlData) {
+            stringifyFunctions(urlData);
+            expandUrlData(urlData);
+            return urlData;
         }
         else {
             // TODO: Url data not found; anything else to be done?
@@ -220,9 +220,9 @@
         }
     }
 
-// Converts any "shorthand" notations within the UrlData to their "expanded" forms.
-// Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in UrlData
-    function expandUrlData(UrlData) {
+// Converts any "shorthand" notations within the urlData to their "expanded" forms.
+// Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in urlData
+    function expandUrlData(urlData) {
 
         // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
         // 'selector' that points to the string instead.
@@ -258,13 +258,13 @@
             }
         };
 
-        expandPropertyToObjIfString(UrlData, 'CUs_specifier');
+        expandPropertyToObjIfString(urlData, 'CUs_specifier');
 
-        expandMUsOrActions(UrlData.CUs_MUs, "CUs");
-        expandMUsOrActions(UrlData.CUs_actions, "CUs");
+        expandMUsOrActions(urlData.CUs_MUs, "CUs");
+        expandMUsOrActions(urlData.CUs_actions, "CUs");
 
-        expandMUsOrActions(UrlData.page_MUs, "page");
-        expandMUsOrActions(UrlData.page_actions, "page");
+        expandMUsOrActions(urlData.page_MUs, "page");
+        expandMUsOrActions(urlData.page_actions, "page");
 
     }
 
@@ -292,25 +292,25 @@
 
     function getUrlDataUsingDomainKey(domainKey, locationObj) {
 
-        var UrlDataArr = defaultSettings.urlData_combined[domainKey];
+        var urlDataArr = defaultSettings.urlData_combined[domainKey];
 
-        if (!UrlDataArr) {
+        if (!urlDataArr) {
             return false;
         }
 
-        while (typeof UrlDataArr === "string") {
-            UrlDataArr = defaultSettings.urlData_combined[UrlDataArr];
+        while (typeof urlDataArr === "string") {
+            urlDataArr = defaultSettings.urlData_combined[urlDataArr];
         }
 
-        if (!Array.isArray(UrlDataArr)) {
-            UrlDataArr = [UrlDataArr];
+        if (!Array.isArray(urlDataArr)) {
+            urlDataArr = [urlDataArr];
         }
 
-        var UrlDataArrLen = UrlDataArr.length;
-        for (var i = 0; i < UrlDataArrLen; ++i) {
+        var urlDataArrLen = urlDataArr.length;
+        for (var i = 0; i < urlDataArrLen; ++i) {
 
-            var UrlData = UrlDataArr[i],
-                regexpsToTest = getCombinedRegexps(UrlData),
+            var urlData = urlDataArr[i],
+                regexpsToTest = getCombinedRegexps(urlData),
                 currentUrl = locationObj.href,
                 protocolSeparator = "://", // to strip the leading http:// or https:// etc.
                 strippedUrlBeginIndex = currentUrl.indexOf(protocolSeparator) + protocolSeparator.length,
@@ -321,7 +321,7 @@
 
                 regexp = regexpsToTest[j];
                 if (regexp.test(strippedUrl)) {
-                    return UrlData;
+                    return urlData;
                 }
             }
 
@@ -343,11 +343,11 @@
     }
 
 // returns an array combining these two sets of regexps:
-// 1) regexps corresponding to the 'urlPatterns' property of the UrlData object
-// 2) regexps directly specified using the 'urlRegexps' property of the UrlData object
-    function getCombinedRegexps(UrlData) {
-        var urlPatterns = UrlData.urlPatterns,
-            urlRegexps = UrlData.urlRegexps,
+// 1) regexps corresponding to the 'urlPatterns' property of the urlData object
+// 2) regexps directly specified using the 'urlRegexps' property of the urlData object
+    function getCombinedRegexps(urlData) {
+        var urlPatterns = urlData.urlPatterns,
+            urlRegexps = urlData.urlRegexps,
             combinedRegexps = [];
 
         if (urlPatterns) {
