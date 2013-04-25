@@ -18,7 +18,7 @@
             "common/helper.js",
 
             "background_scripts/data/defaultSettings.js",
-            "background_scripts/data/urlData_combined.js",
+            "background_scripts/data/urlDataMap.js",
             "background_scripts/data/searchData.js",
 
             "background_scripts/searchExternalSite.js",

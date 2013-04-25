@@ -292,14 +292,14 @@
 
     function getUrlDataUsingDomainKey(domainKey, locationObj) {
 
-        var urlDataArr = defaultSettings.urlData_combined[domainKey];
+        var urlDataArr = defaultSettings.urlDataMap[domainKey];
 
         if (!urlDataArr) {
             return false;
         }
 
         while (typeof urlDataArr === "string") {
-            urlDataArr = defaultSettings.urlData_combined[urlDataArr];
+            urlDataArr = defaultSettings.urlDataMap[urlDataArr];
         }
 
         if (!Array.isArray(urlDataArr)) {

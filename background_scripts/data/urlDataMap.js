@@ -10,14 +10,14 @@ A note on the terms 'CU' and 'MU' that occur multiple times throughout this file
  */
 
 /*
-The object `defaultSettings.urlData_combined` (along with the 'specialDomain_masterDomain_map' object) provides a way to
+The object `defaultSettings.urlDataMap` (along with the 'specialDomain_masterDomain_map' object) provides a way to
 map each URl to the data associated with it (which is called the `urlData` corresponding to that URL). [Currently, the
 term "URL" is used to mean the part of the URL that is stripped of "http(s)://", etc].
 Each `urlData` object identifies elements of importance on the webpage, including any "content units" (CUs), and the
 associated keyboard shortcuts. The `urlData` also specifies any other information associated with the URL.
 
 Notes:
-1) Each key of the urlData_combined object is called a domain-key, and is the "main domain" for the corresponding
+1) Each key of the urlDataMap object is called a domain-key, and is the "main domain" for the corresponding
 website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
 
 2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
@@ -69,7 +69,7 @@ opposed to supplementing them.) This allows complete control over what keyboard 
 // TODO: maybe the formats can be explained at two levels - simple options and advanced ones
 // One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
 // in the content scripts
-defaultSettings.urlData_combined = {
+defaultSettings.urlDataMap = {
     // ** NOTE: domain-keys are listed alphabetically **
 
     // this domain key serves only as an example illustrating the structure of a domain-key and value pair. is named so to appear first among sorted keys

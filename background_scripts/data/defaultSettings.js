@@ -4,14 +4,14 @@ Most of these settings can be overridden by the user
 */
 var defaultSettings = {
 
-    // Only exists as a placeholder (for reference). The property assigned in urlData_combined.js
-    urlData_combined: null,
+    // Only exists as a placeholder (for reference). The property assigned in urlDataMap.js
+    urlDataMap: null,
 
     /*
      The data in this file specifies sites where the extension should not run/run in partial mode.
      Patterns for matching urls can be specified using either the 'url pattern' format allowing '@' and '*' wildcards,
      or regexp objects where the aforementioned patterns don't suffice. Details about the 'url pattern' format can be found
-     in the urlData_combined.js file.
+     in the urlDataMap.js file.
      */
     disabledSites: {
 
