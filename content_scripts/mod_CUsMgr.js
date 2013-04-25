@@ -104,7 +104,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
         // the following objects are retrieved from the background script
-        globalMiscSettings,
+        miscGlobalSettings,
         browserShortcuts,
         generalShortcuts,
         expandedUrlData,
@@ -224,7 +224,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
      * This parameter is currently passed as true only from selectPrev() and selectNext()
-     * @param {object} [options] Misc options. Can also be used to override globalMiscSettings
+     * @param {object} [options] Misc options. Can also be used to override miscGlobalSettings
      */
     var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
 //        console.log('selectCU() called');
@@ -244,7 +244,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             return;
         }
 
-        options = $.extend(true, {}, globalMiscSettings, options);
+        options = $.extend(true, {}, miscGlobalSettings, options);
 
         deselectCU(options); // before proceeding, deselect currently selected CU, if any
 
@@ -455,12 +455,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
      * in the direction specified.
      * @param {string} direction Can be either 'up' or 'down'
-     * @param {object} [options] Misc options. Can also be used to override globalMiscSettings
+     * @param {object} [options] Misc options. Can also be used to override miscGlobalSettings
      * @return {Boolean} value indicating whether scroll took place
      */
     function scrollSelectedCUIfRequired (direction, options) {
 
-        options = $.extend(true, {}, globalMiscSettings, options);
+        options = $.extend(true, {}, miscGlobalSettings, options);
 
         var $CU = $CUsArray[selectedCUIndex];
 
@@ -564,7 +564,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
             new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
-            if (globalMiscSettings.sameCUScroll) {
+            if (miscGlobalSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('up');
                 if (scrolled) {
                     return;
@@ -613,7 +613,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
             new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
-            if (globalMiscSettings.sameCUScroll) {
+            if (miscGlobalSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('down');
                 if (scrolled) {
                     return;
@@ -933,7 +933,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
         // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
         // This is  handled by calculating the time diff. between invocations. See later.)
-            intervalPeriod = Math.min(100, globalMiscSettings.animatedCUScroll_MaxDuration/4),
+            intervalPeriod = Math.min(100, miscGlobalSettings.animatedCUScroll_MaxDuration/4),
 
             lastInvocationTime, // will contain the time of the last invocation (of invokeIncrementalScroll)
 
@@ -983,7 +983,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * //TODO3: consider if horizontal scrolling should be adjusted as well (some, very few, sites sites might, like an
      * image gallery, might have CUs laid out horizontally)
      * @param {DOM element|JQuery wrapper} $element
-     * @param {object} options Misc options. Can also be used to override globalMiscSettings
+     * @param {object} options Misc options. Can also be used to override miscGlobalSettings
      */
     function scrollIntoView($element, options) {
 
@@ -992,7 +992,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             return;
         }
 
-        options = $.extend(true, {}, globalMiscSettings, options);
+        options = $.extend(true, {}, miscGlobalSettings, options);
 
         var // for the window:
             winTop = $document.scrollTop(),
@@ -1140,7 +1140,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 filterCUsArray($CUsArray);
             }
 
-            if (globalMiscSettings.selectCUOnLoad && !selectCU.invokedYet) {
+            if (miscGlobalSettings.selectCUOnLoad && !selectCU.invokedYet) {
                 // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
                 selectFirstCUInViewport(true, false);
             }
@@ -1802,11 +1802,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     }
 
     function scrollDown() {
-        scroll(globalMiscSettings.pageScrollDelta);
+        scroll(miscGlobalSettings.pageScrollDelta);
     }
 
     function scrollUp() {
-        scroll(-globalMiscSettings.pageScrollDelta);
+        scroll(-miscGlobalSettings.pageScrollDelta);
     }
 
     function closeTab() {
@@ -2455,7 +2455,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     function onDomReady() {
 
         // if settings have been obtained from background script before dom ready takes place
-        if (globalMiscSettings && globalMiscSettings.selectCUOnLoad) {
+        if (miscGlobalSettings && miscGlobalSettings.selectCUOnLoad) {
 
             selectMostSensibleCU(true, false);
         }
@@ -2528,7 +2528,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 helper.makeImmutable(settings);
 
                 // assign references to module level variables
-                globalMiscSettings = settings.globalMiscSettings;
+                miscGlobalSettings = settings.miscGlobalSettings;
                 browserShortcuts = settings.browserShortcuts;
                 generalShortcuts = settings.generalShortcuts;
                 expandedUrlData = settings.expandedUrlData;
@@ -2539,7 +2539,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 setupShortcuts();
                 setupHelpUIAndEvents();
 
-                if ( globalMiscSettings.selectCUOnLoad) {
+                if ( miscGlobalSettings.selectCUOnLoad) {
                     selectMostSensibleCU(true, false);
                 }
             }

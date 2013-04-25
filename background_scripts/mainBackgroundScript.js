@@ -13,7 +13,6 @@
                         setTimeout(sendResponseWhenReady, 100);
                     }
                 };
-
                 sendResponseWhenReady();
 
             }
@@ -31,7 +30,6 @@
                 if (tabArray && tabArray[0]) {
                     chrome.tabs.remove(tabArray[0].id);
                 }
-
             }
         );
     }
@@ -64,9 +62,7 @@
                 else {
                     publicSuffixMap[tld] = [subdomainsArray];
                 }
-
             }
-
         }
 //    console.log(publicSuffixMap);
         return publicSuffixMap;
@@ -151,7 +147,6 @@
                 }
             }
         }
-
     }
 
 // Returns true if domain tokens match all the suffix tokens, else false.
@@ -179,18 +174,18 @@
                 return false;
             }
         }
-
         return true;
     }
 
     function getSettings(locationObj) {
         return {
-            globalMiscSettings: globalMiscSettings,
-            browserShortcuts: browserShortcuts,
-            generalShortcuts: generalShortcuts,
+            miscGlobalSettings: defaultSettings.miscGlobalSettings,
+            browserShortcuts: defaultSettings.browserShortcuts,
+            generalShortcuts: defaultSettings.generalShortcuts,
             expandedUrlData: getExpandedUrlData(locationObj)
         };
     }
+
     function getExpandedUrlData(locationObj) {
 
         if (!locationObj) {
@@ -216,9 +211,7 @@
             // TODO: Url data not found; anything else to be done?
             return null;
         }
-
     }
-
 
 // Converts any "shorthand" notations within the UrlData to their "expanded" forms.
 // Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in UrlData
@@ -235,15 +228,15 @@
             }
         };
 
-        // uses defaultValuesFor_stdUrlDataItems to supplement values in the MU/action (specified using the first two params)
+        // uses defaultSettings.valuesFor_stdUrlDataItems to supplement values in the MU/action (specified using the first two params)
         // 'scope' can be either "page" or "CUs"
         var supplementWithDefaultValues = function(MUorAction, MUOrAction_Name, scope) {
 
             var temp;
-            if (!MUorAction.kbdShortcuts && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
+            if (!MUorAction.kbdShortcuts && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
                 MUorAction.kbdShortcuts = temp.kbdShortcuts;
             }
-            if (!MUorAction.miniDescr && (temp = defaultValuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
+            if (!MUorAction.miniDescr && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
                 MUorAction.miniDescr = temp.miniDescr;
             }
         };
