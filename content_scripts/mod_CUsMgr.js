@@ -112,8 +112,15 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         addEventListener_eventHandlers = [],
         jQueryOn_eventHandlers = [];
 
+    // re-initialize the extension when background script informs of change in settings
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
 
-
+            if (request.message === 'settingsChanged') {
+                initializeExtension();
+            }
+        }
+    );
 
 // returns a jQuery set composed of all focusable DOM elements contained in the
 // jQuery set ($CU) passed
@@ -2485,6 +2492,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 // (reset and re-)initialize the extension.
     function initializeExtension() {
 
+        console.log('UnitsProj initialized');
         disableExtension(); // resets the state
 
         chrome.runtime.sendMessage({
@@ -2508,7 +2516,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 else if (settings.disabledStatus === "partial") {
                     // TODO: separate this stuff from CUsMgr
                     thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
-                    _setupBrowserShortcuts();
+                    _setupBrowserShortcuts(); // check if it's okay to call this directly (since it starts with an "_")
                     return;
                 }
 

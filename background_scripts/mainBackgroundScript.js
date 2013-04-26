@@ -1,3 +1,14 @@
+// Remove the following commented out code later
+// setInterval(function() {
+//    chrome.tabs.query({}, function(tabs) {
+//        var message = {message: "settingsChanged"};
+//
+//      for (var i=0; i<tabs.length; ++i) {
+//            chrome.tabs.sendMessage(tabs[i].id, message);
+//        }
+//    });
+// }, 3000);
+
 (function(helper) {
     "use strict";
 
