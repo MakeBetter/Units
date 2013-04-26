@@ -86,6 +86,97 @@ _u.helper = {
         return false;
     },
 
+    suppressEvent: function(e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+    },
+
+    /**
+     * returns an array containing ancestor elements in document order
+     * @param element
+     * @return {Array of DOM elements}
+     */
+    ancestorElements: function(element, blah) {
+        var ancestors = [];
+        for (; element; element = element.parentElement) {
+            ancestors.unshift(element);
+        }
+        return ancestors;
+    },
+
+    /** returns that DOM element which is the closest common ancestor of the elements specified,
+     * or null if no common ancestor exists.
+     * @param {Array of DOM Elements | jQuery wrapper} elements
+     * @return {DOM Element}
+     */
+    closestCommonAncestor: function(elements) {
+
+        if(!elements || !elements.length) {
+            return null;
+        }
+
+        if (elements.length ===1) {
+            return elements[0];
+        }
+
+        // each element of this array will be an array containing the ancestors (in document order, i.e. topmost first) of
+        // the element at the corresponding index in 'elements'
+        var ancestorsArray = [],
+            elementsLen = elements.length,
+            ancestorsArrLen;
+
+        for (var i = 0; i < elementsLen; ++i ) {
+            ancestorsArray[i] = _u.helper.ancestorElements(elements[i]);
+        }
+
+        var isAncestorAtSpecifiedIndexCommon = function(index) {
+
+            var referenceAncestor = ancestorsArray[0][index];
+
+            ancestorsArrLen = ancestorsArray.length;
+            for (var i = 1; i < ancestorsArrLen; ++i ) {
+                if (ancestorsArray[i][index] !== referenceAncestor) {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        // check if all share the same topmost ancestor
+        if (!isAncestorAtSpecifiedIndexCommon(0)) {
+            return null;  // no common ancestor
+        }
+
+        // This will hold the index of the element in 'elements' with the smallest number of ancestors (in other words,  the element
+        // that is highest in the DOM)
+        var highestElementIndex = 0;
+
+
+        ancestorsArrLen = ancestorsArray.length;
+
+        for (i = 0; i < ancestorsArrLen; ++i) {
+            if (ancestorsArray[i].length < ancestorsArray[highestElementIndex].length) {
+                highestElementIndex = i;
+            }
+        }
+
+        var ancestorArrayWithFewestElements = ancestorsArray[highestElementIndex]; // use this as the reference array
+        var closestCommonAnstr = null,
+            arrLen = ancestorArrayWithFewestElements.length;
+        for (var i = 0; i < arrLen; ++i) {
+            if (isAncestorAtSpecifiedIndexCommon(i)) {
+                closestCommonAnstr = ancestorArrayWithFewestElements[i];
+            }
+            else {
+                break;
+            }
+        }
+
+        return closestCommonAnstr;
+    },
+
+
 // Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
 // (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
 // allowed between the background and content scripts)
@@ -108,40 +199,39 @@ _u.helper = {
         }
     },
 
-
 // De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
     destringifyFunctions: function destringifyFunctions(obj) {
 
-    // Returns the de-stringifed version of the function passed. If something other than a stringified function is passed in,
-    // it is returned back unmodified.
-    var _destringifyFn = function(stringifiedFn) {
-        var returnVal;
-        try {
-            returnVal = eval(stringifiedFn);
-            if (typeof returnVal === "function") {
-                return returnVal;
-            }
-            else {
+        // Returns the de-stringifed version of the function passed. If something other than a stringified function is passed in,
+        // it is returned back unmodified.
+        var _destringifyFn = function(stringifiedFn) {
+            var returnVal;
+            try {
+                returnVal = eval(stringifiedFn);
+                if (typeof returnVal === "function") {
+                    return returnVal;
+                }
+                else {
+                    return stringifiedFn; // return the input back unmodified
+                }
+            } catch (e) {
                 return stringifiedFn; // return the input back unmodified
             }
-        } catch (e) {
-            return stringifiedFn; // return the input back unmodified
-        }
-    };
+        };
 
-    var stringifiedFn,
-        initialSubstr = "(function"; // this would be the initial part of any function stringified by us.
+        var stringifiedFn,
+            initialSubstr = "(function"; // this would be the initial part of any function stringified by us.
 
-    for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            if (typeof obj[key] === "object") {
-                destringifyFunctions(obj[key]);
-            }
-            else if (typeof (stringifiedFn = obj[key]) === "string" &&
-                stringifiedFn.slice(0, initialSubstr.length) === initialSubstr) {
-                obj[key] = _destringifyFn(obj[key]);
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (typeof obj[key] === "object") {
+                    destringifyFunctions(obj[key]);
+                }
+                else if (typeof (stringifiedFn = obj[key]) === "string" &&
+                    stringifiedFn.slice(0, initialSubstr.length) === initialSubstr) {
+                    obj[key] = _destringifyFn(obj[key]);
+                }
             }
         }
     }
-}
 };

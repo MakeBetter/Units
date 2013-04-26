@@ -45,6 +45,7 @@
                 "content_scripts/mod_mutationObserver.js",
                 "content_scripts/mod_core.js",
                 "content_scripts/mod_chromeAltHack.js",
+                "content_scripts/mod_filterCUs.js",
                 "content_scripts/mod_CUsMgr.js"
             ],
 

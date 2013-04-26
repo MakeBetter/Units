@@ -1,7 +1,7 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_chromeAltHack, helper, CONSTS) {
+_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_chromeAltHack, helper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -14,6 +14,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     /*-- Event bindings --*/
     thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);
     thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', updateCUsAndRelatedState);
+    // if mod_filterCUs is not defined, rest of the extension still works fine
+    if (mod_filterCUs) {
+        thisModule.listenTo(mod_filterCUs, 'filtering-state-change', updateCUsAndRelatedState);
+        thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
+    }
 
     /*-- Module implementation --*/
     //////////////////////////////////
@@ -78,7 +83,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         class_scrollingMarker = 'CU-scrolling-marker',
         $scrollingMarker,
 
-        $searchContainer,
+
         $helpContainer,
         timeout_search,
 
@@ -96,11 +101,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         stopExistingScrollAnimation,
         animationInProgress,
 
-    // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
-    // with the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
-        focusablesSelector = 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:visible, *[contenteditable]',
-
-
+    
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
         // the following objects are retrieved from the background script
@@ -110,7 +111,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         expandedUrlData,
 
         addEventListener_eventHandlers = [],
-        jQueryOn_eventHandlers = [];
+        jQueryOn_eventHandlers = [],
+        suppressEvent = helper.suppressEvent;
 
     // re-initialize the extension when background script informs of change in settings
     chrome.runtime.onMessage.addListener(
@@ -127,7 +129,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     var $getContainedFocusables = function($CU) {
 
         var $allElements = $CU.find('*').addBack();
-        var $containedFocusables = $allElements.filter(focusablesSelector);
+        var $containedFocusables = $allElements.filter(CONSTS.focusablesSelector);
         return $containedFocusables;
 
     };
@@ -726,6 +728,17 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     };
 
+    function onTabOnFilterSearchBox() {
+        if ($CUsArray.length) {
+            selectCU(0, true, true);
+        }
+        else {
+            var $focusables = $document.find(CONSTS.focusablesSelector);
+            if ($focusables.length) {
+                $focusables[0].focus();
+            }
+        }
+    }
 
 // Returns ALL the elements after the current one in the DOM (as opposed to jQuery's built in nextAll which retults only
 // the next siblings.
@@ -1139,13 +1152,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         var $prevSelectedCU = $CUsArray && $CUsArray[selectedCUIndex];
         dehoverCU(); // to prevent a "ghost" hover overlay
         deselectCU({onDomChangeOrWindowResize: true});
-        $CUsArray = getCUsArray();
+        var $CUs = getAllCUsOnPage();
+        mod_filterCUs && mod_filterCUs.filterCUsArray($CUs);
+        $CUsArray = $CUs;
 
         if ($CUsArray && $CUsArray.length) {
-            if (parseInt($searchContainer.css('top'), 10) >= 0) { // if search box is visible
-//    if ($searchContainer.offset().top >= 0) { // if search box is visible
-                filterCUsArray($CUsArray);
-            }
 
             if (miscGlobalSettings.selectCUOnLoad && !selectCU.invokedYet) {
                 // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
@@ -1166,10 +1177,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }
     }
 
-// Populates the CUs array based on the current contents of the DOM and returns it.
-// If search box is visibile, the returned CUs array is filtered accordingly.
-// Note: this expects the expandedUrlData to be in a fully "expanded" form (which is done by expandUrlData())
-    var getCUsArray = function() {
+// Finds the set of all the CUs on the current page, and returns it as an array
+    var getAllCUsOnPage = function() {
 
         if (!expandedUrlData || !expandedUrlData.CUs_specifier) {
             // returning an empty array instead of null means accessing $CUsArray[selectedCUIndex] (which
@@ -1251,7 +1260,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             $CUsArr = [];
             var currentGroupingIndex = 0;
 
-            var $container = closestCommonAncestor($(CUsSpecifier.buildCUAround));
+            var $container = helper.closestCommonAncestor($(CUsSpecifier.buildCUAround));
             // TODO: move the function below to a more apt place
             /**
              *
@@ -1400,93 +1409,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }
     };
 
-
-    /**
-     * returns an array containing ancestor elements in document order
-     * @param element
-     * @return {Array of DOM elements}
-     */
-    var ancestorElements = function(element, blah) {
-        var ancestors = [];
-        for (; element; element = element.parentElement) {
-            ancestors.unshift(element);
-        }
-        return ancestors;
-    };
-
-    /** returns that DOM element which is the closest common ancestor of the elements specified,
-     * or null if no common ancestor exists.
-     * @param {Array of DOM Elements | jQuery wrapper} elements
-     * @return {DOM Element}
-     */
-    var closestCommonAncestor = function(elements) {
-
-        if(!elements || !elements.length) {
-            return null;
-        }
-
-        if (elements.length ===1) {
-            return elements[0];
-        }
-
-        // each element of this array will be an array containing the ancestors (in document order, i.e. topmost first) of
-        // the element at the corresponding index in 'elements'
-        var ancestorsArray = [],
-            elementsLen = elements.length,
-            ancestorsArrLen;
-
-        for (var i = 0; i < elementsLen; ++i ) {
-            ancestorsArray[i] = ancestorElements(elements[i]);
-        }
-
-        var isAncestorAtSpecifiedIndexCommon = function(index) {
-
-            var referenceAncestor = ancestorsArray[0][index];
-
-            ancestorsArrLen = ancestorsArray.length;
-            for (var i = 1; i < ancestorsArrLen; ++i ) {
-                if (ancestorsArray[i][index] !== referenceAncestor) {
-                    return false;
-                }
-
-            }
-            return true;
-        };
-
-        // check if all share the same topmost ancestor
-        if (!isAncestorAtSpecifiedIndexCommon(0)) {
-            return null;  // no common ancestor
-        }
-
-        // This will hold the index of the element in 'elements' with the smallest number of ancestors (in other words,  the element
-        // that is highest in the DOM)
-        var highestElementIndex = 0;
-
-
-        ancestorsArrLen = ancestorsArray.length;
-
-        for (i = 0; i < ancestorsArrLen; ++i) {
-            if (ancestorsArray[i].length < ancestorsArray[highestElementIndex].length) {
-                highestElementIndex = i;
-            }
-        }
-
-        var ancestorArrayWithFewestElements = ancestorsArray[highestElementIndex]; // use this as the reference array
-        var closestCommonAnstr = null,
-            arrLen = ancestorArrayWithFewestElements.length;
-        for (var i = 0; i < arrLen; ++i) {
-            if (isAncestorAtSpecifiedIndexCommon(i)) {
-                closestCommonAnstr = ancestorArrayWithFewestElements[i];
-            }
-            else {
-                break;
-            }
-        }
-
-        return closestCommonAnstr;
-    };
-
-
     /**
      *
      * @param {DOM Element|JQuery wrapper} element
@@ -1597,198 +1519,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         return isRtButton;
     };
-
-    function showSearchBox() {
-
-        if (!$searchContainer.is(':visible')) {
-            $searchContainer.show();
-        }
-
-        if (parseInt($searchContainer.css('top'), 10) < 0) {
-
-            $searchContainer.$searchBox.val('');
-
-            $searchContainer.css({top: "0px"});
-
-            var savedScrollPos = $document.scrollTop();
-
-            $searchContainer.$searchBox.focus();
-
-            // Setting the focus to the searchbox scrolls the page up slightly because the searchbox lies above the visible
-            // part of the page (till its css animation completes). This is undesirable. Hence we restore the scroll
-            // position:
-            $document.scrollTop(savedScrollPos);
-
-        }
-        else {
-            $searchContainer.$searchBox.focus();
-        }
-
-    }
-
-    function closeSearchBox() {
-        $searchContainer.$searchBox.val('');
-
-        // This function should be called before the search box is hidden, so that the call to filter() function is made
-        // within it
-        updateCUsAndRelatedState();
-        $searchContainer.$searchBox.blur();
-
-        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
-
-    }
-
-// filters $CUsArr based on the text in the search box
-    function filterCUsArray($CUsArr) {
-
-        if (!$CUsArr || !$CUsArr.length) {
-            return;
-        }
-
-        // ** --------- PRE FILTERING --------- **
-        var CUsNodes = [],
-            CUsArrLen = $CUsArr.length;
-
-        for (var i = 0; i < CUsArrLen; ++i) {
-            var $CU = $CUsArr[i];
-            CUsNodes = CUsNodes.concat($CU.get());
-        }
-
-        var $closestAncestor = $(closestCommonAncestor(CUsNodes));
-
-        mod_mutationObserver.stop(); // ** stop monitoring mutations **
-        $closestAncestor.hide();
-        removeHighlighting($closestAncestor);
-
-        // ** --------- FILTERING --------- **
-        var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
-
-        if (!searchTextLowerCase) {
-            var $CUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
-            $CUsHiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
-
-        }
-        else {
-
-            console.log('filtering invoked...');
-
-            for (var i = 0, $CU; i < CUsArrLen; ++i) {
-                $CU = $CUsArr[i];
-                // if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-                if (highlightInCU($CU, searchTextLowerCase)) {
-
-                    //if ($CU.hasClass('hiddenByUnitsProj')) {
-
-                    $CU.show().removeClass('hiddenByUnitsProj');
-                    //}
-                }
-                else {
-                    //if ($CU.is(':visible')) {
-                    $CU.hide().addClass('hiddenByUnitsProj');
-                    $CUsArr.splice(i, 1);
-                    --CUsArrLen;
-                    --i;
-
-                    //}
-                }
-            }
-        }
-
-        // ** --------- POST FILTERING --------- **
-        $closestAncestor.show();
-        mod_mutationObserver.start(); // ** start monitoring mutations **
-
-    }
-
-// filters $CUsArr based on the text in the search box\
-    /*
-     function filterCUsArray($CUsArr) {
-
-     if (!$CUsArr || !$CUsArr.length) {
-     return;
-     }
-
-     // ** --------- PRE FILTERING --------- **
-     var CUsNodes = [],
-     CUsArrLen = $CUsArr.length;
-
-     for (var i = 0; i < CUsArrLen; ++i) {
-     var $CU = $CUsArr[i];
-     CUsNodes = CUsNodes.concat($CU.get());
-     }
-
-     var $closestAncestor = $(closestCommonAncestor(CUsNodes));
-
-     mod_mutationObserver.stop(); // ** stop monitoring mutations **
-
-
-     // ** --------- FILTERING --------- **
-     var searchTextLowerCase = $searchContainer.$searchBox.val().toLowerCase();
-
-     if (!searchTextLowerCase) {
-     //        var $CUsHiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
-     //        $CUsHiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
-
-     $closestAncestor.hide();  // for efficiency: remove from the render tree first
-
-     for (var i = 0; i < CUsArrLen; ++i) {
-     var $CU = $CUsArr[i];
-     if ($CU.data('hiddenByUnitsProj')) {
-     $CU.show().data('hiddenByUnitsProj', false);
-     }
-     }
-
-     removeHighlighting($closestAncestor);
-
-     $closestAncestor.show();
-     }
-
-     else {
-
-     console.log('filtering invoked...');
-
-     for (var i = 0, $CU; i < CUsArrLen; ++i) {
-     $CU = $CUsArr[i];
-     //            if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-     if (highlightInCU($CU, searchTextLowerCase)) {
-
-     //if ($CU.hasClass('hiddenByUnitsProj')) {
-
-     //                $CU.removeClass('hiddenByUnitsProj');
-     $CU.data('hiddenByUnitsProj', false);
-     //}
-     }
-     else {
-     //if ($CU.is(':visible')) {
-     //                $CU.addClass('hiddenByUnitsProj');
-     $CU.data('hiddenByUnitsProj', true);
-
-
-     //}
-     }
-     }
-     }
-
-     $closestAncestor.hide();  // for efficiency: remove from the render tree first
-     for (var i = 0, $CU; i < CUsArrLen; ++i) {
-     $CU = $CUsArr[i];
-     if ($CU.data('hiddenByUnitsProj')) {
-     $CU.hide();
-     $CUsArr.splice(i, 1);
-     --CUsArrLen;
-     --i;
-     }
-     else {
-     $CU.show();
-     }
-     }
-
-     // ** --------- POST FILTERING --------- **
-     $closestAncestor.show();
-     mod_mutationObserver.start(); // ** start monitoring mutations **
-
-     }
-     */
 
 // Positive value for 'delta' scrolls down, negative scrolls up
     function scroll(delta) {
@@ -1958,7 +1688,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         bind(generalShortcuts.prevCU.kbdShortcuts, selectPrev);
 
-        bind(generalShortcuts.search.kbdShortcuts, showSearchBox);
+        mod_filterCUs && bind(generalShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
         bind(generalShortcuts.firstCU.kbdShortcuts, function(e) {
             selectCU(0, true);
@@ -2364,74 +2094,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             .hide()
             .appendTo($topLevelContainer);
 
-        setupSearch();
-    }
-    function setupSearch() {
-
-        var $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
-                .addClass(class_addedByUnitsProj),
-
-            $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
-                .attr("id", "UnitsProj-search-close-icon")
-                .addClass(class_addedByUnitsProj);
-
-        $searchContainer = $('<div id = "UnitsProj-search-container">')
-            .addClass(class_addedByUnitsProj)
-            .append($searchBox)
-            .append($closeButton)
-            .hide()
-            .appendTo($topLevelContainer);
-
-        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
-
-        // attach reference to the global variable for easy access in the rest of the code
-        $searchContainer.$searchBox = $searchBox;
-
-        $searchBox.on('keydown paste input', onSearchBoxKeydown);
-        $closeButton.click(closeSearchBox);
-
-    }
-
-    function onSearchBoxKeydown(e) {
-
-        clearTimeout(timeout_search); // clears timeout if it is set
-
-        if (e.type === 'keydown' || e.type === 'keypress') {
-
-            var code = e.which || e.keyCode;
-
-            if (code === 27) { // ESc
-
-                closeSearchBox();
-                e.stopImmediatePropagation();
-                return false;
-            }
-            else  if (code === 13) { // Enter
-                updateCUsAndRelatedState();
-                return false;
-            }
-            else if (code === 9) { // Tab
-                if ($CUsArray.length) {
-                    selectCU(0, true, true);
-                }
-                else {
-                    var $focusables = $document.find(focusablesSelector);
-                    if ($focusables.length) {
-                        $focusables[0].focus();
-                    }
-                }
-                e.stopImmediatePropagation(); // otherwise the 'tab' is invoked on the CU, focusing the next element
-                return false;
-            }
-        }
-
-        // setting the time out below, in conjunction with the clearTimeout() earlier, allows search-as-you-type, while
-        // not executing the search related code multiple times while the user is typing the search string.
-        timeout_search = setTimeout (function() {
-
-            updateCUsAndRelatedState();
-
-        }, 400);
+        mod_filterCUs && mod_filterCUs.setup();
     }
 
     function setupExternalSearchEvents() {
@@ -2544,7 +2207,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
                 // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
                 // However, 'focusin' behaves as expected in either case.
-                $document.on('focusin', focusablesSelector, onFocus);
+                $document.on('focusin', CONSTS.focusablesSelector, onFocus);
                 $(window).on('resize', onWindowResize);
 
                 if (overlayCssHasTransition) {
@@ -2677,10 +2340,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 ///////////////////////////////////////////
 //helper.js
 
-    function suppressEvent(e) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-    }
 
     /**
      * Returns true if all (top most) constituents of $CU have css 'visibility' style equal to "hidden"
@@ -2777,90 +2436,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     }
 
-
-// inspired from:
-// http://johannburkard.de/blog/programming/javascript/highlight-javascript-text-higlighting-jquery-plugin.html
-    /* Main changes:
-     1) Use of JS keyword 'with' (deprecated) was removed, and modifications made in accordance
-     2) toLowercase() being instead of toUppercase, and also being calculated only once at the beginning.
-     3) converted from jQuery plugin to a regular function; main since we want num of highlights made to be
-     returned
-     4) <removed> Only searches within visible elements. Since numHighlights is required by the calling function to
-     detect if a CU should be counted as a match or not. Also helps with efficiency.
-     5) Other minor optimizations
-     6) Added comments
-     */
-
-    function highlightInCU($CU, pattern) {
-
-        var numHighlighted = 0, // count of how many items were highlighted
-            patternLowerCase = pattern && pattern.toLowerCase();
-
-        /*
-         Called recursively. Each time this function is called on a text node, it highlights the first instance of
-         'pattern' found. Upon finding 'pattern', it returns after creating 3 nodes in place of the original text node --
-         a span node for the highlighted pattern and two text nodes surrounding it.
-         Returns true or false to indicate if highlight took place
-         */
-        var innerHighlight = function (node) {
-
-            var highlighted = false;
-
-            if (node.nodeType == 3) { // nodeType 3 - text node
-
-                var pos = node.data.toLowerCase().indexOf(patternLowerCase);
-                if (pos >= 0) {
-                    var spannode = document.createElement('span');
-                    spannode.className = 'UnitsProj-highlight';
-                    var middlebit = node.splitText(pos);
-                    var endbit = middlebit.splitText(patternLowerCase.length);
-                    var middleclone = middlebit.cloneNode(true);
-                    spannode.appendChild(middleclone);
-                    middlebit.parentNode.replaceChild(spannode, middlebit);
-                    highlighted = true;
-                    ++numHighlighted;
-                }
-            }
-            // nodeType 1 - element node
-            else if (node.nodeType == 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
-
-                // var $node = $(node); // node is an element
-                // if (!$node.is(':visible') || $node.css('visibility') === 'hidden') {
-                //     return;
-                // }
-
-                for (var i = 0; i < node.childNodes.length; ++i) {
-                    if (innerHighlight(node.childNodes[i])) {
-                        ++i; // to move past the new span node created
-                    }
-                }
-            }
-            return highlighted;
-        };
-
-
-        if ($CU.length && patternLowerCase && patternLowerCase.length) {
-            $CU.each(function() {
-                innerHighlight(this);
-            });
-        }
-
-        return numHighlighted;
-    }
-
-// container - dom node or jQuery set within which highlighting should be removed
-    function removeHighlighting (container) {
-        var $container = $(container);
-
-        $container.find(".UnitsProj-highlight").each(function() {
-            var parentNode = this.parentNode;
-
-            parentNode.replaceChild(this.firstChild, this);
-            parentNode.normalize();
-
-        });
-    }
-
     //////////////////////////////////////////////
     // selectFocusables.js
 
@@ -2911,7 +2486,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         };
 
 
-        var $matchedFocusables = $scope.find(focusablesSelector).filter(function() {
+        var $matchedFocusables = $scope.find(CONSTS.focusablesSelector).filter(function() {
             return elementMatches(this);
         });
 
@@ -2961,6 +2536,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, null,
+        _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
 
 

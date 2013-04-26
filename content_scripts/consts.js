@@ -13,8 +13,12 @@ _u.CONSTS = (function(helper){
         /* -- Used by mod_CUsMgr -- */
         class_CUOverlay : "CU-overlay",                     // class applied to all CU overlays
         class_CUSelectedOverlay : "CU-overlay-selected",    // class applied to overlay on a selected CU
-        class_CUHoveredOverlay : "CU-overlay-hovered"      // class applied to overlay on a hovered CU
+        class_CUHoveredOverlay : "CU-overlay-hovered",      // class applied to overlay on a hovered CU
 
-    };
+        // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
+        // with the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
+        focusablesSelector: 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:visible, *[contenteditable]',
+
+        };
     return helper.makeImmutable(CONSTS);
 })(_u.helper);
