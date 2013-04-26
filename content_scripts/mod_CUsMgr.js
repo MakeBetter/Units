@@ -2813,7 +2813,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     var spannode = document.createElement('span');
                     spannode.className = 'UnitsProj-highlight';
                     var middlebit = node.splitText(pos);
-                    // var endbit = middlebit.splitText(patternLowerCase.length);
+                    var endbit = middlebit.splitText(patternLowerCase.length);
                     var middleclone = middlebit.cloneNode(true);
                     spannode.appendChild(middleclone);
                     middlebit.parentNode.replaceChild(spannode, middlebit);
