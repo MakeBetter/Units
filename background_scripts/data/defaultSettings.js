@@ -8,22 +8,22 @@ var defaultSettings = {
     urlDataMap: null,
 
     /*
-     The data in this file specifies sites where the extension should not run/run in partial mode.
-     Patterns for matching urls can be specified using either the 'url pattern' format allowing '@' and '*' wildcards,
-     or regexp objects where the aforementioned patterns don't suffice. Details about the 'url pattern' format can be found
-     in the urlDataMap.js file.
-     */
+    Specifies sites on which the extension is partially or fully disabled.
+    Patterns for matching urls can be specified using either the 'url pattern' format allowing '@' and '*' wildcards,
+    or regexp objects where the aforementioned patterns don't suffice. Details about the 'url pattern' format can be found
+    in the urlDataMap.js file.
+    */
     disabledSites: {
 
         // On these sites, only the "browser action" shortcuts are enabled, but the rest of the extension is disabled.
         partial: {
-            urlPatterns: [/* 'mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*' */],
+            urlPatterns: ['mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'],
             urlRegexps: []
         },
 
         // On these sites, the extension is completely disabled.
         full: {
-            urlPatterns: ['mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'],
+            urlPatterns: [],
             urlRegexps: []
         }
     },

@@ -1,4 +1,6 @@
 (function(helper) {
+    "use strict";
+
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
 
@@ -177,15 +179,54 @@
         return true;
     }
 
+    /**
+     * Returns a string indicating if the extension is to be fully or partially disabled on the URL specified (returns
+     * "full" or "partial" respectively). If the extension is to fully function on the URL, `false` is returned
+     * @param {string} url
+     * @param {object} disabledSites Object specifying on which sites the extension is partially and fully disabled
+     */
+    function getDisabledStatus(url, disabledSites) {
+
+        var strippedUrl = getStrippedUrl(url),
+            regexps;
+
+        var matches = function(data) {
+            regexps = data.urlRegexps.concat(getEquivalentRegexps(data.urlPatterns));
+            var regexpsLen = regexps.length;
+
+            for (var i = 0; i < regexpsLen; ++i) {
+                var regexp = regexps[i];
+                if (regexp.test(strippedUrl)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (matches(disabledSites.full)) {
+            return "full";
+        }
+        else if (matches(disabledSites.partial)) {
+            return "partial";
+        }
+        else {
+            return false;
+        }
+    }
+
     function getSettings(locationObj) {
         var settings = {
-            miscGlobalSettings: defaultSettings.miscGlobalSettings,
-            browserShortcuts: defaultSettings.browserShortcuts,
-            generalShortcuts: defaultSettings.generalShortcuts,
-            expandedUrlData: getExpandedUrlData(locationObj)
-        };
-        var userSettings = getUserSettings();
-        return $.extend(true, settings, userSettings);
+                miscGlobalSettings: defaultSettings.miscGlobalSettings,
+                browserShortcuts: defaultSettings.browserShortcuts,
+                generalShortcuts: defaultSettings.generalShortcuts,
+                disabledSites: defaultSettings.disabledSites,
+                expandedUrlData: getExpandedUrlData(locationObj)
+            },
+            userSettings = getUserSettings(),
+            settings = $.extend(true, settings, userSettings);
+
+        settings.disabledStatus = getDisabledStatus(locationObj.href, settings.disabledSites);
+        return settings;
     }
 
     function getUserSettings() {
@@ -310,12 +351,17 @@
         for (var i = 0; i < urlDataArrLen; ++i) {
 
             var urlData = urlDataArr[i],
-                regexpsToTest = getCombinedRegexps(urlData),
+                regexpsToTest = [],
                 currentUrl = locationObj.href,
-                protocolSeparator = "://", // to strip the leading http:// or https:// etc.
-                strippedUrlBeginIndex = currentUrl.indexOf(protocolSeparator) + protocolSeparator.length,
-                strippedUrl = currentUrl.substring(strippedUrlBeginIndex),
-                regexpsLen =  regexpsToTest.length;
+                strippedUrl = getStrippedUrl(currentUrl);
+
+
+            if (Array.isArray(urlData.urlPatterns))
+                regexpsToTest = regexpsToTest.concat(getEquivalentRegexps(urlData.urlPatterns));
+            if (Array.isArray(urlData.urlRegexps))
+                regexpsToTest = regexpsToTest.concat(urlData.urlRegexps);
+
+            var regexpsLen =  regexpsToTest.length;
 
             for (var j = 0, regexp; j < regexpsLen; ++j) {
 
@@ -327,6 +373,33 @@
 
         }
         return false;
+    }
+
+    // returns the URl stripped of the protocol i.e. "http(s)://" etc
+    function getStrippedUrl(url) {
+        var protocolSeparator = "://", // to strip the leading http:// or https:// etc.
+            strippedUrlBeginIndex = url.indexOf(protocolSeparator) + protocolSeparator.length;
+
+        return url.substring(strippedUrlBeginIndex);
+    }
+
+    /**
+     * Converts the specified wildcard patterns into an equivalent array of regexps.
+     * @param {Array} wildcardPatterns
+     */
+    function getEquivalentRegexps (wildcardPatterns) {
+        var regexps = [];
+
+        if (wildcardPatterns) {
+            var wildcardPatternsLen = wildcardPatterns.length;
+            for (var i = 0, regexp; i < wildcardPatternsLen; ++i) {
+
+                regexp = wildcardPatternToRegexp(wildcardPatterns[i]);
+                regexps.push(regexp);
+
+            }
+        }
+        return regexps;
     }
 
 // returns the master domain-key for the specified domain, if one can be found
@@ -342,38 +415,6 @@
         }
     }
 
-// returns an array combining these two sets of regexps:
-// 1) regexps corresponding to the 'urlPatterns' property of the urlData object
-// 2) regexps directly specified using the 'urlRegexps' property of the urlData object
-    function getCombinedRegexps(urlData) {
-        var urlPatterns = urlData.urlPatterns,
-            urlRegexps = urlData.urlRegexps,
-            combinedRegexps = [];
-
-        if (urlPatterns) {
-            if (!Array.isArray(urlPatterns)) {
-                urlPatterns = [urlPatterns];
-            }
-
-            var urlPatternsLen = urlPatterns.length;
-            for (var i = 0, regexp; i < urlPatternsLen; ++i) {
-
-                regexp = urlPatternToRegexp(urlPatterns[i]);
-                combinedRegexps.push(regexp);
-
-            }
-        }
-
-        if (urlRegexps) {
-
-            combinedRegexps = combinedRegexps.concat(urlRegexps);
-        }
-
-        return combinedRegexps;
-
-    }
-
-
     /**
      * Returns the regexp object corresponding the to the url pattern supplied.
      * @param {String} urlPattern This is a string that can contain '*'s and @'s as "wildcards":
@@ -381,7 +422,7 @@
      - A '*' matches any combination of *one or more* characters of *ANY* type.)
      * @return {RegExp}
      */
-    function urlPatternToRegexp(urlPattern) {
+    function wildcardPatternToRegexp(urlPattern) {
 
         // get the corresponding "regular expression escaped" string.
         var regexpStr = urlPattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');

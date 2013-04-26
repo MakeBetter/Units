@@ -2487,38 +2487,30 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         disableExtension(); // resets the state
 
-        setupBasicUIComponents(); // also set up their associated event handlers
-
-        // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
-        // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
-        setupExternalSearchEvents();
-
-        addEventListener2(document, 'keydown', onKeydown, true);
-        addEventListener2(document, 'mousedown', onMouseDown, true);
-        addEventListener2(document, 'mouseup', onMouseUp, true);
-        addEventListener2(document, 'mouseover', onMouseOver, true);
-        addEventListener2(document, 'mouseout', onMouseOut, true);
-        addEventListener2(document, 'contextmenu', onContextMenu, true);
-        addEventListener2(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
-        addEventListener2(document, 'mousewheel', onMouseWheel, false);   // for webkit
-
-        // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
-        // However, 'focusin' behaves as expected in either case.
-        $document.on('focusin', focusablesSelector, onFocus);
-        $(window).on('resize', onWindowResize);
-
-        if (overlayCssHasTransition) {
-            $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
-                '.' + class_CUOverlay, onTransitionEnd);
-        }
-
-        mod_mutationObserver.start();
-
         chrome.runtime.sendMessage({
                 message: "getSettings",
                 locationObj: window.location
             },
             function(settings) {
+
+                // assign references to module level variables
+                miscGlobalSettings = settings.miscGlobalSettings;
+                browserShortcuts = settings.browserShortcuts;
+                generalShortcuts = settings.generalShortcuts;
+                expandedUrlData = settings.expandedUrlData;
+
+                if (settings.disabledStatus === "full") {
+                    // TODO: separate this stuff from CUsMgr
+                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
+
+                    return;
+                }
+                else if (settings.disabledStatus === "partial") {
+                    // TODO: separate this stuff from CUsMgr
+                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
+                    _setupBrowserShortcuts();
+                    return;
+                }
 
                 // has to be done before the the call to makeImmutable :)
                 if (settings.expandedUrlData) {
@@ -2527,11 +2519,32 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
                 helper.makeImmutable(settings);
 
-                // assign references to module level variables
-                miscGlobalSettings = settings.miscGlobalSettings;
-                browserShortcuts = settings.browserShortcuts;
-                generalShortcuts = settings.generalShortcuts;
-                expandedUrlData = settings.expandedUrlData;
+                setupBasicUIComponents(); // also set up their associated event handlers
+
+                // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
+                // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
+                setupExternalSearchEvents();
+
+                addEventListener2(document, 'keydown', onKeydown, true);
+                addEventListener2(document, 'mousedown', onMouseDown, true);
+                addEventListener2(document, 'mouseup', onMouseUp, true);
+                addEventListener2(document, 'mouseover', onMouseOver, true);
+                addEventListener2(document, 'mouseout', onMouseOut, true);
+                addEventListener2(document, 'contextmenu', onContextMenu, true);
+                addEventListener2(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
+                addEventListener2(document, 'mousewheel', onMouseWheel, false);   // for webkit
+
+                // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
+                // However, 'focusin' behaves as expected in either case.
+                $document.on('focusin', focusablesSelector, onFocus);
+                $(window).on('resize', onWindowResize);
+
+                if (overlayCssHasTransition) {
+                    $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
+                        '.' + class_CUOverlay, onTransitionEnd);
+                }
+
+                mod_mutationObserver.start();
 
                 // the following line should remain outside the if condition so that the change from a url with CUs
                 // to one without any is correctly handled

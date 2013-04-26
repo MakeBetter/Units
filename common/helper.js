@@ -17,7 +17,7 @@ _u.helper = {
      * @param {object} obj Input object
      */
     makeImmutable: function makeImmutable (obj) {
-        if ((typeof obj === "object") ||
+        if ((typeof obj === "object" && obj !== null) ||
             (Array.isArray? Array.isArray(obj): obj instanceof Array) ||
             (typeof obj === "function")) {
 

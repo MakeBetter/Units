@@ -430,6 +430,7 @@ defaultSettings.urlDataMap = {
 //                "overlayPadding": "3px 6px 3px 0"
         }
     },
+
 //    "wikipedia.org": {
 //        urlPatterns: ["@.wikipedia.org/wiki/*"],
 //        CUs_specifier: {
@@ -437,26 +438,27 @@ defaultSettings.urlDataMap = {
 //            exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
 //        }
 //    },
-//    "ycombinator.com": {
-//        urlPatterns: ["news.ycombinator.com*"],
-//        CUs_specifier: {
-//            buildCUAround: "td.title>a"
-//        },
-//        CUs_style: {
-//            useInnerElementsToGetOverlaySize: true,
-//            "overlayPadding": "3px 6px 3px 0"
-//        },
-//        CUs_actions: {
-//
-//        },
-//        CUs_MUs: {
-//            "std_mainEl": "td.title>a",
-//            "std_viewComments": {
-//                kbdShortcuts: ["c", "g c"], // overridden to add additional shortcut
-//                selector: "a:contains('comment'), a:contains('discuss')"
-//            }
-//        }
-//    }
+
+    "ycombinator.com": {
+        urlPatterns: ["news.ycombinator.com*"],
+        CUs_specifier: {
+            buildCUAround: "td.title>a"
+        },
+        CUs_style: {
+            useInnerElementsToGetOverlaySize: true,
+            "overlayPadding": "3px 6px 3px 0"
+        },
+        CUs_actions: {
+
+        },
+        CUs_MUs: {
+            "std_mainEl": "td.title>a",
+            "std_viewComments": {
+                kbdShortcuts: ["c", "g c"], // overridden to add additional shortcut
+                selector: "a:contains('comment'), a:contains('discuss')"
+            }
+        }
+    }
 };
 
 // this array allows mapping a special domain to the corresponding "master domain"
