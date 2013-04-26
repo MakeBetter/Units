@@ -1,13 +1,14 @@
-// Remove the following commented out code later
-// setInterval(function() {
+//Remove the following commented out code later
+//setInterval(function() {
 //    chrome.tabs.query({}, function(tabs) {
-//        var message = {message: "settingsChanged"};
+//        localStorage.x++;
+//        var message = {message: "settingsChanged", x: localStorage.x};
 //
 //      for (var i=0; i<tabs.length; ++i) {
 //            chrome.tabs.sendMessage(tabs[i].id, message);
 //        }
 //    });
-// }, 3000);
+//}, 3000);
 
 (function(helper) {
     "use strict";
@@ -262,7 +263,7 @@
         }
 
         if (urlData) {
-            stringifyFunctions(urlData);
+            helper.stringifyFunctions(urlData);
             expandUrlData(urlData);
             return urlData;
         }
@@ -318,28 +319,6 @@
         expandMUsOrActions(urlData.page_MUs, "page");
         expandMUsOrActions(urlData.page_actions, "page");
 
-    }
-
-// Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
-// (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
-// allowed between the background and content scripts)
-    function stringifyFunctions(obj) {
-
-        // retruns the strigified version of the function passed
-        var _stringifyFn = function(fn) {
-            return "(" + fn.toString() + ")";
-        };
-
-        for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                if (typeof obj[key] === "object") {
-                    stringifyFunctions(obj[key]);
-                }
-                else if (typeof obj[key] === "function") {
-                    obj[key] = _stringifyFn(obj[key])
-                }
-            }
-        }
     }
 
     function getUrlDataUsingDomainKey(domainKey, locationObj) {

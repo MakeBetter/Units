@@ -2522,7 +2522,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
                 // has to be done before the the call to makeImmutable :)
                 if (settings.expandedUrlData) {
-                    destringifyFunctions(settings.expandedUrlData);
+                    helper.destringifyFunctions(settings.expandedUrlData);
                 }
 
                 helper.makeImmutable(settings);
@@ -2676,44 +2676,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
 ///////////////////////////////////////////
 //helper.js
-
-
-// De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
-// Note: stringification assumed to have been done by stringifyFunctions() function called in the background script
-    function destringifyFunctions(obj) {
-
-        // Returns the de-stringifed version of the function passed. If something other than a stringified function is passed in,
-        // it is returned back unmodified.
-        var _destringifyFn = function(stringifiedFn) {
-            var returnVal;
-            try {
-                returnVal = eval(stringifiedFn);
-                if (typeof returnVal === "function") {
-                    return returnVal;
-                }
-                else {
-                    return stringifiedFn; // return the input back unmodified
-                }
-            } catch (e) {
-                return stringifiedFn; // return the input back unmodified
-            }
-        };
-
-        var stringifiedFn,
-            initialSubstr = "(function"; // this would be the initial part of any function stringified by us.
-
-        for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                if (typeof obj[key] === "object") {
-                    destringifyFunctions(obj[key]);
-                }
-                else if (typeof (stringifiedFn = obj[key]) === "string" &&
-                    stringifiedFn.slice(0, initialSubstr.length) === initialSubstr) {
-                    obj[key] = _destringifyFn(obj[key]);
-                }
-            }
-        }
-    }
 
     function suppressEvent(e) {
         e.stopImmediatePropagation();

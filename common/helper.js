@@ -84,5 +84,64 @@ _u.helper = {
         }
 
         return false;
+    },
+
+// Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
+// (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
+// allowed between the background and content scripts)
+    stringifyFunctions: function stringifyFunctions(obj) {
+
+        // retruns the strigified version of the function passed
+        var _stringifyFn = function(fn) {
+            return "(" + fn.toString() + ")";
+        };
+
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (typeof obj[key] === "object") {
+                    stringifyFunctions(obj[key]);
+                }
+                else if (typeof obj[key] === "function") {
+                    obj[key] = _stringifyFn(obj[key])
+                }
+            }
+        }
+    },
+
+
+// De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
+    destringifyFunctions: function destringifyFunctions(obj) {
+
+    // Returns the de-stringifed version of the function passed. If something other than a stringified function is passed in,
+    // it is returned back unmodified.
+    var _destringifyFn = function(stringifiedFn) {
+        var returnVal;
+        try {
+            returnVal = eval(stringifiedFn);
+            if (typeof returnVal === "function") {
+                return returnVal;
+            }
+            else {
+                return stringifiedFn; // return the input back unmodified
+            }
+        } catch (e) {
+            return stringifiedFn; // return the input back unmodified
+        }
+    };
+
+    var stringifiedFn,
+        initialSubstr = "(function"; // this would be the initial part of any function stringified by us.
+
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === "object") {
+                destringifyFunctions(obj[key]);
+            }
+            else if (typeof (stringifiedFn = obj[key]) === "string" &&
+                stringifiedFn.slice(0, initialSubstr.length) === initialSubstr) {
+                obj[key] = _destringifyFn(obj[key]);
+            }
+        }
     }
+}
 };
