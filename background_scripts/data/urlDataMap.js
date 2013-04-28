@@ -420,14 +420,22 @@ defaultSettings.urlDataMap = {
 
         }
     ],
+    "sulekha.com": {
+        urlPatterns: ["*.sulekha.com/*"],
+        CUs_specifier: {
+            selector: ".sul_result_container"
+        }
+    },
+    "team-bhp.com": {
+        urlPatterns: ["*.team-bhp.com/*"],
+        CUs_specifier: {
+            selector: ".box>table tr"
+        }
+    },
     "urbandictionary.com": {
         urlPatterns: ["*.urbandictionary.com*"],
         CUs_specifier: {
                 buildCUAround: "td.index",
-        },
-        CUs_style: {
-//                useInnerElementsToGetOverlaySize: true,
-//                "overlayPadding": "3px 6px 3px 0"
         }
     },
 
