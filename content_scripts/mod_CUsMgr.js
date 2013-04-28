@@ -2536,7 +2536,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, null,
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs,
         _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
 
 
