@@ -33,11 +33,24 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
     }
 
     function getAllSettings() {
-        return defaultSettings;
+        var userSettings = getUserSettings(),
+            settings = $.extend(true, defaultSettings, userSettings);
+
+        return settings;
     }
 
     function getDefaultSettings() {
+        return defaultSettings;
+    }
 
+    function getUserSettings() {
+        var settingsJSON = localStorage.userSettings;
+        if (settingsJSON) {
+            var settingsObj = JSON.parse(settingsJSON);
+            helper.destringifyFunctions(settingsObj);
+
+            return settingsObj;
+        }
     }
 
     function setUserSettings(settingsObj) {
@@ -238,16 +251,6 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
         return new RegExp(regexpStr);
 
-    }
-
-    function getUserSettings() {
-        var settingsText = localStorage.userSettings;
-        if (settingsText) {
-            var settingsObj = JSON.parse(settingsText);
-            helper.destringifyFunctions(settingsObj);
-
-            return settingsObj;
-        }
     }
 
     /**
