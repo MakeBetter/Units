@@ -3,7 +3,7 @@
     "version": "0.5",
     "manifest_version": 2,
     "description": "Keyboard navigation on web pages + better focus using units.",
-    "options_page": "background_scripts/options_page.html",
+    "options_page": "background_scripts/options_page/options_page.html",
     "browser_action": {
         "default_icon": "icon.png",
         "default_popup": "background_scripts/popup.html",
@@ -15,6 +15,8 @@
         "scripts": [
             "vendor/jquery-2.0.0.min.js",
 
+            "background_scripts/initializeNamespace.js",
+
             "common/helper.js",
 
             "background_scripts/data/defaultSettings.js",
@@ -22,6 +24,8 @@
             "background_scripts/data/searchData.js",
 
             "background_scripts/searchExternalSite.js",
+            "background_scripts/mod_getMainDomain.js",
+            "background_scripts/mod_settings.js",
             "background_scripts/mainBackgroundScript.js"
         ]
     },

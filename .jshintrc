@@ -7,5 +7,6 @@
     "unused": "vars",	// checks only variables but not function parameters (JSHint 1.1.0 onwards: http://www.jshint.com/blog/2013-03-05/1-1-0/)
     "browser": true,
     "devel": true,
-    "jquery": true
+    "jquery": true,
+    "globals" : {"chrome": false}
 }

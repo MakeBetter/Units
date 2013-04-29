@@ -7,8 +7,6 @@
  * functions, rather than a single cohesive module with a particular function.
  */
 
-if (!window._u) window._u = {}; // useful for when this code is running as part of the the background script
-
 _u.helper = {
 
     /**
