@@ -61,8 +61,12 @@ var defaultSettings = {
         scrollDown: ['alt+j'],
         scrollUp: ['alt+k'],
         closeTab: ['alt+x'],
+        back: ['alt+h'],
+        forward: ['alt+l'],
+        nextTab: ['alt+.'],
+        prevTab: ['alt+,'],
 
-        // Special shortcut. Is made part of "browser action" shortcuts since it should be available even when
+        // Special shortcut. Is part of "browser shortcuts" since it should be available even when
         // extension is only partially enabled.
         toggleExtension: ['ctrl+`']
     },

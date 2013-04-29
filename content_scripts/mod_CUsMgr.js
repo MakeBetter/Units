@@ -1550,6 +1550,23 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         chrome.runtime.sendMessage({message: "closeTab"});
     }
 
+    // invokes the browser's 'back' action
+    function back() {
+        window.history.back();
+    }
+    // invokes the browser's 'forward' action
+    function forward() {
+        window.history.forward();
+    }
+    // switch to next tab
+    function nextTab() {
+        chrome.runtime.sendMessage({message: "nextTab"});
+    }
+    // switch to prev tab
+    function prevTab() {
+        chrome.runtime.sendMessage({message: "prevTab"});
+    }
+
 // *----------code related to setting up and handling events follows---------------
 
 // <NOTE> The lines below override jQuery's 'on' function by a wrapper which allows tracking of the event handlers
@@ -1667,6 +1684,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         bind(browserShortcuts.scrollDown, scrollDown, true);
         bind(browserShortcuts.scrollUp, scrollUp);
         bind(browserShortcuts.closeTab, closeTab);
+        bind(browserShortcuts.back, back);
+        bind(browserShortcuts.forward, forward);
+        bind(browserShortcuts.nextTab, nextTab);
+        bind(browserShortcuts.prevTab, prevTab);
 
 //    bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
 //    bind(['alt+q'], function() {console.log(' alt q');});
@@ -2108,7 +2129,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 if (e.type === 'keydown') {
                     var code = e.which || e.keyCode;
 
-                    // the background script will determine which site to search on based
+                    // the background script will determine which site to search on
                     chrome.runtime.sendMessage({message: "searchExternalSite", selection: selection, keyCode: code});
                 }
 

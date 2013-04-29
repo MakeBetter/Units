@@ -26,7 +26,8 @@
             "background_scripts/searchExternalSite.js",
             "background_scripts/mod_getMainDomain.js",
             "background_scripts/mod_settings.js",
-            "background_scripts/mainBackgroundScript.js"
+            "background_scripts/mainBackgroundScript.js",
+            "background_scripts/mod_browserFunctions.js"
         ]
     },
 

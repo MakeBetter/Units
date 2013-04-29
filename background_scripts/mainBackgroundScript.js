@@ -12,7 +12,7 @@
 //    });
 //}, 3000);
 
-(function(helper, mod_settings, mod_getMainDomain) {
+(function(mod_settings, mod_getMainDomain) {
     "use strict";
 
     chrome.runtime.onMessage.addListener(
@@ -21,13 +21,8 @@
             if (request.message === 'getSettings') {
                 getSettings(request, sender, sendResponse);
             }
-            else if (request.message === 'closeTab') {
-                closeCurrentTab();
-            }
-
         }
     );
-
     function getSettings(request, sender, sendResponse) {
         var sendResponseWhenReady = function() {
             if (mod_getMainDomain.publicSuffixMap) {
@@ -40,16 +35,4 @@
         };
         sendResponseWhenReady();
     }
-
-    function closeCurrentTab() {
-        chrome.tabs.query(
-            {currentWindow: true, active : true},
-            function(tabArray){
-                if (tabArray && tabArray[0]) {
-                    chrome.tabs.remove(tabArray[0].id);
-                }
-            }
-        );
-    }
-
-})(_u.helper, _u.mod_settings, _u.mod_getMainDomain);
+})(_u.mod_settings, _u.mod_getMainDomain);
