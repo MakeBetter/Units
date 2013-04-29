@@ -17,16 +17,16 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
      * @returns {{miscGlobalSettings: *, browserShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
      */
     function getSettings(locationObj) {
-        var settings = {
+        var _defaultSettings = {
                 miscGlobalSettings: defaultSettings.miscGlobalSettings,
                 browserShortcuts: defaultSettings.browserShortcuts,
                 generalShortcuts: defaultSettings.generalShortcuts,
                 disabledSites: defaultSettings.disabledSites,
-                expandedUrlData:getExpandedUrlData(locationObj)
+                expandedUrlData:getExpandedUrlData(defaultSettings, locationObj)
             },
-            userSettings = getUserSettings();
+            userSettings = getUserSettings(locationObj),
+            settings = $.extend(true, {}, _defaultSettings, userSettings);
 
-        settings = $.extend(true, settings, userSettings);
         settings.disabledStatus = getDisabledStatus(locationObj.href, settings.disabledSites);
 
         return settings;
@@ -34,7 +34,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
     function getAllSettings() {
         var userSettings = getUserSettings(),
-            settings = $.extend(true, defaultSettings, userSettings);
+            settings = $.extend(true, {}, defaultSettings, userSettings);
 
         return settings;
     }
@@ -43,10 +43,17 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
         return defaultSettings;
     }
 
-    function getUserSettings() {
+    /***
+     *
+     * @param locationObj
+     * @returns {*}
+     */
+    function getUserSettings(locationObj) {
         var settingsJSON = localStorage.userSettings;
         if (settingsJSON) {
             var settingsObj = JSON.parse(settingsJSON);
+
+            settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
             helper.destringifyFunctions(settingsObj);
 
             return settingsObj;
@@ -58,28 +65,30 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
         var settingsString = JSON.stringify(settingsObj);
         localStorage.userSettings = settingsString;
 
+
         // Send event to all tabs, so that settings are updated for the existing tabs as well.
         chrome.tabs.query({}, function(tabs) {
             for (var i=0; i<tabs.length; ++i) {
                 chrome.tabs.sendMessage(tabs[i].id, {message: 'settingsChanged'});
             }
         });
+
     }
 
 
-    function getExpandedUrlData(locationObj) {
+    function getExpandedUrlData(settings, locationObj) {
 
-        if (!locationObj) {
+        if (!locationObj || !settings) {
             return null;
         }
 
         var domain = mod_getMainDomain.getMainDomain(locationObj);
-        var urlData = getUrlDataUsingDomainKey(domain, locationObj);
+        var urlData = getUrlDataUsingDomainKey(settings, domain, locationObj);
 
         if (!urlData) {
-            var masterDomainKey = getMasterDomainKey(domain);
+            var masterDomainKey = getMasterDomainKey(settings, domain);
             if (masterDomainKey) {
-                urlData = getUrlDataUsingDomainKey(masterDomainKey, locationObj);
+                urlData = getUrlDataUsingDomainKey(settings, masterDomainKey, locationObj);
             }
         }
 
@@ -94,16 +103,16 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
         }
     }
 
-    function getUrlDataUsingDomainKey(domainKey, locationObj) {
+    function getUrlDataUsingDomainKey(settings, domainKey, locationObj) {
 
-        var urlDataArr = defaultSettings.urlDataMap[domainKey];
+        var urlDataArr = settings.urlDataMap[domainKey];
 
         if (!urlDataArr) {
             return false;
         }
 
         while (typeof urlDataArr === "string") {
-            urlDataArr = defaultSettings.urlDataMap[urlDataArr];
+            urlDataArr = settings.urlDataMap[urlDataArr];
         }
 
         if (!Array.isArray(urlDataArr)) {
@@ -216,8 +225,8 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
 // returns the master domain-key for the specified domain, if one can be found
     function getMasterDomainKey(domain) {
-
-        var len = specialDomain_masterDomain_map.length;
+        var specialDomain_masterDomain_map = specialDomain_masterDomain_map,
+            len = specialDomain_masterDomain_map.length;
         for (var i = 0, currentObj; i < len; ++i) {
             currentObj = specialDomain_masterDomain_map[i];
             if (currentObj.regexp.test(domain)) {
