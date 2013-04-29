@@ -8,8 +8,8 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
         showSearchBox: showSearchBox
     });
 
-    var $topLevelContainer = mod_core.$topLevelContainer,
-        $searchContainer,
+    var $searchContainer,
+        $searchBox,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         isVisible = false,
         $document = $(document),
@@ -17,24 +17,24 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
         suppressEvent = helper.suppressEvent;
 
     function setup() {
-        var $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
-                .addClass(class_addedByUnitsProj),
+        $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
+            .addClass(class_addedByUnitsProj);
 
-            $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
-                .attr("id", "UnitsProj-search-close-icon")
-                .addClass(class_addedByUnitsProj);
+        var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
+            .attr("id", "UnitsProj-search-close-icon")
+            .addClass(class_addedByUnitsProj);
 
         $searchContainer = $('<div id = "UnitsProj-search-container">')
             .addClass(class_addedByUnitsProj)
             .append($searchBox)
             .append($closeButton)
-            .hide()
-            .appendTo($topLevelContainer);
+            .hide()     // to prevent the search box from appearing when the page loads
+            .appendTo(mod_core.$topLevelContainer);
+        // Use a timeout to call .show(), otherwise the search box might appear briefly at the top of the page as
+        // it loads
+        setTimeout(function() {$searchContainer.show();}, 500);
 
         $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
-
-        // attach reference to the global variable for easy access in the rest of the code
-        $searchContainer.$searchBox = $searchBox;
 
         $searchBox.on('keydown paste input', onSearchBoxKeydown);
         $closeButton.click(closeSearchBox);
@@ -111,7 +111,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
      detect if a CU should be counted as a match or not. Also helps with efficiency.
      5) Other minor optimizations
      6) Added comments
-    */
+     */
     function highlightInCU($CU, pattern) {
 
         var numHighlighted = 0, // count of how many items were highlighted
@@ -212,34 +212,29 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
     }
 
     function getSearchBoxText() {
-        return $searchContainer.$searchBox.val();
+        return $searchBox.val();
     }
 
     function showSearchBox() {
-
-        if (!$searchContainer.is(':visible')) {
-            $searchContainer.show();
-        }
-
         if (!isVisible) {
-            $searchContainer.$searchBox.val('');
+            $searchBox.val('');
             $searchContainer.css({top: "0px"});
             var savedScrollPos = $document.scrollTop();
-            $searchContainer.$searchBox.focus();
+            $searchBox.focus();
             // Setting the focus to the search box scrolls the page up slightly because the searchbox lies above the visible
-            // part of the page (i.e. till its 'sliding' effect due to css transition completes). This is undesirable. 
+            // part of the page (i.e. till its 'sliding' effect due to css transition completes). This is undesirable.
             // Hence we restore the scroll position:
             $document.scrollTop(savedScrollPos);
         }
         else {
-            $searchContainer.$searchBox.focus();
+            $searchBox.focus();
         }
         isVisible = true;
     }
 
     function closeSearchBox() {
-        $searchContainer.$searchBox.val('');
-        $searchContainer.$searchBox.blur();
+        $searchBox.val('');
+        $searchBox.blur();
         $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
         isVisible = false;
         thisModule.trigger('filtering-state-change');
