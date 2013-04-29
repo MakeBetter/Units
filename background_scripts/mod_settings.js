@@ -242,10 +242,12 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
     function getUserSettings() {
         var settingsText = localStorage.userSettings;
-        var settingsObj = JSON.parse(settingsText);
-        helper.destringifyFunctions(settingsObj);
+        if (settingsText) {
+            var settingsObj = JSON.parse(settingsText);
+            helper.destringifyFunctions(settingsObj);
 
-        return settingsObj;
+            return settingsObj;
+        }
     }
 
     /**
