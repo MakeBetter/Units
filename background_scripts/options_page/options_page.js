@@ -1,3 +1,7 @@
+
+/* Note: In the HTML page, we use the word 'options' instead of 'settings', which is used in code. 'Options' is more
+consistent with Chrome extension terms. 'Settings' might be easier to understand in code. */
+
 var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     _u = backgroundPageWindow._u;
 
@@ -8,7 +12,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         saveSettingsButton = document.getElementById("save-settings"),
         resetSettingsButton = document.getElementById("reset-settings");
 
-    var populateUserOptions = function() {
+    var populateUserSettings = function() {
         var settings = mod_settings.getAllSettings();
 
         helper.stringifyJSONUnsupportedTypes_inSettings(settings);
@@ -32,7 +36,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             console.log("settings saved."); // till there is no user feedback, let's keep this.
         }
 
-        populateUserOptions();
+        populateUserSettings();
 
     };
 
@@ -44,13 +48,13 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var resetSettings = function() {
       if (confirm("Sure you want to reset the settings ?")) {
           delete localStorage.userSettings;
-          populateUserOptions();
+          populateUserSettings();
 
           console.log("settings reset."); // till there is no user feedback, let's keep this.
       }
     };
 
-    populateUserOptions();
+    populateUserSettings();
     saveSettingsButton.addEventListener("click", eh_saveSettings);
     resetSettingsButton.addEventListener("click", resetSettings);
 
