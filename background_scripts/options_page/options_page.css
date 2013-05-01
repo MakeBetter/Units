@@ -12,6 +12,10 @@ textarea {
     margin-top: 10px;
 }
 
+button {
+    height: 20px;
+}
+
 
 
 
@@ -22,5 +26,8 @@ textarea {
 
 #save-settings{
    float: right;
-    height: 20px;
+}
+
+#reset-settings {
+    float: right;
 }
