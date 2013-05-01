@@ -11,7 +11,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var populateUserOptions = function() {
         var settings = mod_settings.getAllSettings();
 
-        helper.stringifyFunctions(settings);
+        helper.stringifyJSONUnsupportedTypes_inSettings(settings);
         settings = JSON.stringify(settings, null, "\t");
 
         settingsTextArea.value = settings;
@@ -24,7 +24,8 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
     var saveSettings = function(settingsText) {
         var settingsObj = JSON.parse(settingsText);
-        helper.destringifyFunctions(settingsObj);
+        helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
+
         mod_settings.setUserSettings(settingsObj);
 
         console.log("settings saved!"); // till there is no user feedback, let's keep this.

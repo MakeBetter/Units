@@ -52,16 +52,16 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
         var settingsJSON = localStorage.userSettings;
         if (settingsJSON) {
             var settingsObj = JSON.parse(settingsJSON);
+            helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
 
             settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
-            helper.destringifyFunctions(settingsObj);
 
             return settingsObj;
         }
     }
 
     function setUserSettings(settingsObj) {
-        helper.stringifyFunctions(settingsObj);
+        helper.stringifyJSONUnsupportedTypes_inSettings(settingsObj);
         var settingsString = JSON.stringify(settingsObj);
         localStorage.userSettings = settingsString;
 
@@ -75,7 +75,6 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
     }
 
-
     function getExpandedUrlData(settings, locationObj) {
 
         if (!locationObj || !settings) {
@@ -86,7 +85,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
         var urlData = getUrlDataUsingDomainKey(settings, domain, locationObj);
 
         if (!urlData) {
-            var masterDomainKey = getMasterDomainKey(settings, domain);
+            var masterDomainKey = getMasterDomainKey(domain);
             if (masterDomainKey) {
                 urlData = getUrlDataUsingDomainKey(settings, masterDomainKey, locationObj);
             }
@@ -225,8 +224,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
 // returns the master domain-key for the specified domain, if one can be found
     function getMasterDomainKey(domain) {
-        var specialDomain_masterDomain_map = specialDomain_masterDomain_map,
-            len = specialDomain_masterDomain_map.length;
+        var len = specialDomain_masterDomain_map.length;
         for (var i = 0, currentObj; i < len; ++i) {
             currentObj = specialDomain_masterDomain_map[i];
             if (currentObj.regexp.test(domain)) {

@@ -1,3 +1,8 @@
+/* JSHint config*/
+/* global _u*/
+
+"use strict";
+
 /**
  * This module contains common/generic helper functions that are/might be used by more than one module (including the
  * background script).
@@ -175,9 +180,12 @@ _u.helper = {
     },
 
 
-// Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
-// (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
-// allowed between the background and content scripts)
+    /***
+     * Stringifies any property in the obj that is a function (including in the nested/inner objects within it).
+     * (Functions must be stringified before they can be passed to the content script, because only JSON type messages are
+     * allowed between the background and content scripts)
+     * @param obj
+     */
     stringifyFunctions: function stringifyFunctions(obj) {
 
         // retruns the strigified version of the function passed
@@ -197,7 +205,10 @@ _u.helper = {
         }
     },
 
-// De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
+    /***
+     * De-stringifies any property in the obj that is a stringfied function (including in the nested/inner objects within it).
+     * @param obj
+     */
     destringifyFunctions: function destringifyFunctions(obj) {
 
         // Returns the de-stringifed version of the function passed. If something other than a stringified function is passed in,
@@ -231,5 +242,141 @@ _u.helper = {
                 }
             }
         }
+    },
+
+    /***
+     * Stringifies regular expressions in a settings object.
+     * Stringify regular expressions at specific known locations in the settings object:
+     * settingsObj.urlDataMap[{key}][{index}].urlRegexps
+     * @param settingsObj
+     */
+    stringifyRegexps_inSettings: function(settingsObj) {
+        var stringifyRegexp_inUrlData = function(urlData) {
+            var getStringifiedRegexp = function(regexp) {
+                if (regexp && regexp instanceof RegExp) {
+                    return regexp.source;
+                }
+            };
+
+            if (!urlData || !urlData.urlRegexps) {
+                return;
+            }
+            var urlRegexps = urlData.urlRegexps,
+                regexStr;
+
+            if (Array.isArray(urlRegexps)) {
+                for (var index in urlRegexps) {
+                    regexStr = getStringifiedRegexp(urlRegexps[index]);
+                    if (regexStr) {
+                        urlRegexps[index] = regexStr;
+                    }
+                }
+            }
+            else {
+                regexStr = getStringifiedRegexp(urlRegexps);
+                if (regexStr) {
+                    urlData.urlRegexps = regexStr;
+                }
+            }
+
+        };
+
+        var urlDataMap = settingsObj && settingsObj.urlDataMap;
+
+        if (!urlDataMap) {
+            return;
+        }
+
+        var urlData;
+        for (var key in urlDataMap) {
+            urlData = urlDataMap[key];
+
+            if (Array.isArray(urlData)) {
+                for (var index in urlData) {
+                    stringifyRegexp_inUrlData(urlData[index]);
+                }
+
+            }
+            else {
+                stringifyRegexp_inUrlData(urlData);
+            }
+        }
+    },
+
+    /***
+     * Destringifies regular expressions in a settings object.
+     * Destringify regular expressions at specific known locations in the settings object:
+     * settingsObj.urlDataMap[{key}][{index}].urlRegexps
+     * @param settingsObj
+     */
+    destringifyRegexps__inSettings: function(settingsObj) {
+
+        var destringifyRegexp_inUrlData = function(urlData) {
+            var getDestringifiedRegexp = function(regexpStr) {
+                if (regexpStr && (regexpStr instanceof String || typeof regexpStr === "string")) {
+                    return new RegExp(regexpStr);
+                }
+            };
+
+            if (!urlData || !urlData.urlRegexps) {
+                return;
+            }
+            var urlRegexps = urlData.urlRegexps,
+                regexp;
+
+            if (Array.isArray(urlRegexps)) {
+                for (var index in urlRegexps) {
+                    regexp = getDestringifiedRegexp(urlRegexps[index]);
+                    if (regexp) {
+                        urlRegexps[index] = regexp;
+                    }
+                }
+            }
+            else {
+                regexp = getDestringifiedRegexp(urlRegexps);
+                if (regexp) {
+                    urlData.urlRegexps = regexp;
+                }
+            }
+
+        };
+
+        var urlDataMap = settingsObj && settingsObj.urlDataMap;
+
+        if (!urlDataMap) {
+            return;
+        }
+
+        var urlData;
+        for (var key in urlDataMap) {
+            urlData = urlDataMap[key];
+            if (Array.isArray(urlData)) {
+                for (var index in urlData) {
+                    destringifyRegexp_inUrlData(urlData[index]);
+                }
+
+            }
+            else {
+                destringifyRegexp_inUrlData(urlData);
+            }
+        }
+    },
+
+    /***
+     * Stringifies all the functions and regular expressions in a settings object (defaultSettings or userSettings)
+     * @param {object} settingsObj
+     */
+    stringifyJSONUnsupportedTypes_inSettings: function(settingsObj) {
+        this.stringifyFunctions(settingsObj);
+        this.stringifyRegexps_inSettings(settingsObj);
+    },
+
+    /***
+     * De-stringifies all the functions and regular expressions in a settings object (defaultSettings or userSettings)
+     * @param {object} settingsObj
+     */
+    destringifyJsonUnsupportedTypes_inSettings: function(settingsObj) {
+        this.destringifyFunctions(settingsObj);
+        this.destringifyRegexps__inSettings(settingsObj);
     }
 };
