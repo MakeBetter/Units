@@ -18,12 +18,22 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     };
 
     var saveSettings = function(settingsText) {
-        var settingsObj = JSON.parse(settingsText);
-        helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
+        var settingsObj = null;
+        try {
+            settingsObj = JSON.parse(settingsText);
+        }
+        catch(exception) {
+            console.error("Error in saving the settings. Edited JSON is not valid", exception);
+        }
 
-        mod_settings.setUserSettings(settingsObj);
+        if (settingsObj) {
+            helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
+            mod_settings.setUserSettings(settingsObj);
+            console.log("settings saved."); // till there is no user feedback, let's keep this.
+        }
 
-        console.log("settings saved."); // till there is no user feedback, let's keep this.
+        populateUserOptions();
+
     };
 
 

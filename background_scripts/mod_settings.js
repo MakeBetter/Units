@@ -49,15 +49,23 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
      * @returns {*}
      */
     function getUserSettings(locationObj) {
-        var settingsJSON = localStorage.userSettings;
+        var settingsJSON = localStorage.userSettings,
+            settingsObj = null;
+
         if (settingsJSON) {
-            var settingsObj = JSON.parse(settingsJSON);
+            try{
+                settingsObj = JSON.parse(settingsJSON);
+            }
+            catch(exception) {
+                console.error(exception);
+                return settingsObj;
+            }
+
             helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
-
             settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
-
-            return settingsObj;
         }
+        return settingsObj;
+
     }
 
     function setUserSettings(settingsObj) {
