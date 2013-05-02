@@ -1630,7 +1630,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * The bind function allows mapping of an array of keyboard shortcuts to a handler.
      * @param {Array} shortcuts
      * @param {Function} handler
-     * @param {boolean|undefined} suppressPropagation Whether to prevent the event from causing any other action. This
+     * @param {boolean} [suppressPropagation] Whether to prevent the event from causing any other action. This
      * defaults to true since it makes sense that if a shortcut has been invoked, nothing else should happen, given that
      * the shortcuts are configurable on a per-page basis). Note: Google results page (and similar pages; see below) need
      * this to be set to true in order to work correctly. In particular, a call to stopImmediatePropagation() is required
