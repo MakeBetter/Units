@@ -10,12 +10,8 @@
  * Dependencies:
  * mod_chromeAltHack: (Just in order to determine whether the 'accesskey' attribute needs to be observed for
  * mutations, depending on whether mod_chromeAltHack is loaded.)
- *
- * ////////////Note: currently using mod_chromeAltHack to make
- * calls to it as well. Remove those and communicate using events instead. Remove this note, when this is done.
- * ////////////////////
  */
-_u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
+_u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     "use strict";
 
     /*-- Public interface --*/
@@ -87,10 +83,8 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
 
         var newUrl = window.location.href;
         if (newUrl !== currentUrl) {
-
             thisModule.trigger("url-change", newUrl, currentUrl);
             currentUrl = newUrl;
-
         }
 
         // The following ensures that a set of closely spaced DOM mutation events triggers only one
@@ -105,15 +99,9 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
 
     };
 
-    function _onDomChange_grouped() {
-//        thisModule.trigger("dom-mutations-grouped", mutations);
-        thisModule.trigger("dom-mutations-grouped");
-    }
-
     // returns boolean
     function _canIgnoreMutation(mutationRecord) {
-        var class_addedByUnitsProj = CONSTS.class_addedByUnitsProj;
-        if (mutationRecord.type === "attributes" && mutationRecord.target.classList.contains(class_addedByUnitsProj)) {
+        if (mutationRecord.type === "attributes" && mod_contentHelper.isUnitsProjElement(mutationRecord.target)) {
             return true;
         }
 
@@ -127,7 +115,7 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
                 if (nodes && nodes.length) {
                     for (var i = 0; i < nodes.length; ++i) {
                         var node = nodes[i];
-                        if(!  ((node.classList && node.classList.contains(class_addedByUnitsProj)) ||
+                        if(!  ((node.nodeType === document.ELEMENT_NODE && mod_contentHelper.isUnitsProjElement(node)) ||
                             node.nodeType === document.TEXT_NODE)  ) {
                             canIgnore = false;
                             break;
@@ -153,4 +141,4 @@ _u.mod_mutationObserver = (function($, mod_core, mod_chromeAltHack, CONSTS) {
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_chromeAltHack, _u.CONSTS);
+})(jQuery, _u.mod_chromeAltHack, _u.mod_contentHelper);

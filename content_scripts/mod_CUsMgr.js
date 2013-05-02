@@ -1,7 +1,8 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_chromeAltHack, helper, CONSTS) {
+_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_chromeAltHack,
+                          mod_contentHelper, mod_commonHelper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -85,7 +86,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
 
         $helpContainer,
-        timeout_search,
 
         $lastSelectedCU = null,   // to store a reference to the last selected CU
 
@@ -112,7 +112,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         addEventListener_eventHandlers = [],
         jQueryOn_eventHandlers = [],
-        suppressEvent = helper.suppressEvent;
+        suppressEvent = mod_contentHelper.suppressEvent;
 
     // re-initialize the extension when background script informs of change in settings
     chrome.runtime.onMessage.addListener(
@@ -1260,7 +1260,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             $CUsArr = [];
             var currentGroupingIndex = 0;
 
-            var $container = helper.closestCommonAncestor($(CUsSpecifier.buildCUAround));
+            var $container = mod_contentHelper.closestCommonAncestor($(CUsSpecifier.buildCUAround));
             // TODO: move the function below to a more apt place
             /**
              *
@@ -1626,48 +1626,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     }
 
-    /**
-     * The bind function allows mapping of an array of keyboard shortcuts to a handler.
-     * @param {Array} shortcuts
-     * @param {Function} handler
-     * @param {boolean|undefined} suppressPropagation Whether to prevent the event from causing any other action. This
-     * defaults to true since it makes sense that if a shortcut has been invoked, nothing else should happen, given that
-     * the shortcuts are configurable on a per-page basis). Note: Google results page (and similar pages; see below) need
-     * this to be set to true in order to work correctly. In particular, a call to stopImmediatePropagation() is required
-     * for google, even if preventDefault() are not called.
-     *
-     Additional Notes:
-     Within the code for bind(), we specify 'keydown' for correct functioning in certain pages which otherwise consume
-     keyboard input even when a "typable" element is not focused. The main example of this we encountered was the google
-     search results page, which starts typing into the search box even when pressing keys when the search box doesn't
-     have focus.
-     [This is done in addition to having the keyboared library attach events in the capturing phase.]
-
-     In the future, if required, we could consider doing these only for google search pages/sites where it is required.
-     */
-    function bind(shortcuts, handler, suppressPropagation) {
-
-        // defaults to true unless explicitly specified as false (i.e. undefined is true as well)
-        if (suppressPropagation !== false) {
-            suppressPropagation = true;
-        }
-
-        if (suppressPropagation) {
-            mod_keyboardLib.bind(shortcuts, suppressEvent, 'keypress');
-            mod_keyboardLib.bind(shortcuts, suppressEvent, 'keyup');
-        }
-
-        mod_keyboardLib.bind(shortcuts, function(e) {
-            handler();
-            if (suppressPropagation) {
-                suppressEvent(e);
-            }
-        }, 'keydown');
-
-        if (mod_chromeAltHack) {
-            mod_chromeAltHack.applyHack(shortcuts);
-        }
-    }
 
     /* Sets up "browser action" shortcuts. That is ones that (generally) correspond to browser actions. This extension can
      be run in special mode  in which only this category of shortcuts is enabled (and this can be configured
@@ -1680,55 +1638,53 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      */
     function _setupBrowserShortcuts() {
 
-        // true is redundant here; used only to illustrate this form of the function call
-        bind(browserShortcuts.scrollDown, scrollDown, true);
-        bind(browserShortcuts.scrollUp, scrollUp);
-        bind(browserShortcuts.closeTab, closeTab);
-        bind(browserShortcuts.back, back);
-        bind(browserShortcuts.forward, forward);
-        bind(browserShortcuts.nextTab, nextTab);
-        bind(browserShortcuts.prevTab, prevTab);
+        mod_keyboardLib.bind(browserShortcuts.scrollDown, scrollDown);
+        mod_keyboardLib.bind(browserShortcuts.scrollUp, scrollUp);
+        mod_keyboardLib.bind(browserShortcuts.closeTab, closeTab);
+        mod_keyboardLib.bind(browserShortcuts.back, back);
+        mod_keyboardLib.bind(browserShortcuts.forward, forward);
+        mod_keyboardLib.bind(browserShortcuts.nextTab, nextTab);
+        mod_keyboardLib.bind(browserShortcuts.prevTab, prevTab);
 
-//    bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
-//    bind(['alt+q'], function() {console.log(' alt q');});
-//    bind(['alt+4'], function() {console.log(' alt 4');});
-//    bind(['alt+space+g'], function() {console.log(' alt space g');});
-//    bind(['shift+q'], function() {console.log('shift q');});
-//    bind(['q'], function() {console.log('q')});
+//    mod_keyboardLib.bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
+//    mod_keyboardLib.bind(['alt+q'], function() {console.log(' alt q');});
+//    mod_keyboardLib.bind(['alt+4'], function() {console.log(' alt 4');});
+//    mod_keyboardLib.bind(['alt+space+g'], function() {console.log(' alt space g');});
+//    mod_keyboardLib.bind(['shift+q'], function() {console.log('shift q');});
+//    mod_keyboardLib.bind(['q'], function() {console.log('q')});
 
         // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke mod_keyboardLib.reset()
-        bind(browserShortcuts.toggleExtension, disableExtension);
+        mod_keyboardLib.bind(browserShortcuts.toggleExtension, disableExtension);
     }
 
 // Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
 // selecting next/prev CU, etc.
     function _setupGeneralShortcuts() {
 
-        // true is redundant here; used only to illustrate this form of the function call
-        bind(generalShortcuts.nextCU.kbdShortcuts, selectNext, true);
+        mod_keyboardLib.bind(generalShortcuts.nextCU.kbdShortcuts, selectNext);
 
-        bind(generalShortcuts.prevCU.kbdShortcuts, selectPrev);
+        mod_keyboardLib.bind(generalShortcuts.prevCU.kbdShortcuts, selectPrev);
 
-        mod_filterCUs && bind(generalShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
+        mod_filterCUs && mod_keyboardLib.bind(generalShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
-        bind(generalShortcuts.firstCU.kbdShortcuts, function(e) {
+        mod_keyboardLib.bind(generalShortcuts.firstCU.kbdShortcuts, function(e) {
             selectCU(0, true);
         });
 
-        bind(generalShortcuts.lastCU.kbdShortcuts, function(e) {
+        mod_keyboardLib.bind(generalShortcuts.lastCU.kbdShortcuts, function(e) {
             selectCU($CUsArray.length - 1, true);
         });
 
-        bind(generalShortcuts.showHelp.kbdShortcuts, showHelp);
+        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, showHelp);
 
-        bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
+        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
 
-        bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
+        mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
             openActiveElement(true); // open in new tab
         });
-        bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
-        bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
-        bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
+        mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
+        mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
+        mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
 
     }
 
@@ -1757,7 +1713,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     kbdShortcuts = MU.kbdShortcuts;
 
                 if (selectors && kbdShortcuts) {
-                    bind(kbdShortcuts, _accessMU.bind(null, selectors, scope));
+                    mod_keyboardLib.bind(kbdShortcuts, _accessMU.bind(null, selectors, scope));
                 }
             }
         }
@@ -1777,7 +1733,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     fn = action.fn,
                     kbdShortcuts = action.kbdShortcuts;
                 if (typeof fn === "function" && kbdShortcuts) {
-                    bind(kbdShortcuts, _invokeAction.bind(null, fn, scope));
+                    mod_keyboardLib.bind(kbdShortcuts, _invokeAction.bind(null, fn, scope));
                 }
 
             }
@@ -1812,7 +1768,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             }
             (function invokeSequentialClicks (selectorsArr) {
                 if (selectorsArr.length) {
-                    helper.executeWhenConditionMet(
+                    mod_commonHelper.executeWhenConditionMet(
                         function() {
                             // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
                             $scope.find(selectorsArr[0])[0].click();
@@ -1879,7 +1835,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     selectMostSensibleCU(true, true);
                 }
             }
-            else if (helper.isElementEditable(activeEl)) {
+            else if (mod_contentHelper.isElementEditable(activeEl)) {
                 activeEl.blur();
             }
             else {
@@ -2168,9 +2124,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }
 
         if (browserShortcuts) {  // need this check since since the obj wouldn't be defined the first time
-            bind(browserShortcuts.toggleExtension, initializeExtension);
+            mod_keyboardLib.bind(browserShortcuts.toggleExtension, initializeExtension);
         }
-
     }
 
 // (reset and re-)initialize the extension.
@@ -2191,25 +2146,35 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 generalShortcuts = settings.generalShortcuts;
                 expandedUrlData = settings.expandedUrlData;
 
-                if (settings.disabledStatus === "full") {
+                if (settings.isDisabled) {
                     // TODO: separate this stuff from CUsMgr
-                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
+                    disableExtension();
+                    // the following lines exist to cater to url changes in single page apps etc. TODO: is it an
+                    // overkill to be handling these rare cases?
+                    mod_mutationObserver.start();
+                    thisModule.stopListening(); // stop listening to all events from all modules...
+                    thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);// ...except 'url-change'
 
                     return;
                 }
-                else if (settings.disabledStatus === "partial") {
-                    // TODO: separate this stuff from CUsMgr
-                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
-                    _setupBrowserShortcuts(); // check if it's okay to call this directly (since it starts with an "_")
-                    return;
-                }
+//                else if (settings.isDisabled === "partial") {
+//                    // TODO: separate this stuff from CUsMgr
+//                    mod_mutationObserver.start();
+//                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
+//                    _setupBrowserShortcuts(); // check if it's okay to call this directly (since it starts with an "_")
+//                    return;
+//                }
 
                 // has to be done before the the call to makeImmutable :)
                 if (settings.expandedUrlData) {
-                    helper.destringifyFunctions(settings.expandedUrlData);
+                    mod_commonHelper.destringifyFunctions(settings.expandedUrlData);
                 }
 
-                helper.makeImmutable(settings);
+                mod_commonHelper.makeImmutable(settings);
+
+                if (settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts) {
+                    mod_keyboardLib.setProtectedWebpageShortcuts(settings.expandedUrlData.protectedWebpageShortcuts);
+                }
 
                 setupBasicUIComponents(); // also set up their associated event handlers
 
@@ -2359,7 +2324,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     }
 
 ///////////////////////////////////////////
-//helper.js
+//mod_commonHelper.js
 
 
     /**
@@ -2558,6 +2523,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     return thisModule;
 
 })(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs,
-        _u.mod_chromeAltHack, _u.helper, _u.CONSTS);
+        _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.CONSTS);
 
 

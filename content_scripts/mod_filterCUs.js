@@ -1,4 +1,4 @@
-_u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) {
+_u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -14,7 +14,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
         isVisible = false,
         $document = $(document),
         timeout_typing,
-        suppressEvent = helper.suppressEvent;
+        suppressEvent = mod_contentHelper.suppressEvent;
 
     function setup() {
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
@@ -56,7 +56,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
             CUsNodes = CUsNodes.concat($CU.get());
         }
 
-        var $closestAncestor = $(helper.closestCommonAncestor(CUsNodes));
+        var $closestAncestor = $(mod_contentHelper.closestCommonAncestor(CUsNodes));
 
         mod_mutationObserver.stop(); // ** stop monitoring mutations **
         $closestAncestor.hide();
@@ -242,4 +242,4 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, helper, CONSTS) 
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.helper, _u.CONSTS);
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_contentHelper, _u.CONSTS);

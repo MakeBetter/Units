@@ -15,17 +15,8 @@ var defaultSettings = {
     */
     disabledSites: {
 
-        // On these sites, only the "browser action" shortcuts are enabled, but the rest of the extension is disabled.
-        partial: {
-            urlPatterns: ['mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'],
-            urlRegexps: []
-        },
-
-        // On these sites, the extension is completely disabled.
-        full: {
-            urlPatterns: [],
-            urlRegexps: []
-        }
+        urlPatterns: ['www.google.com/*' /*'mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'*/],
+        urlRegexps: []
     },
 
     /*
@@ -58,8 +49,8 @@ var defaultSettings = {
     In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key.
     */
     browserShortcuts: {
-        scrollDown: ['alt+j'],
-        scrollUp: ['alt+k'],
+        scrollDown: ['shift+j'],
+        scrollUp: ['shift+k'],
         closeTab: ['alt+x'],
         back: ['alt+h'],
         forward: ['alt+l'],

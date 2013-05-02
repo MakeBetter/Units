@@ -5,7 +5,7 @@ consistent with Chrome extension terms. 'Settings' might be easier to understand
 var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     _u = backgroundPageWindow._u;
 
-(function(helper, mod_settings) {
+(function(mod_commonHelper, mod_settings) {
     "use strict";
 
     var settingsTextArea = document.getElementById("userSettingsJSON"),
@@ -15,7 +15,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var populateUserSettings = function() {
         var settings = mod_settings.getAllSettings();
 
-        helper.stringifyJSONUnsupportedTypes_inSettings(settings);
+        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settings);
         settings = JSON.stringify(settings, null, "\t");
 
         settingsTextArea.value = settings;
@@ -31,7 +31,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         }
 
         if (settingsObj) {
-            helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
+            mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
             mod_settings.setUserSettings(settingsObj);
             console.log("settings saved."); // till there is no user feedback, let's keep this.
         }
@@ -58,4 +58,4 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     saveSettingsButton.addEventListener("click", eh_saveSettings);
     resetSettingsButton.addEventListener("click", resetSettings);
 
-})(_u.helper, _u.mod_settings);
+})(_u.mod_commonHelper, _u.mod_settings);

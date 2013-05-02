@@ -1,6 +1,6 @@
 /* global jQuery, _u, defaultSettings, specialDomain_masterDomain_map */
 
-_u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map) {
+_u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map) {
     "use strict";
 
     /*-- Public interface --*/
@@ -27,7 +27,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
             userSettings = getUserSettings(locationObj),
             settings = $.extend(true, {}, _defaultSettings, userSettings);
 
-        settings.disabledStatus = getDisabledStatus(locationObj.href, settings.disabledSites);
+        settings.isDisabled = getDisabledStatus(locationObj.href, settings.disabledSites);
 
         return settings;
     }
@@ -61,7 +61,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
                 return settingsObj;
             }
 
-            helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
+            mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
             settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
         }
         return settingsObj;
@@ -69,7 +69,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
     }
 
     function setUserSettings(settingsObj) {
-        helper.stringifyJSONUnsupportedTypes_inSettings(settingsObj);
+        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settingsObj);
         var settingsString = JSON.stringify(settingsObj);
         localStorage.userSettings = settingsString;
 
@@ -100,7 +100,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
         }
 
         if (urlData) {
-            helper.stringifyFunctions(urlData);
+            mod_commonHelper.stringifyFunctions(urlData);
             expandUrlData(urlData);
             return urlData;
         }
@@ -269,8 +269,7 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
     }
 
     /**
-     * Returns a string indicating if the extension is to be fully or partially disabled on the URL specified (returns
-     * "full" or "partial" respectively). If the extension is to fully function on the URL, `false` is returned
+     * Returns true/false indicating whether the extension is to be disabled on the URL specified
      * @param {string} url
      * @param {object} disabledSites Object specifying on which sites the extension is partially and fully disabled
      */
@@ -292,12 +291,14 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
             return false;
         };
 
-        if (matches(disabledSites.full)) {
-            return "full";
+//        if (matches(disabledSites.full)) {
+        if (matches(disabledSites)) {
+//            return "full";
+            return true;
         }
-        else if (matches(disabledSites.partial)) {
-            return "partial";
-        }
+//        else if (matches(disabledSites.partial)) {
+//            return "partial";
+//        }
         else {
             return false;
         }
@@ -306,4 +307,4 @@ _u.mod_settings = (function($, helper, mod_getMainDomain, defaultSettings, speci
 
     return thisModule;
 
-})(jQuery, _u.helper, _u.mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map);
+})(jQuery, _u.mod_commonHelper, _u.mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map);

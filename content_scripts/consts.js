@@ -1,4 +1,4 @@
-_u.CONSTS = (function(helper){
+_u.CONSTS = (function(mod_commonHelper){
 
     // properties defined in this object will be set as read-only properties of the global _u.CONSTS object
     var CONSTS = {
@@ -17,8 +17,8 @@ _u.CONSTS = (function(helper){
 
         // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
         // with the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
-        focusablesSelector: 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:visible, *[contenteditable]',
+        focusablesSelector: 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:visible, *[contenteditable]'
 
         };
-    return helper.makeImmutable(CONSTS);
-})(_u.helper);
+    return mod_commonHelper.makeImmutable(CONSTS);
+})(_u.mod_commonHelper);

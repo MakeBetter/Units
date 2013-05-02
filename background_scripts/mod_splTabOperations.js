@@ -1,21 +1,29 @@
+/*
+ mod_specialBrowserFunctions:
+ Defines functions corresponding to actions which will be bound to a group of so called *special shortcuts*. These
+ minimal shortcuts remain active even when the extension is to be partially disabled on a URL. Most of these `special
+ shortcuts` are defined/modified using manifest.json or chrome.commands api. The keys bound to these shortcuts can be
+ changed by the user using the *Configure Commands* interface provided by Chrome on the extensions page.
+ Note: apart from these shortcuts, the extension for *toggle extension state* is considered part of the set of special
+ shortcuts. It is defined
+ */
 (function() {
     "use strict";
 
-    chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-            if (request.message === 'closeTab') {
-                closeCurrentTab();
-            }
-            else  if (request.message === 'prevTab') {
-                prevTab();
-            }
-            else  if (request.message === 'nextTab') {
-                nextTab();
-            }
+    chrome.commands.onCommand.addListener(function(command) {
+        if (command === 'closeTab') {
+            closeTab();
         }
-    );
+        else if (command === 'prevTab') {
+            prevTab();
+        }
+        else if (command === 'nextTab') {
+            nextTab();
+        }
+    });
+
     // close the currently active tab
-    function closeCurrentTab() {
+    function closeTab() {
         chrome.tabs.query(
             {currentWindow: true, active : true},
             function(tabArray){

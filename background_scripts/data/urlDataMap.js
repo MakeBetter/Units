@@ -110,6 +110,12 @@ defaultSettings.urlDataMap = {
              specific or CU specific, except as a matter of good practice.]
              */
 
+            // These are shortcuts on the page that the extension should NOT override
+            protectedWebpageShortcuts: ["j", "k"],
+            //TODO: consider allowing generalShortcuts etc to be specified here (or in a separate object)
+            // if required to specify alternatives for protectedWebpageShortcuts. It will only ADD to the existing
+            // list. Any removals should be done using `protectedWebpageShortcuts`?
+
             CUs_specifier:  {
                 selector: ".foo .bar",
                 exclude: ".advert",          // TODO: check if this is implemented
@@ -278,6 +284,11 @@ defaultSettings.urlDataMap = {
             // for scholar.google.com etc.
             urlPatterns: ["scholar.google.@/*", "scholar.google.co.@/*"],
             CUs_specifier: ".gs_r, .gs_ico_nav_next"
+        },
+        {
+            // for Gmail
+            urlPatterns: ["gmail.com", "gmail.com/*", "mail.google.com", "mail.google.com/*"],
+            protectedWebpageShortcuts: ["j", "k"]
         }
     ],
     "guardian.co.uk": {

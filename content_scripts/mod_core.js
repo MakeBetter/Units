@@ -1,4 +1,6 @@
-_u.mod_core = (function($, mod_mutationObserver, CONSTS) {
+// TODO: !!NOTE!!:consider making $topLevelContainer a direct property of `_u`, if this module does nothing apart from
+// exposing it publicly
+_u.mod_core = (function($, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -11,23 +13,5 @@ _u.mod_core = (function($, mod_mutationObserver, CONSTS) {
         $topLevelContainer: $('<div></div>').addClass(CONSTS.class_addedByUnitsProj),
     });
 
-    /*-- Event bindings --*/
-    // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
-    // time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutation', _ensureTopLevelContainerIsInDom);
-
-    /*-- Module implementation --*/
-    // Checks if document.body contains the $topLevelContainer element, and appends it to the body if it doesn't.
-    function _ensureTopLevelContainerIsInDom() {
-        if (!document.body.contains(thisModule.$topLevelContainer[0])) {
-//        console.log('appending $topLevelContainer to body');
-            thisModule.$topLevelContainer.appendTo(document.body);
-
-        }
-    }
-
-
     return thisModule;
-})(jQuery, _u.mod_mutationObserver, _u.CONSTS);
-
-
+})(jQuery,_u.CONSTS);

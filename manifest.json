@@ -16,8 +16,7 @@
             "vendor/jquery-2.0.0.min.js",
 
             "background_scripts/initializeNamespace.js",
-
-            "common/helper.js",
+            "common/mod_commonHelper.js",
 
             "background_scripts/data/defaultSettings.js",
             "background_scripts/data/urlDataMap.js",
@@ -27,7 +26,7 @@
             "background_scripts/mod_getMainDomain.js",
             "background_scripts/mod_settings.js",
             "background_scripts/mainBackgroundScript.js",
-            "background_scripts/mod_browserFunctions.js"
+            "background_scripts/mod_splTabOperations.js"
         ]
     },
 
@@ -42,16 +41,20 @@
                 "vendor/mousetrap-modified.js",
 
                 "content_scripts/initializeNamespace.js",
-                "common/helper.js",
+                "common/mod_commonHelper.js",
                 "content_scripts/CONSTS.js",
+                "content_scripts/mod_core.js",
+                "content_scripts/mod_contentHelper.js",
 
-                "content_scripts/mod_keyboardLib.js",
                 "content_scripts/mod_events.js",
                 "content_scripts/mod_mutationObserver.js",
-                "content_scripts/mod_core.js",
+
                 "content_scripts/mod_chromeAltHack.js",
+                "content_scripts/mod_keyboardLib.js",
                 "content_scripts/mod_filterCUs.js",
-                "content_scripts/mod_CUsMgr.js"
+                "content_scripts/mod_CUsMgr.js",
+
+                "content_scripts/mod_main.js"
             ],
 
             "css": ["units.css"],
@@ -63,5 +66,26 @@
     "permissions": [
         "tabs",
         "storage"
-    ]
+    ],
+
+    "commands": {
+        "closeTab": {
+            "suggested_key": {
+                "default": "Alt+X"
+            },
+            "description": "Close tab"
+        },
+        "prevTab": {
+            "suggested_key": {
+                "default": "Alt+J"
+            },
+            "description": "Select previous tab"
+        },
+        "nextTab": {
+            "suggested_key": {
+                "default": "Alt+K"
+            },
+            "description": "Select next tab"
+        }
+    }
 }
