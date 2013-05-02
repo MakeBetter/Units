@@ -9,7 +9,7 @@ h1 {
 
 textarea {
     padding: 0;
-    margin-top: 10px;
+    /*margin-top: 10px;*/
 }
 
 button {
@@ -24,6 +24,23 @@ button {
     display: table;
 }
 
+#user-settings p {
+    margin-bottom: 0;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    font-style: italic;
+    /*background-color: #fafafa;*/
+}
+
+#user-settings textarea {
+    border-color: #efefef;
+    margin-bottom: 20px;
+}
+
+#settings-buttons-panel {
+    margin-bottom: 30px;
+}
+
 #save-settings{
    float: right;
 }
@@ -31,3 +48,5 @@ button {
 #reset-settings {
     float: right;
 }
+
+

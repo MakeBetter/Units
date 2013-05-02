@@ -5,10 +5,10 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     /*-- Public interface --*/
     var thisModule ={
-       getSettings: getSettings,
-       getAllSettings: getAllSettings,
-       setUserSettings: setUserSettings,
-       getDefaultSettings: getDefaultSettings
+        getSettings: getSettings,
+        getAllSettings: getAllSettings,
+        setUserSettings: setUserSettings,
+        getDefaultSettings: getDefaultSettings
     };
 
     /***
@@ -69,10 +69,17 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     }
 
     function setUserSettings(settingsObj) {
-        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settingsObj);
-        var settingsString = JSON.stringify(settingsObj);
-        localStorage.userSettings = settingsString;
 
+        if (settingsObj) {
+            mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settingsObj);
+            var settingsJSON = JSON.stringify(settingsObj);
+            localStorage.userSettings = settingsJSON;
+
+
+        }
+        else {
+            delete localStorage.userSettings;
+        }
 
         // Send event to all tabs, so that settings are updated for the existing tabs as well.
         chrome.tabs.query({}, function(tabs) {

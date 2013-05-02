@@ -15,7 +15,7 @@ var defaultSettings = {
     */
     disabledSites: {
 
-        urlPatterns: ['www.google.com/*' /*'mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'*/],
+        urlPatterns: [/*'mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'*/],
         urlRegexps: []
     },
 
