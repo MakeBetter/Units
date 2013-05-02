@@ -134,6 +134,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
                     var spannode = document.createElement('span');
                     spannode.className = 'UnitsProj-highlight';
                     var middlebit = node.splitText(pos);
+                    // this line is required, even though the variable assigned to is unused 
                     var endbit = middlebit.splitText(patternLowerCase.length);
                     var middleclone = middlebit.cloneNode(true);
                     spannode.appendChild(middleclone);
