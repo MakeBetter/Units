@@ -1,11 +1,14 @@
 /*
- mod_specialBrowserFunctions:
- Defines functions corresponding to actions which will be bound to a group of so called *special shortcuts*. These
- minimal shortcuts remain active even when the extension is to be partially disabled on a URL. Most of these `special
- shortcuts` are defined/modified using manifest.json or chrome.commands api. The keys bound to these shortcuts can be
- changed by the user using the *Configure Commands* interface provided by Chrome on the extensions page.
- Note: apart from these shortcuts, the extension for *toggle extension state* is considered part of the set of special
- shortcuts. It is defined
+ mod_splTabOperations.js:
+ In conjunction with the `commands` defined in `manifest.json`, this module allows handling of shortcuts for
+ a minimal set of special tab relation operations: close tab, select next tab, select prev tab.
+ These are special because they are defined as "global" shortcuts handled by the background script. This has the
+ following advantages:
+ 1) It allows these shortcuts to work when the tab has no content (e.g. 'new tab' tab, a tab in which the page could not
+ be found, 'chrome://settings' tab)
+ 2) It lets this (miminal) set of shortcuts work on a tab even if the extension (content script) is disabled for the
+ corresponding URL (The nature of these shortcuts, and their extremely small number, makes this a desirable effect in
+ our view.) 
  */
 (function() {
     "use strict";
