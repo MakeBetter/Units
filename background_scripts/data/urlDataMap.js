@@ -443,10 +443,28 @@ defaultSettings.urlDataMap = {
             selector: ".box>table tr"
         }
     },
+//    "twitter.com": {
+//        urlPatterns: ["twitter.com/", "twitter.com/*"],
+//        CUs_specifier: {
+//            selector: ".tweet"
+//        },
+//        page_actions: {
+//            "std_onCUSelection": {
+//                fn: function($selectedCU, document, urlData) {
+//                    $selectedCU[0].click(); // to expand the tweet
+//                }
+//            },
+//            "std_onCUDeselection": {
+//                fn: function($deselectedCU, document, urlData) {
+//                    $deselectedCU[0].click(); // to un-expand it again
+//                }
+//            }
+//        }
+//    },
     "urbandictionary.com": {
         urlPatterns: ["*.urbandictionary.com*"],
         CUs_specifier: {
-                buildCUAround: "td.index",
+            buildCUAround: "td.index",
         }
     },
 
