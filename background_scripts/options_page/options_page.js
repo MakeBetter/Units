@@ -8,31 +8,47 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 (function(helper, mod_settings) {
     "use strict";
 
-    var settingsTextArea = document.getElementById("userSettingsJSON"),
+    var generalSettingsTextArea = document.getElementById("general-settings"),
+        siteSettingsTextArea = document.getElementById("site-specific-settings"),
         saveSettingsButton = document.getElementById("save-settings"),
         resetSettingsButton = document.getElementById("reset-settings");
 
     var populateUserSettings = function() {
-        var settings = mod_settings.getAllSettings();
+        // settings are divided into general settings and site-specific settings.
+        var generalSettings = mod_settings.getAllSettings(),
+            siteSpecificSettings;
 
-        helper.stringifyJSONUnsupportedTypes_inSettings(settings);
-        settings = JSON.stringify(settings, null, "\t");
+        helper.stringifyJSONUnsupportedTypes_inSettings(generalSettings);
 
-        settingsTextArea.value = settings;
+        siteSpecificSettings = generalSettings.urlDataMap;
+        siteSpecificSettings = JSON.stringify(siteSpecificSettings, null, "\t");
+
+        delete generalSettings.urlDataMap;
+        generalSettings = JSON.stringify(generalSettings, null, "\t");
+
+        generalSettingsTextArea.value = generalSettings;
+        siteSettingsTextArea.value = siteSpecificSettings;
     };
 
-    var saveSettings = function(settingsText) {
-        var settingsObj = null;
+    var saveSettings = function(generalSettingsJSON, siteSpecificSettingsJSON) {
+        var generalSettingsObj = null,
+            siteSpecificSettingsObj = null
         try {
-            settingsObj = JSON.parse(settingsText);
+            generalSettingsObj = JSON.parse(generalSettingsJSON);
+            siteSpecificSettingsObj = JSON.parse(siteSpecificSettingsJSON);
+
         }
         catch(exception) {
             console.error("Error in saving the settings. Edited JSON is not valid", exception);
         }
 
-        if (settingsObj) {
+        if (generalSettingsObj && siteSpecificSettingsObj) {
+            var settingsObj = generalSettingsObj;
+            settingsObj.urlDataMap = siteSpecificSettingsObj;
+
             helper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
             mod_settings.setUserSettings(settingsObj);
+
             console.log("settings saved."); // till there is no user feedback, let's keep this.
         }
 
@@ -42,12 +58,12 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
 
     var eh_saveSettings = function() {
-        saveSettings(settingsTextArea.value);
+        saveSettings(generalSettingsTextArea.value, siteSettingsTextArea.value);
     };
 
     var resetSettings = function() {
-      if (confirm("Sure you want to reset the settings ?")) {
-          delete localStorage.userSettings;
+      if (confirm("Sure you want to reset all the options?")) {
+          mod_settings.setUserSettings(null);
           populateUserSettings();
 
           console.log("settings reset."); // till there is no user feedback, let's keep this.
