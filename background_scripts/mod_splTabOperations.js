@@ -1,14 +1,12 @@
 /*
  mod_splTabOperations.js:
  In conjunction with the `commands` defined in `manifest.json`, this module allows handling of shortcuts for
- a minimal set of special tab relation operations: close tab, select next tab, select prev tab.
- These are special because they are defined as "global" shortcuts handled by the background script. This has the
- following advantages:
+ a minimal set of special tab-related operations - close tab, select next tab, select prev tab.
+ These are defined as "global" shortcuts handled by the background script. This has the following effects/advantages:
  1) It allows these shortcuts to work when the tab has no content (e.g. 'new tab' tab, a tab in which the page could not
  be found, 'chrome://settings' tab)
- 2) It lets this (miminal) set of shortcuts work on a tab even if the extension (content script) is disabled for the
- corresponding URL (The nature of these shortcuts, and their extremely small number, makes this a desirable effect in
- our view.) 
+ 2) It lets this set of shortcuts work on a tab even if the (content script part of the) extension is disabled for the
+ tab's URL (The nature of these shortcuts, and their extremely small number, makes this a desirable effect in our view.)
  */
 (function() {
     "use strict";
@@ -69,9 +67,7 @@
                         }
                     });
                 });
-
             }
         });
     }
-
 })();
