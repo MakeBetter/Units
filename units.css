@@ -84,7 +84,9 @@ input.UnitsProj-reset-text-input {
     margin: 0 !important;
     padding: 2px !important;
     width: 150px !important;
+    min-width: 150px !important;
     height: 20px !important;
+    min-height: 20px !important;
     float: none !important;
 
 
