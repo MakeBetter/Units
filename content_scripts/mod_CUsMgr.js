@@ -2264,9 +2264,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     function setupHelpUI() {
 
         var $heading = $("<div id='heading'><span>Units Shortcuts</span></div>");
-        console.log(expandedUrlData, browserShortcuts, generalShortcuts);
 
-//        var pageShortcuts = expandedUrlData && expandedUrlData.page_shortcuts;
+        // shortcuts are displayed under three different heads: CUs based, page based, and general browser based.   
+
         var CUs_MUs = expandedUrlData && expandedUrlData.CUs_MUs,
             CUs_actions = expandedUrlData && expandedUrlData.CUs_actions,
             CUs_allShortcuts = $.extend({}, CUs_MUs, CUs_actions);
@@ -2276,6 +2276,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             page_allShortcuts = $.extend({}, page_MUs, page_actions);
 
         var allGeneralShortcuts = $.extend({},browserShortcuts, generalShortcuts);
+        // TODO: the generalShortcuts contains quite a few CUs based shortcuts. Make changes to the data to be able to
+        // identify these CUs based shortcuts, and then show them as part of the CUs shortcuts.
 
         var $pageShortcutsSection = $("<div></div>");
         var $CUShortcutsSection = $("<div></div>");
