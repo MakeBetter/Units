@@ -5,7 +5,7 @@
 var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     _u = backgroundPageWindow._u;
 
-(function(mod_commonHelper, mod_settings) {
+(function(mod_commonHelper, mod_settings, mod_UIHelper) {
     "use strict";
 
     var generalSettingsTextArea = document.getElementById("general-settings"),
@@ -17,6 +17,10 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         // settings are divided into general settings and site-specific settings.
         var generalSettings = mod_settings.getAllSettings(),
             siteSpecificSettings;
+
+        if (!generalSettings) {
+            mod_UIHelper.showErrorMessage("Your settings are in a corrupt state. Try resetting to default options.");
+        }
 
         mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(generalSettings);
 
@@ -32,7 +36,8 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
     var saveSettings = function(generalSettingsJSON, siteSpecificSettingsJSON) {
         var generalSettingsObj = null,
-            siteSpecificSettingsObj = null
+            siteSpecificSettingsObj = null;
+
         try {
             generalSettingsObj = JSON.parse(generalSettingsJSON);
             siteSpecificSettingsObj = JSON.parse(siteSpecificSettingsJSON);
@@ -40,6 +45,12 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         }
         catch(exception) {
             console.error("Error in saving the settings. Edited JSON is not valid", exception);
+
+            var error = exception && exception.message,
+                errorMessage = "<p>Invalid JSON Error: <span class='json-error-message'>" + error + "</span> </p>" +
+                    "<span>Please make sure the edited JSON is valid before saving.</span>";
+
+            mod_UIHelper.showErrorMessage(errorMessage);
         }
 
         if (generalSettingsObj && siteSpecificSettingsObj) {
@@ -49,11 +60,9 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
             mod_settings.setUserSettings(settingsObj);
 
-            console.log("settings saved."); // till there is no user feedback, let's keep this.
+            mod_UIHelper.showSuccessMessage("Options successfully edited!");
+            populateUserSettings();
         }
-
-        populateUserSettings();
-
     };
 
 
@@ -66,7 +75,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             mod_settings.setUserSettings(null);
             populateUserSettings();
 
-            console.log("settings reset."); // till there is no user feedback, let's keep this.
+            mod_UIHelper.showSuccessMessage("Default options are reset!");
         }
     };
 
@@ -74,4 +83,4 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     saveSettingsButton.addEventListener("click", eh_saveSettings);
     resetSettingsButton.addEventListener("click", resetSettings);
 
-})(_u.mod_commonHelper, _u.mod_settings);
+})(_u.mod_commonHelper, _u.mod_settings, mod_UIHelper);

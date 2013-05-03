@@ -14,18 +14,41 @@ mod_UIHelper = (function() {
         successClass = "success";
 
     /*-- Module implementation --*/
-    function showMessage(message, type) {
-        messageDiv.value = message;
-//        messageDiv
 
+    /***
+     * Show success or error message in the top user-message div.
+     * @param message
+     * @param type
+     * @param [duration]
+     */
+    function showMessage(message, type, duration) {
+        messageDiv.classList.remove(errorClass);
+        messageDiv.classList.remove(successClass);
+
+        if (type === "error") {
+            messageDiv.classList.add(errorClass);
+        }
+        else if (type === "success"){
+            messageDiv.classList.add(successClass);
+        }
+
+        messageDiv.innerHTML = message;
+        messageDiv.style.display = "block";
+
+        if (type === "success") {
+            duration = parseInt(duration) || 3000;
+            setTimeout(function() {
+                messageDiv.style.display = "none";
+            }, duration);
+        }
     }
 
-    function showErrorMessage() {
-
+    function showErrorMessage(message) {
+        this.showMessage(message, "error");
     }
 
-    function showSuccessMessage() {
-
+    function showSuccessMessage(message) {
+        this.showMessage(message, "success");
     }
 
     return thisModule;

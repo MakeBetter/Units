@@ -16,9 +16,6 @@ button {
     height: 20px;
 }
 
-
-
-
 #settings-container {
     margin: 0 auto;
     display: table;
@@ -42,11 +39,49 @@ button {
 }
 
 #save-settings{
-   float: right;
+    float: right;
 }
 
 #reset-settings {
     float: right;
 }
 
+/* TODO: To be improved. Just some CSS for now. */
+#user-message {
+    width: 500px;
+    position:fixed;
+    top:0;
+    left: 50%;
+    margin-left: -250px;
+    z-index: 1501;
+    text-align: center;
 
+    padding: 5px 0;
+    /*min-height: 30px;*/
+
+    color: #ffffff;
+    opacity: 0.98;
+    font-size: 12px;
+
+    /*corner-bottom*/
+    -moz-border-radius-bottomleft: 2px; -webkit-border-bottom-left-radius: 2px; -khtml-border-bottom-left-radius: 2px; border-bottom-left-radius: 2px;
+    -moz-border-radius-bottomright: 2px; -webkit-border-bottom-right-radius: 2px; -khtml-border-bottom-right-radius: 2px; border-bottom-right-radius: 2px;
+}
+
+#user-message>p {
+    padding: 0; margin: 0;
+}
+
+#user-message .json-error-message {
+    font-style: italic;
+}
+
+#user-message.error {
+    background: #e30202;
+    border: 1px solid #e60000;
+}
+
+#user-message.success {
+    background-color: #3e801b;
+    border: 1px solid #3e801b;
+}
