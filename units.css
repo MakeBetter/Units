@@ -213,32 +213,98 @@ span#UnitsProj-search-close-icon:hover {
     color: #eee !important;
 }
 
-#UnitsProj-help-container {
-    background-color: #222;
-    opacity: 0.88;
-    min-height: 400px;
-    min-width: 400px;
-    position: fixed;
-    z-index: 10000;
+.UnitsProj-modal {
+    background-color: white !important;
+    min-height: 400px !important;
+    min-width: 400px !important;
+    position: fixed !important;
+    z-index: 10000 !important;
     top: 10%; left:30%; right: 30%;
-    border-radius: 10px;
-    color: #fafafa;
+
+    border: 2px solid #999;
+    border-radius: 4px !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    color: black !important;
 }
 
-#UnitsProj-help-container #heading>span{
-    font-size: 18px;
-    padding: 20px;
-    margin-left:auto;
-    margin-right:auto;
+.UnitsProj-modal-header {
+    padding: 9px 15px !important;
+    border-bottom: 1px solid #eee !important;
+    background: none !important;
+    box-sizing: border-box !important;
+    position: relative;
+
+}
+
+.UnitsProj-modal-body {
+    padding: 10px;
+}
+
+.UnitsProj-modal-header>.close {
+    position: absolute !important;
+    top: 7px !important; right: 7px !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    line-height: 20px !important;
+    height: 20px !important;
+    width: 20px; !important;
+
+    color: #000000 !important;
+    text-shadow: 0 1px 0 #ffffff !important;
+    opacity: 0.2 !important;
+    border: none;
+
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+.UnitsProj-modal-title{
+    font-size: 18px !important;
+    font-weight: normal !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    text-align: center;
+
+}
+
+#help {
+
 }
 
 #UnitsProj-help-container table {
-    font-size: 12px !important;
+
     margin: 20px;
     text-align: left;
-    color: #eaeaea;
+    /*color: #eaeaea;*/
 }
 
 #UnitsProj-help-container table tr {
     margin: 2px;
+}
+
+#UnitsProj-help-container td {
+    font-size: 12px !important;
+    color: black !important;
+}
+
+#UnitsProj-help-container span.section-title {
+    font-size: 12px !important;
+    color: black !important;
+    font-weight: bold !important;
+    text-align: left !important;
+}
+
+.UnitsProj-modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000000;
+    opacity: 0.5;
 }

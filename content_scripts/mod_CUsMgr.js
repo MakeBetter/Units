@@ -2263,7 +2263,35 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     function setupHelpUI() {
 
-        var $heading = $("<div id='heading'><span>Units Shortcuts</span></div>");
+        var helpModalDialogHtml =
+            '<div id = "UnitsProj-help-container">' +
+                '<div class = "UnitsProj-modal-backdrop">' +
+                '</div>' +
+
+                '<div id= "help" class = "UnitsProj-modal">' +
+                    '<div class= "UnitsProj-modal-header">' +
+                        '<h1 class="UnitsProj-modal-title">Units Shortcuts</h1>' +
+                        '<button class= close>×</button>' +
+                    '</div>' +
+
+                    '<div class = "UnitsProj-modal-body">' +
+                    '</div>' +
+
+                '</div>' +
+
+            '</div>';
+
+
+        var shortcutsSectionHtml =
+            '<div class = "section">' +
+                '<span class= "section-title"></span>' +
+                '<table>' + '</table>' +
+            '</div>';
+
+        $helpContainer = $(helpModalDialogHtml);
+
+        var $help = $helpContainer.find("#help");
+
 
         // shortcuts are displayed under three different heads: CUs based, page based, and general browser based.   
 
@@ -2279,57 +2307,41 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         // TODO: the generalShortcuts contains quite a few CUs based shortcuts. Make changes to the data to be able to
         // identify these CUs based shortcuts, and then show them as part of the CUs shortcuts.
 
-        var $pageShortcutsSection = $("<div></div>");
-        var $CUShortcutsSection = $("<div></div>");
-        var $generalShortcutsSection = $("<div></div>");
+        var appendSectionShortcuts = function(shortcuts, sectionTitle) {
+            if (!shortcuts || !sectionTitle) {
+                return;
+            }
 
-        if (page_allShortcuts) {
-            var $pageShortcutsTable = $("<table></table>").appendTo($pageShortcutsSection);
-            $.each(page_allShortcuts, function(key, value) {
+            var $section = $(shortcutsSectionHtml),
+                $shortcutsTable = $section.find("table"),
+                hasAtLeastOneShortcut = false;
 
+            $.each(shortcuts, function(key, value) {
                 if (value.kbdShortcuts) {
                     $("<tr></tr>")
-                        .appendTo($pageShortcutsTable)
+                        .appendTo($shortcutsTable)
                         .append($("<td></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
                         .append($("<td></td>").text(value.miniDescr || key));
+
+                    hasAtLeastOneShortcut = true;
                 }
             });
-        }
 
-        if (CUs_allShortcuts) {
-            var $CUShortcutsTable = $("<table></table>").appendTo($CUShortcutsSection);
-            $.each(CUs_allShortcuts, function(key, value) {
-                if (value.kbdShortcuts) {
-                    $("<tr></tr>")
-                        .appendTo($CUShortcutsTable)
-                        .append($("<td></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
-                        .append($("<td></td>").text(value.miniDescr || key));
-                }
+            if (hasAtLeastOneShortcut) {
+                $section.find(".section-title").text(sectionTitle);
+                $help.find(".UnitsProj-modal-body").append($section);
+            }
 
-            });
-        }
+        };
 
-        if (allGeneralShortcuts) {
-            var $generalShortcutsTable = $("<table></table>").appendTo($generalShortcutsSection);
-            $.each(allGeneralShortcuts, function(key, value) {
-                if (value.kbdShortcuts) {
-                    $("<tr></tr>")
-                        .appendTo($generalShortcutsTable)
-                        .append($("<td></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
-                        .append($("<td></td>").text(value.miniDescr || key));
-                }
-            });
-        }
+        appendSectionShortcuts(CUs_allShortcuts, "CUs Shortcuts");
+        appendSectionShortcuts(page_allShortcuts, "Page Shortcuts");
+        appendSectionShortcuts(allGeneralShortcuts, "General Shortcuts");
 
-        $helpContainer = $('<div id = "UnitsProj-help-container">')
+        $helpContainer
             .addClass(class_addedByUnitsProj)
             .hide()
-            .appendTo($topLevelContainer)
-            .append($heading)
-            .append($pageShortcutsSection)
-            .append($CUShortcutsSection)
-            .append($generalShortcutsSection);
-
+            .appendTo($topLevelContainer);
     }
 
     function showHelp() {
