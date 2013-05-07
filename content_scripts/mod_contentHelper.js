@@ -12,7 +12,8 @@ _u.mod_contentHelper = (function(mod_core, CONSTS) {
 
     /*-- Public interface --*/
     var thisModule = {
-        isElementEditable: isElementEditable,
+        elementAllowsSingleKeyShortcut: elementAllowsSingleKeyShortcut,
+        elementAllowsTyping: elementAllowsTyping,
         suppressEvent: suppressEvent,
         ancestorElements: ancestorElements,
         closestCommonAncestor: closestCommonAncestor,
@@ -21,12 +22,24 @@ _u.mod_contentHelper = (function(mod_core, CONSTS) {
 
     /*-- Module implementation --*/
     /**
-     * Returns true if the specified DOM element is editable (e.g: textbox), else false
+     * Returns true when single key shortcuts can be invoked when the specified element has focus. Exceptions are
+     * elements which allow typing text on them + the <select> element
      * @param {HTMLElement} element
      * @returns {boolean}
      */
-    function isElementEditable(element) {
+    function elementAllowsSingleKeyShortcut(element) {
+        if (elementAllowsTyping(element) || element.tagName.toLowerCase() === "select") {
+            return false;
+        }
+        return true;
+    }
 
+    /**
+     * Does the specified element allow text to be typed on (when it has focus)
+     * @param element
+     * @returns {boolean}
+     */
+    function elementAllowsTyping(element) {
         var tagName_lowerCase = element.tagName.toLowerCase(),
             typeProp_lowerCase = element.type && element.type.toLowerCase(),
 
@@ -47,6 +60,7 @@ _u.mod_contentHelper = (function(mod_core, CONSTS) {
             return true;
         }
 
+        // for everything else
         return false;
     }
 

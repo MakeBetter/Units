@@ -1820,7 +1820,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         /* On pressing ESC:
          - When no CU is selected, blur the active element and select the "most sensible" CU
          - When a CU is selected
-         - if an editable element is active (and hence single key shortcuts can't be used), blur the active element
+         - if an element which does not allow single key shortcuts is active, blur it
          - else deselect the CU. (meaning that a selected CU will be deselected on at most a second 'Esc', if not
          the first)
          */
@@ -1835,7 +1835,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     selectMostSensibleCU(true, true);
                 }
             }
-            else if (mod_contentHelper.isElementEditable(activeEl)) {
+            else if (!mod_contentHelper.elementAllowsSingleKeyShortcut(activeEl)) {
                 activeEl.blur();
             }
             else {
