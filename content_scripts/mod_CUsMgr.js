@@ -2,7 +2,7 @@
 
 
 _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_chromeAltHack,
-                          mod_contentHelper, mod_commonHelper, CONSTS) {
+                          mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -264,6 +264,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             console.warn('UnitsProj: no $overlay returned by showOverlay');
         }
 
+        mod_context.setCUSelectedState(true);
+
         if (!options || !options.onDomChangeOrWindowResize) {
             selectCU.invokedYet = true; // to indicate that now this function (selectCU) has been invoked at least once
 
@@ -323,6 +325,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             }
         }
         selectedCUIndex = -1;
+        mod_context.setCUSelectedState(false);
     };
 
     /**
@@ -2553,6 +2556,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     return thisModule;
 
 })(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs,
-        _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.CONSTS);
+        _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
 
 

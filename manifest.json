@@ -46,6 +46,7 @@
                 "content_scripts/mod_core.js",
                 "content_scripts/mod_contentHelper.js",
 
+                "content_scripts/mod_context.js",
                 "content_scripts/mod_events.js",
                 "content_scripts/mod_mutationObserver.js",
 

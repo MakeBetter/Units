@@ -13,6 +13,61 @@
  made it a separate module just to keep all context related code in a separate place.
 
  */
-_u.mod_context = (function(){
+_u.mod_context = (function(mod_contentHelper){
 
-})();
+    var thisModule = {
+        isContextValid: isContextValid,
+        setCUSelectedState: setCUSelectedState
+    };
+
+    var isCUSelected;
+    var helper = {
+        pageUIHasFocus: function () {
+            return !mod_contentHelper.isUnitsProjElement(document.activeElement);
+        },
+
+        unitsProjUIHasFocus: function () {
+            return mod_contentHelper.isUnitsProjElement(document.activeElement);
+        },
+        CUSelected: function() {
+            return isCUSelected;
+        }
+    };
+
+    /**
+     * Returns true if all the conditions (specified as key/value pairs in the `context` hash) are true. Else false.
+     * Note: only the conditions specified are checked. Other conditions can have any value, and they won't affect
+     * the result.
+     *
+     * The list of context conditions is specified below (each should be specified as a key of the `context` hash, with
+     * the corresponding property being true or false as desired):
+     * - CUSelected: true/false
+     * - pageUIHasFocus: true/false
+     * - unitsProjUIHasFocus: true/false
+     * (the last two are opposites of each other, so you don't need to specify both)
+     *
+     * Examples of `context` object:
+     * {CUSelected: true}, {CUSelected: true, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc
+     *
+     * @param context
+     * @returns {boolean}
+     */
+    function isContextValid(context) {
+
+        for (var prop in context) {
+            if (context.hasOwnProperty(prop)) {
+                if (context[prop] !== helper[prop]()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function setCUSelectedState(state) {
+        isCUSelected = state;
+    }
+
+    return thisModule;
+
+})(_u.mod_contentHelper);

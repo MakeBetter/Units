@@ -41,6 +41,8 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
      * shortcuts specified in urlData.protectedWebpageShortcuts
      * @param {Array} shortcuts
      * @param {Function} handler
+     * @param context Context hash (refer: mod_context) or a function that should evaluate to true for the shortcut to
+     * get triggered
 
      Further Notes:
      1) When handling a shortcut, we suppress further propagation of the event. This seems reasonable since if a
@@ -172,34 +174,22 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
      * Determines whether the invoked key/key combination (`shortcut`) should be handled as a shortcut
      * @param {string} shortcut String representation of keyboard shortcut invoked
      * @param targetElement
-     * @param context
+     * @param context Context hash (refer: mod_context) or a function
      */
     function shouldHandleShortcut(shortcut, targetElement, context) {
-
         if (!canTreatAsShortcut(shortcut, targetElement)) {
             return false;
         }
-
         if (protectedWebpageShortcuts && protectedWebpageShortcuts.length &&
-            protectedWebpageShortcuts.indexOf(shortcut) >= 0/* && !mod_context.isUnitsProjElement(element)*/) {
+            protectedWebpageShortcuts.indexOf(shortcut) >= 0 && mod_context.isContextValid({pageUIHasFocus: true})) {
             return false;
         }
-
-        /*
-         For context:
-         can specify context using a hash E.g: {CUSelected: true, pageUIHasFocus: true}, {CUSelected: true}, {CUSelected: true, unitsProjUIHasFocus: false}, etc
-         OR If using strings, can have each of the used combinations (shouldn't be that many) described by a string etc
-         */
-//        if (context === "page") {
-//
-//        }
-//        else if (context === "CUSelected") {
-//
-//        }
-//        else if (typeof context === function) {
-//            return context();
-//        }
-
+        if (typeof context === "object") {
+            return mod_context.isContextValid(context);
+        }
+        else if(typeof context === "function") {
+            return context();
+        }
         return true;
     }
 
