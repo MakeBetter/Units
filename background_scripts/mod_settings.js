@@ -14,13 +14,14 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     /***
      *
      * @param locationObj
-     * @returns {{miscGlobalSettings: *, browserShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
+     * @returns {{miscGlobalSettings: *, browserShortcuts: *, CUsShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
      */
     function getSettings(locationObj) {
         var _defaultSettings = {
                 miscGlobalSettings: defaultSettings.miscGlobalSettings,
                 browserShortcuts: defaultSettings.browserShortcuts,
                 generalShortcuts: defaultSettings.generalShortcuts,
+                CUsShortcuts: defaultSettings.CUsShortcuts,
                 disabledSites: defaultSettings.disabledSites,
                 expandedUrlData:getExpandedUrlData(defaultSettings, locationObj)
             },

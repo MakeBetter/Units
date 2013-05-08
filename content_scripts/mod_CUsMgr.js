@@ -1,8 +1,9 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_chromeAltHack,
+_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help, mod_chromeAltHack,
                           mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
+
     "use strict";
 
     /*-- Public interface --*/
@@ -84,9 +85,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         class_scrollingMarker = 'CU-scrolling-marker',
         $scrollingMarker,
 
-
-        $helpContainer,
-
         $lastSelectedCU = null,   // to store a reference to the last selected CU
 
     // If a CU is currently selected, this stores the time it was selected, else this stores the time the last
@@ -108,6 +106,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         miscGlobalSettings,
         browserShortcuts,
         generalShortcuts,
+        CUsShortcuts,
         expandedUrlData,
 
         addEventListener_eventHandlers = [],
@@ -1664,21 +1663,21 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 // selecting next/prev CU, etc.
     function _setupGeneralShortcuts() {
 
-        mod_keyboardLib.bind(generalShortcuts.nextCU.kbdShortcuts, selectNext);
+        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext);
 
-        mod_keyboardLib.bind(generalShortcuts.prevCU.kbdShortcuts, selectPrev);
+        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev);
 
-        mod_filterCUs && mod_keyboardLib.bind(generalShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
+        mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
-        mod_keyboardLib.bind(generalShortcuts.firstCU.kbdShortcuts, function(e) {
+        mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function(e) {
             selectCU(0, true);
         });
 
-        mod_keyboardLib.bind(generalShortcuts.lastCU.kbdShortcuts, function(e) {
+        mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function(e) {
             selectCU($CUsArray.length - 1, true);
         });
 
-        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, showHelp);
+        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
 
         mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
 
@@ -2065,7 +2064,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }
     };
 
-    function setupBasicUIComponents() {
+    function setupBasicUIComponents(settings) {
         $topLevelContainer.appendTo(document.body);
 
         $scrollingMarker = $('<div></div>')
@@ -2075,6 +2074,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             .appendTo($topLevelContainer);
 
         mod_filterCUs && mod_filterCUs.setup();
+        mod_help && mod_help.setup(settings);
     }
 
     function setupExternalSearchEvents() {
@@ -2147,6 +2147,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 miscGlobalSettings = settings.miscGlobalSettings;
                 browserShortcuts = settings.browserShortcuts;
                 generalShortcuts = settings.generalShortcuts;
+                CUsShortcuts = settings.CUsShortcuts;
                 expandedUrlData = settings.expandedUrlData;
 
                 if (settings.isDisabled) {
@@ -2179,7 +2180,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     mod_keyboardLib.setProtectedWebpageShortcuts(settings.expandedUrlData.protectedWebpageShortcuts);
                 }
 
-                setupBasicUIComponents(); // also set up their associated event handlers
+                setupBasicUIComponents(settings); // also set up their associated event handlers
 
                 // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
                 // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
@@ -2210,7 +2211,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 // to one without any is correctly handled
                 updateCUsAndRelatedState();
                 setupShortcuts();
-                setupHelpUIAndEvents();
 
                 if ( miscGlobalSettings.selectCUOnLoad) {
                     selectMostSensibleCU(true, false);
@@ -2240,121 +2240,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         initializeExtension();
 
     })();
-
-
-//////////////////////////////////////////
-    //help.js
-
-
-    function setupHelpUIAndEvents() {
-        setupHelpUI();
-
-        var onEscapeKeyDownOnHelp = function(e) {
-            var code = e.which || e.keyCode;
-            if (code === 27) { // ESc
-                if ($helpContainer.is(':visible')) {
-                    hideHelp();
-                    suppressEvent(e);
-                }
-            }
-
-        };
-
-        document.addEventListener('keydown', onEscapeKeyDownOnHelp, true);
-
-    }
-
-    function setupHelpUI() {
-
-        var helpModalDialogHtml =
-            '<div id = "UnitsProj-help-container">' +
-                '<div class = "UnitsProj-modal-backdrop">' +
-                '</div>' +
-
-                '<div id= "help" class = "UnitsProj-modal">' +
-                    '<div class= "UnitsProj-modal-header">' +
-                        '<h1 class="UnitsProj-modal-title">Units Shortcuts</h1>' +
-                        '<button class= close>×</button>' +
-                    '</div>' +
-
-                    '<div class = "UnitsProj-modal-body">' +
-                    '</div>' +
-
-                '</div>' +
-
-            '</div>';
-
-
-        var shortcutsSectionHtml =
-            '<div class = "section">' +
-                '<span class= "section-title"></span>' +
-                '<table>' + '</table>' +
-            '</div>';
-
-        $helpContainer = $(helpModalDialogHtml);
-
-        var $help = $helpContainer.find("#help");
-
-
-        // shortcuts are displayed under three different heads: CUs based, page based, and general browser based.   
-
-        var CUs_MUs = expandedUrlData && expandedUrlData.CUs_MUs,
-            CUs_actions = expandedUrlData && expandedUrlData.CUs_actions,
-            CUs_allShortcuts = $.extend({}, CUs_MUs, CUs_actions);
-        
-        var page_MUs = expandedUrlData && expandedUrlData.page_MUs,
-            page_actions = expandedUrlData && expandedUrlData.page_actions,
-            page_allShortcuts = $.extend({}, page_MUs, page_actions);
-
-        var allGeneralShortcuts = $.extend({},browserShortcuts, generalShortcuts);
-        // TODO: the generalShortcuts contains quite a few CUs based shortcuts. Make changes to the data to be able to
-        // identify these CUs based shortcuts, and then show them as part of the CUs shortcuts.
-
-        var appendSectionShortcuts = function(shortcuts, sectionTitle) {
-            if (!shortcuts || !sectionTitle) {
-                return;
-            }
-
-            var $section = $(shortcutsSectionHtml),
-                $shortcutsTable = $section.find("table"),
-                hasAtLeastOneShortcut = false;
-
-            $.each(shortcuts, function(key, value) {
-                if (value.kbdShortcuts) {
-                    $("<tr></tr>")
-                        .appendTo($shortcutsTable)
-                        .append($("<td></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
-                        .append($("<td></td>").text(value.miniDescr || key));
-
-                    hasAtLeastOneShortcut = true;
-                }
-            });
-
-            if (hasAtLeastOneShortcut) {
-                $section.find(".section-title").text(sectionTitle);
-                $help.find(".UnitsProj-modal-body").append($section);
-            }
-
-        };
-
-        appendSectionShortcuts(CUs_allShortcuts, "CUs Shortcuts");
-        appendSectionShortcuts(page_allShortcuts, "Page Shortcuts");
-        appendSectionShortcuts(allGeneralShortcuts, "General Shortcuts");
-
-        $helpContainer
-            .addClass(class_addedByUnitsProj)
-            .hide()
-            .appendTo($topLevelContainer);
-    }
-
-    function showHelp() {
-        $helpContainer.show();
-    }
-
-    function hideHelp() {
-        $helpContainer.hide();
-
-    }
 
 ///////////////////////////////////////////
 //mod_commonHelper.js
@@ -2555,7 +2440,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs,
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
         _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
+
 
 
