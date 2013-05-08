@@ -11,6 +11,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         hideHelp: hideHelp
     });
 
+
     /*-- Module implementation --*/
 
     var $helpContainer,
@@ -56,6 +57,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         };
 
         document.addEventListener('keydown', onEscapeKeyDownOnHelp, true);
+        $helpContainer.find(".close")[0].addEventListener('click', hideHelp);
 
     }
 
@@ -66,7 +68,8 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
             $CUsShortcutsSection = getCUsShortcutsSection(settings),
             $generalShortcutsSection = getGeneralShortcutsSection(settings);
 
-        $help.find(".UnitsProj-modal-body").append($CUsShortcutsSection, $generalShortcutsSection);
+        $help.find(".UnitsProj-modal-body").append($CUsShortcutsSection, $generalShortcutsSection,
+            $("<div class=UnitsProj-float-fixer></div>"));
 
         $helpContainer
             .addClass(class_addedByUnitsProj)
@@ -118,6 +121,12 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         return $section;
     }
 
+    /***
+     *
+     * @param shortcutsObj
+     * @param $shortcutsTable
+     * @param [isBrowserShortcut] TODO: This is temporary
+     */
     function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, isBrowserShortcut) {
         if (!shortcutsObj || !$shortcutsTable) {
             return;
@@ -152,6 +161,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         });
 
         if (hasAtLeastOneShortcut) {
+            $shortcutsTable.find("tr:last-child").addClass("sub-section-end");
           // TODO: show a marker to indicate end of this sub-section
         }
     }
