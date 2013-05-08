@@ -38,8 +38,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
         shortcutsSectionHtml =
             '<div class = "section">' +
-                '<span class= "section-title"></span>' +
-                '<table>' + '</table>' +
+                '<table><thead><tr><th colspan="2" class="section-title"></th></tr></thead></table>' +
             '</div>';
 
     function setup(settings) {
@@ -114,12 +113,12 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
         renderShortcutsInSectionTable(generalShortcuts, $shortcutsTable);
         renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable);
-        renderShortcutsInSectionTable(browserShortcuts, $shortcutsTable);
+        renderShortcutsInSectionTable(browserShortcuts, $shortcutsTable, true);
 
         return $section;
     }
 
-    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable) {
+    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, isBrowserShortcut) {
         if (!shortcutsObj || !$shortcutsTable) {
             return;
         }
@@ -127,11 +126,26 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         var hasAtLeastOneShortcut = false;
 
         $.each(shortcutsObj, function(key, value) {
-            if (value.kbdShortcuts) {
+            var kbdShortcuts = value.kbdShortcuts;
+            if (isBrowserShortcut) {
+                kbdShortcuts = value;
+            }
+
+            if (kbdShortcuts) {
+                var kbdShortcutsHtml = "";
+
+                for (var i = 0; i < kbdShortcuts.length; i++) {
+                    kbdShortcutsHtml += "<span class=key>"+ kbdShortcuts[i] + "</span>";
+//                    if (i !== kbdShortcuts.length -1) {
+//                        kbdShortcutsHtml+= "<span class=separator>,</span>";
+//                    }
+                }
+
                 $("<tr></tr>")
                     .appendTo($shortcutsTable)
-                    .append($("<td></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
-                    .append($("<td></td>").text(value.miniDescr || key));
+//                    .append($("<td class= key></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
+                    .append($("<td class= key></td>").html(kbdShortcutsHtml))
+                    .append($("<td class = action></td>").text(value.miniDescr || key));
 
                 hasAtLeastOneShortcut = true;
             }
