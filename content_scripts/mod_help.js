@@ -38,6 +38,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
         var browserShortcuts = settings.browserShortcuts,
             generalShortcuts = settings.generalShortcuts,
+            CUsShortcuts = settings.CUsShortcuts,
             expandedUrlData = settings.expandedUrlData;
 
         var helpModalDialogHtml =
@@ -74,7 +75,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
         var CUs_MUs = expandedUrlData && expandedUrlData.CUs_MUs,
             CUs_actions = expandedUrlData && expandedUrlData.CUs_actions,
-            CUs_allShortcuts = $.extend({}, CUs_MUs, CUs_actions);
+            CUs_allShortcuts = $.extend({}, CUs_MUs, CUs_actions, CUsShortcuts);
 
         var page_MUs = expandedUrlData && expandedUrlData.page_MUs,
             page_actions = expandedUrlData && expandedUrlData.page_actions,

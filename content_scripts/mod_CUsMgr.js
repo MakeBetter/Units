@@ -105,6 +105,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         miscGlobalSettings,
         browserShortcuts,
         generalShortcuts,
+        CUsShortcuts,
         expandedUrlData,
 
         addEventListener_eventHandlers = [],
@@ -1658,17 +1659,17 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 // selecting next/prev CU, etc.
     function _setupGeneralShortcuts() {
 
-        mod_keyboardLib.bind(generalShortcuts.nextCU.kbdShortcuts, selectNext);
+        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext);
 
-        mod_keyboardLib.bind(generalShortcuts.prevCU.kbdShortcuts, selectPrev);
+        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev);
 
-        mod_filterCUs && mod_keyboardLib.bind(generalShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
+        mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
-        mod_keyboardLib.bind(generalShortcuts.firstCU.kbdShortcuts, function(e) {
+        mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function(e) {
             selectCU(0, true);
         });
 
-        mod_keyboardLib.bind(generalShortcuts.lastCU.kbdShortcuts, function(e) {
+        mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function(e) {
             selectCU($CUsArray.length - 1, true);
         });
 
@@ -2142,6 +2143,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 miscGlobalSettings = settings.miscGlobalSettings;
                 browserShortcuts = settings.browserShortcuts;
                 generalShortcuts = settings.generalShortcuts;
+                CUsShortcuts = settings.CUsShortcuts;
                 expandedUrlData = settings.expandedUrlData;
 
                 if (settings.isDisabled) {

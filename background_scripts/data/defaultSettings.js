@@ -65,27 +65,6 @@ var defaultSettings = {
     generalShortcuts: {
         // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-        nextCU: {
-            miniDescr: "Select next CU",
-            kbdShortcuts: ['j', '`', 'down']
-        },
-        prevCU: {
-            miniDescr: "Select previous CU",
-            kbdShortcuts: ['k', 'shift+`', 'up']
-        },
-        // TODO: rename this to filter
-        search: {
-            miniDescr: "Search and filter CUs ",
-            kbdShortcuts: ['alt+f']
-        },
-        firstCU: {
-            miniDescr: "Select first CU",
-            kbdShortcuts: ['^', 'alt+1']
-        },
-        lastCU: {
-            miniDescr: "Select last CU",
-            kbdShortcuts: ['$', 'alt+9', 'alt+0']
-        },
         showHelp: {
             miniDescr: "Show the help page",
             kbdShortcuts: ['alt+h', 'alt+?']
@@ -109,6 +88,35 @@ var defaultSettings = {
         focusPrevTextInput: {
             miniDescr: "Focus previous text input element",
             kbdShortcuts: ['alt+shift+o']
+        }
+    },
+
+    /*
+    Default shortcuts that need CUs to be defined on a page.
+    * */
+    CUsShortcuts: {
+        // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
+        // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
+        nextCU: {
+            miniDescr: "Select next CU",
+            kbdShortcuts: ['j', '`', 'down']
+        },
+        prevCU: {
+            miniDescr: "Select previous CU",
+            kbdShortcuts: ['k', 'shift+`', 'up']
+        },
+        // TODO: rename this to filter
+        search: {
+            miniDescr: "Search and filter CUs ",
+            kbdShortcuts: ['alt+f']
+        },
+        firstCU: {
+            miniDescr: "Select first CU",
+            kbdShortcuts: ['^', 'alt+1']
+        },
+        lastCU: {
+            miniDescr: "Select last CU",
+            kbdShortcuts: ['$', 'alt+9', 'alt+0']
         }
     },
 
