@@ -217,19 +217,21 @@ span#UnitsProj-search-close-icon:hover {
     background-color: white !important;
 
     min-height: 400px !important;
-    min-width: 400px !important;
-    max-height: 400px !important;
-    overflow: auto;
+    /*min-width: 400px !important;*/
+    max-height: 600px !important;
+    width: 700px !important;
+    overflow: auto !important;
 
     position: fixed !important;
+    left: 50%; margin-left: -350px; /*center the div horizontally*/
+    top: 10%;
+
     z-index: 10000 !important;
-    top: 10%; left:30%; right: 30%; /*TODO: position modal in the center!!! */
 
     border: 2px solid #999;
     border-radius: 4px !important;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     color: black !important;
-    width: 700px !important;
 }
 
 .UnitsProj-modal-header {
@@ -245,7 +247,9 @@ span#UnitsProj-search-close-icon:hover {
 .UnitsProj-modal-header>.close {
     position: absolute !important;
     top: 7px !important; right: 7px !important;
+
     font-size: 20px !important;
+    font-family: Arial;
     font-weight: bold !important;
     line-height: 20px !important;
     height: 20px !important;
@@ -299,40 +303,49 @@ span#UnitsProj-search-close-icon:hover {
 }
 
 #UnitsProj-help-container td {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     font-size: 13px !important;
     color: black !important;
 }
 
-tr.sub-section-end>td{
+tr.subsection-end>td{
     padding-bottom: 30px;
 }
 
 #UnitsProj-help-container td.key {
     padding-right: 10px;
+    text-align: right;
 }
 
 #UnitsProj-help-container td.key>span.key {
     /*margin-right: 2px;*/
     background-color: #efefef;
-    border: 1px solid #aaa;
+    border: 1px solid #ddd;
     border-radius: 2px !important;
     /*color: #fefefe;*/
     padding: 3px;
-    margin-right: 4px;
+    margin: 0 2px;
 
 }
 
-/*td.key>span:not(:last-child):after {*/
-    /*content: "  or  ";*/
-    /*color: #777777;*/
-    /*font-size: 11px;*/
-    /*padding: 2px;*/
-/*}*/
+td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td{
+    color: #777777 !important;
+    text-align: center;
+}
+
+td.key>span.separator {
+    font-size: 11px !important;
+}
+
+#UnitsProj-help-container tr.subsection-title>td{
+
+}
 
 #UnitsProj-help-container th.section-title {
     font-size: 12px !important;
     color: black !important;
     font-weight: bold !important;
+    text-align: center;
 }
 
 .UnitsProj-modal-backdrop {

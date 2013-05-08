@@ -92,7 +92,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         var $shortcutsTable = $section.find("table");
 
         renderShortcutsInSectionTable(CUsShortcuts_Default, $shortcutsTable);
-        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable);
+        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "Applicable for this page/ website");
 
         return $section;
 
@@ -115,8 +115,8 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         var $shortcutsTable = $section.find("table");
 
         renderShortcutsInSectionTable(generalShortcuts, $shortcutsTable);
-        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable);
-        renderShortcutsInSectionTable(browserShortcuts, $shortcutsTable, true);
+        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Applicable for this page/ website");
+        renderShortcutsInSectionTable(browserShortcuts, $shortcutsTable, null, true);
 
         return $section;
     }
@@ -125,14 +125,24 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
      *
      * @param shortcutsObj
      * @param $shortcutsTable
+     * @param [subSectionTitle]
      * @param [isBrowserShortcut] TODO: This is temporary
      */
-    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, isBrowserShortcut) {
+    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSectionTitle, isBrowserShortcut) {
         if (!shortcutsObj || !$shortcutsTable) {
             return;
         }
 
-        var hasAtLeastOneShortcut = false;
+        var hasAtLeastOneShortcut = false,
+            $subSectionTitle;
+
+        if (subSectionTitle) {
+            $subSectionTitle = $("<tr><td colspan='2'></td></tr>");
+            $subSectionTitle
+                .addClass('subsection-title')
+                .find("td").text(subSectionTitle);
+            $shortcutsTable.append($subSectionTitle);
+        }
 
         $.each(shortcutsObj, function(key, value) {
             var kbdShortcuts = value.kbdShortcuts;
@@ -143,11 +153,12 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
             if (kbdShortcuts) {
                 var kbdShortcutsHtml = "";
 
+                // Create spans for each keyboard shortcut. And spans with the text "or" to connect them.
                 for (var i = 0; i < kbdShortcuts.length; i++) {
                     kbdShortcutsHtml += "<span class=key>"+ kbdShortcuts[i] + "</span>";
-//                    if (i !== kbdShortcuts.length -1) {
-//                        kbdShortcutsHtml+= "<span class=separator>,</span>";
-//                    }
+                    if (i !== kbdShortcuts.length -1) {
+                        kbdShortcutsHtml+= "<span class=separator> or </span>";
+                    }
                 }
 
                 $("<tr></tr>")
@@ -161,8 +172,10 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
         });
 
         if (hasAtLeastOneShortcut) {
-            $shortcutsTable.find("tr:last-child").addClass("sub-section-end");
-          // TODO: show a marker to indicate end of this sub-section
+            $shortcutsTable.find("tr:last-child").addClass("subsection-end");
+        }
+        else {
+            $subSectionTitle && $subSectionTitle.remove();
         }
     }
 
