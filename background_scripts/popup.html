@@ -1,67 +1,101 @@
 <html>
 <head>
     <style>
-       /* * {
-            margin: 0px;
-            padding: 0px;
-        }
-
-        #vimiumPopup { width: 300px; }
-
-        #excludeControls {
-            padding: 10px;
-        }
-
-        #popupInput {
-            width: 160px;
-        }
-
-        #excludeConfirm {
-            display: inline-block;
-            width: 18px;
-            height: 13px;
-            background: url(icons/check.png) 3px 2px no-repeat;
-            display: none;
-        }
-
-        #popupButton { margin-left: 10px; }
-
-        #popupMenu ul {
-            list-style: none;
-        }
-
-        #popupMenu a, #popupMenu a:active, #popupMenu a:visited {
-            color: #3F6EC2;
-            display: block;
-            border-top: 1px solid #DDDDDD;
-            padding: 3px;
-            padding-left: 10px;
-        }
-
-        #popupMenu a:hover {
-            background: #EEEEEE;
-        }
-
-        #optionsLink {
-            font-family : "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        body {
+            width: 300px;
+            font-family:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
             font-size: 12px;
-        }*/
+        }
+        input[type=text] {
+            width: 150px;
+        }
+        div.action {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        div.action:nth-child(2n) {
+            background-color: #fafafa;
+        }
+
+        p, ol {
+            color: #666;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        p.strong {
+            /*color: black;*/
+            font-weight: 600;
+        }
+
+            .advanced {
+                font-size: 10.5px;
+                display: inline-block;
+                color: #666;
+            }
+
+        div#goToOptions{
+            padding: 6px 10px;
+        }
+            #optionsLink {
+                font-size: 12;
+                float: right;
+                /*padding: 4px;*/
+            }
+
+        #enable-steps {
+            padding-left: 30px;
+        }
+
     </style>
-    <script src="popup.js"></script>
 </head>
 <body>
 <div id="unitsPopup">
-    <div id="popupOptions">
-        <div id="excludeDomain">
-            <input type="text"/>
-            <input type="button" value="Exclude this domain">
+    <div id= "extension-enabled" style="display: none">
+        <div id="popupOptions">
+            <div id="disableDomain" class="action">
+                <p class="strong">Disable for this domain <sup>+</sup> </p>
+                <input type="text" id="url-pattern-to-disable"/>
+                <input type="button" id= "disable-url-permanently" value="Disable" tabindex="1">
+            </div>
+            <div id="disableTemporarily" class="action">
+                <p class="strong">Disable on this page, for now</p>
+                <input type="button" id= "disable-temporarily" value="Disable for now">
+            </div>
         </div>
-
+        <div id="goToOptions">
+            <p class="advanced"><sup>+</sup>Or, tweak the URL pattern as needed.</p>
+            <a id="optionsLink" target="_blank" href="options_page/options_page.html">Options</a>
+        </div>
     </div>
 
-    <div id="goToOptions">
-         <a id="optionsLink" target="_blank" href="options_page/options_page.html">Options</a>
+    <div id="extension-disabled" style="display: none">
+        <div class="action">
+            <p class="strong">
+                Units is disabled for this site.
+            </p>
+            </br>
+            <p>
+                To enable it again:
+            <ol id="enable-steps">
+                <li>
+                    Go to the 'Options' page.
+                </li>
+                <li>
+                    Remove the site URL from under 'disabledSites' -> 'urlPatterns', and save.
+                </li>
+            </ol>
+            </p>
+        </div>
+        <div id="goToOptions">
+            <a id="optionsLink" target="_blank" href="options_page/options_page.html">Options</a>
+            <div style="clear: both"></div>
+
+        </div>
     </div>
+
 </div>
+<script src="popup.js"></script>
 </body>
 </html>
