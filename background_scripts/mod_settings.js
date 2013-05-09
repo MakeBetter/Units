@@ -8,7 +8,9 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         getSettings: getSettings,
         getAllSettings: getAllSettings,
         setUserSettings: setUserSettings,
-        getDefaultSettings: getDefaultSettings
+        getDefaultSettings: getDefaultSettings,
+        addUrlPatternToUserDisabledSites: addUrlPatternToUserDisabledSites,
+        getDisabledStatus: getDisabledStatus
     };
 
     /***
@@ -45,7 +47,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     }
 
     /***
-     *
+     * Return user settings.
      * @param locationObj
      * @returns {*}
      */
@@ -88,6 +90,27 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
                 chrome.tabs.sendMessage(tabs[i].id, {message: 'settingsChanged'});
             }
         });
+
+    }
+
+    function addUrlPatternToUserDisabledSites(urlPattern) {
+        var userSettings = getUserSettings();
+        if (!userSettings) {
+            userSettings = $.extend(true, {}, defaultSettings);
+        }
+
+        if (userSettings.disabledSites && userSettings.disabledSites.urlPatterns) {
+            var disabledUrlPatterns = userSettings.disabledSites.urlPatterns;
+            disabledUrlPatterns.push(urlPattern);
+
+            setUserSettings(userSettings);
+
+            return true;
+        }
+        else {
+            console.error("Settings seem to be corrupted. Disabled sites property not found");
+            return false;
+        }
 
     }
 
