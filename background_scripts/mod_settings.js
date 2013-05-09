@@ -14,7 +14,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     };
 
     /***
-     *
+     * Return final settings (default settings overriden by user settings) for the specified location object
      * @param locationObj
      * @returns {{miscGlobalSettings: *, browserShortcuts: *, CUsShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
      */
@@ -35,6 +35,11 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         return settings;
     }
 
+    /***
+     * Get all the final settings (default settings overriden by user settings)
+     * This is used to display the final settings in the settings UI.
+     * @returns {*}
+     */
     function getAllSettings() {
         var userSettings = getUserSettings(),
             settings = $.extend(true, {}, defaultSettings, userSettings);
@@ -42,13 +47,19 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         return settings;
     }
 
+    /***
+     * Get the default settings
+     * @returns {*}
+     */
     function getDefaultSettings() {
         return defaultSettings;
     }
 
     /***
-     * Return user settings.
-     * @param locationObj
+     * Get user settings, stored in local storage.
+     *
+     * @param [locationObj] If locationObj is specified, then settingsObj.expandedUrlData will have the data for the
+     * locationObj URL, if present. Otherwise, expandedUrlData will be null.
      * @returns {*}
      */
     function getUserSettings(locationObj) {
@@ -93,25 +104,30 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     }
 
+    /**
+     * Method to add a URL pattern/ site to be disabled to the user settings. Used from popup.js for disabling site at
+     * the currently active tab.
+     * @param urlPattern
+     * @returns {boolean}
+     */
     function addUrlPatternToUserDisabledSites(urlPattern) {
         var userSettings = getUserSettings();
         if (!userSettings) {
             userSettings = $.extend(true, {}, defaultSettings);
         }
 
+        // only allowing adding to URL patterns at the moment. 
         if (userSettings.disabledSites && userSettings.disabledSites.urlPatterns) {
             var disabledUrlPatterns = userSettings.disabledSites.urlPatterns;
             disabledUrlPatterns.push(urlPattern);
 
             setUserSettings(userSettings);
-
             return true;
         }
         else {
             console.error("Settings seem to be corrupted. Disabled sites property not found");
             return false;
         }
-
     }
 
     function getExpandedUrlData(settings, locationObj) {
