@@ -17,11 +17,16 @@ _u.mod_context = (function(mod_contentHelper){
 
     var thisModule = {
         isContextValid: isContextValid,
-        setCUSelectedState: setCUSelectedState
+        setCUSelectedState: setCUSelectedState,
+        setCUsCount: setCUsCount
     };
 
-    var isCUSelected;
-    var helper = {
+    var isCUSelected,
+        numCUs = 0; // number of CUs currently on the page
+
+    // Method inside `contextHelper` have names corresponding to supported context properties (see isContextValid(),
+    // which calls the the corresponding method in `contextHelper` when evaluating a specific property's status)
+    var contextHelper = {
         pageUIHasFocus: function () {
             return !mod_contentHelper.isUnitsProjElement(document.activeElement);
         },
@@ -31,6 +36,9 @@ _u.mod_context = (function(mod_contentHelper){
         },
         CUSelected: function() {
             return isCUSelected;
+        },
+        pageHasCUs: function() {
+            return (numCUs > 0);
         }
     };
 
@@ -44,7 +52,7 @@ _u.mod_context = (function(mod_contentHelper){
      * - CUSelected: true/false
      * - pageUIHasFocus: true/false
      * - unitsProjUIHasFocus: true/false
-     * (the last two are opposites of each other, so you don't need to specify both)
+     * (the last two are actually opposites of each other, so you don't need to specify both)
      *
      * Examples of `context` object:
      * {CUSelected: true}, {CUSelected: true, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc
@@ -56,7 +64,7 @@ _u.mod_context = (function(mod_contentHelper){
 
         for (var prop in context) {
             if (context.hasOwnProperty(prop)) {
-                if (context[prop] !== helper[prop]()) {
+                if (context[prop] !== contextHelper[prop]()) {
                     return false;
                 }
             }
@@ -66,6 +74,10 @@ _u.mod_context = (function(mod_contentHelper){
 
     function setCUSelectedState(state) {
         isCUSelected = state;
+    }
+
+    function setCUsCount(n) {
+        numCUs = n;
     }
 
     return thisModule;

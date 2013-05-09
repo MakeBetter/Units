@@ -1157,6 +1157,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         var $CUs = getAllCUsOnPage();
         mod_filterCUs && mod_filterCUs.filterCUsArray($CUs);
         $CUsArray = $CUs;
+        mod_context.setCUsCount($CUsArray.length);
 
         if ($CUsArray && $CUsArray.length) {
 
@@ -1663,19 +1664,19 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 // selecting next/prev CU, etc.
     function _setupGeneralShortcuts() {
 
-        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext);
+        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext, {pageHasCUs: true});
 
-        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev);
+        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev, {pageHasCUs: true});
 
         mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
         mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function(e) {
             selectCU(0, true);
-        });
+        }, {pageHasCUs: true});
 
         mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function(e) {
             selectCU($CUsArray.length - 1, true);
-        });
+        }, {pageHasCUs: true});
 
         mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
 
@@ -1715,7 +1716,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     kbdShortcuts = MU.kbdShortcuts;
 
                 if (selectors && kbdShortcuts) {
-                    mod_keyboardLib.bind(kbdShortcuts, _accessMU.bind(null, selectors, scope));
+                    mod_keyboardLib.bind(kbdShortcuts, _accessMU.bind(null, selectors, scope),
+                        scope === 'CUs'? {CUSelected: true}: undefined);
                 }
             }
         }
@@ -1735,7 +1737,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                     fn = action.fn,
                     kbdShortcuts = action.kbdShortcuts;
                 if (typeof fn === "function" && kbdShortcuts) {
-                    mod_keyboardLib.bind(kbdShortcuts, _invokeAction.bind(null, fn, scope));
+                    mod_keyboardLib.bind(kbdShortcuts, _invokeAction.bind(null, fn, scope),
+                        scope === 'CUs'? {CUSelected: true}: undefined);
                 }
 
             }
@@ -2111,15 +2114,20 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }
     }
 
-    // reset state and disable the extension
-    function disableExtension() {
-
+    function resetCUsState() {
         dehoverCU();
         deselectCU();
         $CUsArray = [];
-        $topLevelContainer.empty().remove();
         $lastSelectedCU = null;
+        mod_context.setCUSelectedState(false);
+        mod_context.setCUsCount(0);
+    }
 
+    // reset state and disable the extension
+    function disableExtension() {
+
+        resetCUsState();
+        $topLevelContainer.empty().remove();
         removeAllEventListeners();
 
         if (mod_chromeAltHack) {
