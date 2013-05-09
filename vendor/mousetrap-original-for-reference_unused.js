@@ -1,38 +1,6 @@
-/*
- ----------------------------------------------------------------------------------
- NOTE (by Himanshu):
- This is a modified version of the mousetrap.js by Craig Campbell (http://craig.is/killing/mice).
- Several modifications have been made to allow specific things that were required for this project.
- They are called out in the comments using the text "[Modification for UnitsProj]". The original
- source code is available at mousetrap-original-reference_unused.js for comparison.
-
- A summary of the changes made:
-
- 1. Changes to allow using 'space' key as a modifier. (These changes depend on the code in
- mod_keyboardLib.js):
-
- 2. Change to add event handlers in capturing phase. For this, the call to addEventListener has been
- modified to set the 3rd param to true.
-
- 3. Changed Mousetrap to allow multiple callbacks to be bound for the same hotkey/sequence. However,
- only one *actual* callback is allowed to execute, depending on the context etc. ("actual" here means
- as seen from the public interface for binding shortcuts provided by mod_keyboardLib.js (refer to it
- for details). For this, Mousetrap's callback triggering loops are modified to end upon encountering the first event
- with a the property `__handledByUnitsProj` set to true (this property is set by mod_keyboardLib.js)
-
-4. (Related to the previous point) Made changes to Mousetrap to ensure that callbacks bound using it
-to the same keyboard shortcut execute in the order in which they were bound (This required specific
-changes for "sequence" type shortcuts)
-
-5) Removed all instances of `_directMap`, `unbind`, `trigger` which are not needed and will no longer
-work as expected
-
- ----------------------------------------------------------------------------------
- */
-
 /*global define:false */
 /**
- * Copyright 2013 Craig Campbell ( on the original Mousetrap.js)
+ * Copyright 2013 Craig Campbell
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,10 +150,7 @@ work as expected
          *
          * @type {Object}
          */
-        // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
-        // of `_directMap`, `unbind`, `trigger` are to be removed)
-        //_directMap = {},
+        _directMap = {},
 
         /**
          * keeps track of what level each sequence is at since multiple
@@ -194,16 +159,6 @@ work as expected
          * @type {Object}
          */
         _sequenceLevels = {},
-
-
-
-        // [Modification for UnitsProj]
-        // Variable to support multiple bindings for same keyboard sequence. Keeps count
-        // of the number of bindings made for the same sequence. (As of now, the count
-        // itself isn't required -- we only use this to find if the sequence being bound
-        // is the same as another one previously bound). E.g: if "g a" is bound 1 and "g b"
-        // is bound thrice this will look like {"g a": 1, "g b": 3}
-        _sequenceCounts = {},
 
         /**
          * variable to store the setTimeout call
@@ -252,10 +207,7 @@ work as expected
      */
     function _addEvent(object, type, callback) {
         if (object.addEventListener) {
-            // [Modification for UnitsProj]
-            // Changed the third parameter in the call below from false to true.
-            // This makes the library bind events in the capturing phase.
-            object.addEventListener(type, callback, true);
+            object.addEventListener(type, callback, false);
             return;
         }
 
@@ -434,12 +386,6 @@ work as expected
             modifiers.push('meta');
         }
 
-        // [Modification for UnitsProj]
-        // Added the following if block
-        if (Mousetrap.isSpaceDown) {
-            modifiers.push('space');
-        }
-
         return modifiers;
     }
 
@@ -523,11 +469,6 @@ work as expected
                 // keep a list of which sequences were matches for later
                 doNotReset[callbacks[i].seq] = 1;
                 _fireCallback(callbacks[i].callback, e, callbacks[i].combo);
-                // [Modification for UnitsProj]
-                // Added the following if block
-                if (e.__handledByUnitsProj) {
-                    break;
-                }
                 continue;
             }
 
@@ -535,11 +476,6 @@ work as expected
             // that means this is a regular match so we should fire that
             if (!processedSequenceCallback && !_sequenceType) {
                 _fireCallback(callbacks[i].callback, e, callbacks[i].combo);
-                // [Modification for UnitsProj]
-                // Added the following if block
-                if (e.__handledByUnitsProj) {
-                    break;
-                }
             }
         }
 
@@ -595,9 +531,7 @@ work as expected
      * @returns {boolean}
      */
     function _isModifier(key) {
-        // [Modification for UnitsProj]
-        // Added ` || key == 'space'` at the end of the following line
-        return key == 'shift' || key == 'ctrl' || key == 'alt' || key == 'meta' || key == 'space';
+        return key == 'shift' || key == 'ctrl' || key == 'alt' || key == 'meta';
     }
 
     /**
@@ -677,10 +611,6 @@ work as expected
         // and setting the level to 0
         _sequenceLevels[combo] = 0;
 
-        // [Modification for UnitsProj]
-        // Added this line:
-        _sequenceCounts[combo]? (_sequenceCounts[combo]++): (_sequenceCounts[combo] = 1);
-
         // if there is no action pick the best one for the first key
         // in the sequence
         if (!action) {
@@ -723,21 +653,11 @@ work as expected
             },
             i;
 
-        // [Modification for UnitsProj]
-        // Created an if-else block and moved the original code within the else block.
-        // The if block ensures that if the same sequence was previously bound, we bind
-        // the event for the last key only. This is required to keep the counts in
-        // _sequenceLevels correct
-        if (_sequenceCounts[combo] >= 2) {
-            _bindSingle(keys[keys.length-1], _callbackAndReset, action, combo, keys.length-1);
-        }
-        else {
-            // loop through keys one at a time and bind the appropriate callback
-            // function.  for any key leading up to the final one it should
-            // increase the sequence. after the final, it should reset all sequences
-            for (i = 0; i < keys.length; ++i) {
-                _bindSingle(keys[i], i < keys.length - 1 ? _increaseSequence : _callbackAndReset, action, combo, i);
-            }
+        // loop through keys one at a time and bind the appropriate callback
+        // function.  for any key leading up to the final one it should
+        // increase the sequence. after the final, it should reset all sequences
+        for (i = 0; i < keys.length; ++i) {
+            _bindSingle(keys[i], i < keys.length - 1 ? _increaseSequence : _callbackAndReset, action, combo, i);
         }
     }
 
@@ -754,10 +674,7 @@ work as expected
     function _bindSingle(combination, callback, action, sequenceName, level) {
 
         // store a direct mapped reference for use with Mousetrap.trigger
-        // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
-        // of `_directMap`, `unbind`, `trigger` are to be removed)
-        //_directMap[combination + ':' + action] = callback;
+        _directMap[combination + ':' + action] = callback;
 
         // make sure multiple spaces in a row become a single space
         combination = combination.replace(/\s+/g, ' ');
@@ -811,10 +728,8 @@ work as expected
             _callbacks[key] = [];
         }
 
-        // [Modification for UnitsProj]
-        // Commented out the following line of code, which removed any callback previously
-        // bound to the same key
-        // _getMatches(key, modifiers, {type: action}, !sequenceName, combination);
+        // remove an existing match if there is one
+        _getMatches(key, modifiers, {type: action}, !sequenceName, combination);
 
         // add this call back to the array
         // if it is a sequence put it at the beginning
@@ -822,42 +737,14 @@ work as expected
         //
         // this is important because the way these are processed expects
         // the sequence ones to come first
-//        _callbacks[key][sequenceName ? 'unshift' : 'push']({
-//            callback: callback,
-//            modifiers: modifiers,
-//            action: action,
-//            seq: sequenceName,
-//            level: level,
-//            combo: combination
-//        });
-
-        // [Modification for UnitsProj:
-        // Replaced code commented code above with the following code. Now sequence
-        // related callbacks are still added before non-sequence ones, but they are
-        // added after the previously added sequence ones. This ensures that callbacks
-        // fire in the order in which they were bound, which is consistent with the
-        // behavior for non-sequence bindings.]
-        var callbackInfo = {
+        _callbacks[key][sequenceName ? 'unshift' : 'push']({
             callback: callback,
             modifiers: modifiers,
             action: action,
             seq: sequenceName,
             level: level,
             combo: combination
-        };
-
-        if (sequenceName) { // if its part of a sequence
-            for (i = 0; i< _callbacks[key].length; i++) {
-                if (!_callbacks[key][i].seq) {
-                    break;
-                }
-            }
-            _callbacks[key].splice(i, 0, callbackInfo)
-        }
-        else {
-            _callbacks[key].push(callbackInfo);
-        }
-
+        });
     }
 
     /**
@@ -918,12 +805,9 @@ work as expected
          * @param {string} action
          * @returns void
          */
-        // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
-        // of `_directMap`, `unbind`, `trigger` are to be removed)
-//        unbind: function(keys, action) {
-//            return Mousetrap.bind(keys, function() {}, action);
-//        },
+        unbind: function(keys, action) {
+            return Mousetrap.bind(keys, function() {}, action);
+        },
 
         /**
          * triggers an event that has already been bound
@@ -932,15 +816,12 @@ work as expected
          * @param {string=} action
          * @returns void
          */
-        // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
-        // of `_directMap`, `unbind`, `trigger` are to be removed)
-//        trigger: function(keys, action) {
-//            if (_directMap[keys + ':' + action]) {
-//                _directMap[keys + ':' + action]({}, keys);
-//            }
-//            return this;
-//        },
+        trigger: function(keys, action) {
+            if (_directMap[keys + ':' + action]) {
+                _directMap[keys + ':' + action]({}, keys);
+            }
+            return this;
+        },
 
         /**
          * resets the library back to its initial state.  this is useful
@@ -951,14 +832,7 @@ work as expected
          */
         reset: function() {
             _callbacks = {};
-            // [Modification for UnitsProj]
-            // Reset the following variable as well
-            _sequenceCounts = {};
-
-            // [Modification for UnitsProj]
-            // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
-            // of `_directMap`, `unbind`, `trigger` are to be removed)
-            //_directMap = {};
+            _directMap = {};
             return this;
         },
 
