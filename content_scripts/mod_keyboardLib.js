@@ -64,6 +64,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
         var suppressPropagationIfHandling = function (e, shortcut) {
             if (shouldHandleShortcut(shortcut, e.target, context)) {
                 mod_contentHelper.suppressEvent(e);
+                e.__handledByUnitsProj = true;
                 return 1;
             }
             return 0;
