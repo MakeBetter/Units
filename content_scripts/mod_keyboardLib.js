@@ -34,15 +34,14 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
 //    var protectedWebpageShortcuts_lowerCase;
 
     /**
-     * The bind function maps an array of keyboard shortcuts to a handler. Binding is done for the capturing phase of
-     * the event. Before the handler is triggered for a particular keyboard shortcut, and the event suppressed,
-     * (the overridden) Mousetrap.stopCallback() is called to determine if the event should be handled or not (which,
-     * among other things, checks if the shortcut is not in `protectedWebpageShortcuts` before proceeding)
-     * shortcuts specified in urlData.protectedWebpageShortcuts
+     * The bind function maps an array of keyboard shortcuts to a handler. Before the handler is triggered for a
+     * particular keyboard shortcut, and the event suppressed, `shouldHandleShortcut` is called to determine if it
+     * should be invoked. If multiple handlers are bound to the same shortcut, the first one to successfully be handled
+     * will stop further propagation of the event.
      * @param {Array} shortcuts
      * @param {Function} handler
-     * @param context Context hash (refer: mod_context) or a function that should evaluate to true for the shortcut to
-     * get triggered
+     * @param [context] Context hash (refer: mod_context) or a function that should evaluate to true for the shortcut to
+     * get triggered. If no `context` is specified, any context is assumed to be valid.
 
      Further Notes:
      1) When handling a shortcut, we suppress further propagation of the event. This seems reasonable since if a
@@ -53,7 +52,8 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
      2) Currently, specifying a shortcut means, it gets invoked on 'keydown' (while the corresponding 'keypress' an
      'keyup' events are handled are simply supresed. This aids simplicity and consistency, but if found to be causing
      issues, can be re-thought.
-     3) Owing to point 1), modules which have conflicting shortcuts should have their shortcuts bound in order of 
+     3) Binding is done for the capturing phase of the event (by modifying Mousetrap library)
+     4) Owing to point 1), modules which have conflicting shortcuts should have their shortcuts bound in order of
      priority. TODO: give an example of this 
      */
     function bind(shortcuts, handler, context) {
@@ -64,7 +64,6 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
         var suppressPropagationIfHandling = function (e, shortcut) {
             if (shouldHandleShortcut(shortcut, e.target, context)) {
                 mod_contentHelper.suppressEvent(e);
-                e.__handledByUnitsProj = true;
                 return 1;
             }
             return 0;
@@ -75,6 +74,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
 
         Mousetrap.bind(shortcuts, function(e, shortcut) {
             if (suppressPropagationIfHandling(e, shortcut)) {
+                e.__handledByUnitsProj = true;  // is checked within mousetrap-modified.js
                 handler();
             }
         }, 'keydown');
@@ -119,19 +119,23 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
 
         if (keycode === 32) { // space
 
-            // First, ensure that we don't consider <space> a (potential) modifier if:
-            // [the target element is a type-able element or a <select> element] AND there is no other modifier key
-            if ((mod_contentHelper.elementAllowsTyping(e.target) || e.target.tagName.toLowerCase() === "select")  &&
-                !(e.altKey || e.shiftKey || e.ctrlKey || e.metaKey)) {
-                return;
-            }
-
-            // else...
-
             if (e.type === 'keydown') {
+                // First, ensure that we don't consider <space> a (potential) modifier if:
+                // the target element is a type-able element or a <select> element
+                // AND
+                // there is no other non-shift modifier key
+                if ((mod_contentHelper.elementAllowsTyping(e.target) || e.target.tagName.toLowerCase() === "select")  &&
+                    !(e.altKey || e.ctrlKey || e.metaKey)) {
+                    return;
+                }
+
+                // else...
+
 //            console.log('space down');
                 Mousetrap.isSpaceDown = true;
                 Mousetrap.spaceUsedAsModifier = false; // reset
+                mod_contentHelper.suppressEvent(e);
+
             }
             else { // 'keyup'
 //            console.log('space up');
@@ -141,9 +145,6 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
                 }
                 Mousetrap.spaceUsedAsModifier = false; // reset
             }
-            e.stopImmediatePropagation();
-            e.stopPropagation();
-            e.preventDefault();
 
         }
         // any other key than space
@@ -225,11 +226,13 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
             }
         }
 
+        // [NOTE] The following has been commented out since <shift> + <space> + <key> can accidentally get pressed
+        // when typing fast on a text editable area
         // Otherwise if *both* <space> and <shift> (+ some other <key(s)>) are present, we can deem the combination as a
         // shortcut irrespective of the target element
-        if (shortcutKeys.indexOf('shift') >= 0 && shortcutKeys.indexOf('space') >= 0) {
-            return true;
-        }
+//        if (shortcutKeys.indexOf('shift') >= 0 && shortcutKeys.indexOf('space') >= 0) {
+//            return true;
+//        }
 
         // If shortcut is the single key <enter> and element is *any* input type or the select type, don't treat is
         // as a shortcut
