@@ -116,7 +116,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             userSettings = $.extend(true, {}, defaultSettings);
         }
 
-        // only allowing adding to URL patterns at the moment. 
+        // only allowing adding to URL patterns at the moment.
         if (userSettings.disabledSites && userSettings.disabledSites.urlPatterns) {
             var disabledUrlPatterns = userSettings.disabledSites.urlPatterns;
             disabledUrlPatterns.push(urlPattern);

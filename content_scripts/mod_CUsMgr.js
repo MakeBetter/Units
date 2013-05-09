@@ -108,17 +108,24 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         generalShortcuts,
         CUsShortcuts,
         expandedUrlData,
+        isDisabled,
 
         addEventListener_eventHandlers = [],
         jQueryOn_eventHandlers = [],
         suppressEvent = mod_contentHelper.suppressEvent;
 
-    // re-initialize the extension when background script informs of change in settings
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
 
+            // re-initialize the extension when background script informs of change in settings
             if (request.message === 'settingsChanged') {
                 initializeExtension();
+            }
+
+            // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
+            // This is used for setting the extension icon appropriately.
+            else if (request.message === "isEnabled") {
+                sendResponse({isEnabled: !isDisabled});
             }
         }
     );
@@ -2134,7 +2141,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 // (reset and re-)initialize the extension.
     function initializeExtension() {
 
-        console.log('UnitsProj initialized');
         disableExtension(); // resets the state
 
         chrome.runtime.sendMessage({
@@ -2149,8 +2155,15 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 generalShortcuts = settings.generalShortcuts;
                 CUsShortcuts = settings.CUsShortcuts;
                 expandedUrlData = settings.expandedUrlData;
+                isDisabled = settings.isDisabled;
 
-                if (settings.isDisabled) {
+                // set the extension icon as enabled/disabled every time the extension is initialized.
+                chrome.runtime.sendMessage({
+                   message: 'setIcon',
+                   isDisabled: isDisabled
+                });
+
+                if (isDisabled) {
                     // TODO: separate this stuff from CUsMgr
                     disableExtension();
                     // the following lines exist to cater to url changes in single page apps etc. TODO: is it an
