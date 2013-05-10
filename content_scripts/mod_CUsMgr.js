@@ -1799,9 +1799,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     /**
      * Sets up the keyboard shortcuts.
-     * Note: Because of the order in which shortcuts are set up, their priorities in case of a conflict are:
-     * <browser-shortcuts> override <general-shortcuts> override <page-specific-shortcuts> override <CU-specific-shortcuts>
-     * This order has been chosen since it favors consistency and hence minimizes confusion.
+     * Note: Because of the order in which shortcuts are set up, the more specific ones (e.g: ones which need a CU
+     * to be selected, or CUs to be present on the page) will have priority over the general shortcuts, as long as
+     * the context they require is valid. That is, if 's' is defined as the shortcut for 'sharing' a CU and also for
+     * scrolling down on the page, it will do the former if a CU is selected, and the latter otherwise.
      */
     function setupShortcuts() {
 
