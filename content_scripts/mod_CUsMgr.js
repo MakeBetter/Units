@@ -1556,10 +1556,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         scroll(-miscGlobalSettings.pageScrollDelta);
     }
 
-    function closeTab() {
-        chrome.runtime.sendMessage({message: "closeTab"});
-    }
-
     // invokes the browser's 'back' action
     function back() {
         window.history.back();
@@ -1567,14 +1563,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     // invokes the browser's 'forward' action
     function forward() {
         window.history.forward();
-    }
-    // switch to next tab
-    function nextTab() {
-        chrome.runtime.sendMessage({message: "nextTab"});
-    }
-    // switch to prev tab
-    function prevTab() {
-        chrome.runtime.sendMessage({message: "prevTab"});
     }
 
 // *----------code related to setting up and handling events follows---------------
@@ -1650,11 +1638,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         mod_keyboardLib.bind(browserShortcuts.scrollDown, scrollDown);
         mod_keyboardLib.bind(browserShortcuts.scrollUp, scrollUp);
-        mod_keyboardLib.bind(browserShortcuts.closeTab, closeTab);
         mod_keyboardLib.bind(browserShortcuts.back, back);
         mod_keyboardLib.bind(browserShortcuts.forward, forward);
-        mod_keyboardLib.bind(browserShortcuts.nextTab, nextTab);
-        mod_keyboardLib.bind(browserShortcuts.prevTab, prevTab);
 
 //    mod_keyboardLib.bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
 //    mod_keyboardLib.bind(['alt+q'], function() {console.log(' alt q');});

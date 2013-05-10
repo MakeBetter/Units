@@ -51,11 +51,8 @@ var defaultSettings = {
     browserShortcuts: {
         scrollDown: ['shift+j'],
         scrollUp: ['shift+k'],
-        closeTab: ['alt+x'],
         back: ['alt+h'],
         forward: ['alt+l'],
-        nextTab: ['alt+.'],
-        prevTab: ['alt+,'],
 
         // Special shortcut. Is part of "browser shortcuts" since it should be available even when
         // extension is only partially enabled.
