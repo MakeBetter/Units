@@ -3,6 +3,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_events, {
+        reset: reset,
         setup: setup,
         filterCUsArray: filterCUsArray,
         showSearchBox: showSearchBox
@@ -11,12 +12,21 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
     var $searchContainer,
         $searchBox,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
-        isVisible = false,
-        $document = $(document),
+//        isVisible = false,
         timeout_typing,
-        suppressEvent = mod_contentHelper.suppressEvent;
+        suppressEvent = mod_contentHelper.suppressEvent,
+        beenSetupOnce; // has the module been setup at least once
+
+    // reset state
+    function reset() {
+        if (beenSetupOnce) {
+            closeSearchBox();
+            timeout_typing = null;
+        }
+    }
 
     function setup() {
+        beenSetupOnce = true;
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);
 
@@ -32,9 +42,9 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
             .appendTo(mod_core.$topLevelContainer);
         // Use a timeout to call .show(), otherwise the search box might appear briefly at the top of the page as
         // it loads
-        setTimeout(function() {$searchContainer.show();}, 500);
+//            setTimeout(function() {$searchContainer.show();}, 500);
 
-        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
+//            $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
 
         $searchBox.on('keydown paste input', onSearchBoxKeydown);
         $closeButton.click(closeSearchBox);
@@ -65,7 +75,8 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         // ** --------- FILTERING --------- **
         var searchTextLowerCase = getSearchBoxText().toLowerCase();
 
-        if (!searchTextLowerCase || !isVisible) {
+//        if (!searchTextLowerCase || !isVisible) {
+        if (!searchTextLowerCase || !$searchContainer.is(':visible')) {
             var $hiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
             $hiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
         }
@@ -217,27 +228,30 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
     }
 
     function showSearchBox() {
-        if (!isVisible) {
+//        if (!isVisible) {
+        if(!$searchContainer.is(':visible')) {
             $searchBox.val('');
-            $searchContainer.css({top: "0px"});
-            var savedScrollPos = $document.scrollTop();
+//            $searchContainer.css({top: "0px"});
+//            var savedScrollPos = $document.scrollTop();
+            $searchContainer.show();
             $searchBox.focus();
             // Setting the focus to the search box scrolls the page up slightly because the searchbox lies above the visible
             // part of the page (i.e. till its 'sliding' effect due to css transition completes). This is undesirable.
             // Hence we restore the scroll position:
-            $document.scrollTop(savedScrollPos);
+//            $document.scrollTop(savedScrollPos);
         }
         else {
             $searchBox.focus();
         }
-        isVisible = true;
+//        isVisible = true;
     }
 
     function closeSearchBox() {
         $searchBox.val('');
         $searchBox.blur();
-        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
-        isVisible = false;
+//        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
+//        isVisible = false;
+        $searchContainer.hide();
         thisModule.trigger('filtering-state-change');
     }
 

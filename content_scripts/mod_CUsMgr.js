@@ -2133,7 +2133,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     // reset state and disable the extension
     function disableExtension() {
 
-        resetCUsState();
+        resetCUsState(); // TODO: this should become mod_CUs.reset()
+        mod_filterCUs.reset();
         $topLevelContainer.empty().remove();
         removeAllEventListeners();
 

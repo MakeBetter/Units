@@ -141,6 +141,7 @@ div#UnitsProj-search-container {
 
     position: fixed !important;
     /*top: 0px;*/ /*this is set via javascript*/
+    top: 0px;
     left: 0px !important;
     margin: 0px !important;
     z-index: 100000 !important;
