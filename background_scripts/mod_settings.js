@@ -146,6 +146,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         }
 
         if (urlData) {
+            urlData = $.extend(true, {}, urlData); // make a copy of urlData
             mod_commonHelper.stringifyFunctions(urlData);
             expandUrlData(urlData);
             return urlData;
