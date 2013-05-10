@@ -104,7 +104,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         // the following objects are retrieved from the background script
         miscGlobalSettings,
-        browserShortcuts,
         generalShortcuts,
         CUsShortcuts,
         expandedUrlData,
@@ -1624,22 +1623,18 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     }
 
+// Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
+// selecting next/prev CU, etc.
+    function _setupGeneralShortcuts() {
 
-    /* Sets up "browser action" shortcuts. That is ones that (generally) correspond to browser actions. This extension can
-     be run in special mode  in which only this category of shortcuts is enabled (and this can be configured
-     on a per website/webpage basis). This is helpful for pages like gmail, github, etc which often have good shortcuts
-     implemented out of the box. Yet completely disabling the extension on such sites would lead to breaking of the user's
-     "flow" when, for example, invoking sequentially invoking "left tab" to move through a bunch of tabs one of which had
-     UnitsProj completely  disabled.
-     As a general recommendation, single letter keys are not used for this category of shortcuts, because that seems to be
-     the most common type of shortcuts implemented on web apps, and so would result in a higher possibility of conflict.
-     */
-    function _setupBrowserShortcuts() {
+        // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke mod_keyboardLib.reset()
+        mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, disableExtension);
 
-        mod_keyboardLib.bind(browserShortcuts.scrollDown, scrollDown);
-        mod_keyboardLib.bind(browserShortcuts.scrollUp, scrollUp);
-        mod_keyboardLib.bind(browserShortcuts.back, back);
-        mod_keyboardLib.bind(browserShortcuts.forward, forward);
+
+        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
+        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
+        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
+        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
 
 //    mod_keyboardLib.bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
 //    mod_keyboardLib.bind(['alt+q'], function() {console.log(' alt q');});
@@ -1648,13 +1643,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 //    mod_keyboardLib.bind(['shift+q'], function() {console.log('shift q');});
 //    mod_keyboardLib.bind(['q'], function() {console.log('q')});
 
-        // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke mod_keyboardLib.reset()
-        mod_keyboardLib.bind(browserShortcuts.toggleExtension, disableExtension);
-    }
-
-// Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
-// selecting next/prev CU, etc.
-    function _setupGeneralShortcuts() {
 
         mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext, {pageHasCUs: true});
 
@@ -1796,7 +1784,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             _setupUrlDataShortcuts('page'); // shortcuts for the rest of the page
         }
         _setupGeneralShortcuts();   // general shortcuts
-        _setupBrowserShortcuts(); // browser action shortcuts
     }
 
     var onKeydown = function (e) {
@@ -2128,8 +2115,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             mod_chromeAltHack.undoAndDisableHack();
         }
 
-        if (browserShortcuts) {  // need this check since since the obj wouldn't be defined the first time
-            mod_keyboardLib.bind(browserShortcuts.toggleExtension, initializeExtension);
+        if (generalShortcuts) {  // need this check since since the obj wouldn't be defined the first time
+            mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, initializeExtension);
         }
     }
 
@@ -2146,7 +2133,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
                 // assign references to module level variables
                 miscGlobalSettings = settings.miscGlobalSettings;
-                browserShortcuts = settings.browserShortcuts;
                 generalShortcuts = settings.generalShortcuts;
                 CUsShortcuts = settings.CUsShortcuts;
                 expandedUrlData = settings.expandedUrlData;
@@ -2173,7 +2159,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 //                    // TODO: separate this stuff from CUsMgr
 //                    mod_mutationObserver.start();
 //                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
-//                    _setupBrowserShortcuts(); // check if it's okay to call this directly (since it starts with an "_")
 //                    return;
 //                }
 

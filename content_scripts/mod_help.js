@@ -99,8 +99,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
     }
 
     function getGeneralShortcutsSection(settings) {
-        var browserShortcuts = settings.browserShortcuts,
-            generalShortcuts = settings.generalShortcuts,
+        var generalShortcuts = settings.generalShortcuts,
             expandedUrlData = settings.expandedUrlData;
 
         var page_MUs = expandedUrlData && expandedUrlData.page_MUs,
@@ -116,7 +115,6 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
         renderShortcutsInSectionTable(generalShortcuts, $shortcutsTable);
         renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Applicable for this page/ website");
-        renderShortcutsInSectionTable(browserShortcuts, $shortcutsTable, null, true);
 
         return $section;
     }

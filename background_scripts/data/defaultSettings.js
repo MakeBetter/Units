@@ -47,21 +47,31 @@ var defaultSettings = {
     Note for specifying keyboard shortcuts (Applies to the following three objects, as well as other shortcuts
     specified in the urlData for a webpage):
     In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key.
+    i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
     */
-    browserShortcuts: {
-        scrollDown: ['shift+j'],
-        scrollUp: ['shift+k'],
-        back: ['alt+h'],
-        forward: ['alt+l'],
-
-        // Special shortcut. Is part of "browser shortcuts" since it should be available even when
-        // extension is only partially enabled.
-        toggleExtension: ['ctrl+`']
-    },
-
     generalShortcuts: {
-        // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
-        // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
+        
+        toggleExtension: {
+            miniDescr: "Disable/enable Units on the current page",
+            kbdShortcuts: ['ctrl+`']
+        },
+        scrollDown: {
+            miniDescr: "Scroll down",
+            kbdShortcuts: ['shift+j']
+        },
+        scrollUp: {
+            miniDescr: "Scroll down",
+            kbdShortcuts: ['shift+k']
+        },
+        back: {
+            miniDescr: "Go back",
+            kbdShortcuts: ['alt+h']
+        },
+        forward: {
+            miniDescr: "Go forward",
+            kbdShortcuts: ['alt+l']
+        },
+
         showHelp: {
             miniDescr: "Show the help page",
             kbdShortcuts: ['alt+h', 'alt+?']
