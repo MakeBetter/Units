@@ -201,8 +201,9 @@ work as expected
         // Variable to support multiple bindings for same keyboard sequence. Keeps count
         // of the number of bindings made for the same sequence. (As of now, the count
         // itself isn't required -- we only use this to find if the sequence being bound
-        // is the same as another one previously bound). E.g: if "g a" is bound 1 and "g b"
-        // is bound thrice this will look like {"g a": 1, "g b": 3}
+        // is the same as another one previously bound). E.g: if "g a" (keydown) is bound
+        // once and "g b" (keypress) is bound thrice this will look this:
+        // {"g a:keydown": 1, "g b:keypress": 3}
         _sequenceCounts = {},
 
         /**
@@ -679,7 +680,7 @@ work as expected
 
         // [Modification for UnitsProj]
         // Added this line:
-        _sequenceCounts[combo]? (_sequenceCounts[combo]++): (_sequenceCounts[combo] = 1);
+        _sequenceCounts[combo+":"+action]? (_sequenceCounts[combo+":"+action]++): (_sequenceCounts[combo+":"+action] = 1);
 
         // if there is no action pick the best one for the first key
         // in the sequence
@@ -694,7 +695,11 @@ work as expected
          * @param {Event} e
          * @returns void
          */
-        var _increaseSequence = function() {
+        var _increaseSequence = function(e) {
+                // [Modification for UnitsProj]
+                // Parameter 'e' added to the function abovefor
+                e.stopImmediatePropagation();
+                e.preventDefault();
                 _sequenceType = action;
                 ++_sequenceLevels[combo];
                 _resetSequenceTimer();
@@ -728,7 +733,7 @@ work as expected
         // The if block ensures that if the same sequence was previously bound, we bind
         // the event for the last key only. This is required to keep the counts in
         // _sequenceLevels correct
-        if (_sequenceCounts[combo] >= 2) {
+        if (_sequenceCounts[combo+":"+action] >= 2) {
             _bindSingle(keys[keys.length-1], _callbackAndReset, action, combo, keys.length-1);
         }
         else {
