@@ -16,11 +16,11 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     /***
      * Return final settings (default settings overriden by user settings) for the specified location object
      * @param locationObj
-     * @returns {{miscGlobalSettings: *, CUsShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
+     * @returns {{miscSettings: *, CUsShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
      */
     function getSettings(locationObj) {
         var _defaultSettings = {
-                miscGlobalSettings: defaultSettings.miscGlobalSettings,
+                miscSettings: defaultSettings.miscSettings,
                 generalShortcuts: defaultSettings.generalShortcuts,
                 CUsShortcuts: defaultSettings.CUsShortcuts,
                 disabledSites: defaultSettings.disabledSites,

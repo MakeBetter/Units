@@ -5,7 +5,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
-    var thisModule = $.extend({}, _u.mod_events, {
+    var thisModule = $.extend({}, _u.mod_pubSub, {
         setup: setup,
         showHelp: showHelp,
         hideHelp: hideHelp

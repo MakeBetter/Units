@@ -22,10 +22,10 @@ var defaultSettings = {
     /*
     Specifies misc. options used by the program. Functions (in the content scripts) that use this object might also
     accept a 'options' object as argument. In addition to providing additional options for the function, the 'options'
-    argument can also be to override any properties of the 'miscGlobalSettings' object (for that specific invocation)
+    argument can also be to override any properties of the 'miscSettings' object (for that specific invocation)
     by providing different values for those properties.
     */
-    miscGlobalSettings: {
+    miscSettings: {
         selectCUOnLoad: true, // whether the first CU should be selected when the page loads
         animatedCUScroll: true,
         animatedCUScroll_Speed: 2, // pixels per millisecond

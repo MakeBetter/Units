@@ -20,7 +20,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     "use strict";
 
     /*-- Public interface --*/
-    var thisModule = $.extend({}, _u.mod_events, {
+    var thisModule = $.extend({}, _u.mod_pubSub, {
         bind: bind,
         reset:reset,
         isSpaceDown: isSpaceDown,

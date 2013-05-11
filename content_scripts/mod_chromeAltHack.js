@@ -26,7 +26,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
         "use strict";
 
        /*-- Public interface --*/
-        var thisModule = $.extend({}, _u.mod_events, {
+        var thisModule = $.extend({}, _u.mod_pubSub, {
             applyHack: applyHack,
             undoAndDisableHack: undoAndDisableHack
             //_onDomMutation: _onDomMutation, //to  apply the hack for conflicting accesskeys that come into existence later

@@ -1,20 +1,23 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help, mod_chromeAltHack,
-                          mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
+_u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
+                          mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
 
     "use strict";
 
     /*-- Public interface --*/
-    var thisModule = $.extend({}, _u.mod_events, {
-        $selectedCU: null,
-//        selectNext: selectNext,
-//        selectPrev: selectPrev,
+    var thisModule = $.extend({}, _u.mod_pubSub, {
+        setup: setup,
+        reset: reset,
+        $getSelectedCU: $getSelectedCU,
+        selectNext: selectNext,
+        selectPrev: selectPrev,
+        selectFirst: selectFirst,
+        selectLast: selectLast
     });
 
     /*-- Event bindings --*/
-    thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);
     thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', updateCUsAndRelatedState);
     // if mod_filterCUs is not defined, rest of the extension still works fine
     if (mod_filterCUs) {
@@ -75,11 +78,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         $document = $(document), // cached jQuery object
 
-    // tracks the element on which scrolling should be attempted first, when the user invokes scrolllDown/scrollUp
-        elementToScroll,
-
         rtMouseBtnDown,         // boolean holding the state of the right mouse button
-        ltMouseBtnDown,         // boolean holding the state of the left mouse button
+//        ltMouseBtnDown,         // boolean holding the state of the left mouse button
         scrolledWithRtMouseBtn, // boolean indicating if right mouse button was used to modify scrolling
 
         class_scrollingMarker = 'CU-scrolling-marker',
@@ -99,35 +99,18 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         stopExistingScrollAnimation,
         animationInProgress,
 
+        expandedUrlData,
     
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
         // the following objects are retrieved from the background script
-        miscGlobalSettings,
-        generalShortcuts,
-        CUsShortcuts,
-        expandedUrlData,
-        isDisabled,
+        miscSettings,
 
-        addEventListener_eventHandlers = [],
-        jQueryOn_eventHandlers = [],
         suppressEvent = mod_contentHelper.suppressEvent;
 
-    chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-
-            // re-initialize the extension when background script informs of change in settings
-            if (request.message === 'settingsChanged') {
-                initializeExtension();
-            }
-
-            // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
-            // This is used for setting the extension icon appropriately.
-            else if (request.message === "isEnabled") {
-                sendResponse({isEnabled: !isDisabled});
-            }
-        }
-    );
+    function $getSelectedCU() {
+        return $CUsArray[selectedCUIndex];
+    }
 
 // returns a jQuery set composed of all focusable DOM elements contained in the
 // jQuery set ($CU) passed
@@ -181,53 +164,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     }
 
     /**
-     * Invokes a click on the active element (see getMainElement()) of the selected CU. Passing true for
-     * 'newTab' invokes "ctrl+click", which has the effect of opening the link in a new tab (if the "main" element is
-     * a link)
-     * @param {boolean} newTab {Determines whether to invoke ctrl+click or simply a click)
- */
-    function openActiveElement(newTab) {
-
-        if (newTab) {
-            var ctrlClickEvent = document.createEvent("MouseEvents");
-
-            // detecting OS detection based on:
-            // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
-            if (isMac) {
-                ctrlClickEvent.initMouseEvent("click", true, true, null,
-                    0, 0, 0, 0, 0, false, false, false, true, 0, null); // cmd key set to true for mac
-            }
-            else {
-                ctrlClickEvent.initMouseEvent("click", true, true, null,
-                    0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
-            }
-
-            document.activeElement.dispatchEvent(ctrlClickEvent);
-        }
-        else {
-            document.activeElement.click();
-        }
-
-//    var $CU = $CUsArray[selectedCUIndex];
-//    if ($CU) {
-//        var element = getMainElement($CU)
-//        if (element) {
-//            if (newTab) {
-//                var ctrlClickEvent = document.createEvent("MouseEvents");
-//                ctrlClickEvent.initMouseEvent("click", true, true, null,
-//                    0, 0, 0, 0, 0, true, false, false, false, 0, null);
-//
-//                element.dispatchEvent(ctrlClickEvent);
-//            }
-//            else {
-//                element.click();
-//            }
-//        }
-//
-//    }
-    }
-
-    /**
      * Selects the CU specified.
      * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
      * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
@@ -238,7 +174,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
      * This parameter is currently passed as true only from selectPrev() and selectNext()
-     * @param {object} [options] Misc options. Can also be used to override miscGlobalSettings
+     * @param {object} [options] Misc options. Can also be used to override miscSettings
      */
     var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
 //        console.log('selectCU() called');
@@ -258,7 +194,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             return;
         }
 
-        options = $.extend(true, {}, miscGlobalSettings, options);
+        options = $.extend(true, {}, miscSettings, options);
 
         deselectCU(options); // before proceeding, deselect currently selected CU, if any
 
@@ -472,12 +408,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
      * in the direction specified.
      * @param {string} direction Can be either 'up' or 'down'
-     * @param {object} [options] Misc options. Can also be used to override miscGlobalSettings
+     * @param {object} [options] Misc options. Can also be used to override miscSettings
      * @return {Boolean} value indicating whether scroll took place
      */
     function scrollSelectedCUIfRequired (direction, options) {
 
-        options = $.extend(true, {}, miscGlobalSettings, options);
+        options = $.extend(true, {}, miscSettings, options);
 
         var $CU = $CUsArray[selectedCUIndex];
 
@@ -559,7 +495,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
     /**
      * Selects the previous CU to the currently selected one.
      */
-    var selectPrev = function() {
+    function selectPrev () {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
             scrollUp();
@@ -581,7 +517,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
             new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
-            if (miscGlobalSettings.sameCUScroll) {
+            if (miscSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('up');
                 if (scrolled) {
                     return;
@@ -600,14 +536,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         else {
             selectMostSensibleCU(true, true);
         }
-
-
-    };
+    }
 
     /**
      * Selects the next CU to the currently selected one.
      */
-    var selectNext = function() {
+    function selectNext() {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
             scrollDown();
@@ -630,7 +564,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         if (selectedCUIndex >=0 && (isCUInViewport($CUsArray[selectedCUIndex]) ||
             new Date() - lastSelectedCUTime < selectionTimeoutPeriod)) {
 
-            if (miscGlobalSettings.sameCUScroll) {
+            if (miscSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('down');
                 if (scrolled) {
                     return;
@@ -650,7 +584,14 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         else {
             selectMostSensibleCU(true, true);
         }
-    };
+    }
+
+    function selectFirst() {
+        selectCU(0, true);
+    }
+    function selectLast() {
+        selectCU($CUsArray.length - 1, true);
+    }
 
     /**
      * Called typically when there is no currently selected CU, and we need to select the CU that makes most sense
@@ -961,7 +902,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
         // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
         // This is  handled by calculating the time diff. between invocations. See later.)
-            intervalPeriod = Math.min(100, miscGlobalSettings.animatedCUScroll_MaxDuration/4),
+            intervalPeriod = Math.min(100, miscSettings.animatedCUScroll_MaxDuration/4),
 
             lastInvocationTime, // will contain the time of the last invocation (of invokeIncrementalScroll)
 
@@ -1011,7 +952,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * //TODO3: consider if horizontal scrolling should be adjusted as well (some, very few, sites sites might, like an
      * image gallery, might have CUs laid out horizontally)
      * @param {DOM element|JQuery wrapper} $element
-     * @param {object} options Misc options. Can also be used to override miscGlobalSettings
+     * @param {object} options Misc options. Can also be used to override miscSettings
      */
     function scrollIntoView($element, options) {
 
@@ -1020,7 +961,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             return;
         }
 
-        options = $.extend(true, {}, miscGlobalSettings, options);
+        options = $.extend(true, {}, miscSettings, options);
 
         var // for the window:
             winTop = $document.scrollTop(),
@@ -1083,75 +1024,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
     }
 
-    function $getVisibleTextInputElements() {
-        var $textInput = $document.find('input[type=text], input:not([type]), textarea, [contenteditable=true]').filter(function() {
-            var $this = $(this);
-            if ($this.is(':visible') || $this.css('visiblity') === 'visible') {
-                return true;
-            }
-        });
-
-        return $textInput;
-    }
-
-    function focusFirstTextInput() {
-        var $textInput = $getVisibleTextInputElements();
-        $textInput.length && $textInput[0].focus();
-    }
-    function focusNextTextInput() {
-        var $textInput = $getVisibleTextInputElements(),
-            currentIndex,
-            targetIndex;
-
-        if (!$textInput.length)
-            return;
-
-        if ( (currentIndex = $textInput.index(document.activeElement)) >= 0) {
-            targetIndex = currentIndex;
-            do {
-                targetIndex++;
-                if (targetIndex >= $textInput.length) {
-                    targetIndex = 0;
-                }
-
-                $textInput[targetIndex].focus();  // this may not work in all cases (if the element is disabled etc), hence the loop
-                currentIndex = $textInput.index(document.activeElement);
-            } while (targetIndex !== currentIndex);
-        }
-        else {
-            $textInput[0].focus();
-        }
-    }
-    function focusPrevTextInput() {
-        var $textInput = $getVisibleTextInputElements(),
-            currentIndex,
-            targetIndex;
-
-        if (!$textInput.length)
-            return;
-
-        if ( (currentIndex = $textInput.index(document.activeElement)) >= 0) {
-            targetIndex = currentIndex;
-            do {
-                targetIndex--;
-                if (targetIndex < 0) {
-                    targetIndex = $textInput.length - 1;
-                }
-
-                $textInput[targetIndex].focus();  // this may not work in all cases (if the element is disabled etc), hence the loop
-                currentIndex = $textInput.index(document.activeElement);
-            } while (targetIndex !== currentIndex);
-        }
-        else {
-            $textInput[0].focus();
-        }
-    }
-
-
-    function _onUrlChange() {
-        initializeExtension(); // resets the extension
-    }
-
 // Sets/updates the global variable $CUsArray and other state associated with it
     function updateCUsAndRelatedState() {
 
@@ -1167,7 +1039,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
 
         if ($CUsArray && $CUsArray.length) {
 
-            if (miscGlobalSettings.selectCUOnLoad && !selectCU.invokedYet) {
+            if (miscSettings.selectCUOnLoad && !selectCU.invokedYet) {
                 // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
                 selectFirstCUInViewport(true, false);
             }
@@ -1447,41 +1319,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         }
     };
 
-    function checkOverlayCssHasTransition() {
-
-        // create a short-lived element which is inserted into the DOM to allow determination of CSS transition property
-        // on overlay elements, and then quickly removed.
-        var $tempOverlay = $('<div></div>')
-            .addClass(class_addedByUnitsProj)
-            .addClass(class_CUOverlay)
-            .hide()
-            .appendTo(document.body);
-        var properties = ['transition-duration', '-webkit-transition-duration', '-moz-transition-duration',
-            '-o-transition-duration'];
-
-        var transitionDuration;
-        for (var property, i = 0; property = properties[i++]; ) {
-            transitionDuration = $tempOverlay.css(property);
-            if (transitionDuration !== null) {
-                break;
-            }
-        }
-
-        $tempOverlay.remove();
-
-        transitionDuration = parseFloat(transitionDuration); // to get 0.3 from 0.3s etc
-
-        // check if transitionDuration exists and has a non-zero value, while tolerating
-        // precision errors with float (which should not occur for 0, but just in case)
-        if (transitionDuration && transitionDuration > 0.00000001) {
-            return true;
-        }
-        else {
-            return false;
-        }
-
-    }
-
 // Based on the header selector provided, this returns the "effective" height of the header (i.e. unusable space) at the
 // top of the current view.
 // Only the part of the header below the view's top is considered, and its size returned. If there is more than one
@@ -1529,264 +1366,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         return isRtButton;
     };
 
-// Positive value for 'delta' scrolls down, negative scrolls up
-    function scroll(delta) {
-        var scrollElement = elementToScroll || document.activeElement || document.body,
-            oldScrollVal;
-
-        while (scrollElement) {
-            oldScrollVal = scrollElement.scrollTop;
-            scrollElement.scrollTop += delta;
-
-            if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
-                return;
-            }
-            else {
-                scrollElement = scrollElement.parentElement;
-            }
-        }
-    }
-
-    function scrollDown() {
-        scroll(miscGlobalSettings.pageScrollDelta);
-    }
-
-    function scrollUp() {
-        scroll(-miscGlobalSettings.pageScrollDelta);
-    }
-
-    // invokes the browser's 'back' action
-    function back() {
-        window.history.back();
-    }
-    // invokes the browser's 'forward' action
-    function forward() {
-        window.history.forward();
-    }
-
-// *----------code related to setting up and handling events follows---------------
-
-// <NOTE> The lines below override jQuery's 'on' function by a wrapper which allows tracking of the event handlers
-// set up by this extension, so that they can be removed if required.
-    $.fn.on_original = $.fn.on;
-    $.fn.on = function(/*args list intentionally left empty*/) {
-
-        this.on_original.apply(this, arguments);
-        jQueryOn_eventHandlers.push([this].concat(Array.prototype.slice.call(arguments)));
-
-    };
-
-    /**
-     * <NOTE> This wrapper function should be used as an alternative to the DOM's native element.addEventListener
-     * in order to track event handlers set up by this extension, so that they can be removed if required.
-     * A technique similar to the overriding of jQuery's 'on' function cannot be used for this, because the DOM, including
-     * its functions, are shared with current web page.
-     * @param target
-     * @param event
-     * @param handler
-     * @param useCapture
-     */
-    function addEventListener2(target, event, handler, useCapture) {
-
-        target.addEventListener(event, handler, useCapture);
-        addEventListener_eventHandlers.push(Array.prototype.slice.call(arguments));
-
-    }
-
-    function removeAllEventListeners() {
-
-        var i, len, ehInfo, target;
-
-        len = addEventListener_eventHandlers.length;
-        for (i = 0; i < len; i++) {
-            ehInfo = addEventListener_eventHandlers[i];
-            target = ehInfo[0];
-            ehInfo.splice(0, 1);
-            target.removeEventListener.apply(target, ehInfo);
-        }
-        addEventListener_eventHandlers = [];
-
-        len = jQueryOn_eventHandlers.length;
-        for (i = 0; i < len; i++) {
-            ehInfo = jQueryOn_eventHandlers[i],
-                target = ehInfo[0];
-            ehInfo.splice(0, 1);
-            target.off.apply(target, ehInfo);
-        }
-        jQueryOn_eventHandlers = [];
-
-        mod_keyboardLib.reset();
-
-        mod_mutationObserver.stop();
-
-//    console.log("UnitsProj: all event handlers removed");
-
-    }
-
-// Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
-// selecting next/prev CU, etc.
-    function _setupGeneralShortcuts() {
-
-        // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke mod_keyboardLib.reset()
-        mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, disableExtension);
-
-
-        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
-        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
-        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
-        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
-
-//    mod_keyboardLib.bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
-//    mod_keyboardLib.bind(['alt+q'], function() {console.log(' alt q');});
-//    mod_keyboardLib.bind(['alt+4'], function() {console.log(' alt 4');});
-//    mod_keyboardLib.bind(['alt+space+g'], function() {console.log(' alt space g');});
-//    mod_keyboardLib.bind(['shift+q'], function() {console.log('shift q');});
-//    mod_keyboardLib.bind(['q'], function() {console.log('q')});
-
-
-        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext, {pageHasCUs: true});
-
-        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev, {pageHasCUs: true});
-
-        mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
-
-        mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function(e) {
-            selectCU(0, true);
-        }, {pageHasCUs: true});
-
-        mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function(e) {
-            selectCU($CUsArray.length - 1, true);
-        }, {pageHasCUs: true});
-
-        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
-
-        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
-
-        mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
-            openActiveElement(true); // open in new tab
-        });
-        mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
-        mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
-        mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
-
-    }
-
-    /**
-     * Sets up the shortcuts specified. Can be used to setup either page-specific or CU-specific shortcuts depending on
-     * whether the 'scope' passed is "page" or 'CUs'.
-     * @param scope
-     */
-    function _setupUrlDataShortcuts(scope) {
-        _setupMUsShortcuts(scope);
-        _setupActionShortcuts(scope);
-    }
-
-    function _setupMUsShortcuts(scope) {
-        var MUs;
-        if (scope === 'CUs') {
-            MUs = expandedUrlData.CUs_MUs;
-        }
-        else {
-            MUs = expandedUrlData.page_MUs;
-        }
-        if (MUs) {
-            for (var key in MUs) {
-                var MU = MUs[key],
-                    selectors = MU.selector,
-                    kbdShortcuts = MU.kbdShortcuts;
-
-                if (selectors && kbdShortcuts) {
-                    mod_keyboardLib.bind(kbdShortcuts, _accessMU.bind(null, selectors, scope),
-                        scope === 'CUs'? {CUSelected: true}: undefined);
-                }
-            }
-        }
-    }
-
-    function _setupActionShortcuts(scope) {
-        var actions;
-        if (scope === 'CUs') {
-            actions = expandedUrlData.CUs_actions;
-        }
-        else {
-            actions = expandedUrlData.page_actions;
-        }
-        if (actions) {
-            for (var key in actions) {
-                var action = actions[key],
-                    fn = action.fn,
-                    kbdShortcuts = action.kbdShortcuts;
-                if (typeof fn === "function" && kbdShortcuts) {
-                    mod_keyboardLib.bind(kbdShortcuts, _invokeAction.bind(null, fn, scope),
-                        scope === 'CUs'? {CUSelected: true}: undefined);
-                }
-
-            }
-        }
-    }
-    function _invokeAction (fn, scope) {
-        var $selectedCU = $CUsArray[selectedCUIndex];
-        if (scope === 'CUs' && !$selectedCU) {
-            return;
-        }
-        var urlDataDeepCopy =  $.extend(true, {}, expandedUrlData);
-        fn($selectedCU, document, urlDataDeepCopy);
-    }
-
-    /**
-     *
-     * @param selectors
-     * @param {string} scope Can be either "page" or 'CUs'
-     */
-    function _accessMU(selectors, scope) {
-        var $scope;
-
-        if (scope === 'CUs') {
-            $scope =  $CUsArray[selectedCUIndex];
-        }
-        else  {
-            $scope = $document;
-        }
-        if ($scope) {
-            if (typeof selectors === 'string' ) {
-                selectors = [selectors];
-            }
-            (function invokeSequentialClicks (selectorsArr) {
-                if (selectorsArr.length) {
-                    mod_commonHelper.executeWhenConditionMet(
-                        function() {
-                            // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
-                            $scope.find(selectorsArr[0])[0].click();
-                            selectorsArr.splice(0, 1);
-                            invokeSequentialClicks(selectorsArr);
-                        },
-                        function() {
-                            return $scope.find(selectorsArr[0]).length;
-                        },
-                        2000
-                    );
-                }
-            })(selectors);
-        }
-    }
-
-    /**
-     * Sets up the keyboard shortcuts.
-     * Note: Because of the order in which shortcuts are set up, the more specific ones (e.g: ones which need a CU
-     * to be selected, or CUs to be present on the page) will have priority over the general shortcuts, as long as
-     * the context they require is valid. That is, if 's' is defined as the shortcut for 'sharing' a CU and also for
-     * scrolling down on the page, it will do the former if a CU is selected, and the latter otherwise.
-     */
-    function setupShortcuts() {
-
-        if (expandedUrlData) {
-            _setupUrlDataShortcuts('CUs'); // shortcuts for CUs
-            _setupUrlDataShortcuts('page'); // shortcuts for the rest of the page
-        }
-        _setupGeneralShortcuts();   // general shortcuts
-    }
-
-    var onKeydown = function (e) {
+    function onKeydown(e) {
         var code = e.which || e.keyCode,
             hasNonShiftModifier = e.altKey || e.ctrlKey|| e.metaKey,
             hasModifier = hasNonShiftModifier || e.shiftKey,
@@ -1828,14 +1408,13 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 dehoverCU();
             }
         }
-    };
+    }
 
 // handler for whenever an element on the page receives focus
 // (and thereby a handler for focus-change events)
-    var onFocus = function(e) {
+    function onFocus(e) {
         //console.log('on focus called');
-        var el = e.target, $el;
-        elementToScroll = el; // update global variable used by scrollDown()/scrollUp()
+        var el = e.target;
 //
 //    if ( ($el = $(el)).data('enclosingCUJustSelected') ) {
 //        $el.data('enclosingCUJustSelected', false);
@@ -1846,9 +1425,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             selectCU(enclosingCUIndex, false);
         }
 //    }
-    };
+    }
 
-    var onMouseWheel = function (e) {
+    function onMouseWheel (e) {
         // don't do this on macs for now. can make two finger scrolling problematic if the setting "tap to click"
         // is on. (because then, then a two finger tap becomes right click.)
         if (!isMac) {
@@ -1868,12 +1447,11 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 }
             }
         }
-    };
+    }
 
-    var onLtMouseBtnDown = function(e) {
+    function onLtMouseBtnDown(e) {
         // first update the following global variables
-        ltMouseBtnDown = true;
-        elementToScroll = e.target;
+//        ltMouseBtnDown = true;
 
         var point = {x: e.pageX, y: e.pageY},
             $selectedCU = $CUsArray[selectedCUIndex],
@@ -1905,12 +1483,13 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
         }
 
-    };
+    }
 
     function onRtMouseBtnDown(e) {
         rtMouseBtnDown = true;
     }
 
+    // TODO: describe this in documentation if the feature is deemed useful
     function onContextMenu(e) {
 
         if (scrolledWithRtMouseBtn) {
@@ -1940,14 +1519,14 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
                 scrolledWithRtMouseBtn = false;
             },100);
         }
-        else {
-            ltMouseBtnDown = false;
-        }
+//        else {
+//            ltMouseBtnDown = false;
+//        }
 
     }
 
-// function to be called once the user "intends" to hover over an element
-    var onMouseOverIntent = function(e) {
+    // function to be called once the user "intends" to hover over an element
+    function onMouseOverIntent(e) {
 
         var point = {x: e.pageX, y: e.pageY};
 
@@ -1967,18 +1546,15 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             hoverCU(CUIndex);
         }
 
-    };
+    }
 
-    var onMouseOver = function(e) {
-
-        elementToScroll = e.target; // update global variable used by scrollDown()/scrollUp()
+    function onMouseOver(e) {
         var timeout_applyHoveredOverlay = setTimeout(onMouseOverIntent.bind(null, e), 150);
         $(e.target).data({timeout_applyHoveredOverlay: timeout_applyHoveredOverlay});
 //    onMouseOverIntent(e);
+    }
 
-    };
-
-    var onMouseOut = function(e) {
+    function onMouseOut(e) {
 
         //clear any timeout set in onMouseOver
         var timeout_applyHoveredOverlay = $(e.target).data('timeout_applyHoveredOverlay');
@@ -1994,20 +1570,19 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             dehoverCU();
 
         }
+    }
 
-    };
-
-    var onWindowResize = function() {
+    function onWindowResize() {
 
         dehoverCU();
 
         if (selectedCUIndex >= 0) {
             selectCU(selectedCUIndex, false, false, {onDomChangeOrWindowResize: true}); // to redraw the overlay
         }
-    };
+    }
 
 
-    var onTransitionEnd = function(e) {
+    function onTransitionEnd (e) {
 
         var $overlay = $(e.target);
 
@@ -2021,7 +1596,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
      * use, and if so, marks it as available for future reuse.
      * @param $overlay
      */
-    var tryRecycleOverlay = function($overlay) {
+    function tryRecycleOverlay($overlay) {
 
         if (!$overlay.hasClass(class_CUOverlay)) {
             console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_CUOverlay + "'");
@@ -2045,56 +1620,18 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             $unusedOverlaysArray.push($overlay);
 
         }
-    };
-
-    function setupBasicUIComponents(settings) {
-        $topLevelContainer.appendTo(document.body);
-
-        $scrollingMarker = $('<div></div>')
-            .addClass(class_scrollingMarker)
-            .addClass(class_addedByUnitsProj)
-            .hide()
-            .appendTo($topLevelContainer);
-
-        mod_filterCUs && mod_filterCUs.setup();
-        mod_help && mod_help.setup(settings);
-    }
-
-    function setupExternalSearchEvents() {
-
-        var keyHandler = function(e) {
-            var selection;
-
-            // If a kew is pressed while the left-mouse button is pressed down and some text is selected
-            if (ltMouseBtnDown && (selection = document.getSelection().toString())) {
-
-                if (e.type === 'keydown') {
-                    var code = e.which || e.keyCode;
-
-                    // the background script will determine which site to search on
-                    chrome.runtime.sendMessage({message: "searchExternalSite", selection: selection, keyCode: code});
-                }
-
-                suppressEvent(e); // for all types - keypress, keydown, keyup
-            }
-        };
-
-        addEventListener2(document, 'keydown', keyHandler, true);
-        addEventListener2(document, 'keypress', keyHandler, true);
-        addEventListener2(document, 'keyup', keyHandler, true);
-
     }
 
     function onDomReady() {
 
         // if settings have been obtained from background script before dom ready takes place
-        if (miscGlobalSettings && miscGlobalSettings.selectCUOnLoad) {
+        if (miscSettings && miscSettings.selectCUOnLoad) {
 
             selectMostSensibleCU(true, false);
         }
     }
 
-    function resetCUsState() {
+    function reset() {
         dehoverCU();
         deselectCU();
         $CUsArray = [];
@@ -2103,140 +1640,53 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         mod_context.setCUsCount(0);
     }
 
-    // reset state and disable the extension
-    function disableExtension() {
-
-        resetCUsState(); // TODO: this should become mod_CUs.reset()
-        mod_filterCUs.reset();
-        $topLevelContainer.empty().remove();
-        removeAllEventListeners();
-
-        if (mod_chromeAltHack) {
-            mod_chromeAltHack.undoAndDisableHack();
-        }
-
-        if (generalShortcuts) {  // need this check since since the obj wouldn't be defined the first time
-            mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, initializeExtension);
-        }
-    }
-
-// (reset and re-)initialize the extension.
-    function initializeExtension() {
-
-        disableExtension(); // resets the state
-
-        chrome.runtime.sendMessage({
-                message: "getSettings",
-                locationObj: window.location
-            },
-            function(settings) {
-
-                // assign references to module level variables
-                miscGlobalSettings = settings.miscGlobalSettings;
-                generalShortcuts = settings.generalShortcuts;
-                CUsShortcuts = settings.CUsShortcuts;
-                expandedUrlData = settings.expandedUrlData;
-                isDisabled = settings.isDisabled;
-
-                // set the extension icon as enabled/disabled every time the extension is initialized.
-                chrome.runtime.sendMessage({
-                   message: 'setIcon',
-                   isDisabled: isDisabled
-                });
-
-                if (isDisabled) {
-                    // TODO: separate this stuff from CUsMgr
-                    disableExtension();
-                    // the following lines exist to cater to url changes in single page apps etc. TODO: is it an
-                    // overkill to be handling these rare cases?
-                    mod_mutationObserver.start();
-                    thisModule.stopListening(); // stop listening to all events from all modules...
-                    thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);// ...except 'url-change'
-
-                    return;
-                }
-//                else if (settings.isDisabled === "partial") {
-//                    // TODO: separate this stuff from CUsMgr
-//                    mod_mutationObserver.start();
-//                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
-//                    return;
-//                }
-
-                // has to be done before the the call to makeImmutable :)
-                if (settings.expandedUrlData) {
-                    mod_commonHelper.destringifyFunctions(settings.expandedUrlData);
-                }
-
-                mod_commonHelper.makeImmutable(settings);
-
-                if (settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts) {
-                    mod_keyboardLib.setProtectedWebpageShortcuts(settings.expandedUrlData.protectedWebpageShortcuts);
-                }
-
-                setupBasicUIComponents(settings); // also set up their associated event handlers
-
-                // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
-                // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
-                setupExternalSearchEvents();
-
-                addEventListener2(document, 'keydown', onKeydown, true);
-                addEventListener2(document, 'mousedown', onMouseDown, true);
-                addEventListener2(document, 'mouseup', onMouseUp, true);
-                addEventListener2(document, 'mouseover', onMouseOver, true);
-                addEventListener2(document, 'mouseout', onMouseOut, true);
-                addEventListener2(document, 'contextmenu', onContextMenu, true);
-                addEventListener2(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
-                addEventListener2(document, 'mousewheel', onMouseWheel, false);   // for webkit
-
-                // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
-                // However, 'focusin' behaves as expected in either case.
-                $document.on('focusin', CONSTS.focusablesSelector, onFocus);
-                $(window).on('resize', onWindowResize);
-
-                if (overlayCssHasTransition) {
-                    $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
-                        '.' + class_CUOverlay, onTransitionEnd);
-                }
-
-                mod_mutationObserver.start();
-
-                // the following line should remain outside the if condition so that the change from a url with CUs
-                // to one without any is correctly handled
-                updateCUsAndRelatedState();
-                setupShortcuts();
-
-                if ( miscGlobalSettings.selectCUOnLoad) {
-                    selectMostSensibleCU(true, false);
-                }
-            }
-        );
-    }
-
-// don't need to wait till dom-ready. allows faster starting up of the extension's features
-// (in certain sites at least. e.g. guardian.co.uk)
-// this should not cause any issues since we are handling dom changes anyway.
-    (function initializeStateAndSetupEvents (){
+    function setup(_miscSettings, _expandedUrlData) {
 
         // we need the body to exist before we can set overlayCssHasTransition
         if (!document.body) {
-            setTimeout(initializeStateAndSetupEvents, 100);
+            setTimeout(setup, 100);
             return;
         }
-
-        $topLevelContainer.appendTo(document.body);
 
         // This is required to be initialized before setting up at least one of the event handlers subsequently set up
         overlayCssHasTransition = checkOverlayCssHasTransition();
 
+        miscSettings = _miscSettings;
+        expandedUrlData = _expandedUrlData;
+
+        $scrollingMarker = $('<div></div>')
+            .addClass(class_scrollingMarker)
+            .addClass(class_addedByUnitsProj)
+            .hide()
+            .appendTo($topLevelContainer);
+
         $(onDomReady);
 
-        initializeExtension();
+        mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
+        mod_domEvents.addEventListener(document, 'mousedown', onMouseDown, true);
+        mod_domEvents.addEventListener(document, 'mouseup', onMouseUp, true);
+        mod_domEvents.addEventListener(document, 'mouseover', onMouseOver, true);
+        mod_domEvents.addEventListener(document, 'mouseout', onMouseOut, true);
+        mod_domEvents.addEventListener(document, 'contextmenu', onContextMenu, true);
+        mod_domEvents.addEventListener(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
+        mod_domEvents.addEventListener(document, 'mousewheel', onMouseWheel, false);   // for webkit
 
-    })();
+        $(window).on('resize', onWindowResize);
 
-///////////////////////////////////////////
-//mod_commonHelper.js
+        // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
+        // However, 'focusin' behaves as expected in either case.
+        $document.on('focusin', CONSTS.focusablesSelector, onFocus);
 
+        if (overlayCssHasTransition) {
+            $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
+                '.' + class_CUOverlay, onTransitionEnd);
+        }
+
+        updateCUsAndRelatedState();
+        if ( miscSettings.selectCUOnLoad) {
+            selectMostSensibleCU(true, false);
+        }
+    }
 
     /**
      * Returns true if all (top most) constituents of $CU have css 'visibility' style equal to "hidden"
@@ -2273,31 +1723,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
             (CUBottom > winTop && CUBottom < winBottom) );
     }
 
-    function changeFontSize($jQuerySet, isBeingIncreased) {
-        if (!$jQuerySet || !$jQuerySet.length) {
-            return;
-        }
-
-        for (var i = 0; i < $jQuerySet.length; i++) {
-            var $el = $jQuerySet.eq(i);
-            var font = $el.css('font-size');
-            var numericVal = parseFloat(font);
-            var CU = font.substring(numericVal.toString().length);
-
-            var newNumericVal = isBeingIncreased?(numericVal+2): (numericVal-2);
-            $el.css('font-size', newNumericVal+CU);
-
-        }
-    }
-    function increaseFont($jQuerySet) {
-        changeFontSize($jQuerySet, true);
-    }
-
-    function decreaseFont($jQuerySet) {
-        changeFontSize($jQuerySet, false);
-    }
-
-
     function checkOverlayCssHasTransition() {
 
         // create a short-lived element which is inserted into the DOM to allow determination of CSS transition property
@@ -2330,110 +1755,35 @@ _u.mod_CUsMgr = (function($, mod_core, mod_mutationObserver, mod_keyboardLib, mo
         else {
             return false;
         }
-
     }
 
-    //////////////////////////////////////////////
-    // selectFocusables.js
-
-    document.addEventListener('keydown', onKeydown_selectFocusable, true);
-
-// to be used in conjunction with space. currently.
-    function onKeydown_selectFocusable (e) {
-
-        var code = e.which || e.keycode;
-
-        if (mod_keyboardLib.isSpaceDown() && code !== 32 && code !== 16) { // 32 is space, 16 shift
-
-            if (code === 190) { // code for '.'
-                selectFocusable(e.shiftKey? "prev": "next", null);
-            }
-            else {
-                var key = String.fromCharCode(code).toLowerCase();
-                selectFocusable(e.shiftKey? "prev": "next", key);
-            }
-
-            suppressEvent(e);
+    function changeFontSize($jQuerySet, isBeingIncreased) {
+        if (!$jQuerySet || !$jQuerySet.length) {
+            return;
         }
 
-    }
+        for (var i = 0; i < $jQuerySet.length; i++) {
+            var $el = $jQuerySet.eq(i);
+            var font = $el.css('font-size');
+            var numericVal = parseFloat(font);
+            var CU = font.substring(numericVal.toString().length);
 
-// Focuses next/prev focusable beginning with the specified char. If beginningChar is not specified/null, it selects
-// the next/prev focusable WITHOUT any text (useful for cycling through non-textual links, buttons etc)
-// If a CU is selected, this is applies only within it, else on the whole page
-    function selectFocusable(nextOrPrev, beginningChar) {
-
-        var $selectedCU = $CUsArray[selectedCUIndex];
-        var $scope =  $selectedCU || $document;
-
-
-        var elementMatches = function(element) {
-            var text = $(element).text();
-            if (!text && $(element).is('input[type = "button"]')) {
-                text = element.value;
-            }
-            if (beginningChar) {
-                if (text && text[0].toLowerCase() === beginningChar) {
-                    return true;
-                }
-            }
-            else {
-                return !text;
-            }
-        };
-
-
-        var $matchedFocusables = $scope.find(CONSTS.focusablesSelector).filter(function() {
-            return elementMatches(this);
-        });
-
-        console.log('matched focusables: ', $matchedFocusables);
-
-        if ($matchedFocusables && $matchedFocusables.length) {
-
-            var focusedElementInScope, // will refer to currently focused element in $scope, if any
-
-                activeEl = document.activeElement;
-
-            //if scope is the currently selected CU and the active element lies within it
-            if ( ($scope === $selectedCU && getEnclosingCUIndex(activeEl) === selectedCUIndex) ||
-                ($scope === $document)) {
-
-                focusedElementInScope = activeEl;
-            }
-
-            if (elementMatches (focusedElementInScope)) {
-
-                var index = ((nextOrPrev === "prev")? -1: 1) + $matchedFocusables.index(focusedElementInScope);
-
-                console.log("$matchedFocusables.index(focusedElementInScope): ", $matchedFocusables.index(focusedElementInScope));
-
-                console.log("index: ", index);
-
-                console.log("$matchedFocusables.length: ", $matchedFocusables.length);
-
-                if (index >=  $matchedFocusables.length) {
-                    index = 0;
-                }
-                else  if (index <  0) {
-                    index = $matchedFocusables.length-1;
-                }
-                $matchedFocusables[index].focus();
-            }
-            else {
-                $matchedFocusables[0].focus();
-            }
-
+            var newNumericVal = isBeingIncreased?(numericVal+2): (numericVal-2);
+            $el.css('font-size', newNumericVal+CU);
 
         }
-
-
     }
-/////////////////////////////////////////////////
+    function increaseFont($jQuerySet) {
+        changeFontSize($jQuerySet, true);
+    }
+
+    function decreaseFont($jQuerySet) {
+        changeFontSize($jQuerySet, false);
+    }
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
+})(jQuery, _u.mod_core, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
         _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
 
 

@@ -11,7 +11,7 @@
  - The `thisModule` object
     * Define a `thisModule` object at the top of the IIFE, which lists down the *public interface* of the module, and will
     be returned by the IIFE.
-    * Also, (if the module needs to publish or subscribe to events), `thisModule` should extend the `_u.mod_events` module).
+    * Also, (if the module needs to publish or subscribe to events), `thisModule` should extend the `_u.mod_pubSub` module).
     * `thisModule` is like the 'exports' object in node.js/require.js, but called so since triggering an event using
     `thisModule.trigger()` sounds better than `exports.trigger`. And similarly when accessing public variables
     (properties) etc using `thisModule.varName`
@@ -38,7 +38,7 @@ _u.mod_moduleName = (function($/*, mod_1*/) {
     "use strict";
 
     /*-- Public interface --*/
-    var thisModule = $.extend({}, _u.mod_events, {
+    var thisModule = $.extend({}, _u.mod_pubSub, {
         func_foo: func_foo
     });
 

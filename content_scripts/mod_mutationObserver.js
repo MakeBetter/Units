@@ -15,7 +15,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     "use strict";
 
     /*-- Public interface --*/
-    var thisModule = $.extend({}, _u.mod_events, {
+    var thisModule = $.extend({}, _u.mod_pubSub, {
         start: start,    // start observing DOM mutations
         stop: stop      // stop observing DOM mutations
     });

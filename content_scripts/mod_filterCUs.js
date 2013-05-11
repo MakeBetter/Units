@@ -2,7 +2,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
     "use strict";
 
     /*-- Public interface --*/
-    var thisModule = $.extend({}, _u.mod_events, {
+    var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset,
         setup: setup,
         filterCUsArray: filterCUsArray,
