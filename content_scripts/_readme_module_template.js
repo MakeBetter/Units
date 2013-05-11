@@ -20,15 +20,12 @@
     * Public variables should be avoided. But, if you must use them, they can be created as properties of the `thisModule`
     object.
  - Module's functions/methods:
-    * Functions not requiring visibility outside the module (private methods) should have an underscore at the beginning
-    of their names, while ones needing public visibility should not.
-    * The `thisModule` object defined at the top should contain a property corresponding to each public function.
-    The name of the property should be the same as that of the corresponding function, and its value a reference to the
-    function.
-    * Top-level functions in the module should be defined using the function definition syntax (as opposed to the function
-    expression syntax). (This allows using references to them in the `thisModule`, even though they are defined below it).
+    * Top-level functions in the module should be defined using the function definition syntax, as opposed to the function
+    expression syntax. (This allows using references to them in the `thisModule`, even though they are defined below it).
     But for defining inner functions, the function expression syntax is preferred.
-    * Within the module'd code, public functions should be invoked directly with their local references (i.e. simply
+    * Public functions: For each function to be exposed publicly, create a property in `thisModule` having the same name
+    as the function, the value of which should be a reference to the function.
+    * Within the module's code, public functions should be invoked directly with their local references (i.e. simply
     foo() instead of  thisModule.foo()). This makes it easier to change a function's type (from private to public, or
     vice-versa) when required.
  - Event handlers
