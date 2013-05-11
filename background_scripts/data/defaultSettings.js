@@ -86,7 +86,7 @@ var defaultSettings = {
         },
         focusFirstTextInput: {
             miniDescr: "Focus first text input element",
-            kbdShortcuts: ['g i', 'alt+i']   // TODO: on google search results page, invoking 'g i' results in g getting typed into the search box
+            kbdShortcuts: ['f i', 'alt+i']
         },
         focusNextTextInput: {
             miniDescr: "Focus next text input element",
