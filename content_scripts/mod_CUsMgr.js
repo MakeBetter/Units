@@ -114,19 +114,19 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
 // returns a jQuery set composed of all focusable DOM elements contained in the
 // jQuery set ($CU) passed
-    var $getContainedFocusables = function($CU) {
+    function $getContainedFocusables($CU) {
         var $allElements = $CU.find('*').addBack();
         return $allElements.filter(CONSTS.focusablesSelector);
-    };
+    }
 
     /**
      * Returns the "main" element in the specified $CU. This is determined using the "std_mainEl" MU specified in the expandedUrlData.
      * If no std_mainEl is specified, this function simply returns the first focusable element in the $CU
      *
      * @param $CU
-     * @return {DOM element} Returns the "main" element, if one was found, else null.
+     * @return {HtmlElement} Returns the "main" element, if one was found, else null.
      */
-    var getMainElement = function($CU) {
+    function getMainElement($CU) {
 
         if (!$CU || !$CU.length) {
             return null;
@@ -148,7 +148,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         else {
             return $containedFocusables[0];
         }
-    };
+    }
 
 // Focuses the "main" focusable element in a CU, if one can be found.
 // See function "getMainElement" for more details.
@@ -162,18 +162,19 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
     /**
      * Selects the CU specified.
-     * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
+     * @param {number|JQuery} CUOrItsIndex Specifies the CU. Should either be the JQuery object representing the CU
+     * or its index in $CUsArray
      * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
      * (While performance isn't a major concern here,) passing the index is preferable if it is already known,
      * otherwise the function will determine it itself (in order to set the selectedCUIndex variable).
      * @param {boolean} setFocus If true, the "main" element for this CU, if one is found, is
      * focused.
-     * @param {boolean|undefined} adjustScrolling If true, document's scrolling is adjusted so that
+     * @param {boolean} [adjustScrolling] If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
      * This parameter is currently passed as true only from selectPrev() and selectNext()
      * @param {object} [options] Misc options. Can also be used to override miscSettings
      */
-    var selectCU = function(CUOrItsIndex, setFocus, adjustScrolling, options) {
+    function selectCU(CUOrItsIndex, setFocus, adjustScrolling, options) {
 //        console.log('selectCU() called');
         var $CU,
             indexOf$CU; // index in $CUsArray
@@ -183,7 +184,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             $CU = $CUsArray[indexOf$CU];
         }
         else {
-            $CU = $(CUOrItsIndex);
+            $CU = CUOrItsIndex;
             indexOf$CU = findIndex_In_$CUsArray($CU);
         }
 
@@ -231,12 +232,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                 fn_onCUSelection($CU, document, $.extend(true, {}, expandedUrlData));
             }
         }
-    };
+    }
 
     /**
      * Deselects the currently selected CU, if there is one
      */
-    var deselectCU = function (options) {
+    function deselectCU(options) {
 
         var $CU = $CUsArray[selectedCUIndex];
         if ($CU) {
@@ -264,7 +265,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
         selectedCUIndex = -1;
         mod_context.setCUSelectedState(false);
-    };
+    }
 
     /**
      * Removes the 'selected' or 'hovered' css class from the CU, as specified by 'type'
@@ -298,7 +299,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * @param {string} type Can be 'selected' or 'hovered'
      * @return {*} Displays and returns $overlay (i.e. a jQuery wrapped overlay element)
      */
-    var showOverlay = function($CU, type) {
+    function showOverlay($CU, type) {
         if (!$CU || !$CU.length) {
             return null;
         }
@@ -346,7 +347,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
         return $overlay;
 
-    };
+    }
 
     /**
      * Shows as hovered the CU specified.
@@ -354,7 +355,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
      * (While performance isn't a major concern,) passing the index is preferable if it is already known.
      */
-    var hoverCU = function(CUOrItsIndex) {
+    function hoverCU(CUOrItsIndex) {
 
         var $CU,
             indexOf$CU; // index in $CUsArray
@@ -377,20 +378,20 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         hoveredCUIndex = indexOf$CU;
         showOverlay($CU, 'hovered');
 
-    };
+    }
 
     /**
      * Dehovers the currently hovered (over) CU, if there is one
      */
-    var dehoverCU = function () {
+    function dehoverCU() {
         var $CU = $CUsArray[hoveredCUIndex];
         if ($CU) {
             removeOverlay($CU, 'hovered');
         }
         hoveredCUIndex = -1;
-    };
+    }
 
-    var showScrollingMarker = function(x, y, height) {
+    function showScrollingMarker(x, y, height) {
 
         clearTimeout($scrollingMarker.timeoutId); // clear a previously set timeout out, if one exists...
 
@@ -399,7 +400,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }, 3000);
 
         $scrollingMarker.css({top: y, left: x-$scrollingMarker.width()-5, height: height}).show();
-    };
+    }
 
     /**
      * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
@@ -660,7 +661,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * @param {DOM element|jQuery wrapper} element
      * @return {number} If containing CU was found, its index, else -1
      */
-    var getEnclosingCUIndex = function(element) {
+    function getEnclosingCUIndex(element) {
         var $element = $(element),
             CUsArrLen = $CUsArray.length;
 
@@ -672,7 +673,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
         return -1;
 
-    };
+    }
 
     function onTabOnFilterSearchBox() {
         if ($CUsArray.length) {
@@ -705,7 +706,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 // Array#indexOf() method, a match will be found even if the passed jQuery set is "equivalent" (i.e has the same
 // contents as a member of $CUsArray, even if they are not the *same* object.
 // Returns -1 if not found.
-    var findIndex_In_$CUsArray = function($CU)  {
+    function findIndex_In_$CUsArray($CU)  {
 
         var CUsArrLen;
 
@@ -719,7 +720,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
 
         return -1;
-    };
+    }
 
 // returns a boolean indicating if the passed CUs (jQuery sets) have the same contents in the same order (for
 // instances where we use this function, the order of elements is always the document order)
@@ -730,7 +731,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * @param $2 Another CU to compare with the first one.
      * @return {Boolean}
      */
-    var areCUsSame = function($1, $2) {
+    function areCUsSame($1, $2) {
 
         // if each jQuery set is either empty or nonexistent, their "contents" are "same".
         if (!$1 && (!$2 || !$2.length)) {
@@ -762,12 +763,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             return false;
         }
 
-    };
+    }
 
 // returns a bounding rectangle for $CU
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
-    var getBoundingRectangle = function($CU) {
+    function getBoundingRectangle($CU) {
 
         if (!$CU || !$CU.length)
             return;
@@ -787,12 +788,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             elements = $CU.get();
         }
         return getBoundingRectangleForElements(elements);
-    };
+    }
 
 // returns a bounding rectangle for the set (array) of DOM elements specified
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
-    var getBoundingRectangleForElements = function(elements) {
+    function getBoundingRectangleForElements(elements) {
 
         if (!elements || !elements.length)
             return;
@@ -863,10 +864,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             width: x2-x1,
             height: y2-y1
         };
-    };
+    }
 
 // sets the document's scrollTop to the value specified, using gradual changes in the scrollTop value.
-    var animatedScroll = function(scrollTop, duration) {
+    function animatedScroll(scrollTop, duration) {
 
         var current = $document.scrollTop();
         var destination = scrollTop;
@@ -939,7 +940,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         invokeIncrementalScroll();   // invoke once immediately, before setting setInterval.
 
         intervalId = setInterval (invokeIncrementalScroll , intervalPeriod);
-    };
+    }
 
 
     /**
@@ -1055,7 +1056,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
     }
 
 // Finds the set of all the CUs on the current page, and returns it as an array
-    var getAllCUsOnPage = function() {
+    function getAllCUsOnPage() {
 
         if (!expandedUrlData || !expandedUrlData.CUs_specifier) {
             // returning an empty array instead of null means accessing $CUsArray[selectedCUIndex] (which
@@ -1221,12 +1222,12 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 //    }
 
         return $CUsArr;
-    };
+    }
 
     /* Returns true if all constituent elements of $CU1 are contained within (the constituents) of $CU2, false
      otherwise. (An element is considered to 'contain' itself and all its descendants)
      */
-    var isCUContainedInAnother = function($CU1, $CU2) {
+    function isCUContainedInAnother($CU1, $CU2) {
 
         var CU1Len = $CU1.length,
             CU2Len = $CU2.length;
@@ -1247,14 +1248,14 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             }
         }
         return true;
-    };
+    }
 
     /**
      * process all CUs in $CUsArr does the following
      1) remove any CU that is not visible in the DOM
      2) remove any CU that is fully contained within another
      */
-    var processCUsArray = function($CUsArr) {
+    function processCUsArray($CUsArr) {
 
         if (!$CUsArr || !$CUsArr.length) {
             return;
@@ -1284,7 +1285,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                 }
             }
         }
-    };
+    }
 
     /**
      *
@@ -1292,7 +1293,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * @param {object} point Should have the properties x and y.
      * @return {Boolean}
      */
-    var elementContainsPoint = function(element, point) {
+    function elementContainsPoint(element, point) {
 
         var $element = $(element);
         if (!$element || !$element.length) {
@@ -1307,13 +1308,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             y1 = offset.top,
             y2 = y1 + $element.height();
 
-        if (x >= x1 && x <= x2 && y >= y1 && y <= y2 ) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    }
 
 // Based on the header selector provided, this returns the "effective" height of the header (i.e. unusable space) at the
 // top of the current view.
@@ -1352,7 +1348,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
     }
 
-    var isRtMouseButton = function(e) {
+    function isRtMouseButton(e) {
         // following right code mostly taken from http://www.quirksmode.org/js/events_properties.html
         var isRtButton;
 //    if (!e) var e = window.event;
@@ -1360,7 +1356,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         else if (e.button) isRtButton = (e.button == 2);
 
         return isRtButton;
-    };
+    }
 
     function onKeydown(e) {
         var code = e.which || e.keyCode,
@@ -1481,7 +1477,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
     }
 
-    function onRtMouseBtnDown(e) {
+    function onRtMouseBtnDown() {
         rtMouseBtnDown = true;
     }
 
@@ -1496,7 +1492,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
     function onMouseDown (e) {
 
         if (isRtMouseButton(e)) {
-            return onRtMouseBtnDown(e);
+            return onRtMouseBtnDown();
         }
         else {
             return onLtMouseBtnDown(e);
@@ -1746,12 +1742,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
         // check if transitionDuration exists and has a non-zero value, while tolerating
         // precision errors with float (which should not occur for 0, but just in case)
-        if (transitionDuration && transitionDuration > 0.00000001) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return transitionDuration && transitionDuration > 0.00000001;
     }
 
     function changeFontSize($jQuerySet, isBeingIncreased) {
