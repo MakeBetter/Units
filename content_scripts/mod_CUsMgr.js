@@ -1,7 +1,7 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
+_u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
                           mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
 
     "use strict";
@@ -498,7 +498,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_
     function selectPrev () {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
-            scrollUp();
+            mod_utils.scrollUp();
             return;
         }
 
@@ -523,7 +523,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_
                     return;
                 }
                 else if (selectedCUIndex === 0) { // special case for first CU
-                    scrollUp();
+                    mod_utils.scrollUp();
                 }
             }
 
@@ -544,7 +544,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_
     function selectNext() {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
-            scrollDown();
+            mod_utils.scrollDown();
             return;
         }
 
@@ -570,7 +570,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_
                     return;
                 }
                 else  if (selectedCUIndex === $CUsArray.length-1) { // special case for last CU
-                    scrollDown();
+                    mod_utils.scrollDown();
                 }
             }
 
@@ -1783,7 +1783,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_domEvents, mod_mutationObserver, mod_
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
+})(jQuery, _u.mod_core, _u.mod_utils, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
         _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
 
 
