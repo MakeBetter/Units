@@ -115,11 +115,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 // returns a jQuery set composed of all focusable DOM elements contained in the
 // jQuery set ($CU) passed
     var $getContainedFocusables = function($CU) {
-
         var $allElements = $CU.find('*').addBack();
-        var $containedFocusables = $allElements.filter(CONSTS.focusablesSelector);
-        return $containedFocusables;
-
+        return $allElements.filter(CONSTS.focusablesSelector);
     };
 
     /**
@@ -800,9 +797,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         if (!elements || !elements.length)
             return;
 
+        var $el, offset;
         if (elements.length === 1) {
-            var $el = $(elements[0]),
-                offset = $el.offset();
+            $el = $(elements[0]);
+            offset = $el.offset();
             return {
                 top: offset.top,
                 left: offset.left,
@@ -823,11 +821,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
 
         for (var i = 0; i < elements.length; i++) {
-            var el = elements[i],
-            // Ignoring JSHint warning in the following line. Variable hoisting notwithstanding, I like having "logical/intended" variable scopes,
-            // and "defining" variables as close to where they are required. Helps me when code chunks need to be moved around.
-                $el = $(el),
-                elPosition = $(el).css('position');
+            var el = elements[i];
+            $el = $(el);
+            var elPosition = $(el).css('position');
 
             // ignore elements out of normal flow to calculate rectangle + hidden/invisible elements
             if (elPosition === "fixed" || elPosition === "absolute" || /*|| elPosition === "relative"*/
@@ -836,7 +832,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                 continue;
             }
 
-            var offset = $el.offset();  // Ingnoring JSHint warning, for the same reason as above
+            offset = $el.offset();  // Ingnoring JSHint warning, for the same reason as above
 
             // for the current element:
             var _x1, _y1, _x2, _y2;
@@ -1230,7 +1226,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
     /* Returns true if all constituent elements of $CU1 are contained within (the constituents) of $CU2, false
      otherwise. (An element is considered to 'contain' itself and all its descendants)
      */
-    var CUContainedInAnother = function($CU1, $CU2) {
+    var isCUContainedInAnother = function($CU1, $CU2) {
 
         var CU1Len = $CU1.length,
             CU2Len = $CU2.length;
@@ -1280,7 +1276,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                     continue;
                 }
 
-                if (CUContainedInAnother($CU, $CUsArr[j])) {
+                if (isCUContainedInAnother($CU, $CUsArr[j])) {
                     $CUsArr.splice(i, 1);
                     --CUsArrLen;
                     --i;
@@ -1503,7 +1499,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             return onRtMouseBtnDown(e);
         }
         else {
-            return onLtMouseBtnDown(e)
+            return onLtMouseBtnDown(e);
         }
 
     }
@@ -1589,7 +1585,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 //  console.log('overlay transition ended. total overlays = ', $('.' + class_CUOverlay).length);
         tryRecycleOverlay($overlay);
 
-    };
+    }
 
     /**
      * Checks if the overlay element specified (as jQuery wrapper) is no longer in
@@ -1736,7 +1732,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             '-o-transition-duration'];
 
         var transitionDuration;
-        for (var property, i = 0; property = properties[i++]; ) {
+        for (var i = 0; i < properties.length; i++) {
+            var property = properties[i];
             transitionDuration = $tempOverlay.css(property);
             if (transitionDuration !== null) {
                 break;

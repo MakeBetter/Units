@@ -1,7 +1,10 @@
-/*
-Specifies the default values for various settings including keyboard shortcuts.
-Most of these settings can be overridden by the user
-*/
+// JSHint Config
+/* exported defaultSettings */
+
+/**
+ * Specifies the default values for various settings including keyboard shortcuts.
+ * Most of these settings can be overridden by the user
+ */
 var defaultSettings = {
 
     // Only exists as a placeholder (for reference). The property assigned in urlDataMap.js

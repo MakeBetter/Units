@@ -59,10 +59,11 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
         // ** --------- PRE FILTERING --------- **
         var CUsNodes = [],
-            CUsArrLen = $CUsArr.length;
+            CUsArrLen = $CUsArr.length,
+            $CU;
 
         for (var i = 0; i < CUsArrLen; ++i) {
-            var $CU = $CUsArr[i];
+            $CU = $CUsArr[i];
             CUsNodes = CUsNodes.concat($CU.get());
         }
 
@@ -82,7 +83,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         }
         else {
             console.log('filtering invoked...');
-            for (var i = 0, $CU; i < CUsArrLen; ++i) {
+            for (i = 0, $CU; i < CUsArrLen; ++i) {
                 $CU = $CUsArr[i];
                 // if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
                 if (highlightInCU($CU, searchTextLowerCase)) {
@@ -146,7 +147,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
                     spannode.className = 'UnitsProj-highlight';
                     var middlebit = node.splitText(pos);
                     // this line is required, even though the variable assigned to is unused
-                    var endbit = middlebit.splitText(patternLowerCase.length);
+                    /*var endbit =*/ middlebit.splitText(patternLowerCase.length);
                     var middleclone = middlebit.cloneNode(true);
                     spannode.appendChild(middleclone);
                     middlebit.parentNode.replaceChild(spannode, middlebit);
