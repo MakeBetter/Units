@@ -130,6 +130,7 @@
 
                 $topLevelContainer.appendTo(document.body);
 
+                mod_utils.setup(miscSettings);
                 mod_help && mod_help.setup(settings);
                 mod_filterCUs && mod_filterCUs.setup();
                 mod_CUsMgr.setup(miscSettings, expandedUrlData);
