@@ -504,13 +504,13 @@ var specialDomain_masterDomain_map = [
         // which is superfluous here as it is the "master domain" key.)
         regexp: /^google\.(?:com|((?:co\.)?[a-z]{2}))$/,
         masterDomainKey: "google.com"
-    },
-    {
-        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
-        masterDomainKey: "stackexchange.com"
-    },
-    {
-        regexp: /^(mathoverflow\.net)/,
-        masterDomainKey: "stackexchange.com"
     }
+//    {
+//        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
+//        masterDomainKey: "stackexchange.com"
+//    },
+//    {
+//        regexp: /^(mathoverflow\.net)/,
+//        masterDomainKey: "stackexchange.com"
+//    }
 ];
