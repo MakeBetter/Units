@@ -296,27 +296,13 @@ defaultSettings.urlDataMap = {
     ],
     "quora.com": [
         {
-            urlPatterns: ["www.quora.com/", "www.quora.com/?share=1"], // main quora feed page
-            CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5",
-            CUs_MUs: {
-                std_mainEl: " a.question_link",
-                "std_upvote": ".add_upvote, .remove_upvote",
-                "std_viewComments": ".view_comments",
-                "std_downvote": ".add_downvote, .remove_downvote",
-                "std_share": ".share_link",
-                "follow": {
-                    selector: ".follow_question",
-                    kbdShortcuts:["shift+f"]
-                }
-            },
-            CUs_style: {
-                overlayPadding: "0 0 0 5px"
-            }
-        },
-        {
-            urlPatterns: ["www.quora.com/*"], // all other pages on quora (tested currently for question pages)
+            // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
+            // 'about', 'questions', 'new'. These are special pages in Quora, pertaining to a topic generally. These should be
+            // handled by the CU selector for www.quora.com/* pattern (specified later).
+            urlRegexps: [/^www\.quora\.com\/.+\/(?!about$|questions$|new$|home$).+/],
             CUs_specifier: {
-                selector: ".question.row, .main_col>div>.row .row"
+                // separate selectors for the question and then the answers
+                selector: ".question.row, .main_col>div>.row .row" /*seems to be working well, as on May 13, 2013! */
             },
             CUs_style: {
                 overlayPadding: "2px 0 0 0"
@@ -333,31 +319,52 @@ defaultSettings.urlDataMap = {
                     kbdShortcuts:["shift+f"]
                 }
             }
+        },
+        {
+            urlPatterns: ["www.quora.com/", "www.quora.com/?share=1", "www.quora.com/*"], // The first two patterns match
+            // with the main quora feed page.
+            CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5, .feed_item.row.p1",
+            // the first selector for quora main page (and a few others), the second one for a page like this one:
+            // http://www.quora.com/Front-End-Web-Development
+            CUs_MUs: {
+                std_mainEl: " a.question_link",
+                "std_upvote": ".add_upvote, .remove_upvote",
+                "std_viewComments": ".view_comments",
+                "std_downvote": ".add_downvote, .remove_downvote",
+                "std_share": ".share_link",
+                "follow": {
+                    selector: ".follow_question",
+                    kbdShortcuts:["shift+f"]
+                }
+            },
+            CUs_style: {
+                overlayPadding: "0 0 0 5px"
+            }
         }
     ],
     "reddit.com": [
+//        {
+//            urlPatterns: ["www.reddit.com/*/comments/*"],
+//            CUs_specifier: {
+//                buildCUAround: ".arrow.up, .usertext-edit",
+//                //                exclude: ".panestack-title, .menuarea"
+//
+//            },
+//            CUs_MUs: {
+//                //                std_mainEl: ".title",
+//                "std_upvote": ".arrow.up, .arrow.upmod",
+//                "std_downvote": ".arrow.down, .arrow.downmod",
+//                "std_share": ".share-button .active",
+//                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
+//                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
+//                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
+//                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
+//            }
+//        },
         {
-            urlPatterns: ["www.reddit.com/*/comments/*"],
+            urlPatterns: ["www.reddit.com/", "www.reddit.com/?*"],
             CUs_specifier: {
-                buildCUAround: ".arrow.up, .usertext-edit",
-                //                exclude: ".panestack-title, .menuarea"
-
-            },
-            CUs_MUs: {
-                //                std_mainEl: ".title",
-                "std_upvote": ".arrow.up, .arrow.upmod",
-                "std_downvote": ".arrow.down, .arrow.downmod",
-                "std_share": ".share-button .active",
-                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
-                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
-                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
-                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
-            }
-        },
-        {
-            urlPatterns: ["www.reddit.com*"],
-            CUs_specifier: {
-                selector: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
+                selector: "#siteTable>div.thing, .nextprev a[rel='nofollow next']" //works well. doesn't include the promoted article.
             },
             CUs_style: {
                 useInnerElementsToGetOverlaySize: true,
