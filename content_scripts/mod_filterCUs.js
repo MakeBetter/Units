@@ -16,7 +16,8 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
         beenSetupOnce, // has the module been setup at least once
-        $document = $(document);
+        $document = $(document),
+        lastFilterText;
 
     // reset state
     function reset() {
@@ -28,6 +29,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
     function setup() {
         beenSetupOnce = true;
+        lastFilterText = "";
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);
 
@@ -71,14 +73,20 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         var $closestAncestor = $(mod_contentHelper.closestCommonAncestor(CUsNodes));
 
         mod_mutationObserver.stop(); // ** stop monitoring mutations **
-        // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
-        var savedScrollPos = $document.scrollTop();
+        var searchTextLowerCase = getSearchBoxText().toLowerCase();
+        var savedScrollPos;
+        if (lastFilterText === searchTextLowerCase) {
+            // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
+            savedScrollPos = $document.scrollTop();
+        }
+        else {
+            lastFilterText = searchTextLowerCase;
+            savedScrollPos = 0;
+        }
         $closestAncestor.hide();
         removeHighlighting($closestAncestor);
 
         // ** --------- FILTERING --------- **
-        var searchTextLowerCase = getSearchBoxText().toLowerCase();
-
 //        if (!searchTextLowerCase || !isVisible) {
         if (!searchTextLowerCase || !$searchContainer.is(':visible')) {
             var $hiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
