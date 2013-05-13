@@ -329,7 +329,7 @@ defaultSettings.urlDataMap = {
             CUs_MUs: {
                 std_mainEl: " a.question_link",
                 "std_upvote": ".add_upvote, .remove_upvote",
-                "std_viewComments": ".view_comments",
+                "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".view_comments"},
                 "std_downvote": ".add_downvote, .remove_downvote",
                 "std_share": ".share_link",
                 "follow": {
@@ -374,11 +374,11 @@ defaultSettings.urlDataMap = {
                 std_mainEl: ".title",
                 "std_upvote": ".arrow.up, .arrow.upmod",
                 "std_downvote": ".arrow.down, .arrow.downmod",
-                "std_share": ".std_share-button .active",
-                "std_viewComments": {kbdShortcuts: ["c", "g c"], selector: ".flat-list.buttons .comments"},
-                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
+                "std_share": ".share-button .active",
+                "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".flat-list.buttons .comments"},
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button a" },
                 "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
-                "save": {kbdShortcuts: ["v"], selector: ".save-button a, .unsave-button a.togglebutton"}
+                "save": {kbdShortcuts: ["shift+s"], selector: ".save-button a"}
             },
             CUs_actions: {
 
