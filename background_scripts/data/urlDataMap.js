@@ -201,12 +201,13 @@ defaultSettings.urlDataMap = {
         /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com, and group page
          ._4_7u .fbTimelineUnit -> Timeline page (the units on the right side)
          */
-        CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._4_7u .fbTimelineUnit",
+        CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._4_7u .fbTimelineUnit, a.uiMorePagerPrimary",
         CUs_MUs: {
             "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
             "std_comment": ".comment_link",
             "std_share": ".share_action_link",
-            "std_viewComments": ".UFIPagerLink"
+            "std_viewComments": ".UFIPagerLink",
+            std_mainEl: ".fbMainStreamAttachment a:first-child"
         },
         page_MUs: {
             std_header: "#headNav, .stickyHeaderWrap",
@@ -342,6 +343,8 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
+
+    // only support on the main page
     "reddit.com": [
 //        {
 //            urlPatterns: ["www.reddit.com/*/comments/*"],
@@ -450,24 +453,8 @@ defaultSettings.urlDataMap = {
 
         }
     ],
-    "sulekha.com": {
-        urlPatterns: ["*.sulekha.com/*"],
-        CUs_specifier: {
-            selector: ".sul_result_container"
-        }
-    },
-    "team-bhp.com": {
-        urlPatterns: ["*.team-bhp.com/*"],
-        CUs_specifier: {
-            selector: ".box>table tr"
-        }
-    },
-    "urbandictionary.com": {
-        urlPatterns: ["*.urbandictionary.com*"],
-        CUs_specifier: {
-            buildCUAround: "td.index",
-        }
-    },
+
+    // only support on the first page
     "ycombinator.com": {
         urlPatterns: ["news.ycombinator.com*"],
         CUs_specifier: {
@@ -494,7 +481,27 @@ defaultSettings.urlDataMap = {
     "serverfault.com": "stackexchange.com",
     "stackapps.com": "stackexchange.com",
     "askubuntu.com": "stackexchange.com",
-    "mathoverflow.net" : "stackexchange.com"
+    "mathoverflow.net" : "stackexchange.com",
+
+    // randomly supported.
+    "sulekha.com": {
+        urlPatterns: ["*.sulekha.com/*"],
+        CUs_specifier: {
+            selector: ".sul_result_container"
+        }
+    },
+    "team-bhp.com": {
+        urlPatterns: ["*.team-bhp.com/*"],
+        CUs_specifier: {
+            selector: ".box>table tr"
+        }
+    },
+    "urbandictionary.com": {
+        urlPatterns: ["*.urbandictionary.com*"],
+        CUs_specifier: {
+            buildCUAround: "td.index"
+        }
+    }
 };
 
 // this array allows mapping a special domain to the corresponding "master domain"
