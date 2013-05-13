@@ -43,7 +43,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
             attributeOldValue: true
         };
         mutationObserver.observe(document, mutationObserverConfig);
-    };
+    }
 
     // stop observing DOM mutations
     function stop() {
@@ -51,9 +51,9 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         mutationObserver.disconnect();
         timeout_warning = setTimeout(function() {
             console.warn('Mutation Observer was stopped ' + warnInSeconds + ' seconds ago and not restarted.');
-        }, warnInSeconds * 1000)
+        }, warnInSeconds * 1000);
 
-    };
+    }
 
     function _processMutations(mutations) {
         var mutationsLen = mutations.length;
