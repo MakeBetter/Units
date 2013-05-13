@@ -24,6 +24,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
         bind: bind,
         reset:reset,
         isSpaceDown: isSpaceDown,
+        shouldHandleShortcut: shouldHandleShortcut, // exposed publicly for Mousetrap library (mousetrap-modified.js)
         setProtectedWebpageShortcuts: setProtectedWebpageShortcuts
     });
 

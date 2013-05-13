@@ -695,14 +695,21 @@ work as expected
          * @param {Event} e
          * @returns void
          */
-        var _increaseSequence = function(e) {
+        var _increaseSequence = function(e, seq_component_combo) {
                 // [Modification for UnitsProj]
-                // Parameter 'e' added to the function abovefor
-                e.stopImmediatePropagation();
-                e.preventDefault();
-                _sequenceType = action;
-                ++_sequenceLevels[combo];
-                _resetSequenceTimer();
+                // 1. Parameters added to the definition of the enclosing function
+                // 2. Modified existing code as below (compare with mousetrap-original-for-reference.js)
+                if (_u.mod_keyboardLib.shouldHandleShortcut(seq_component_combo, e.target)) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    _sequenceType = action;
+                    ++_sequenceLevels[combo];
+                    _resetSequenceTimer();
+                }
+                else {
+                    _resetSequences();
+                }
+
             },
 
             /**
