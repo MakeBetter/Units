@@ -171,7 +171,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * focused.
      * @param {boolean} [adjustScrolling] If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
-     * This parameter is currently passed as true only from selectPrev() and selectNext()
      * @param {object} [options] Misc options. Can also be used to override miscSettings
      */
     function selectCU(CUOrItsIndex, setFocus, adjustScrolling, options) {
@@ -585,10 +584,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
     }
 
     function selectFirst() {
-        selectCU(0, true);
+        selectCU(0, true, true);
     }
     function selectLast() {
-        selectCU($CUsArray.length - 1, true);
+        selectCU($CUsArray.length - 1, true, true);
     }
 
     /**
