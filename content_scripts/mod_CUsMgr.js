@@ -419,7 +419,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
         var // for the window:
             winTop = $document.scrollTop(),
-            winHeight = $(window).height(),
+            winHeight = /*$(window).height()*/ window.innerHeight,// $(window).height() does not work on HN
             winBottom = winTop + winHeight;
 
         // for the CU
@@ -884,8 +884,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         if (destination < 0) {
             destination = 0;
         }
-        else if (destination > $document.height() - $(window).height()) {
-            destination = $document.height() - $(window).height();
+        else if (destination > $document.height() - window.innerHeight) {
+            destination = $document.height() - window.innerHeight; // $(window).height does not work on HN
         }
 
         var scrollingDown;
