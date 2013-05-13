@@ -15,7 +15,8 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 //        isVisible = false,
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
-        beenSetupOnce; // has the module been setup at least once
+        beenSetupOnce, // has the module been setup at least once
+        $document = $(document);
 
     // reset state
     function reset() {
@@ -70,6 +71,8 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         var $closestAncestor = $(mod_contentHelper.closestCommonAncestor(CUsNodes));
 
         mod_mutationObserver.stop(); // ** stop monitoring mutations **
+        // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
+        var savedScrollPos = $document.scrollTop();
         $closestAncestor.hide();
         removeHighlighting($closestAncestor);
 
@@ -107,6 +110,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
         // ** --------- POST FILTERING --------- **
         $closestAncestor.show();
+        $document.scrollTop(savedScrollPos);
         mod_mutationObserver.start(); // ** start monitoring mutations **
 
         return $CUsArr;
