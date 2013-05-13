@@ -777,13 +777,21 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             elements = [];
 
         if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize) {
-            var $innermostDescendants = $CU.find('*').filter(function() {
-                if (!($(this).children().length)) {
-                    return true;
-                }
-            });
-            elements = $innermostDescendants.get();
+            var allDescendants = $CU.find('*');
+
+            if (allDescendants.length) {
+                var $innermostDescendants = allDescendants.filter(function() {
+                    if (!($(this).children().length)) {
+                        return true;
+                    }
+                });
+                elements = $innermostDescendants.get();
+            }
+            else {
+                elements = $CU.get();
+            }
         }
+
         else {
             elements = $CU.get();
         }
