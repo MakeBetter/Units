@@ -63,7 +63,7 @@ var defaultSettings = {
             kbdShortcuts: ['shift+j']
         },
         scrollUp: {
-            miniDescr: "Scroll down",
+            miniDescr: "Scroll up",
             kbdShortcuts: ['shift+k']
         },
         back: {
