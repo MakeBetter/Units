@@ -43,7 +43,7 @@ _u.mod_context = (function(mod_contentHelper){
             return pageHasUrlData;
         },
         pageHasCUsSpecifier: function() {
-            pageHasCUsSpecifier;
+            return pageHasCUsSpecifier;
         },
         pageHasCUs: function() {
             return (numCUs > 0);

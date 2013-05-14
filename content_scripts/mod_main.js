@@ -36,16 +36,13 @@
     // don't need to wait till dom-ready. allows faster starting up of the extension's features
     // (in certain sites at least. e.g. guardian.co.uk)
     // this should not cause any issues since we are handling dom changes anyway.
-    (function initializeStateAndSetupEvents (){
-
+    (function initializeWhenReady (){
         if (!document.body) {
-            setTimeout(initializeStateAndSetupEvents, 100);
+            setTimeout(initializeWhenReady, 100);
             return;
         }
         $topLevelContainer.appendTo(document.body);
-
         initializeExtension();
-
     })();
 
     function _onUrlChange() {
@@ -185,16 +182,20 @@
         mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, disableExtension);
 
         // Next, bind `CUsShortcuts`...
-        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_CUsMgr.selectNext, {pageHasCUs: true});
-        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_CUsMgr.selectPrev, {pageHasCUs: true});
-        mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
-            mod_CUsMgr.selectFirst(true, true);
-        }, {pageHasCUs: true});
-        mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
-            mod_CUsMgr.selectLast(true, true);
-        }, {pageHasCUs: true});
-        mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
+        if (expandedUrlData && expandedUrlData.CUs_specifier) {
+            mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_CUsMgr.selectNext, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_CUsMgr.selectPrev, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
+                mod_CUsMgr.selectFirst(true, true);
+            }, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
+                mod_CUsMgr.selectLast(true, true);
+            }, {pageHasCUs: true});
+            // the last parameter (context) is redundant due to the enclosing `if` condition, but its harmless
+            mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox,
+                {pageHasCUsSpecifier: true});
 
+        }
 
         // Then, bind `generalShortcuts`...
         mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
