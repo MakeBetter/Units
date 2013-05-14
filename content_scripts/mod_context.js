@@ -16,43 +16,55 @@
 _u.mod_context = (function(mod_contentHelper){
 
     var thisModule = {
+        setup: setup,
         isContextValid: isContextValid,
         setCUSelectedState: setCUSelectedState,
         setCUsCount: setCUsCount
     };
 
-    var isCUSelected,
-        numCUs = 0; // number of CUs currently on the page
+    var pageHasUrlData,
+        pageHasCUsSpecifier,
+        isCUSelected,
+        numCUs; // number of CUs currently on the page
 
-    // Method inside `contextHelper` have names corresponding to supported context properties (see isContextValid(),
-    // which calls the the corresponding method in `contextHelper` when evaluating a specific property's status)
-    var contextHelper = {
+    // Method inside `supportedContexts` have names corresponding to supported context properties (see isContextValid(),
+    // which calls the the corresponding method in `supportedContexts` when evaluating a specific property's status)
+    var supportedContexts = {
+        CUSelected: function() {
+            return isCUSelected;
+        },
         pageUIHasFocus: function () {
             return !mod_contentHelper.isUnitsProjElement(document.activeElement);
         },
-
         unitsProjUIHasFocus: function () {
             return mod_contentHelper.isUnitsProjElement(document.activeElement);
         },
-        CUSelected: function() {
-            return isCUSelected;
+        pageHasUrlData: function() {
+            return pageHasUrlData;
+        },
+        pageHasCUsSpecifier: function() {
+            pageHasCUsSpecifier;
         },
         pageHasCUs: function() {
             return (numCUs > 0);
         }
     };
 
+    function setup(expandedUrlData) {
+        pageHasUrlData = expandedUrlData? true: false;
+        pageHasCUsSpecifier = (expandedUrlData && expandedUrlData.CUs_specifier)? true: false;
+
+        isCUSelected = false;
+        numCUs = 0;
+    }
+
     /**
      * Returns true if all the conditions (specified as key/value pairs in the `context` hash) are true. Else false.
      * Note: only the conditions specified are checked. Other conditions can have any value, and they won't affect
      * the result.
      *
-     * The list of context conditions is specified below (each should be specified as a key of the `context` hash, with
+     * The list of context conditions is specified below (each should be specified as a key of the `supportedContexts` hash, with
      * the corresponding property being true or false as desired):
-     * - CUSelected: true/false
-     * - pageUIHasFocus: true/false
-     * - unitsProjUIHasFocus: true/false
-     * (the last two are actually opposites of each other, so you don't need to specify both)
      *
      * Examples of `context` object:
      * {CUSelected: true}, {CUSelected: true, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc
@@ -64,7 +76,7 @@ _u.mod_context = (function(mod_contentHelper){
 
         for (var prop in context) {
             if (context.hasOwnProperty(prop)) {
-                if (context[prop] !== contextHelper[prop]()) {
+                if (context[prop] !== supportedContexts[prop]()) {
                     return false;
                 }
             }

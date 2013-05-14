@@ -4,7 +4,7 @@
  * main module (mod_main.js) This is the main module which runs the extension by using the other modules
  */
 (function($, mod_core, mod_domEvents, mod_utils, mod_CUsMgr, mod_mutationObserver, mod_keyboardLib,
-          mod_filterCUs, mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper) {
+          mod_filterCUs, mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context) {
     "use strict";
 
     /*-- Public interface --*/
@@ -130,6 +130,7 @@
 
                 $topLevelContainer.appendTo(document.body);
 
+                mod_context.setup(settings.expandedUrlData);
                 mod_utils.setup(miscSettings);
                 mod_help && mod_help.setup(settings);
                 mod_filterCUs && mod_filterCUs.setup();
@@ -362,4 +363,4 @@
     //return thisModule; // not required for main module
 
 })(jQuery, _u.mod_core, _u.mod_domEvents, _u.mod_utils, _u.mod_CUsMgr, _u.mod_mutationObserver, _u.mod_keyboardLib,
-        _u.mod_filterCUs, _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper);
+        _u.mod_filterCUs, _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context);
