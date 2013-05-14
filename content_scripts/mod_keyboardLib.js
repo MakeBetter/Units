@@ -41,8 +41,10 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
      * will stop further propagation of the event.
      * @param {Array} shortcuts
      * @param {Function} handler
-     * @param [context] Context hash (refer: mod_context) or a function that should evaluate to true for the shortcut to
-     * get triggered. If no `context` is specified, any context is assumed to be valid.
+     * @param {Object|Function}[context] An object specifying the "context" for this shortcut to be applicable (refer:
+     * mod_context.isContextValid()). A function can also be specified -- the shortcut will be handled if the function
+     * evaluates to true when the shortcut is invoked. If no `context` is specified, the shortcut is deemed valid in
+     * any context.
 
      Further Notes:
      1) When handling a shortcut, we suppress further propagation of the event. This seems reasonable since if a
@@ -177,7 +179,10 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
      * Determines whether the invoked key/key combination (`shortcut`) should be handled as a shortcut
      * @param {string} shortcut String representation of keyboard shortcut invoked
      * @param targetElement
-     * @param context Context hash (refer: mod_context) or a function
+     * @param {Object|Function}[context] An object specifying the "context" for this shortcut to be applicable (refer:
+     * mod_context.isContextValid()). A function can also be specified -- the shortcut will be handled if the function
+     * evaluates to true when the shortcut is invoked. If no `context` is specified, the shortcut is deemed valid in
+     * any context.
      */
     function shouldHandleShortcut(shortcut, targetElement, context) {
         if (!canTreatAsShortcut(shortcut, targetElement)) {
