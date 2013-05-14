@@ -1,4 +1,4 @@
-_u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelper, CONSTS) {
+_u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelper, mod_domEvents, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -50,7 +50,11 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
 //            $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
 
-        $searchBox.on('keydown paste input', onSearchBoxInput);
+        $searchBox.on('paste input', onSearchBoxInput);
+        // Instead of specifying 'keydown' as part of the on() call above, use addEventListener to have priority over
+        // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $searchBox[0]) for
+        // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
+        mod_domEvents.addEventListener(document, 'keydown', onSearchBoxInput, true);
         $closeButton.click(closeSearchBox);
     }
 
@@ -217,7 +221,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
     function onSearchBoxInput(e) {
         clearTimeout(timeout_typing); // clears timeout if it is set
 
-        if (e.type === 'keydown' || e.type === 'keypress') {
+        if (e.target === $searchBox[0] && e.type === 'keydown') {
 
             var code = e.which || e.keyCode;
 
@@ -286,4 +290,4 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_contentHelper, _u.CONSTS);
+})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_domEvents, _u.CONSTS);

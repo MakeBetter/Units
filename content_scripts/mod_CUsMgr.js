@@ -1019,14 +1019,14 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
 
         if (options.animatedCUScroll) {
-            console.log('animated CU scroll');
+//            console.log('animated CU scroll');
             var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
                 Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
             animatedScroll(newWinTop, animationDuration);
 //        $('html, body').animate({scrollTop: newWinTop}, animatedScroll);
         }
         else {
-            console.log('NON animated CU scroll');
+//            console.log('NON animated CU scroll');
             $document.scrollTop(newWinTop);
 
         }
@@ -1055,7 +1055,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             if (invokedDueTo === "dom-change" && miscSettings.selectCUOnLoad && !hasCUBeenSelectedOnce) {
                 invokedDueTo = "initial-setup";
             }
-            
+
             if (invokedDueTo === "initial-setup") {
                 if ( miscSettings.selectCUOnLoad) {
                     // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
@@ -1383,30 +1383,22 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         return isRtButton;
     }
 
-    function onKeydown(e) {
+    /**
+     * Special handler for the escape key
+     * On pressing ESC:
+     * - When no CU is selected, blur the active element and select the "most sensible" CU
+     * - When a CU is selected
+     *    - if an element which does not allow single key shortcuts is active, blur it
+     *    - else deselect the CU. (meaning that a selected CU will be deselected on at most a second 'Esc', if not
+     *    the first)
+     */
+    function onKeydown_Esc(e) {
         var code = e.which || e.keyCode,
-            hasNonShiftModifier = e.altKey || e.ctrlKey|| e.metaKey,
-            hasModifier = hasNonShiftModifier || e.shiftKey,
-            $selectedCU = $CUsArray[selectedCUIndex],
-            activeEl = document.activeElement || document.body;
+            hasModifier = e.altKey || e.ctrlKey|| e.metaKey || e.shiftKey;
 
-        // On pressing TAB (or shift-tab):
-        // If a CU is selected, and no element of the page has focus, focus the 'main' element of the CU.
-        if (code === 9 && !hasNonShiftModifier) { // TAB
-            if ($selectedCU && (activeEl === document.body))  {
-                focusMainElement($selectedCU);
-                suppressEvent(e);
-            }
-        }
-
-        /* On pressing ESC:
-         - When no CU is selected, blur the active element and select the "most sensible" CU
-         - When a CU is selected
-         - if an element which does not allow single key shortcuts is active, blur it
-         - else deselect the CU. (meaning that a selected CU will be deselected on at most a second 'Esc', if not
-         the first)
-         */
-        else if (code === 27 && !hasModifier) { // ESC
+        if (code === 27 && !hasModifier) { // ESC
+            var $selectedCU = $CUsArray[selectedCUIndex],
+                activeEl = document.activeElement || document.body;
             if (!$selectedCU) {
                 activeEl.blur();
                 var index = getEnclosingCUIndex(activeEl);
@@ -1639,6 +1631,20 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
     }
 
+    // Sets up binding for the tab key such that if a CU is selected, and there is no focused (active) element on
+    // the page, the "main" element of the selected CU should get focused.
+    function bindTabKey() {
+
+        var isContextApplicable = function() {
+            var activeEl = document.activeElement || document.body;
+            return $CUsArray[selectedCUIndex] && (activeEl === document.body);
+        };
+
+        mod_keyboardLib.bind(['tab', 'shift+tab'], function() {focusMainElement($CUsArray[selectedCUIndex]);},
+            isContextApplicable);
+
+    }
+
     function onDomReady() {
 
         // if settings have been obtained from background script before dom ready takes place
@@ -1666,7 +1672,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             return;
         }
 
-        // This is required to be initialized before setting up at least one of the event handlers subsequently set up
+        // This is required before we call setupEvents();
         overlayCssHasTransition = checkOverlayCssHasTransition();
 
         miscSettings = _miscSettings;
@@ -1678,9 +1684,15 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             .hide()
             .appendTo($topLevelContainer);
 
-        $(onDomReady);
+        setupEvents();
 
-        mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
+        updateCUsAndRelatedState("initial-setup");
+    }
+
+    function setupEvents() {
+        $(onDomReady);
+        bindTabKey();
+
         mod_domEvents.addEventListener(document, 'mousedown', onMouseDown, true);
         mod_domEvents.addEventListener(document, 'mouseup', onMouseUp, true);
         mod_domEvents.addEventListener(document, 'mouseover', onMouseOver, true);
@@ -1688,6 +1700,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         mod_domEvents.addEventListener(document, 'contextmenu', onContextMenu, true);
         mod_domEvents.addEventListener(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
         mod_domEvents.addEventListener(document, 'mousewheel', onMouseWheel, false);   // for webkit
+
+        // Need to specify 'true' below (for capturing phase) for google search (boo!)
+        mod_domEvents.addEventListener(document, 'keydown', onKeydown_Esc, true);
+
 
         $(window).on('resize', onWindowResize);
 
@@ -1699,8 +1715,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
             $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
                 '.' + class_CUOverlay, onTransitionEnd);
         }
-
-        updateCUsAndRelatedState("initial-setup");
     }
 
     /**
