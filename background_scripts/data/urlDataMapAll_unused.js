@@ -1,74 +1,7 @@
-/*
-A note on the terms 'CU' and 'MU' that occur multiple times throughout this file:
- Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
- adverts) is composed of a set of repeating units. We call such a unit a Content Unit (CU). E.g. on the Google Search
- results page, each search result is a CU. Each CU is a logical unit of content, attention and navigation/access.
- In addition to these CUs, there can be many other types of important units on the page. We call them 'MU's (misc. units).
- MUs can generally be of two types:
- - ones occurring within each CU (e.g: 'like', 'share', etc links/buttons)
- - ones outside any CU, and generally applicable to the whole page itself (e.g: 'logout' link, search field, etc).
- */
+// This file is just a repository of all urlData that we have added in the past. This is not being used by the code.
+// The main file, urlDataMap.js that is in use, contains only that data that works well.
 
-/*
-The object `defaultSettings.urlDataMap` (along with the 'specialDomain_masterDomain_map' object) provides a way to
-map each URl to the data associated with it (which is called the `urlData` corresponding to that URL). [Currently, the
-term "URL" is used to mean the part of the URL that is stripped of "http(s)://", etc].
-Each `urlData` object identifies elements of importance on the webpage, including any "content units" (CUs), and the
-associated keyboard shortcuts. The `urlData` also specifies any other information associated with the URL.
 
-Notes:
-1) Each key of the urlDataMap object is called a domain-key, and is the "main domain" for the corresponding
-website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
-
-2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
-domain-key is called a "master domain". For example, google.com may be used as the master domain for google.co.in etc)
-
-The value mapped to any master domain-key is an array. For an array with only one `urlData` object, the object may
-directly be specified instead of the array.
-
-A URL is mapped to a `urlData` object as follows. For any url, from among the array of `urlData` objects mapped
-to its domain/master domain, the `urlData` object containing the first matching wildcard pattern/regexp is used.
-(And so the "urlData" objects should be ordered accordingly. Eg: The urlData associated with a default/catch-all regexp
-should be the last one specified.)
-
-The regexps associated with a `urlData` object are specified using the `urlRegexp` property. Wildcard-like patterns
-can also be specified using the `urlPatterns` property, as explained below:
-TODO: use '*' with the consistent meaning of *zero or more*. Use '+' instead for "one or more" if required.
-They allow using *'s and @'s as "wildcards":
-- A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
-- A '*' matches any combination of *one or more* characters of *ANY* type.)
-
-3) Only the part of the url after http(s):// is considered for matching with the provided patterns/regexps.
-
-4) As is convention, a domain name is considered case insensitive, but the rest of the URL isn't
-
-5) Regarding functions specified in the object:
-i) They will run in the context of the content script
-ii) Most functions will have access to a $CU type variable. If for any reason, the function needs to modify any
-properties on it, it must be done indirectly using the jQuery data() function (so that it stays associated with
-underlying DOM element(s), rather  than the jQuery set which changes whenever the CUs array is recalculated,
-for instance on dom change. E.g: $CU.data('foo', bar) instead of $CU.foo = bar.
-
-The data is structured this way because:
-i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
-urlData objects associated with a URL's domain takes O(1) time, and search for the specific urlData object matching
-the URL is then restricted to the (very small) array.
-ii) it results in better structure/organization compared to having arrays of regexps at the top level.
-
-6) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
-
-7) // Guide for standard ("std_") items in urlData:
-This applies to MUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
-These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('miniDescr' property).
-This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
-to these items. However, if it specifically makes sense in a given case, these values (one or both) should be provided
-and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
-opposed to supplementing them.) This allows complete control over what keyboard shortcuts are applied to a page.
- */
-// TODO: format of each urlData to be explained along with various ways of specifying, and the various keys etc.
-// TODO: maybe the formats can be explained at two levels - simple options and advanced ones
-// One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
-// in the content scripts
 defaultSettings.urlDataMap = {
     // ** NOTE: domain-keys are listed alphabetically **
 
@@ -195,19 +128,23 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
+    "amazon.com": {
+        urlPatterns: ["www.amazon.com*"],
+        CUs_specifier: "#center .prod"
+
+    },
     "facebook.com": {
         urlPatterns: ["www.facebook.com*"],
 
-        /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com, and group page
-         ._4_7u .fbTimelineUnit -> Timeline page (the units on the right side)
+        /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com
+         the rest -> timeline pages
          */
-        CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._4_7u .fbTimelineUnit, a.uiMorePagerPrimary",
+        CUs_specifier: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer",
         CUs_MUs: {
             "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
             "std_comment": ".comment_link",
             "std_share": ".share_action_link",
-            "std_viewComments": ".UFIPagerLink",
-            std_mainEl: ".fbMainStreamAttachment a:first-child"
+            "std_viewComments": ".UFIPagerLink"
         },
         page_MUs: {
             std_header: "#headNav, .stickyHeaderWrap",
@@ -225,44 +162,39 @@ defaultSettings.urlDataMap = {
             // google search results page
             urlPatterns: ["www.google.@/*", "www.google.co.@/*"],
             urlRegexps: [], // since the array is empty this is redundant
-            /*
-             #res li.g: search result
-             #brs: "related searches"
-             #pnnext: "Next" link
-             */
-            CUs_specifier: "#res li.g, #brs, #pnnext",
+            CUs_specifier: "#res li.g, #foot, #brs",
             CUs_style: {
                 "overlayPadding": "5px"
             },
             CUs_MUs: {
-                /*std_mainEl: "a.l"*/
+                std_mainEl: "a.l"
             },
             CUs_actions: {
-//                "toggle-preview": {
-//                    kbdShortcuts: ["p"],
-//                    // this function is meant to work in conjunction with std_onCUDeselection (see below)
-//                    fn: function($selectedCU, document, urlData) {
-//                        var $previewPane = $('#nycp');
-//                        // Closes any open preview on the page.
-//                        var closePreview = function() {
-//                            if ($previewPane.is(':visible')) { // if the preview pane is already visible
-//                                var closePreviewBtn = document.getElementById("nycx");
-//                                closePreviewBtn &&  closePreviewBtn.click();
-//                            }
-//                        };
-//                        // Shows preview associated with currently selected CU ($selectedCU)
-//                        var showPreview = function() {
-//                            var $previewButton = $selectedCU.find(".vspib");
-//                            $previewButton.length && $previewButton[0].click();
-//                        };
-//                        if ($previewPane.is(':visible')) {
-//                            closePreview();
-//                        }
-//                        else {
-//                            showPreview();
-//                        }
-//                    }
-//                }
+                "toggle-preview": {
+                    kbdShortcuts: ["p"],
+                    // this function is meant to work in conjunction with std_onCUDeselection (see below)
+                    fn: function($selectedCU, document, urlData) {
+                        var $previewPane = $('#nycp');
+                        // Closes any open preview on the page.
+                        var closePreview = function() {
+                            if ($previewPane.is(':visible')) { // if the preview pane is already visible
+                                var closePreviewBtn = document.getElementById("nycx");
+                                closePreviewBtn &&  closePreviewBtn.click();
+                            }
+                        };
+                        // Shows preview associated with currently selected CU ($selectedCU)
+                        var showPreview = function() {
+                            var $previewButton = $selectedCU.find(".vspib");
+                            $previewButton.length && $previewButton[0].click();
+                        };
+                        if ($previewPane.is(':visible')) {
+                            closePreview();
+                        }
+                        else {
+                            showPreview();
+                        }
+                    }
+                }
             },
             page_MUs: {
                 "within-last-year": {
@@ -271,23 +203,20 @@ defaultSettings.urlDataMap = {
                 }
             },
             page_actions: {
-//                "std_onCUDeselection": {
-//                    fn: function($deselectedCU, document, urlData) {
-//                        if ($('#nycp').is(':visible')) { // if the preview pane is already visible
-//                            var closePreviewBtn = document.getElementById("nycx");
-//                            closePreviewBtn &&  closePreviewBtn.click();
-//                        }
-//                    }
-//                }
+                "std_onCUDeselection": {
+                    fn: function($deselectedCU, document, urlData) {
+                        if ($('#nycp').is(':visible')) { // if the preview pane is already visible
+                            var closePreviewBtn = document.getElementById("nycx");
+                            closePreviewBtn &&  closePreviewBtn.click();
+                        }
+                    }
+                }
             }
         },
         {
             // for scholar.google.com etc.
             urlPatterns: ["scholar.google.@/*", "scholar.google.co.@/*"],
-            CUs_specifier: ".gs_r, #gs_n td:last-child",
-            CUs_style:{
-//                useInnerElementsToGetOverlaySize: true
-            }
+            CUs_specifier: ".gs_r, .gs_ico_nav_next"
         },
         {
             // for Gmail
@@ -295,79 +224,61 @@ defaultSettings.urlDataMap = {
             protectedWebpageShortcuts: ["j", "k"]
         }
     ],
+    "guardian.co.uk": {
+        urlPatterns: ["www.guardian.co.uk*"],
+        CUs_specifier:"#inner-wrapper li.b3, #inner-wrapper li.inline-pic, #inner-wrapper li.wide-image"
+    },
+    "nytimes.com": {
+        urlPatterns: ["www.nytimes.com*"],
+        CUs_specifier: ".story:not(.clearfix,.advertisement), #wellRegion .column, .cColumn .columnGroup"
+    },
     "quora.com": [
         {
-            // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
-            // 'about', 'questions', 'new'. These are special pages in Quora, pertaining to a topic generally. These should be
-            // handled by the CU selector for www.quora.com/* pattern (specified later).
-            urlRegexps: [/^www\.quora\.com\/.+\/(?!about$|questions$|new$|home$).+/],
+            urlPatterns: ["www.quora.com"], // main quora feed page
             CUs_specifier: {
-                // separate selectors for the question and then the answers
-                selector: ".question.row, .main_col>div>.row .row" /*seems to be working well, as on May 13, 2013! */
             },
-            CUs_style: {
-                overlayPadding: "2px 0 0 0"
-            },
+            selector: ".feed_item, .announcement, .pager_next.action_button", //TODO: needs work
             CUs_MUs: {
-                std_mainEl: ".answer_user>span>a.user",
-                std_header: ".header",
-                "std_upvote": ".rate_up",
-                "std_viewComments": ".view_comments",
-                "std_downvote": ".rate_down",
-                "std_share": ".share_link",
-                "follow": {
-                    selector: ".follow_question",
-                    kbdShortcuts:["shift+f"]
-                }
+                std_mainEl: " a.question_link"
             }
         },
         {
-            urlPatterns: ["www.quora.com/", "www.quora.com/?share=1", "www.quora.com/*"], // The first two patterns match
-            // with the main quora feed page.
-            CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5, .feed_item.row.p1",
-            // the first selector for quora main page (and a few others), the second one for a page like this one:
-            // http://www.quora.com/Front-End-Web-Development
-            CUs_MUs: {
-                std_mainEl: " a.question_link",
-                "std_upvote": ".add_upvote, .remove_upvote",
-                "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".view_comments"},
-                "std_downvote": ".add_downvote, .remove_downvote",
-                "std_share": ".share_link",
-                "follow": {
-                    selector: ".follow_question",
-                    kbdShortcuts:["shift+f"]
-                }
+            urlPatterns: ["www.quora.com/*"], // all other pages on quora (tested currently for question pages)
+            CUs_specifier: {
+                //TODO: needs work
+//                    selector: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",
+                first: ".rating_options",
+                last: ".item_action_bar",
             },
-            CUs_style: {
-                overlayPadding: "0 0 0 5px"
+            CUs_MUs: {
+                std_mainEl: ".answer_user>span>a.user",
+                std_header: ".header"
             }
         }
     ],
-
-    // only support on the main page
     "reddit.com": [
-//        {
-//            urlPatterns: ["www.reddit.com/*/comments/*"],
-//            CUs_specifier: {
-//                buildCUAround: ".arrow.up, .usertext-edit",
-//                //                exclude: ".panestack-title, .menuarea"
-//
-//            },
-//            CUs_MUs: {
-//                //                std_mainEl: ".title",
-//                "std_upvote": ".arrow.up, .arrow.upmod",
-//                "std_downvote": ".arrow.down, .arrow.downmod",
-//                "std_share": ".share-button .active",
-//                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
-//                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
-//                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
-//                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
-//            }
-//        },
         {
-            urlPatterns: ["www.reddit.com/", "www.reddit.com/?*"],
+            urlPatterns: ["www.reddit.com/*/comments/*"],
             CUs_specifier: {
-                selector: "#siteTable>div.thing, .nextprev a[rel='nofollow next']" //works well. doesn't include the promoted article.
+                buildCUAround: ".arrow.up, .usertext-edit",
+                //                exclude: ".panestack-title, .menuarea"
+
+            },
+            CUs_MUs: {
+                //                std_mainEl: ".title",
+                "std_upvote": ".arrow.up, .arrow.upmod",
+                "std_downvote": ".arrow.down, .arrow.downmod",
+                "std_share": ".share-button .active",
+                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
+                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
+                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
+            }
+        },
+        {
+            urlPatterns: ["www.reddit.com*"],
+            CUs_specifier: {
+                selector: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
             },
             CUs_style: {
                 useInnerElementsToGetOverlaySize: true,
@@ -377,11 +288,11 @@ defaultSettings.urlDataMap = {
                 std_mainEl: ".title",
                 "std_upvote": ".arrow.up, .arrow.upmod",
                 "std_downvote": ".arrow.down, .arrow.downmod",
-                "std_share": ".share-button .active",
-                "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".flat-list.buttons .comments"},
-                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button a" },
+                "std_share": ".std_share-button .active",
+                "std_viewComments": {kbdShortcuts: ["c", "g c"], selector: ".flat-list.buttons .comments"},
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
                 "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
-                "save": {kbdShortcuts: ["shift+s"], selector: ".save-button a"}
+                "save": {kbdShortcuts: ["v"], selector: ".save-button a, .unsave-button a.togglebutton"}
             },
             CUs_actions: {
 
@@ -453,8 +364,51 @@ defaultSettings.urlDataMap = {
 
         }
     ],
+    "sulekha.com": {
+        urlPatterns: ["*.sulekha.com/*"],
+        CUs_specifier: {
+            selector: ".sul_result_container"
+        }
+    },
+    "team-bhp.com": {
+        urlPatterns: ["*.team-bhp.com/*"],
+        CUs_specifier: {
+            selector: ".box>table tr"
+        }
+    },
+//    "twitter.com": {
+//        urlPatterns: ["twitter.com/", "twitter.com/*"],
+//        CUs_specifier: {
+//            selector: ".tweet"
+//        },
+//        page_actions: {
+//            "std_onCUSelection": {
+//                fn: function($selectedCU, document, urlData) {
+//                    $selectedCU[0].click(); // to expand the tweet
+//                }
+//            },
+//            "std_onCUDeselection": {
+//                fn: function($deselectedCU, document, urlData) {
+//                    $deselectedCU[0].click(); // to un-expand it again
+//                }
+//            }
+//        }
+//    },
+    "urbandictionary.com": {
+        urlPatterns: ["*.urbandictionary.com*"],
+        CUs_specifier: {
+            buildCUAround: "td.index",
+        }
+    },
 
-    // only support on the first page
+//    "wikipedia.org": {
+//        urlPatterns: ["@.wikipedia.org/wiki/*"],
+//        CUs_specifier: {
+//            buildCUAround: "#mw-content-text>p:first-of-type, table.infobox, table.vcard, table.toc, table.wikitable, #bodyContent h2, #bodyContent h3, #bodyContent h4, .vertical-navbox, .horizontal-navbox, .navbox",
+//            exclude: ".dablink, .metadata, .ambox" //TODO: check these (.dablink was in steve job's). this is till unimplemented as of 6 Jan 2012
+//        }
+//    },
+
     "ycombinator.com": {
         urlPatterns: ["news.ycombinator.com*"],
         CUs_specifier: {
@@ -474,33 +428,6 @@ defaultSettings.urlDataMap = {
                 selector: "a:contains('comment'), a:contains('discuss')"
             }
         }
-    },
-
-    "stackoverflow.com": "stackexchange.com",
-    "superuser.com": "stackexchange.com",
-    "serverfault.com": "stackexchange.com",
-    "stackapps.com": "stackexchange.com",
-    "askubuntu.com": "stackexchange.com",
-    "mathoverflow.net" : "stackexchange.com",
-
-    // randomly supported.
-    "sulekha.com": {
-        urlPatterns: ["*.sulekha.com/*"],
-        CUs_specifier: {
-            selector: ".sul_result_container"
-        }
-    },
-    "team-bhp.com": {
-        urlPatterns: ["*.team-bhp.com/*"],
-        CUs_specifier: {
-            selector: ".box>table tr"
-        }
-    },
-    "urbandictionary.com": {
-        urlPatterns: ["*.urbandictionary.com*"],
-        CUs_specifier: {
-            buildCUAround: "td.index"
-        }
     }
 };
 
@@ -511,13 +438,13 @@ var specialDomain_masterDomain_map = [
         // which is superfluous here as it is the "master domain" key.)
         regexp: /^google\.(?:com|((?:co\.)?[a-z]{2}))$/,
         masterDomainKey: "google.com"
+    },
+    {
+        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
+        masterDomainKey: "stackexchange.com"
+    },
+    {
+        regexp: /^(mathoverflow\.net)/,
+        masterDomainKey: "stackexchange.com"
     }
-//    {
-//        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
-//        masterDomainKey: "stackexchange.com"
-//    },
-//    {
-//        regexp: /^(mathoverflow\.net)/,
-//        masterDomainKey: "stackexchange.com"
-//    }
 ];
