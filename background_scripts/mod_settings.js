@@ -203,7 +203,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     }
 
     // Converts any "shorthand" notations within the urlData to their "expanded" forms.
-// Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in urlData
+    // Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in urlData
     function expandUrlData(urlData) {
 
         // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
