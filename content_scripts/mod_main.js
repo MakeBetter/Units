@@ -135,7 +135,7 @@
 
                 // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
                 // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
-                //setupExternalSearchEvents();
+                /* setupExternalSearchEvents(); */
 
 
                 mod_mutationObserver.start();
