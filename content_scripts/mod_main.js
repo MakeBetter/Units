@@ -175,26 +175,15 @@
     }
 
 
-// Sets up the general shortcuts, that is ones that don't depend on the current webpage. E.g: shortcuts for
-// selecting next/prev CU, etc.
-    function _setupGeneralShortcuts() {
+    // setup shortcuts that don't depend on the urlData (`expandedUrlData`)
+    function setupNonUrlDataShortcuts() {
 
-        // we bind the handler for re-enabling elsewhere, because disableExtension() will invoke mod_keyboardLib.reset()
+        // This is a special shortcut. Bind it first (high priority). [Instead of binding this to a toggleExtension()
+        // type method, we bind the handler for re-enabling within disableExtension(), because disableExtension() resets
+        // all previously bound shortcuts shortcuts]
         mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, disableExtension);
 
-
-        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, mod_utils.scrollDown);
-        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, mod_utils.scrollUp);
-        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, mod_utils.back);
-        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, mod_utils.forward);
-
-//    mod_keyboardLib.bind(['alt+y'], function() {console.log(' alt y');}); // this shouldn't be printed because there is a conflicting global shortcut defined in manifest.json
-//    mod_keyboardLib.bind(['alt+q'], function() {console.log(' alt q');});
-//    mod_keyboardLib.bind(['alt+4'], function() {console.log(' alt 4');});
-//    mod_keyboardLib.bind(['alt+space+g'], function() {console.log(' alt space g');});
-//    mod_keyboardLib.bind(['shift+q'], function() {console.log('shift q');});
-//    mod_keyboardLib.bind(['q'], function() {console.log('q')});
-
+        // Next, bind `CUsShortcuts`...
         mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_CUsMgr.selectNext, {pageHasCUs: true});
         mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_CUsMgr.selectPrev, {pageHasCUs: true});
         mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
@@ -205,10 +194,14 @@
         }, {pageHasCUs: true});
         mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
+
+        // Then, bind `generalShortcuts`...
         mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
-
+        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, mod_utils.scrollDown);
+        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, mod_utils.scrollUp);
+        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, mod_utils.back);
+        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, mod_utils.forward);
         mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, mod_utils.openActiveElement);
-
         mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
             mod_utils.openActiveElement(true); // open in new tab
         });
@@ -328,12 +321,17 @@
      * scrolling down on the page, it will do the former if a CU is selected, and the latter otherwise.
      */
     function setupShortcuts() {
+        setupUrlDataShortcuts();
+        setupNonUrlDataShortcuts();
+    }
+
+    // setup shortcuts that depend on the urlData (`expandedUrlData`)
+    function setupUrlDataShortcuts() {
 
         if (expandedUrlData) {
             _setupUrlDataShortcuts('CUs'); // shortcuts for CUs
             _setupUrlDataShortcuts('page'); // shortcuts for the rest of the page
         }
-        _setupGeneralShortcuts();   // general shortcuts
     }
 
 //    function setupExternalSearchEvents() {
