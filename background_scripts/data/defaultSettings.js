@@ -77,7 +77,7 @@ var defaultSettings = {
 
         showHelp: {
             miniDescr: "Show the help page",
-            kbdShortcuts: ['alt+h', 'alt+?']
+            kbdShortcuts: ['alt+/']
         },
         open: { //TODO: should 'enter' be spcified here
             miniDescr: "Open/invoke focused item",
