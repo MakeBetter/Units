@@ -24,6 +24,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         if (beenSetupOnce) {
             closeSearchBox();
             timeout_typing = null;
+            lastFilterText = "";
         }
     }
 
@@ -49,12 +50,20 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
 //            $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
 
-        $searchBox.on('keydown paste input', onSearchBoxKeydown);
+        $searchBox.on('keydown paste input', onSearchBoxInput);
         $closeButton.click(closeSearchBox);
     }
 
-    // filters $CUsArr based on the text in the search box. Returns the modified (filtered) array
-    function filterCUsArray($CUsArr) {
+    // Filters the passed array $CUsArr based on the text in the search box.
+    // Returns bool indicating if the filter text had changed since the last time this function was invoked
+    // (the function could have also simply got invoked due to dom mutations, or as part of mod_CUsMgr's setup())
+    /**
+     * Filters the passed array $CUsArr based on the text in the search box. Returns the filtered array.
+     * @param $CUsArr
+     * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
+     * Else false.
+     */
+    function filterCUsArray($CUsArr, userInvoked) {
 
         if (!$CUsArr || !$CUsArr.length) {
             return $CUsArr; // no filtering required
@@ -75,12 +84,11 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         mod_mutationObserver.stop(); // ** stop monitoring mutations **
         var searchTextLowerCase = getSearchBoxText().toLowerCase();
         var savedScrollPos;
-        if (lastFilterText === searchTextLowerCase) {
+        if (!userInvoked) {
             // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
             savedScrollPos = $document.scrollTop();
         }
         else {
-            lastFilterText = searchTextLowerCase;
             savedScrollPos = 0;
         }
         $closestAncestor.hide();
@@ -93,7 +101,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
             $hiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
         }
         else {
-            console.log('filtering invoked...');
+//            console.log('actual filtering taking place...');
             for (i = 0, $CU; i < CUsArrLen; ++i) {
                 $CU = $CUsArr[i];
                 // if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
@@ -206,7 +214,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         });
     }
 
-    function onSearchBoxKeydown(e) {
+    function onSearchBoxInput(e) {
         clearTimeout(timeout_typing); // clears timeout if it is set
 
         if (e.type === 'keydown' || e.type === 'keypress') {
@@ -219,7 +227,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
             }
             else  if (code === 13) { // Enter
                 suppressEvent(e);
-                thisModule.trigger('filtering-state-change');
+                triggerFiltering();
             }
             else if (code === 9) { // Tab
                 suppressEvent(e);
@@ -231,9 +239,17 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
         // not executing the filtering related code till there is a brief pause in the typing
         timeout_typing = setTimeout (function() {
 
-            thisModule.trigger('filtering-state-change');
+            triggerFiltering();
 
         }, 400);
+    }
+
+    function triggerFiltering() {
+        var searchTextLowerCase = getSearchBoxText().toLowerCase();
+        if (lastFilterText !== searchTextLowerCase) {
+            lastFilterText = searchTextLowerCase;
+            thisModule.trigger('filtering-state-change');
+        }
     }
 
     function getSearchBoxText() {
@@ -265,7 +281,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 //        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
 //        isVisible = false;
         $searchContainer.hide();
-        thisModule.trigger('filtering-state-change');
+        triggerFiltering();
     }
 
     return thisModule;

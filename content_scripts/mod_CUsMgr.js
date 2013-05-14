@@ -17,16 +17,19 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         selectLast: selectLast
     });
 
+    /*-- Module implementation --*/
+
     /*-- Event bindings --*/
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', updateCUsAndRelatedState);
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', function() {
+        updateCUsAndRelatedState("dom-change");
+    });
     // if mod_filterCUs is not defined, rest of the extension still works fine
     if (mod_filterCUs) {
-        thisModule.listenTo(mod_filterCUs, 'filtering-state-change', updateCUsAndRelatedState);
+        thisModule.listenTo(mod_filterCUs, 'filtering-state-change', function() {
+            updateCUsAndRelatedState("filtering-state-change");
+        });
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
     }
-
-    /*-- Module implementation --*/
-    //////////////////////////////////
 
     /* NOTES
      1) Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
@@ -174,7 +177,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
      * @param {object} [options] Misc options. Can also be used to override miscSettings
      */
     function selectCU(CUOrItsIndex, setFocus, adjustScrolling, options) {
-//        console.log('selectCU() called');
+
+//        console.log('selectCU() called. CUOrItsIndex: ', CUOrItsIndex);
         var $CU,
             indexOf$CU; // index in $CUsArray
 
@@ -205,7 +209,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         mod_context.setCUSelectedState(true);
 
         if (!options || !options.onDomChangeOrWindowResize) {
-            selectCU.invokedYet = true; // to indicate that now this function (selectCU) has been invoked at least once
 
             $lastSelectedCU = $CU;
             lastSelectedCUTime = new Date();
@@ -583,16 +586,15 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
     }
 
-    function selectFirst() {
-        selectCU(0, true, true);
+    function selectFirst(setFocus, adjustScrolling) {
+        selectCU(0, setFocus, adjustScrolling);
     }
-    function selectLast() {
-        selectCU($CUsArray.length - 1, true, true);
+    function selectLast(setFocus, adjustScrolling) {
+        selectCU($CUsArray.length - 1, setFocus, adjustScrolling);
     }
 
     /**
-     * Called typically when there is no currently selected CU, and we need to select the CU that makes most sense
-     * to select in this situation.
+     * Selects the most "sensible" CU depending on various parameters...
      */
     function selectMostSensibleCU(setFocus, adjustScrolling) {
 
@@ -657,7 +659,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
     /**
      * If the specified element exists within a CU, the index of that CU in $CUsArray is
      * returned, else -1 is returned.
-     * @param {DOM element|jQuery wrapper} element
+     * @param {HtmlElementt|jQuery} element DOM element or its jQuery wrapper
      * @return {number} If containing CU was found, its index, else -1
      */
     function getEnclosingCUIndex(element) {
@@ -1020,36 +1022,55 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
     }
 
-// Sets/updates the global variable $CUsArray and other state associated with it
-    function updateCUsAndRelatedState() {
+    /**
+     * Sets/updates the global variable $CUsArray and other state associated with it
+     * @param {string} invokedDueTo Should be one of "dom-change", "filtering-state-change", "initial-setup"
+     */
+    function updateCUsAndRelatedState(invokedDueTo) {
 
         // Save the currently selected CU, to reselect it, if it is still present in the $CUsArray after the array is
         // updated. This needs to be done before calling deselectCU() and modifying the current $CUsArray
         var $prevSelectedCU = $CUsArray && $CUsArray[selectedCUIndex];
         dehoverCU(); // to prevent a "ghost" hover overlay
-        deselectCU({onDomChangeOrWindowResize: true});
+        deselectCU({onDomChangeOrWindowResize: (invokedDueTo === "dom-change")});
         var $CUs = getAllCUsOnPage();
-        mod_filterCUs && mod_filterCUs.filterCUsArray($CUs);
+        mod_filterCUs && mod_filterCUs.filterCUsArray($CUs, invokedDueTo === "filtering-state-change");
         $CUsArray = $CUs;
         mod_context.setCUsCount($CUsArray.length);
 
         if ($CUsArray && $CUsArray.length) {
 
-            if (miscSettings.selectCUOnLoad && !selectCU.invokedYet) {
-                // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
-                selectFirstCUInViewport(true, false);
-            }
-
-            // The following block ensures that a previously selected CU continues to remain selected
-            else if ($prevSelectedCU) {
-
-                var newSelectedCUIndex = findIndex_In_$CUsArray($prevSelectedCU);
-
-                if (newSelectedCUIndex >= 0) {
-                    // pass false to not change focus (because it is almost certainly is already where it should be,
-                    // and we don't want to inadvertently change it)
-                    selectCU(newSelectedCUIndex, false, false, {onDomChangeOrWindowResize: true});
+            var newSelectedCUIndex;
+            if (invokedDueTo === "initial-setup") {
+                if ( miscSettings.selectCUOnLoad) {
+                    // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
+                    selectMostSensibleCU(true, false);
                 }
+            }
+            // on a dom-change:
+            // 1) if CU was already selected, it should remain selected
+            // 2) if the selected CU isn't found and the option `selectCUOnLoad` is true, select a sensible CU,
+            // 3) if no CU was selected (perhaps the uesr pressed `Esc` earlier) don't select any CU
+            else  if (invokedDueTo === "dom-change") {
+                if ($prevSelectedCU) {
+                    if ((newSelectedCUIndex = findIndex_In_$CUsArray($prevSelectedCU)) >= 0) {
+                        // don't change focus or scrolling, since this got auto-triggered due to a dom change
+                        selectCU(newSelectedCUIndex, false, false, {onDomChangeOrWindowResize: true});
+                    }
+                    else if ( miscSettings.selectCUOnLoad) {
+                        selectMostSensibleCU(false, false);
+                    }
+                }
+                else {
+                    // do nothing
+                }
+            }
+            else  if (invokedDueTo === "filtering-state-change") {
+                // setFocus is passed as false to prevent filter search box from losing focus
+                selectFirst(false, true);
+            }
+            else {
+                selectFirst(true, true);
             }
         }
     }
@@ -1209,16 +1230,6 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         }
 
         processCUsArray($CUsArr);
-
-//    if (parseInt($searchContainer.css('top')) >= 0) { // if search box is visible
-//    ////if ($searchContainer.offset().top >= 0) { // if search box is visible
-//        filterCUsArray($CUsArr);
-//    }
-
-//    if (!$CUsArr || !$CUsArr.length) {
-//        console.warn("UnitsProj: No CUs were found based on the selector provided for this URL")
-//        return;
-//    }
 
         return $CUsArr;
     }
@@ -1673,10 +1684,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                 '.' + class_CUOverlay, onTransitionEnd);
         }
 
-        updateCUsAndRelatedState();
-        if ( miscSettings.selectCUOnLoad) {
-            selectMostSensibleCU(true, false);
-        }
+        updateCUsAndRelatedState("initial-setup");
     }
 
     /**

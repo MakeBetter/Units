@@ -195,11 +195,14 @@
 //    mod_keyboardLib.bind(['shift+q'], function() {console.log('shift q');});
 //    mod_keyboardLib.bind(['q'], function() {console.log('q')});
 
-
         mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_CUsMgr.selectNext, {pageHasCUs: true});
         mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_CUsMgr.selectPrev, {pageHasCUs: true});
-        mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts,  mod_CUsMgr.selectFirst, {pageHasCUs: true});
-        mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, mod_CUsMgr.selectLast, {pageHasCUs: true});
+        mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
+            mod_CUsMgr.selectFirst(true, true);
+        }, {pageHasCUs: true});
+        mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
+            mod_CUsMgr.selectLast(true, true);
+        }, {pageHasCUs: true});
         mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
 
         mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
