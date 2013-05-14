@@ -1,3 +1,6 @@
+// JSHint Config
+/* global Mousetrap */
+
 /*
  mod_keyboardLib
 
@@ -88,7 +91,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     }
 
     function reset() {
-        Mousetrap.reset.call(this);
+        Mousetrap.reset();
     }
     function isSpaceDown() {
         return Mousetrap.isSpaceDown;
