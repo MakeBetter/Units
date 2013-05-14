@@ -193,7 +193,8 @@
         mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
             mod_CUsMgr.selectLast(true, true);
         }, {pageHasCUs: true});
-        mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox);
+        mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox,
+            {pageHasCUsSpecifier: true});
 
 
         // Then, bind `generalShortcuts`...
