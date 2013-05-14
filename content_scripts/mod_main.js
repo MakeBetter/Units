@@ -36,16 +36,13 @@
     // don't need to wait till dom-ready. allows faster starting up of the extension's features
     // (in certain sites at least. e.g. guardian.co.uk)
     // this should not cause any issues since we are handling dom changes anyway.
-    (function initializeStateAndSetupEvents (){
-
+    (function initializeWhenReady (){
         if (!document.body) {
-            setTimeout(initializeStateAndSetupEvents, 100);
+            setTimeout(initializeWhenReady, 100);
             return;
         }
         $topLevelContainer.appendTo(document.body);
-
         initializeExtension();
-
     })();
 
     function _onUrlChange() {
