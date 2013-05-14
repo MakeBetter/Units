@@ -292,7 +292,7 @@ defaultSettings.urlDataMap = {
         {
             // for Gmail
             urlPatterns: ["gmail.com", "gmail.com/*", "mail.google.com", "mail.google.com/*"],
-            protectedWebpageShortcuts: ["j", "k"]
+            protectedWebpageShortcuts: ["j", "k", "g", "o", "f"]
         }
     ],
     "quora.com": [
