@@ -196,11 +196,10 @@ defaultSettings.urlDataMap = {
         }
     ],
     "facebook.com": {
-        urlPatterns: ["www.facebook.com*"],
+//        urlPatterns: ["www.facebook.com*"],
+        urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type
+        // facebook.com/pages*
 
-        /* .genericStreamStory.uiUnifiedStory -> user's feed at facebook.com, and group page
-         ._4_7u .fbTimelineUnit -> Timeline page (the units on the right side)
-         */
         CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._4_7u .fbTimelineUnit, a.uiMorePagerPrimary",
         CUs_MUs: {
             "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
@@ -399,21 +398,22 @@ defaultSettings.urlDataMap = {
             // Pages with lists of questions
             // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
             // http://stackoverflow.com/
-            urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
-                "*.stackexchange.com\/"],
+//            urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
+//                "*.stackexchange.com\/"],
             urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
+                /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/search?/,
 
                 /^(meta\.)?(mathoverflow\.net)\/questions$/,
                 /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
                 /^(meta\.)?(mathoverflow\.net)\/$/],
-            CUs_specifier: ".question-summary"
+            CUs_specifier: ".question-summary, a[rel='next']"
         },
         {
             // Pages with answers to a specific question
             // Example: http://stackoverflow.com/questions/5874652/prop-vs-attr
-            urlPatterns: ["*.stackexchange.com/questions/*"],
+//            urlPatterns: ["*.stackexchange.com/questions/*"],
             urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\//],
             CUs_specifier: ".question, .answer",
             CUs_style: {
