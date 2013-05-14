@@ -98,6 +98,8 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
     // selected/last-selected, IF it is not in the viewport
         selectionTimeoutPeriod = 60000,
 
+        hasCUBeenSelectedOnce = false,
+
 // TODO: one of the following two is not needed
         stopExistingScrollAnimation,
         animationInProgress,
@@ -201,6 +203,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
         selectedCUIndex = indexOf$CU;
         var $overlaySelected = showOverlay($CU, 'selected');
+        hasCUBeenSelectedOnce = true;
 
         if (!$overlaySelected) {
             console.warn('UnitsProj: no $overlay returned by showOverlay');
@@ -1049,6 +1052,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         if ($CUsArray && $CUsArray.length) {
 
             var newSelectedCUIndex;
+            if (invokedDueTo === "dom-change" && miscSettings.selectCUOnLoad && !hasCUBeenSelectedOnce) {
+                invokedDueTo = "initial-setup";
+            }
+            
             if (invokedDueTo === "initial-setup") {
                 if ( miscSettings.selectCUOnLoad) {
                     // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
@@ -1065,7 +1072,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                         // don't change focus or scrolling, since this got auto-triggered due to a dom change
                         selectCU(newSelectedCUIndex, false, false, {onDomChangeOrWindowResize: true});
                     }
-                    else if ( miscSettings.selectCUOnLoad) {
+                    else if (miscSettings.selectCUOnLoad) {
                         selectMostSensibleCU(false, false);
                     }
                 }
@@ -1646,6 +1653,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         deselectCU();
         $CUsArray = [];
         $lastSelectedCU = null;
+        hasCUBeenSelectedOnce = false;
         mod_context.setCUSelectedState(false);
         mod_context.setCUsCount(0);
     }
