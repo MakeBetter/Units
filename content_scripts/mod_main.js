@@ -52,7 +52,7 @@
     // reset state and disable the extension
     function disableExtension() {
 
-        mod_CUsMgr.reset(); // TODO: this should become mod_CUs.reset()
+        mod_CUsMgr.reset();
         mod_filterCUs.reset();
         $topLevelContainer.empty().remove();
         removeAllEventListeners();
@@ -127,6 +127,7 @@
 
                 $topLevelContainer.appendTo(document.body);
 
+                // All else being equal, modules should be setup in relative order of priority of keyboard shortcuts
                 mod_context.setup(settings.expandedUrlData);
                 mod_utils.setup(miscSettings);
                 mod_help && mod_help.setup(settings);
