@@ -41,7 +41,7 @@
                 "content_scripts/initializeNamespace.js",
                 "common/mod_commonHelper.js",
                 "content_scripts/CONSTS.js",
-                "content_scripts/mod_core.js",
+                "content_scripts/initializeTopLevelContainer.js",
                 "content_scripts/mod_contentHelper.js",
                 "content_scripts/mod_utils.js",
 

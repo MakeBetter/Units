@@ -1,7 +1,7 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
+_u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
                           mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
 
     "use strict";
@@ -66,7 +66,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         hoveredCUIndex  = -1, // Index of the hovered CU in $CUsArray
 
         //container for elements created by this program that we add to the page's DOM.
-        $topLevelContainer = mod_core.$topLevelContainer,
+        $topLevelContainer = _u.$topLevelContainer,
 
         // This class should be applied to all elements added by this extension.
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
@@ -1837,7 +1837,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_utils, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
+})(jQuery, _u.mod_utils, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
         _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
 
 

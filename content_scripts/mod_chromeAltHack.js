@@ -22,7 +22,7 @@
  */
 
 if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-    _u.mod_chromeAltHack = (function($, mod_core, mod_mutationObserver, CONSTS) {
+    _u.mod_chromeAltHack = (function($, mod_mutationObserver, CONSTS) {
         "use strict";
 
        /*-- Public interface --*/
@@ -46,7 +46,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             altShortcutKeys = [],
 
             class_usedForChromeAltHack = 'UnitsProj-usedForChromeAltHack',
-            $topLevelContainer = mod_core.$topLevelContainer,
+            $topLevelContainer = _u.$topLevelContainer,
             class_addedByUnitsProj = CONSTS.class_addedByUnitsProj;
 
         /**
@@ -103,7 +103,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
                 data = accesskeysRemoved[i];
                 $(data.element).attr('accesskey', data.accessKey); // reinstate the removed accesskeys
             }
-            _u.mod_core.$topLevelContainer.find('.' + class_usedForChromeAltHack).remove();
+            _u.$topLevelContainer.find('.' + class_usedForChromeAltHack).remove();
 
             // disable...
             isEnabled = false;
@@ -183,6 +183,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
         return thisModule;
 
-    })(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.CONSTS);
+    })(jQuery, _u.mod_mutationObserver, _u.CONSTS);
 }
 

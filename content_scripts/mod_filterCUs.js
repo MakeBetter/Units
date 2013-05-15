@@ -1,4 +1,4 @@
-_u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelper, mod_domEvents, CONSTS) {
+_u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_domEvents, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -43,7 +43,7 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
             .append($searchBox)
             .append($closeButton)
             .hide()     // to prevent the search box from appearing when the page loads
-            .appendTo(mod_core.$topLevelContainer);
+            .appendTo(_u.$topLevelContainer);
         // Use a timeout to call .show(), otherwise the search box might appear briefly at the top of the page as
         // it loads
 //            setTimeout(function() {$searchContainer.show();}, 500);
@@ -290,4 +290,4 @@ _u.mod_filterCUs = (function($, mod_core, mod_mutationObserver, mod_contentHelpe
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_domEvents, _u.CONSTS);
+})(jQuery, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_domEvents, _u.CONSTS);

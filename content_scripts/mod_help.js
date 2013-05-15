@@ -1,7 +1,7 @@
 /***
  * Module for displaying the "help" modal UI
  */
-_u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
+_u.mod_help = (function($, mod_contentHelper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -16,7 +16,7 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
     var $helpContainer,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
-        $topLevelContainer = mod_core.$topLevelContainer,
+        $topLevelContainer = _u.$topLevelContainer,
         suppressEvent = mod_contentHelper.suppressEvent,
         helpModalDialogHtml =
             '<div id = "UnitsProj-help-container">' +
@@ -189,4 +189,4 @@ _u.mod_help = (function($, mod_core, mod_contentHelper, CONSTS) {
 
     return thisModule;
 
-})(jQuery, _u.mod_core, _u.mod_contentHelper, _u.CONSTS);    // pass as input external modules that this modules depends on
+})(jQuery, _u.mod_contentHelper, _u.CONSTS);    // pass as input external modules that this modules depends on

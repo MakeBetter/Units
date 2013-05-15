@@ -7,7 +7,7 @@
  * cohesive module with a particular role.
  */
 
-_u.mod_contentHelper = (function(mod_core, CONSTS) {
+_u.mod_contentHelper = (function(CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -155,14 +155,14 @@ _u.mod_contentHelper = (function(mod_core, CONSTS) {
     }
 
     function isUnitsProjElement(element) {
-        if (mod_core.$topLevelContainer[0].contains(element) ||
+        if (_u.$topLevelContainer[0].contains(element) ||
             element.classList.contains(CONSTS.class_addedByUnitsProj) ||
             $(element).parents().hasClass(CONSTS.class_addedByUnitsProj)) {
-            return true
+            return true;
         }
         return false;
     }
 
     return thisModule;
 
-})(_u.mod_core, _u.CONSTS);
+})(_u.CONSTS);
