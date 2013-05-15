@@ -74,7 +74,10 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         class_CUOverlay = CONSTS.class_CUOverlay,                     // class applied to all CU overlays
         class_CUSelectedOverlay = CONSTS.class_CUSelectedOverlay,    // class applied to overlay on a selected CU
         class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered CU
-        $unusedOverlaysArray = [],   // to enable reusing existing unused overlays
+
+    // to enable reusing existing unused overlays. this is used only to prevent leaking memory by creating new overlays
+    // without properly discarding the ones no longer in use. TODO: dispose of unused ones properly, so that this is not needed
+        $unusedOverlaysArray = [],
 
     // boolean, holds a value indicating where the css specifies a transition style for overlays
         overlayCssHasTransition,
@@ -109,9 +112,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
         // the following objects are retrieved from the background script
-        miscSettings,
-
-        suppressEvent = mod_contentHelper.suppressEvent;
+        miscSettings;
 
     function $getSelectedCU() {
         return $CUsArray[selectedCUIndex];
