@@ -483,6 +483,30 @@ defaultSettings.urlDataMap = {
     "askubuntu.com": "stackexchange.com",
     "mathoverflow.net" : "stackexchange.com",
 
+    "youtube.com": [
+        {
+            urlPatterns: ["www.youtube.com/results*"],
+            urlRegexps: [],
+            protectedWebpageShortcuts: [],
+            CUs_specifier:  {
+                selector: ".primary-col li"
+            },
+            CUs_MUs: {
+                std_mainEl: ".feed-video-title"
+            }
+        },
+        {
+            urlPatterns:["www.youtube.com*"],
+            CUs_specifier: ".feed-list-item",
+            CUs_MUs: {
+                std_mainEl: ".feed-item-content a, .content-item-detail a"
+            },
+            CUs_style: {
+                overlayPadding: "" // some negative margin-top would be nice to apply.
+            }
+        }
+    ],
+
     // randomly supported.
     "sulekha.com": {
         urlPatterns: ["*.sulekha.com/*"],
