@@ -780,7 +780,9 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
         var CUStyleData = expandedUrlData.CUs_style,
             elements = [];
 
-        if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize) {
+        // Use inner elements to get the overlay size when: 1) explicitly stated with useInnerElementsToGetOverlaySize = true
+        // OR 2) when $CU has a height or width of 0 (i.e. !$CU.is(':visible'))
+        if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize || !$CU.is(':visible')) {
             var allDescendants = $CU.find('*');
 
             if (allDescendants.length) {
@@ -1290,7 +1292,7 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
 
         for (var i = 0; i < CUsArrLen; ++i) {
             var $CU = $CUsArr[i];
-            if ( (!$CU.is(':visible') && !$CU.hasClass('hiddenByUnitsProj')) || isCUInvisible($CU)) {
+            if ((hasNoChildrenVisible($CU) && !$CU.hasClass('hiddenByUnitsProj')) || isCUInvisible($CU)) {
                 $CUsArr.splice(i, 1);
                 --CUsArrLen;
                 --i;
@@ -1729,6 +1731,32 @@ _u.mod_CUsMgr = (function($, mod_core, mod_utils, mod_domEvents, mod_mutationObs
                 return false;
             }
         }
+        return true;
+    }
+
+    /***
+     * Returns true if $CU and all its children have height or width that is zero.
+     * Returns false if $CU or any of its children have a valid height/width (i.e. is(:visible)).
+     *
+     * Sometimes there are cases when $CU has no height or width, but its children do. For excluding a
+     * $CU, we make sure all its children are not visible.
+     * @param $CU
+     * @return {boolean}
+     */
+    function hasNoChildrenVisible($CU) {
+        if ($CU.is(':visible')) {
+            return false;
+        }
+
+        var allDescendants = $CU.find("*");
+
+        for (var i = 0; i < allDescendants.length; i++) {
+            var $element = allDescendants.eq(i);
+            if ($element.is(':visible')) {
+                return false;
+            }
+        }
+
         return true;
     }
 
