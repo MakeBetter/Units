@@ -88,7 +88,7 @@ _u.mod_commonHelper = (function() {
                     stringifyFunctions(obj[key]);
                 }
                 else if (typeof obj[key] === "function") {
-                    obj[key] = _stringifyFn(obj[key])
+                    obj[key] = _stringifyFn(obj[key]);
                 }
             }
         }
@@ -256,8 +256,8 @@ _u.mod_commonHelper = (function() {
      * @param {object} settingsObj
      */
     function stringifyJSONUnsupportedTypes_inSettings(settingsObj) {
-        this.stringifyFunctions(settingsObj);
-        this.stringifyRegexps_inSettings(settingsObj);
+        stringifyFunctions(settingsObj);
+        stringifyRegexps_inSettings(settingsObj);
     }
 
     /***
