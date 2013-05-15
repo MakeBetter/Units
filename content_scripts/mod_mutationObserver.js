@@ -29,7 +29,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         currentUrl = window.location.href;
 
     var mutationObserver = new MutationObserver(_processMutations),
-        timeout_warning
+        timeout_warning;
 
     // start observing DOM mutations
     function start() {
