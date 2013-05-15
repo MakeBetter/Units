@@ -27,7 +27,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
        /*-- Public interface --*/
         var thisModule = $.extend({}, _u.mod_pubSub, {
-            applyHack: applyHack,
+            applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts,
             undoAndDisableHack: undoAndDisableHack
             //_onDomMutation: _onDomMutation, //to  apply the hack for conflicting accesskeys that come into existence later
         });
@@ -57,7 +57,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
          * These is meant to be called at the time of initializing the keyboard shortcuts for the current page.
          * @param {Array} shortcutsArr - array of strings, each of which specifies a keyboard shortcut
          */
-        function applyHack(shortcutsArr) {
+        function applyHackForSpecifiedShortcuts(shortcutsArr) {
 
             isEnabled = true;
             var shortcutsLen = shortcutsArr.length;

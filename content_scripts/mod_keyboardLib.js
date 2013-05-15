@@ -86,7 +86,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
         }, 'keydown');
 
         if (mod_chromeAltHack) {
-            mod_chromeAltHack.applyHack(shortcuts);
+            mod_chromeAltHack.applyHackForSpecifiedShortcuts(shortcuts);
         }
     }
 
