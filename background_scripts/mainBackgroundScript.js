@@ -31,6 +31,12 @@
     // active tab.
     chrome.tabs.onActivated.addListener(setCurrentTabIcon);
     chrome.windows.onFocusChanged.addListener(setCurrentTabIcon);
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+        console.log(changeInfo);
+        if (changeInfo.url) {
+           setCurrentTabIcon();
+        }
+    });
 
 
     function getSettings(request, sender, sendResponse) {
@@ -59,7 +65,7 @@
             });
         });
 
-        setIcon(false);
+//        setIcon(false);
 
         // Set icon status to disabled. If no response received from the content script (for example, on a
         // new tab or chrome extensions page, then the icon will continue to look disabled.

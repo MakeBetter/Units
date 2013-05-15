@@ -24,7 +24,7 @@
         generalShortcuts,
         CUsShortcuts,
         expandedUrlData,
-        isDisabled;
+        isDisabled = null; // initialized to null. Used later to check if a value has been set to isDisabled.
 
     /*-- Event bindings --*/
     // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
@@ -160,7 +160,11 @@
             // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
             // This is used for setting the extension icon appropriately.
             else if (request.message === "isEnabled") {
-                sendResponse({isEnabled: !isDisabled});
+                var isEnabled = (isDisabled === null) ? false : !isDisabled;
+                // if isDisabled is null (with which it was initalized), then we haven't got the settings from the
+                // background script yet. In that case, assume the extension to be disabled.
+
+                sendResponse({isEnabled: isEnabled});
             }
         }
     );
