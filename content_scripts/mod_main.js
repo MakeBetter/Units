@@ -94,7 +94,7 @@
                 // set the extension icon as enabled/disabled every time the extension is initialized.
                 chrome.runtime.sendMessage({
                     message: 'setIcon',
-                    isDisabled: isDisabled
+                    isEnabled: !isDisabled
                 });
 
                 if (isDisabled) {
