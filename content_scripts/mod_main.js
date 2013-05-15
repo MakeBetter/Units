@@ -125,6 +125,11 @@
                     mod_keyboardLib.setProtectedWebpageShortcuts(settings.expandedUrlData.protectedWebpageShortcuts);
                 }
 
+
+                // this should be done  before binding other keydown/keypress/keyup events so that these event handlers get
+                // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
+                /* setupExternalSearchEvents(); */
+
                 $topLevelContainer.appendTo(document.body);
 
                 // All else being equal, modules should be setup in relative order of priority of keyboard shortcuts
@@ -133,17 +138,10 @@
                 mod_help && mod_help.setup(settings);
                 mod_filterCUs && mod_filterCUs.setup();
                 mod_CUsMgr.setup(miscSettings, expandedUrlData);
-
-                // this should be done  before binding any keydown/keypress/keyup events so that these event handlers get
-                // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
-                /* setupExternalSearchEvents(); */
-
+                
+                setupShortcuts();
 
                 mod_mutationObserver.start();
-
-                // the following line should remain outside the if condition so that the change from a url with CUs
-                // to one without any is correctly handled
-                setupShortcuts();
 
             }
         );
