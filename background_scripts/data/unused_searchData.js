@@ -1,3 +1,6 @@
+//JSHint config
+/* exported searchData */
+
 // Instead the following object, a pure JSON file should suffice. The JS object is used only for convenience, and
 // should be converted to a JSON file later if required.
 

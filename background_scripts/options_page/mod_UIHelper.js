@@ -1,5 +1,7 @@
+// JSHint config
+/* exported mod_UIHelper */
 
-mod_UIHelper = (function() {
+var mod_UIHelper = (function() {
     "use strict";
 
     /*-- Public interface --*/
@@ -36,7 +38,7 @@ mod_UIHelper = (function() {
         messageDiv.style.display = "block";
 
         if (type === "success") {
-            duration = parseInt(duration) || 3000;
+            duration = parseInt(duration, 10) || 3000;
             setTimeout(function() {
                 messageDiv.style.display = "none";
             }, duration);
@@ -44,11 +46,11 @@ mod_UIHelper = (function() {
     }
 
     function showErrorMessage(message) {
-        this.showMessage(message, "error");
+        showMessage(message, "error");
     }
 
     function showSuccessMessage(message) {
-        this.showMessage(message, "success");
+        showMessage(message, "success");
     }
 
     return thisModule;

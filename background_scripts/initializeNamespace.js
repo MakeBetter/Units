@@ -1,3 +1,4 @@
+// JSHint config
 /* exported _u */
 
 // This is the first background script to load (see manifest.json for the order in which background scripts are loaded).

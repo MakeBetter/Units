@@ -1,5 +1,3 @@
-/* global _u */
-
 //Remove the following commented out code later
 //setInterval(function() {
 //    chrome.tabs.query({}, function(tabs) {
@@ -11,9 +9,8 @@
 //        }
 //    });
 //}, 3000);
-
 (function(mod_settings, mod_getMainDomain) {
-    "use strict";
+//    "use strict";
 
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {

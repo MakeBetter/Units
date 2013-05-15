@@ -1,4 +1,4 @@
-/* global jQuery, _u, defaultSettings, specialDomain_masterDomain_map */
+/* global jQuery, defaultSettings, specialDomain_masterDomain_map */
 
 _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map) {
     "use strict";

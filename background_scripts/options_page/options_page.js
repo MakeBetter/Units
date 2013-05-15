@@ -1,3 +1,5 @@
+// JSHint Config
+/* global mod_UIHelper */
 
 /* Note: In the HTML page, we use the word 'options' instead of 'settings', which is used in code. 'Options' is more
  consistent with Chrome extension terms. 'Settings' might be easier to understand in code. */

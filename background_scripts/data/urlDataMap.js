@@ -1,3 +1,7 @@
+// JSHint config
+/* global defaultSettings */
+/* exported specialDomain_masterDomain_map */
+
 /*
 A note on the terms 'CU' and 'MU' that occur multiple times throughout this file:
  Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
@@ -118,7 +122,7 @@ defaultSettings.urlDataMap = {
 
             CUs_specifier:  {
                 selector: ".foo .bar",
-                exclude: ".advert",          // TODO: check if this is implemented
+                exclude: ".advert"         // TODO: check if this is implemented
                 //buildCUAround: ".unit-title" // This can be specified *instead*, If specifying a selector for a CU is not straightforward or possible,
                 // then specify this. TODO: complete this.
 
@@ -174,7 +178,7 @@ defaultSettings.urlDataMap = {
                     selector: "#header"
                 },
                 std_nextOrMore: {
-                    selector: ".next",
+                    selector: ".next"
                     //kbdShortcuts: ["g down"]   // this is optional for standard items (i.e. ones prefixed with "std_")
                 }
             },

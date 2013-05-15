@@ -1,3 +1,6 @@
+// JSHint config
+/* global searchData */
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
 

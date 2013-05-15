@@ -1,3 +1,7 @@
+// JSHint config
+/* global defaultSettings */
+/* exported specialDomain_masterDomain_map */
+
 // This file is just a repository of all urlData that we have added in the past. This is not being used by the code.
 // The main file, urlDataMap.js that is in use, contains only that data that works well.
 
@@ -51,7 +55,7 @@ defaultSettings.urlDataMap = {
 
             CUs_specifier:  {
                 selector: ".foo .bar",
-                exclude: ".advert",          // TODO: check if this is implemented
+                exclude: ".advert"          // TODO: check if this is implemented
                 //buildCUAround: ".unit-title" // This can be specified *instead*, If specifying a selector for a CU is not straightforward or possible,
                 // then specify this. TODO: complete this.
 
@@ -107,7 +111,7 @@ defaultSettings.urlDataMap = {
                     selector: "#header"
                 },
                 std_nextOrMore: {
-                    selector: ".next",
+                    selector: ".next"
                     //kbdShortcuts: ["g down"]   // this is optional for standard items (i.e. ones prefixed with "std_")
                 }
             },
@@ -248,7 +252,7 @@ defaultSettings.urlDataMap = {
                 //TODO: needs work
 //                    selector: ".question.row, .w4_5.p1.answer_text, .pager_next.action_button",
                 first: ".rating_options",
-                last: ".item_action_bar",
+                last: ".item_action_bar"
             },
             CUs_MUs: {
                 std_mainEl: ".answer_user>span>a.user",
@@ -260,7 +264,7 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["www.reddit.com/*/comments/*"],
             CUs_specifier: {
-                buildCUAround: ".arrow.up, .usertext-edit",
+                buildCUAround: ".arrow.up, .usertext-edit"
                 //                exclude: ".panestack-title, .menuarea"
 
             },
@@ -278,7 +282,7 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["www.reddit.com*"],
             CUs_specifier: {
-                selector: "#siteTable>div.thing", //works well. doesn't include the promoted article though,
+                selector: "#siteTable>div.thing" //works well. doesn't include the promoted article though,
             },
             CUs_style: {
                 useInnerElementsToGetOverlaySize: true,
@@ -397,7 +401,7 @@ defaultSettings.urlDataMap = {
     "urbandictionary.com": {
         urlPatterns: ["*.urbandictionary.com*"],
         CUs_specifier: {
-            buildCUAround: "td.index",
+            buildCUAround: "td.index"
         }
     },
 

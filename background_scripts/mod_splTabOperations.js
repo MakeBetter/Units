@@ -53,7 +53,7 @@
         chrome.tabs.query({currentWindow:true, active: true}, function(tabs) {
             if (tabs.length) {
                 var activeTab = tabs[0],
-                    tabId = activeTab.id,
+//                    tabId = activeTab.id,
                     currentIndex = activeTab.index;
                 // next, get number of tabs in the window, in order to allow cyclic next
                 chrome.tabs.query({currentWindow: true}, function (tabs) {

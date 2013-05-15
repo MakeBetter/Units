@@ -1,5 +1,3 @@
-/* global _u */
-
 
 _u.mod_getMainDomain = (function() {
     "use strict";
@@ -94,11 +92,13 @@ _u.mod_getMainDomain = (function() {
         }
 
         var mainDomain = null,
-            suffixesArrLen = suffixesArr.length;
+            suffixesArrLen = suffixesArr.length,
+            suffixTokens,
+            i;
 
         // first check for the "exception rules" i.e. rules starting with "!" because they have the highest precedence
-        for (var i = 0; i < suffixesArrLen; ++i) {
-            var suffixTokens = suffixesArr[i];
+        for (i = 0; i < suffixesArrLen; ++i) {
+            suffixTokens = suffixesArr[i];
 
             if (suffixTokens[0].charAt(0) === "!") {
                 if (domainMatchesSuffix(domainTokens, suffixTokens)) {
@@ -112,8 +112,8 @@ _u.mod_getMainDomain = (function() {
         // Match the domain tokens decrementing the number of tokens to be matched in each iteration. Stop at the first match
         // found since that would be the match with the most tokens.
         for (var numTokensToMatch = domainTokensLen; numTokensToMatch >0; numTokensToMatch--) {
-            for (var i = 0; i < suffixesArrLen; ++i) {
-                var suffixTokens = suffixesArr[i];
+            for (i = 0; i < suffixesArrLen; ++i) {
+                suffixTokens = suffixesArr[i];
                 if (numTokensToMatch !== suffixTokens.length || suffixTokens[0].charAt(0) === '!') {
                     continue;
                 }
