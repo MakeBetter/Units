@@ -28,8 +28,8 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         groupingInterval_for_DomMutations = 150,
         currentUrl = window.location.href;
 
-    var mutationObserver = new MutationObserver (_processMutations),
-        timeout_warning;
+    var mutationObserver = new MutationObserver(_processMutations),
+        timeout_warning
 
     // start observing DOM mutations
     function start() {
@@ -47,11 +47,17 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
 
     // stop observing DOM mutations
     function stop() {
-        var warnInSeconds = 60;
+        var warnInSeconds = 30;
+
         mutationObserver.disconnect();
-        timeout_warning = setTimeout(function() {
-            console.warn('Mutation Observer was stopped ' + warnInSeconds + ' seconds ago and not restarted.');
-        }, warnInSeconds * 1000);
+
+        (function setWarningTimeout() {
+            timeout_warning = setTimeout(function() {
+                console.warn('Mutation Observer was stopped (+)' + warnInSeconds + ' seconds ago and not restarted.');
+                setWarningTimeout();
+            }, warnInSeconds * 1000);
+
+        })();
 
     }
 
