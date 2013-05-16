@@ -215,6 +215,11 @@
         mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, mod_utils.focusNextTextInput);
         mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, mod_utils.focusPrevTextInput);
 
+        // special shortcuts, based on the relative priority of shortcuts, these will get invoked only
+        // when the page has no CUs
+        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_utils.scrollDown);
+        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_utils.scrollUp);
+
     }
 
     /**
