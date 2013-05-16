@@ -6,7 +6,8 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
-        setup: setup,
+        reset: reset,
+        init: init,
         showHelp: showHelp,
         hideHelp: hideHelp
     });
@@ -42,7 +43,12 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
                 '<table><thead><tr><th colspan="2" class="section-title"></th></tr></thead></table>' +
             '</div>';
 
-    function setup(settings) {
+    function reset() {
+        $helpContainer && $helpContainer.remove();
+    }
+
+    function init(settings) {
+        reset();
         setupHelpUI(settings);
 
         var onEscapeKeyDownOnHelp = function(e) {

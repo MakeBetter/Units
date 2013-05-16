@@ -24,8 +24,8 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
-        bind: bind,
         reset:reset,
+        bind: bind,
         isSpaceDown: isSpaceDown,
         shouldHandleShortcut: shouldHandleShortcut, // exposed publicly for Mousetrap library (mousetrap-modified.js)
         setProtectedWebpageShortcuts: setProtectedWebpageShortcuts
@@ -91,6 +91,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     }
 
     function reset() {
+        protectedWebpageShortcuts = [];
         Mousetrap.reset();
     }
     function isSpaceDown() {
@@ -98,13 +99,13 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     }
     function setProtectedWebpageShortcuts(shortcuts) {
         if (!shortcuts || !shortcuts.length)
-            return;
-        protectedWebpageShortcuts = shortcuts;
+            protectedWebpageShortcuts = [];
+        else {
+            protectedWebpageShortcuts = shortcuts;
+        }
 //        protectedWebpageShortcuts_lowerCase = [];
-//        if (protectedWebpageShortcuts) {
-//            for (var i = 0; i < protectedWebpageShortcuts.length; i++) {
-//                protectedWebpageShortcuts_lowerCase[i] = protectedWebpageShortcuts[i].toLowerCase();
-//            }
+//        for (var i = 0; i < protectedWebpageShortcuts.length; i++) {
+//            protectedWebpageShortcuts_lowerCase[i] = protectedWebpageShortcuts[i].toLowerCase();
 //        }
     }
 

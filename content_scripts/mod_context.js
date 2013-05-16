@@ -16,7 +16,7 @@
 _u.mod_context = (function(mod_contentHelper){
 
     var thisModule = {
-        setup: setup,
+        init: init,
         isContextValid: isContextValid,
         setCUSelectedState: setCUSelectedState,
         setCUsCount: setCUsCount
@@ -50,7 +50,8 @@ _u.mod_context = (function(mod_contentHelper){
         }
     };
 
-    function setup(expandedUrlData) {
+    function init(settings) {
+        var expandedUrlData = settings.expandedUrlData;
         pageHasUrlData = expandedUrlData? true: false;
         pageHasCUsSpecifier = (expandedUrlData && expandedUrlData.CUs_specifier)? true: false;
 
@@ -63,8 +64,8 @@ _u.mod_context = (function(mod_contentHelper){
      * Note: only the conditions specified are checked. Other conditions can have any value, and they won't affect
      * the result.
      *
-     * The list of context conditions is specified below (each should be specified as a key of the `supportedContexts` hash, with
-     * the corresponding property being true or false as desired):
+     * The list of context conditions is specified below (each should be specified as a key of the `supportedContexts`
+     * hash, with the corresponding property being true or false as desired):
      *
      * Examples of `context` object:
      * {CUSelected: true}, {CUSelected: true, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc

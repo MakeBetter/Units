@@ -4,33 +4,34 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset,
-        setup: setup,
+        init: init,
         filterCUsArray: filterCUsArray,
         showSearchBox: showSearchBox
     });
 
-    var $searchContainer,
+    // *Events Raised*
+    // "filtering-state-change", "tab-on-filter-search-box"
+
+    var $filterCUsContainer,
         $searchBox,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
 //        isVisible = false,
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
-        beenSetupOnce, // has the module been setup at least once
         $document = $(document),
-        lastFilterText;
+        lastFilterText_lowerCase;
 
     // reset state
     function reset() {
-        if (beenSetupOnce) {
-            closeSearchBox();
-            timeout_typing = null;
-            lastFilterText = "";
-        }
+        // the following two lines are conditional because otherwise they won't be valid till init() is called once
+        $searchBox && closeSearchBox(); // to call triggerFilteringIfRequired()
+        $filterCUsContainer && $filterCUsContainer.remove();
+        timeout_typing = null;
+        lastFilterText_lowerCase = "";
     }
 
-    function setup() {
-        beenSetupOnce = true;
-        lastFilterText = "";
+    function init() {
+        reset();
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);
 
@@ -38,7 +39,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             .attr("id", "UnitsProj-search-close-icon")
             .addClass(class_addedByUnitsProj);
 
-        $searchContainer = $('<div id = "UnitsProj-search-container">')
+        $filterCUsContainer = $('<div id = "UnitsProj-search-container">')
             .addClass(class_addedByUnitsProj)
             .append($searchBox)
             .append($closeButton)
@@ -46,26 +47,22 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             .appendTo(_u.$topLevelContainer);
         // Use a timeout to call .show(), otherwise the search box might appear briefly at the top of the page as
         // it loads
-//            setTimeout(function() {$searchContainer.show();}, 500);
+//            setTimeout(function() {$filterCUsContainer.show();}, 500);
 
-//            $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
+//            $filterCUsContainer.css({top: -$filterCUsContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
 
         $searchBox.on('paste input', onSearchBoxInput);
         // Instead of specifying 'keydown' as part of the on() call above, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $searchBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
         mod_domEvents.addEventListener(document, 'keydown', onSearchBoxInput, true);
-        $closeButton.click(closeSearchBox);
+        $closeButton.on('click', closeSearchBox);
     }
 
-    // Filters the passed array $CUsArr based on the text in the search box.
-    // Returns bool indicating if the filter text had changed since the last time this function was invoked
-    // (the function could have also simply got invoked due to dom mutations, or as part of mod_CUsMgr's setup())
     /**
      * Filters the passed array $CUsArr based on the text in the search box. Returns the filtered array.
      * @param $CUsArr
      * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
-     * Else false.
      */
     function filterCUsArray($CUsArr, userInvoked) {
 
@@ -86,7 +83,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         var $closestAncestor = $(mod_contentHelper.closestCommonAncestor(CUsNodes));
 
         mod_mutationObserver.stop(); // ** stop monitoring mutations **
-        var searchTextLowerCase = getSearchBoxText().toLowerCase();
+        var filterText_lowerCase = getSearchBoxText().toLowerCase();
         var savedScrollPos;
         if (!userInvoked) {
             // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
@@ -99,8 +96,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         removeHighlighting($closestAncestor);
 
         // ** --------- FILTERING --------- **
-//        if (!searchTextLowerCase || !isVisible) {
-        if (!searchTextLowerCase || !$searchContainer.is(':visible')) {
+//        if (!filterText_lowerCase || !isVisible) {
+        if (!filterText_lowerCase || !$filterCUsContainer.is(':visible')) {
             var $hiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
             $hiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
         }
@@ -108,8 +105,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 //            console.log('actual filtering taking place...');
             for (i = 0, $CU; i < CUsArrLen; ++i) {
                 $CU = $CUsArr[i];
-                // if ($CU.text().toLowerCase().indexOf(searchTextLowerCase) >= 0) {
-                if (highlightInCU($CU, searchTextLowerCase)) {
+                // if ($CU.text().toLowerCase().indexOf(filterText_lowerCase) >= 0) {
+                if (highlightInCU($CU, filterText_lowerCase)) {
 
                     //if ($CU.hasClass('hiddenByUnitsProj')) {
 
@@ -231,7 +228,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             }
             else  if (code === 13) { // Enter
                 suppressEvent(e);
-                triggerFiltering();
+                triggerFilteringIfRequired();
             }
             else if (code === 9) { // Tab
                 suppressEvent(e);
@@ -241,17 +238,13 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         // setting the time out below, in conjunction with the clearTimeout() earlier, allows search-as-you-type, while
         // not executing the filtering related code till there is a brief pause in the typing
-        timeout_typing = setTimeout (function() {
-
-            triggerFiltering();
-
-        }, 400);
+        timeout_typing = setTimeout (triggerFilteringIfRequired, 400);
     }
 
-    function triggerFiltering() {
-        var searchTextLowerCase = getSearchBoxText().toLowerCase();
-        if (lastFilterText !== searchTextLowerCase) {
-            lastFilterText = searchTextLowerCase;
+    function triggerFilteringIfRequired() {
+        var filterText_lowerCase = getSearchBoxText().toLowerCase();
+        if (lastFilterText_lowerCase !== filterText_lowerCase) {
+            lastFilterText_lowerCase = filterText_lowerCase;
             thisModule.trigger('filtering-state-change');
         }
     }
@@ -262,11 +255,11 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     function showSearchBox() {
 //        if (!isVisible) {
-        if(!$searchContainer.is(':visible')) {
+        if(!$filterCUsContainer.is(':visible')) {
             $searchBox.val('');
-//            $searchContainer.css({top: "0px"});
+//            $filterCUsContainer.css({top: "0px"});
 //            var savedScrollPos = $document.scrollTop();
-            $searchContainer.show();
+            $filterCUsContainer.show();
             $searchBox.focus();
             // Setting the focus to the search box scrolls the page up slightly because the searchbox lies above the visible
             // part of the page (i.e. till its 'sliding' effect due to css transition completes). This is undesirable.
@@ -282,10 +275,10 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function closeSearchBox() {
         $searchBox.val('');
         $searchBox.blur();
-//        $searchContainer.css({top: -$searchContainer.outerHeight(true) + "px"});
+//        $filterCUsContainer.css({top: -$filterCUsContainer.outerHeight(true) + "px"});
 //        isVisible = false;
-        $searchContainer.hide();
-        triggerFiltering();
+        $filterCUsContainer.hide();
+        triggerFilteringIfRequired();
     }
 
     return thisModule;

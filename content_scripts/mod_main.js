@@ -24,7 +24,12 @@
         generalShortcuts,
         CUsShortcuts,
         expandedUrlData,
-        isDisabled = null; // initialized to null. Used later to check if a value has been set to isDisabled.
+        isDisabled = null, // explicitly initialized to null; used later to check against it
+
+        // modules that require init() and/or reset() to be called during extension initialization and disabling
+        // respectively. All else being equal, modules should be initialized in relative order of priority of keyboard
+        // shortcuts. init() is called in the order defined below, while reset() is called in the opposite order
+        modulesToSetup = [mod_context, mod_help, mod_utils, mod_filterCUs, mod_CUsMgr, mod_chromeAltHack];
 
     /*-- Event bindings --*/
     // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
@@ -43,7 +48,7 @@
         }
         $topLevelContainer.appendTo(document.body);
         initializeExtension();
-    })();
+    })();   // ** Main flow begins here!! **
 
     function _onUrlChange() {
         initializeExtension(); // resets the extension
@@ -52,14 +57,13 @@
     // reset state and disable the extension
     function disableExtension() {
 
-        mod_CUsMgr.reset();
-        mod_filterCUs.reset();
+        for (var i = modulesToSetup.length - 1; i >= 0; i--) {
+            var module = modulesToSetup[i];
+            module && module.reset && module.reset();
+        }
+
         $topLevelContainer.empty().remove();
         removeAllEventListeners();
-
-        if (mod_chromeAltHack) {
-            mod_chromeAltHack.undoAndDisableHack();
-        }
 
         if (generalShortcuts) {  // need this check since since the obj wouldn't be defined the first time
             mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, initializeExtension);
@@ -132,12 +136,10 @@
 
                 $topLevelContainer.appendTo(document.body);
 
-                // All else being equal, modules should be setup in relative order of priority of keyboard shortcuts
-                mod_context.setup(settings.expandedUrlData);
-                mod_utils.setup(miscSettings);
-                mod_help && mod_help.setup(settings);
-                mod_filterCUs && mod_filterCUs.setup();
-                mod_CUsMgr.setup(miscSettings, expandedUrlData);
+                for (var i = 0; i < modulesToSetup.length; i++) {
+                    var module = modulesToSetup[i];
+                    module && module.init && module.init(settings);
+                }
                 
                 setupShortcuts();
 
@@ -158,10 +160,9 @@
             // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
             // This is used for setting the extension icon appropriately.
             else if (request.message === "isEnabled") {
-                var isEnabled = (isDisabled === null) ? false : !isDisabled;
                 // if isDisabled is null (with which it was initalized), then we haven't got the settings from the
                 // background script yet. In that case, assume the extension to be disabled.
-
+                var isEnabled = (isDisabled === null) ? false : !isDisabled;
                 sendResponse({isEnabled: isEnabled});
             }
         }
@@ -213,6 +214,11 @@
         mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, mod_utils.focusFirstTextInput);
         mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, mod_utils.focusNextTextInput);
         mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, mod_utils.focusPrevTextInput);
+
+        // special shortcuts, based on the relative priority of shortcuts, these will get invoked only
+        // when the page has no CUs
+        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_utils.scrollDown);
+        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_utils.scrollUp);
 
     }
 

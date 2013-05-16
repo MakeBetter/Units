@@ -28,45 +28,45 @@
     * Within the module's code, public functions should be invoked directly with their local references (i.e. simply
     foo() instead of  thisModule.foo()). This makes it easier to change a function's type (from private to public, or
     vice-versa) when required.
- - Event handlers
-    Each module can have event handlers for external events. For the sake of better organization, as well as self
-    documenting code, all event bindings should be done near top of the module's definition (when possible).
+    * Two public methods `init` and `reset` should be provided by the modules which need them. These will be called
+    by the main module to initialize (and reinitialize) and reset (and disable) the module
+ - Events handlers
+    Each module can respond to events of other modules and raise events of its own. Ideally, both these groups ("Events
+    Raised and "Events Consumed") should be documented just after the `thisModule`.
  */
 
 // A template for modules in this project
-_u.mod_moduleName = (function($/*, mod_1*/) {
+_u.mod_moduleName = (function($/*, mod_1, mod_2*/) {
     "use strict";
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
-        func_foo: func_foo
+        reset: reset, // reset the module (and disable it if applicable/required)
+        init: init,   // (re) initialize the module
+        public_foo: public_foo
     });
 
-//  /*-- Event bindings --*/
-//  thisModule.listenTo(mod_1, "eventA", _onEventA);
-//  thisModule.listenTo(mod_1, "eventA", _onEventA);
-
     /*-- Module implementation --*/
-    var value = 5; // private
+    var private_value = 5; // private
+
+    function reset() {
+
+    }
+    function init() {
+        reset();    // typically called to reset state before proceeding with any other setting up required
+        //... setup code
+    }
 
     // public function
-    function func_foo() {
-        //_func1();
+    function public_foo() {
+        private_bar();
     }
 
     // private function
-    function _func1() {
-      value++;
-      console.log(value);
+    function private_bar() {
+        private_value++;
+      console.log(private_value);
     }
-
-//  function _onEventA() {
-//
-//  }
-//  function _onEventB() {
-//
-//  }
-
     return thisModule;
 
-})(jQuery/*, mod_1*/);    // pass as input external modules that this modules depends on
+})(jQuery/*, mod_1, mod_2*/);    // pass as input external modules that this modules depends on
