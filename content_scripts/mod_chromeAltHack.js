@@ -27,27 +27,51 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
        /*-- Public interface --*/
         var thisModule = $.extend({}, _u.mod_pubSub, {
-            applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts,
-            undoAndDisableHack: undoAndDisableHack
-            //_onDomMutation: _onDomMutation, //to  apply the hack for conflicting accesskeys that come into existence later
+
+            init: init,
+            reset: reset, // Resets state AND *undoes* the hack including reinstating accessKey removed earlier
+            applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts
         });
 
-        /*-- Event bindings --*/
-        thisModule.listenTo(mod_mutationObserver, 'dom-mutation', _onDomMutation);
+        // *Events Consumed* 
+        // 1. mod_mutationObserver: "dom-mutation" (to  apply the hack for conflicting accesskeys that come into existence)
 
+        
         /*-- Module implementation --*/
-        var isEnabled,
-
-            // when the extension is (temporarily) disabled, this is used to reinstate the conflicting access key attributes
+        var 
+            // when the extension is disabled, this is used to reinstate the conflicting access key attributes
             // that were removed from the original DOM
             accesskeysRemoved = [],
 
             // array of <key>'s that are a part of alt+<key> type shortcuts; used to detect conflicts on DOM changes
             altShortcutKeys = [],
 
-            class_usedForChromeAltHack = 'UnitsProj-usedForChromeAltHack',
+            class_dummyAccessKey = 'UnitsProj-dummyAccessKey',
             $topLevelContainer = _u.$topLevelContainer,
             class_addedByUnitsProj = CONSTS.class_addedByUnitsProj;
+
+        // Resets state AND *undoes* the effect of the hack including reinstating accessKey removed earlier
+        function reset() {
+            // undo DOM changes due to hack...
+            var len = accesskeysRemoved.length,
+                data;
+            for (var i = 0; i < len; i++) {
+                data = accesskeysRemoved[i];
+                $(data.element).attr('accesskey', data.accessKey); // reinstate the removed accesskeys
+            }
+            _u.$topLevelContainer.find('.' + class_dummyAccessKey).remove();
+
+            // reset state for the future...
+            accesskeysRemoved = [];
+            altShortcutKeys = [];
+            
+            thisModule.stopListening();
+        }
+
+        function init() {
+            reset();
+            thisModule.listenTo(mod_mutationObserver, 'dom-mutation', onDomMutation);
+        }
 
         /**
          * Applies the "chrome alt hack" (if required) to the page, based on array of keyboard shortcuts passed.
@@ -59,7 +83,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
          */
         function applyHackForSpecifiedShortcuts(shortcutsArr) {
 
-            isEnabled = true;
             var shortcutsLen = shortcutsArr.length;
             for (var i = 0; i < shortcutsLen; ++i) {
                 var shortcut = shortcutsArr[i],
@@ -75,14 +98,14 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
                         altShortcutKeys.push(keyAfterAlt);
                     }
 
-                    _removeAccessKey(keyAfterAlt, document);
+                    removeAccessKey(keyAfterAlt, document);
 
                     if (!($topLevelContainer.find('[accesskey="' + keyAfterAlt+ '"]').length)) {
 
                         $topLevelContainer.append(
                             $('<div></div>')
                                 .attr('accesskey', keyAfterAlt)
-                                .addClass(class_usedForChromeAltHack)
+                                .addClass(class_dummyAccessKey)
                                 .addClass(class_addedByUnitsProj)
                         );
                     }
@@ -91,70 +114,44 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
         }
 
         /**
-         * Disables the hack and undoes any modifications to page made by it. Resets module state.
-         * Is meant to be called when the extension is (temporarily) disabled on the current page.
-         */
-        function undoAndDisableHack() {
-
-            // undo DOM changes due to hack...
-            var len = accesskeysRemoved.length,
-                data;
-            for (var i = 0; i < len; i++) {
-                data = accesskeysRemoved[i];
-                $(data.element).attr('accesskey', data.accessKey); // reinstate the removed accesskeys
-            }
-            _u.$topLevelContainer.find('.' + class_usedForChromeAltHack).remove();
-
-            // disable...
-            isEnabled = false;
-
-            // reset state for the future...
-            accesskeysRemoved = [];
-            altShortcutKeys = [];
-        }
-
-        /**
          * Removes any conflicting accesskey attributes that come into existence due to a DOM change, based on the
          * stored list of keyboard shortcuts active on the page.
          * @param mutations
          */
-        function _onDomMutation(mutations) {
+        function onDomMutation(mutations) {
 
-            if (isEnabled) {
-                var mutationsLen = mutations.length,
-                    mutationRecord,
-                    addedNodes;
-                for (var i = 0; i < mutationsLen; ++i) {
-                    mutationRecord = mutations[i];
+            var mutationsLen = mutations.length,
+                mutationRecord,
+                addedNodes;
+            for (var i = 0; i < mutationsLen; ++i) {
+                mutationRecord = mutations[i];
 
-                    if ((addedNodes = mutationRecord.addedNodes)) {
+                if ((addedNodes = mutationRecord.addedNodes)) {
 
-                        var addedNodesLen = addedNodes.length,
-                            node;
-                        for (var j = 0; j < addedNodesLen; ++j) {
-                            node = addedNodes[j];
-                            if (node.nodeType === document.ELEMENT_NODE) {
-                                _removeAnyConflictingAccessKeyAttr(node);
-                            }
+                    var addedNodesLen = addedNodes.length,
+                        node;
+                    for (var j = 0; j < addedNodesLen; ++j) {
+                        node = addedNodes[j];
+                        if (node.nodeType === document.ELEMENT_NODE) {
+                            removeAnyConflictingAccessKeyAttr(node);
                         }
                     }
+                }
 
-                    if (mutationRecord.attributeName && mutationRecord.attributeName.toLowerCase() === 'accesskey') {
-                        _removeAnyConflictingAccessKeyAttr(mutationRecord.target);
-                    }
+                if (mutationRecord.attributeName && mutationRecord.attributeName.toLowerCase() === 'accesskey') {
+                    removeAnyConflictingAccessKeyAttr(mutationRecord.target);
                 }
             }
         }
-
 
         /**
          * Removes  conflicting accesskeys from the specified element and all its children
          * @param element
          */
-        function _removeAnyConflictingAccessKeyAttr(element) {
+        function removeAnyConflictingAccessKeyAttr(element) {
             var altShortcutKeysLen = altShortcutKeys.length;
             for (var i = 0; i < altShortcutKeysLen; ++i) {
-                _removeAccessKey(altShortcutKeys[i], element);
+                removeAccessKey(altShortcutKeys[i], element);
             }
         }
 
@@ -167,10 +164,10 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
          * @param {DOMelement} element The DOM element within which (including its subtree) a conflicting accesskey will be
          * removed.
          */
-        function _removeAccessKey(accessKey, element) {
+        function removeAccessKey(accessKey, element) {
 
             var $conflictingElements =  $(element).find('[accesskey="' + accessKey+ '"]:not(.' +
-                class_usedForChromeAltHack + ')');
+                class_dummyAccessKey + ')');
 
             $conflictingElements.each(
                 function(index, element) {

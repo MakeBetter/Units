@@ -7,7 +7,7 @@ _u.mod_utils = (function($) {
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
 
-        setup: setup,
+        init: init,
 
         scrollDown: scrollDown,
         scrollUp: scrollUp,
@@ -34,8 +34,8 @@ _u.mod_utils = (function($) {
         elementToScroll = e.target;
     });
 
-    function setup(_miscSettings) {
-        miscSettings = _miscSettings;
+    function init(settings) {
+        miscSettings = settings.miscSettings;
     }
     function scrollDown() {
         scroll(miscSettings.pageScrollDelta);

@@ -8,8 +8,8 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
-        setup: setup,
         reset: reset,
+        init: init,
         $getSelectedCU: $getSelectedCU,
         selectNext: selectNext,
         selectPrev: selectPrev,
@@ -1667,19 +1667,21 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
         mod_context.setCUsCount(0);
     }
 
-    function setup(_miscSettings, _expandedUrlData) {
-
+    function init(settings) {
         // we need the body to exist before we can set overlayCssHasTransition
         if (!document.body) {
-            setTimeout(setup, 100);
+            setTimeout(init, 100);
             return;
         }
+
+        reset();
 
         // This is required before we call setupEvents();
         overlayCssHasTransition = checkOverlayCssHasTransition();
 
-        miscSettings = _miscSettings;
-        expandedUrlData = _expandedUrlData;
+        // assign from `settings` to global variables
+        miscSettings = settings.miscSettings;
+        expandedUrlData = settings.expandedUrlData;
 
         $scrollingMarker = $('<div></div>')
             .addClass(class_scrollingMarker)
