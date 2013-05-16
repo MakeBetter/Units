@@ -474,9 +474,10 @@ defaultSettings.urlDataMap = {
         CUs_MUs: {
             "std_mainEl": "td.title>a",
             "std_viewComments": {
-                kbdShortcuts: ["c", "g c"], // overridden to add additional shortcut
+                kbdShortcuts: ["c", "v c"], // overridden to add additional shortcut
                 selector: "a:contains('comment'), a:contains('discuss')"
-            }
+            },
+            "std_upvote": "td:nth-child(2) center>a"
         }
     },
 
