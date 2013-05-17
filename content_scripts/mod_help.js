@@ -130,9 +130,8 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
      * @param shortcutsObj
      * @param $shortcutsTable
      * @param [subSectionTitle]
-     * @param [isBrowserShortcut] TODO: This is temporary
      */
-    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSectionTitle, isBrowserShortcut) {
+    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSectionTitle) {
         if (!shortcutsObj || !$shortcutsTable) {
             return;
         }
@@ -150,10 +149,7 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
 
         $.each(shortcutsObj, function(key, value) {
             var kbdShortcuts = value.kbdShortcuts;
-            if (isBrowserShortcut) {
-                kbdShortcuts = value;
-            }
-
+            
             if (kbdShortcuts) {
                 var kbdShortcutsHtml = "";
 

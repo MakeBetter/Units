@@ -109,11 +109,11 @@ var defaultSettings = {
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
         nextCU: {
             miniDescr: "Select next CU",
-            kbdShortcuts: ['j', '`', 'down']
+            kbdShortcuts: ['j', 'down']
         },
         prevCU: {
             miniDescr: "Select previous CU",
-            kbdShortcuts: ['k', 'shift+`', 'up']
+            kbdShortcuts: ['k', 'up']
         },
         // TODO: rename this to filter
         search: {
@@ -126,7 +126,7 @@ var defaultSettings = {
         },
         lastCU: {
             miniDescr: "Select last CU",
-            kbdShortcuts: ['$', 'alt+9', 'alt+0']
+            kbdShortcuts: ['$', 'alt+9']
         }
     },
 
