@@ -41,7 +41,9 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
         shortcutsSectionHtml =
             '<div class = "section">' +
                 '<table><thead><tr><th colspan="2" class="section-title"></th></tr></thead></table>' +
-            '</div>';
+            '</div>',
+
+        keysSeparatorHtml = "<span class=separator> or </span>";
 
     function reset() {
         $helpContainer && $helpContainer.remove();
@@ -76,6 +78,8 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
 
         $help.find(".UnitsProj-modal-body").append($CUsShortcutsSection, $generalShortcutsSection,
             $("<div class=UnitsProj-float-fixer></div>"));
+
+        appendSpecialCases(settings, $generalShortcutsSection, $help.find(".UnitsProj-modal-body"));
 
         $helpContainer
             .addClass(class_addedByUnitsProj)
@@ -149,7 +153,7 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
 
         $.each(shortcutsObj, function(key, value) {
             var kbdShortcuts = value.kbdShortcuts;
-            
+
             if (kbdShortcuts) {
                 var kbdShortcutsHtml = "";
 
@@ -157,13 +161,13 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
                 for (var i = 0; i < kbdShortcuts.length; i++) {
                     kbdShortcutsHtml += "<span class=key>"+ kbdShortcuts[i] + "</span>";
                     if (i !== kbdShortcuts.length -1) {
-                        kbdShortcutsHtml+= "<span class=separator> or </span>";
+                        kbdShortcutsHtml+= keysSeparatorHtml;
                     }
                 }
 
                 $("<tr></tr>")
                     .appendTo($shortcutsTable)
-//                    .append($("<td class= key></td>").text(value.kbdShortcuts.toString().replace(",", ", ")))
+                    .attr("id", key)
                     .append($("<td class= key></td>").html(kbdShortcutsHtml))
                     .append($("<td class = action></td>").text(value.miniDescr || key));
 
@@ -179,6 +183,55 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
         }
     }
 
+    function appendSpecialCases(settings, $generalShortcutsSection, $helpModalBody) {
+        var generalShortcuts = settings.generalShortcuts,
+            CUsShortcuts_Default = settings.CUsShortcuts,
+            nextCUShortcuts = CUsShortcuts_Default.nextCU.kbdShortcuts,
+            prevCUShortcuts = CUsShortcuts_Default.prevCU.kbdShortcuts,
+            scrollDownShortcuts = generalShortcuts.scrollDown.kbdShortcuts,
+            scrollUpShortcuts = generalShortcuts.scrollUp.kbdShortcuts,
+            $scrollDownShortcuts = $generalShortcutsSection.find("#scrollDown td.key"),
+            $scrollUpShortcuts =  $generalShortcutsSection.find("#scrollUp td.key");
+
+        var additionalShortcuts,
+            i;
+
+        // Append NextCU shortcuts to scrollDown shortcuts
+        if (scrollDownShortcuts.length) {
+            $scrollDownShortcuts.append(keysSeparatorHtml);
+        }
+
+        additionalShortcuts = "";
+        for (i = 0; i < nextCUShortcuts.length; i++) {
+            additionalShortcuts += "<span class=key>"+ nextCUShortcuts[i] + "*" + "</span>";
+            if (i !== nextCUShortcuts.length - 1) {
+                additionalShortcuts+= keysSeparatorHtml;
+            }
+        }
+        additionalShortcuts && $scrollDownShortcuts.append(additionalShortcuts);
+
+
+        // Append PrevCU shortcuts to scrollUp shortcuts
+        if (scrollUpShortcuts.length) {
+            $scrollUpShortcuts.append(keysSeparatorHtml);
+        }
+
+        additionalShortcuts = "";
+        for (i = 0; i < prevCUShortcuts.length; i++) {
+            additionalShortcuts += "<span class=key>"+ prevCUShortcuts[i] + "*" + "</span>";
+            if (i !== prevCUShortcuts.length - 1) {
+                additionalShortcuts+= keysSeparatorHtml;
+            }
+        }
+        additionalShortcuts && $scrollUpShortcuts.append(additionalShortcuts);
+
+
+        //Add * message at the end of $help
+
+        var messageHtml = "<p class=message>* These will scroll the page up/down only when there are no CUs on the page. Else, these are used to " +
+            "go to previous/next CU. </p>"
+        $helpModalBody.append(messageHtml);
+    }
 
     function showHelp() {
         $helpContainer.show();

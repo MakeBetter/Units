@@ -297,10 +297,14 @@ span#UnitsProj-search-close-icon:hover {
 
 #UnitsProj-help-container table {
     text-align: left;
+    border-spacing: 0;
 }
 
 #UnitsProj-help-container table tr {
-    height: 25px;
+    height: 25px !important;
+}
+
+#UnitsProj-help-container table tr:nth-child(2n+1) td.key {
 }
 
 #UnitsProj-help-container td {
@@ -309,13 +313,19 @@ span#UnitsProj-search-close-icon:hover {
     color: black !important;
 }
 
-tr.subsection-end>td{
-    padding-bottom: 30px;
-}
+/*tr.subsection-end{*/
+    /*margin-bottom: 30px;*/
+/*}*/
 
 #UnitsProj-help-container td.key {
     padding-right: 10px;
     text-align: right;
+    line-height: 25px !important;
+}
+
+#UnitsProj-help-container td.action {
+    vertical-align: top;
+    padding: 3px 0 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
 }
 
 #UnitsProj-help-container td.key>span.key {
@@ -323,14 +333,16 @@ tr.subsection-end>td{
     background-color: #efefef;
     border: 1px solid #ddd;
     border-radius: 2px !important;
-    /*color: #fefefe;*/
-    padding: 3px;
+    padding: 3px; /* Note: If you change this, then change td.action padding as well. They should be consistent. */
     margin: 0 2px;
 
 }
 
-td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td{
+td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td, #UnitsProj-help-container .message{
     color: #777777 !important;
+}
+
+td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td {
     text-align: center;
 }
 
