@@ -37,7 +37,7 @@
 
 
     function getSettings(request, sender, sendResponse) {
-        var sendResponseWhenReady = function() {
+        (function sendResponseWhenReady() {
             if (mod_getMainDomain.publicSuffixMap) {
                 var settings = mod_settings.getSettings(request.locationObj);
                 sendResponse(settings);
@@ -45,8 +45,7 @@
             else {
                 setTimeout(sendResponseWhenReady, 100);
             }
-        };
-        sendResponseWhenReady();
+        })();
     }
 
     /***
