@@ -56,9 +56,8 @@
         // Get the status of the current tab.
         chrome.tabs.query({active: true, currentWindow:true}, function(tabs){
             var tabId = tabs[0] && tabs[0].id;
-            chrome.tabs.sendMessage(tabId, {message: 'isEnabled'}, function(response) {
-                var isEnabled = response && response.isEnabled;
-                setIcon(isEnabled);
+            chrome.tabs.sendMessage(tabId, {message: 'isContentScriptEnabled'}, function(response) {
+                setIcon(response);
             });
         });
 
