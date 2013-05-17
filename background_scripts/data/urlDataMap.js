@@ -402,8 +402,8 @@ defaultSettings.urlDataMap = {
             // Pages with lists of questions
             // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
             // http://stackoverflow.com/
-//            urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
-//                "*.stackexchange.com\/"],
+            urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
+                "*.stackexchange.com\/"],
             urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
@@ -417,7 +417,7 @@ defaultSettings.urlDataMap = {
         {
             // Pages with answers to a specific question
             // Example: http://stackoverflow.com/questions/5874652/prop-vs-attr
-//            urlPatterns: ["*.stackexchange.com/questions/*"],
+            urlPatterns: ["*.stackexchange.com/questions/*"],
             urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\//],
             CUs_specifier: ".question, .answer",
             CUs_style: {
