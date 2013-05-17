@@ -1670,7 +1670,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
     function init(settings) {
         // we need the body to exist before we can set overlayCssHasTransition
         if (!document.body) {
-            setTimeout(init, 100);
+            setTimeout(init.bind(null, settings), 100);
             return;
         }
 
