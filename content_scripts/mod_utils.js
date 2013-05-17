@@ -167,7 +167,5 @@ _u.mod_utils = (function($) {
 
     }
 
-
-
     return thisModule;
 })(jQuery);
