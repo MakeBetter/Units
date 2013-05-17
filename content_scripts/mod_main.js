@@ -19,17 +19,22 @@
         $topLevelContainer = _u.$topLevelContainer,
         $document = $(document), // cached jQuery object
 
-        // the following objects are retrieved from the background script
+        // the following are objects are retrieved from the background script
         miscSettings,
         generalShortcuts,
         CUsShortcuts,
         expandedUrlData,
-        isDisabled = null, // explicitly initialized to null; used later to check against it
+        isDisabled_fromSettings = true, // assume true (disabled) till background script tells us otherwise
+
+        // This should start off being `false` (till the user invokes toggleExtensionTemporarily() for the first time)
+        // Note: Do NOT reset this in disableExtension() (or reset() for mod_main , if you make a function like that)
+        isDisabled_temporarily = false,
 
         // modules that require init() and/or reset() to be called during extension initialization and disabling
         // respectively. All else being equal, modules should be initialized in relative order of priority of keyboard
         // shortcuts. init() is called in the order defined below, while reset() is called in the opposite order
-        modulesToSetup = [mod_context, mod_help, mod_utils, mod_filterCUs, mod_CUsMgr, mod_chromeAltHack];
+        modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_help,
+            mod_utils, mod_filterCUs, mod_CUsMgr, mod_chromeAltHack];
 
     /*-- Event bindings --*/
     // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
@@ -54,27 +59,46 @@
         initializeExtension(); // resets the extension
     }
 
+    // used to enable/disable the extension temporarily on the page -- it only affects the current run of the page,
+    // i.e. no change is made to the user's settings for enabling/disabling that page)
+    function toggleExtensionTemporarily() {
+        if (isDisabled_temporarily) {
+            isDisabled_temporarily = false;
+            initializeExtension();
+        }
+        else {
+            isDisabled_temporarily = true;
+            disableExtension();
+        }
+    }
+
     // reset state and disable the extension
     function disableExtension() {
+        setExtensionIcon(false); // show "disabled" icon
 
+        // The following loop disables all modules, calling their `reset` methods (in reverse order of their setup).
+        // It also removes all bindings for dom events, including keyboard shortcuts (as a result of calling restul() on
+        // `mod_keyboardLib` and `mod_domEvents`
         for (var i = modulesToSetup.length - 1; i >= 0; i--) {
             var module = modulesToSetup[i];
             module && module.reset && module.reset();
         }
 
-        $topLevelContainer.empty().remove();
-        removeAllEventListeners();
-
-        if (generalShortcuts) {  // need this check since since the obj wouldn't be defined the first time
-            mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, initializeExtension);
+        // do the following once mod_keyboardLib.reset() has been called (from the loop above)
+        if (!isDisabled_fromSettings  && generalShortcuts) {
+            mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
         }
+
+        mod_mutationObserver.stop();
+
+        $topLevelContainer.empty().remove();
     }
 
-    function removeAllEventListeners() {
-        mod_domEvents.reset();
-        mod_keyboardLib.reset();
-        mod_mutationObserver.stop();
-//    console.log("UnitsProj: all event handlers removed");
+    function setExtensionIcon(isEnabled) {
+        chrome.runtime.sendMessage({
+            message: 'setIcon',
+            isEnabled: isEnabled
+        });
     }
 
 // (reset and re-)initialize the extension.
@@ -93,30 +117,18 @@
                 generalShortcuts = settings.generalShortcuts;
                 CUsShortcuts = settings.CUsShortcuts;
                 expandedUrlData = settings.expandedUrlData;
-                isDisabled = settings.isDisabled;
+                isDisabled_fromSettings = settings.isDisabled;
 
-                // set the extension icon as enabled/disabled every time the extension is initialized.
-                chrome.runtime.sendMessage({
-                    message: 'setIcon',
-                    isEnabled: !isDisabled
-                });
-
-                if (isDisabled) {
+                if (isDisabled_fromSettings) {
                     disableExtension();
-                    // the following lines exist to cater to url changes in single page apps etc. TODO: is it an
-                    // overkill to be handling these rare cases?
+                    // the following lines exist to cater to url changes in single page apps etc.
                     mod_mutationObserver.start();
                     thisModule.stopListening(); // stop listening to all events from all modules...
                     thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);// ...except 'url-change'
-
                     return;
                 }
-//                else if (settings.isDisabled === "partial") {
-//                    // TODO: separate this stuff from CUsMgr
-//                    mod_mutationObserver.start();
-//                    thisModule.stopListening(mod_mutationObserver, 'dom-mutations-grouped'); // we continue to listen to the 'url-change' event
-//                    return;
-//                }
+
+                setExtensionIcon(true); // show "enabled" icon
 
                 // has to be done before the the call to makeImmutable :)
                 if (settings.expandedUrlData) {
@@ -129,6 +141,11 @@
                     mod_keyboardLib.setProtectedWebpageShortcuts(settings.expandedUrlData.protectedWebpageShortcuts);
                 }
 
+                // Do this before binding any other shortcuts (so that his has higher priority)
+                // This is required here in addition to within the disableExtension() function, since it would not
+                // be able to execute there the first time that function runs (because `generalShortcuts` is not available
+                // at that point)
+                mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
 
                 // this should be done  before binding other keydown/keypress/keyup events so that these event handlers get
                 // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
@@ -154,15 +171,13 @@
 
             // re-initialize the extension when background script informs of change in settings
             if (request.message === 'settingsChanged') {
-                initializeExtension();
+                !isDisabled_temporarily && initializeExtension();
             }
 
             // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
             // This is used for setting the extension icon appropriately.
             else if (request.message === "isEnabled") {
-                // if isDisabled is null (with which it was initalized), then we haven't got the settings from the
-                // background script yet. In that case, assume the extension to be disabled.
-                var isEnabled = (isDisabled === null) ? false : !isDisabled;
+                var isEnabled = !isDisabled_fromSettings;
                 sendResponse({isEnabled: isEnabled});
             }
         }
@@ -180,12 +195,7 @@
     // setup shortcuts that don't depend on the urlData (`expandedUrlData`)
     function setupNonUrlDataShortcuts() {
 
-        // This is a special shortcut. Bind it first (high priority). [Instead of binding this to a toggleExtension()
-        // type method, we bind the handler for re-enabling within disableExtension(), because disableExtension() resets
-        // all previously bound shortcuts shortcuts]
-        mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, disableExtension);
-
-        // Next, bind `CUsShortcuts`...
+        // First, bind `CUsShortcuts`...
         if (expandedUrlData && expandedUrlData.CUs_specifier) {
             mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_CUsMgr.selectNext, {pageHasCUs: true});
             mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_CUsMgr.selectPrev, {pageHasCUs: true});
