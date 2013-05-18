@@ -28,7 +28,7 @@ _u.mod_contentHelper = (function(CONSTS) {
      * @returns {boolean}
      */
     function elementAllowsSingleKeyShortcut(element) {
-        if (elementAllowsTyping(element) || element.tagName.toLowerCase() === "select") {
+        if (elementAllowsTyping(element) || element.tagName.toLowerCase() === "select" || isEmbedElement(element)) {
             return false;
         }
         return true;
@@ -62,6 +62,10 @@ _u.mod_contentHelper = (function(CONSTS) {
 
         // for everything else
         return false;
+    }
+
+    function isEmbedElement(element) {
+        return ["embed", "object", "iframe"].indexOf(element.nodeName.toLowerCase()) > -1;
     }
 
     function suppressEvent(e) {
