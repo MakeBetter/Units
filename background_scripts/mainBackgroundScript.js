@@ -4,7 +4,7 @@
         function(request, sender, sendResponse) {
 
             if (request.message === 'getSettings') {
-                getSettings(request, sender, sendResponse);
+                sendSettingsWhenReady(request, sender, sendResponse);
             }
             else if (request.message === 'setIcon') {
                 if (sender.tab.active) {
@@ -25,14 +25,14 @@
     });
 
 
-    function getSettings(request, sender, sendResponse) {
-        (function sendResponseWhenReady() {
+    function sendSettingsWhenReady(request, sender, sendResponse) {
+        (function _sendSettingsWhenReady() {
             if (mod_getMainDomain.publicSuffixMap) {
                 var settings = mod_settings.getSettings(request.locationObj);
                 sendResponse(settings);
             }
             else {
-                setTimeout(sendResponseWhenReady, 100);
+                setTimeout(_sendSettingsWhenReady, 100);
             }
         })();
     }
