@@ -127,7 +127,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
             if (e.type === 'keydown') {
                 // First, ensure that we don't consider <space> a (potential) modifier if:
                 // the target element is a type-able element etc AND there is no other non-shift modifier key
-                if(mod_contentHelper.elementAllowsSingleKeyShortcut(e.target) && !(e.altKey || e.ctrlKey || e.metaKey)) {
+                if(!mod_contentHelper.elementAllowsSingleKeyShortcut(e.target) && !(e.altKey || e.ctrlKey || e.metaKey)) {
                     return;
                 }
 
