@@ -19,7 +19,9 @@
                 getSettings(request, sender, sendResponse);
             }
             else if (request.message === 'setIcon') {
-                setIcon(request.isEnabled);
+                if (sender.tab.active) {
+                    setIcon(request.isEnabled);
+                }
             }
         }
     );
@@ -29,7 +31,6 @@
     chrome.tabs.onActivated.addListener(setCurrentTabIcon);
     chrome.windows.onFocusChanged.addListener(setCurrentTabIcon);
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-        console.log(changeInfo);
         if (changeInfo.url) {
            setCurrentTabIcon();
         }
@@ -53,18 +54,16 @@
      * Gets the status of the currently active tab, and sets the extension icon appropriately
      */
     function setCurrentTabIcon() {
-        // Get the status of the current tab.
-        chrome.tabs.query({active: true, currentWindow:true}, function(tabs){
-            var tabId = tabs[0] && tabs[0].id;
-            chrome.tabs.sendMessage(tabId, {message: 'isContentScriptEnabled'}, function(response) {
-                setIcon(response);
+
+            // Get the status of the current tab.
+            chrome.tabs.query({active: true, currentWindow:true}, function(tabs){
+                var tabId = tabs[0] && tabs[0].id;
+                chrome.tabs.sendMessage(tabId, {message: 'isContentScriptEnabled'}, function(response) {
+                    // If no response received from the content script (for example, for a new tab), then the icon will be
+                    // set to disabled. 
+                    setIcon(response);
+                });
             });
-        });
-
-//        setIcon(false);
-
-        // Set icon status to disabled. If no response received from the content script (for example, on a
-        // new tab or chrome extensions page, then the icon will continue to look disabled.
     }
 
     /***
