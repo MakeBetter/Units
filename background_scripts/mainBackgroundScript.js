@@ -1,16 +1,4 @@
-//Remove the following commented out code later
-//setInterval(function() {
-//    chrome.tabs.query({}, function(tabs) {
-//        localStorage.x++;
-//        var message = {message: "settingsChanged", x: localStorage.x};
-//
-//      for (var i=0; i<tabs.length; ++i) {
-//            chrome.tabs.sendMessage(tabs[i].id, message);
-//        }
-//    });
-//}, 3000);
 (function(mod_settings, mod_getMainDomain) {
-//    "use strict";
 
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
