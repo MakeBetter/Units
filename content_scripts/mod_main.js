@@ -146,9 +146,14 @@
             else if(request.message === "isContentScriptTemporarilyDisabled") {
                 sendResponse(isDisabled_temporarily);
             }
+
             else if(request.message === "toggleContentScriptTemporarily") {
                 toggleExtensionTemporarily();
                 sendResponse(isDisabled_temporarily);
+            }
+
+            else if(request.message === "showHelp") {
+                mod_help.showHelp();
             }
         }
     );

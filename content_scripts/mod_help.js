@@ -229,7 +229,8 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
 
         //Add * message at the end of $help
 
-        var messageHtml = "<p class=message>* These will scroll the page up/down only when there are no CUs on the page. Else, these are used to " +
+        var messageHtml = "<p id=UnitsProj-message>* These will scroll the page up/down only when there are no CUs on the page. Else, these are used to " +
+
             "go to previous/next CU. </p>";
         $helpModalBody.append(messageHtml);
     }

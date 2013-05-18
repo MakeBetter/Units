@@ -14,11 +14,13 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var disableUrlPatternButton = document.getElementById('disable-url-permanently'),
         disabledUrlPatternInput = document.getElementById("url-pattern-to-disable");
 
-    var toggleExtensionButton = document.getElementById('disable-temporarily');
+    var toggleExtensionButton = document.getElementById('disable-temporarily'),
+        helpLink = document.getElementById('help');
 
     document.addEventListener('DOMContentLoaded', onPopupLoaded);
     disableUrlPatternButton.addEventListener('click', disableUrlPattern);
     toggleExtensionButton.addEventListener('click', toggleExtensionTemporarily);
+    helpLink.addEventListener('click', showHelp);
     
     /******
      * Event Handlers
@@ -52,6 +54,11 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             // can use that to update the toggle button text, we're keeping it simple and calling renderPopupUI to handle
             // any updates to the popup UI.
         });
+    }
+
+    function showHelp() {
+        chrome.tabs.sendMessage(activeTabId, {message: 'showHelp'});
+        window.close();
     }
 
     // Helpers
