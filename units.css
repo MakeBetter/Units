@@ -335,6 +335,7 @@ span#UnitsProj-search-close-icon:hover {
     border-radius: 2px !important;
     padding: 3px; /* Note: If you change this, then change td.action padding as well. They should be consistent. */
     margin: 0 2px;
+    font-family: Georgia, "Times New Roman", Times, serif !important;
 
 }
 
@@ -348,6 +349,13 @@ td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td {
 
 td.key>span.separator {
     font-size: 11px !important;
+}
+
+#UnitsProj-help-container .message {
+    text-align: left !important;
+    background-color: inherit !important;
+    margin-top: 10px !important;
+    border: none !important;
 }
 
 #UnitsProj-help-container tr.subsection-title>td{
