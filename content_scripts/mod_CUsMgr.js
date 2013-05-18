@@ -1,7 +1,7 @@
 // See _readme_module_template.js for module conventions
 
 
-_u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
+_u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObserver, mod_keyboardLib, mod_filterCUs, mod_help,
                           mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
 
     "use strict";
@@ -503,7 +503,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
     function selectPrev () {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
-            mod_utils.scrollUp();
+            mod_basicPageUtils.scrollUp();
             return;
         }
 
@@ -528,7 +528,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
                     return;
                 }
                 else if (selectedCUIndex === 0) { // special case for first CU
-                    mod_utils.scrollUp();
+                    mod_basicPageUtils.scrollUp();
                 }
             }
 
@@ -549,7 +549,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
     function selectNext() {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
-            mod_utils.scrollDown();
+            mod_basicPageUtils.scrollDown();
             return;
         }
 
@@ -575,7 +575,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
                     return;
                 }
                 else  if (selectedCUIndex === $CUsArray.length-1) { // special case for last CU
-                    mod_utils.scrollDown();
+                    mod_basicPageUtils.scrollDown();
                 }
             }
 
@@ -1863,7 +1863,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
 
     return thisModule;
 
-})(jQuery, _u.mod_utils, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
+})(jQuery, _u.mod_basicPageUtils, _u.mod_domEvents, _u.mod_mutationObserver, _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help,
         _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
 
 

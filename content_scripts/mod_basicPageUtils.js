@@ -1,7 +1,8 @@
 /**
- * This module implements miscellaneous utility features
+ * This module implements the basic utility features this extension provides by to a page, like scrolling, 
+ * going back/forward, etc
  */
-_u.mod_utils = (function($) {
+_u.mod_basicPageUtils = (function($, mod_keyboardLib) {
     "use strict";
 
     /*-- Public interface --*/
@@ -36,6 +37,25 @@ _u.mod_utils = (function($) {
 
     function init(settings) {
         miscSettings = settings.miscSettings;
+        setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
+    }
+    
+    function setupShortcuts(generalShortcuts, CUsShortcuts) {
+        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
+        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
+        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
+        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
+        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
+        mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
+            openActiveElement(true); // open in new tab
+        });
+        mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
+        mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
+        mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
+
+        // special shortcuts, these will get invoked only when the page has no CUs
+        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, scrollDown, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, scrollUp, {pageHasCUs: false});
     }
     function scrollDown() {
         scroll(miscSettings.pageScrollDelta);
@@ -168,4 +188,4 @@ _u.mod_utils = (function($) {
     }
 
     return thisModule;
-})(jQuery);
+})(jQuery, _u.mod_keyboardLib);

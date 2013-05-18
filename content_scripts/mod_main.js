@@ -3,7 +3,7 @@
 /**
  * main module (mod_main.js) This is the main module which runs the extension by using the other modules
  */
-(function($, mod_domEvents, mod_utils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver, mod_keyboardLib,
+(function($, mod_domEvents, mod_basicPageUtils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver, mod_keyboardLib,
           mod_filterCUs, mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context) {
     "use strict";
 
@@ -18,11 +18,7 @@
     var
         $topLevelContainer = _u.$topLevelContainer,
 
-        // the following are objects are retrieved from the background script
-        miscSettings,
         generalShortcuts,
-        CUsShortcuts,
-        expandedUrlData,
         isDisabled_fromSettings = true, // assume true (disabled) till background script tells us otherwise
 
         // This should start off being `false` (till the user invokes toggleExtensionTemporarily() for the first time)
@@ -33,7 +29,7 @@
         // respectively. All else being equal, modules should be initialized in relative order of priority of keyboard
         // shortcuts. init() is called in the order defined below, while reset() is called in the opposite order
         modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_help,
-            mod_utils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr, mod_chromeAltHack];
+            mod_basicPageUtils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr, mod_chromeAltHack];
 
     /*-- Module implementation --*/
 
@@ -107,10 +103,7 @@
             function(settings) {
 
                 // assign references to module level variables
-                miscSettings = settings.miscSettings;
                 generalShortcuts = settings.generalShortcuts;
-                CUsShortcuts = settings.CUsShortcuts;
-                expandedUrlData = settings.expandedUrlData;
                 isDisabled_fromSettings = settings.isDisabled;
 
                 if (isDisabled_fromSettings) {
@@ -124,35 +117,24 @@
 
                 setExtensionIcon(true); // show "enabled" icon
 
-                // has to be done before the the call to makeImmutable :)
-                if (settings.expandedUrlData) {
-                    mod_commonHelper.destringifyFunctions(settings.expandedUrlData);
-                }
-
+                // destringify stringified functions before calling makeImmutable()
+                settings.expandedUrlData && mod_commonHelper.destringifyFunctions(settings.expandedUrlData);
                 mod_commonHelper.makeImmutable(settings);
 
-                if (settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts) {
-                    mod_keyboardLib.setProtectedWebpageShortcuts(settings.expandedUrlData.protectedWebpageShortcuts);
-                }
-
-                // Do this before binding any other shortcuts (so that his has higher priority)
-                // This is required here in addition to within the disableExtension() function, since it would not
-                // be able to execute there the first time that function runs (because `generalShortcuts` is not available
-                // at that point)
-                mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
+                $topLevelContainer.appendTo(document.body);
 
                 // this should be done  before binding other keydown/keypress/keyup events so that these event handlers get
                 // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
                 /* setupExternalSearchEvents(); */
 
-                $topLevelContainer.appendTo(document.body);
+                // Set up these essential shortcuts before setting up other modules, so that these get priority over
+                // shortcuts setup in them
+                setupShortcuts();
 
                 for (var i = 0; i < modulesToSetup.length; i++) {
                     var module = modulesToSetup[i];
                     module && module.init && module.init(settings);
                 }
-                
-                setupShortcuts();
 
                 mod_mutationObserver.start();
 
@@ -184,43 +166,13 @@
         }
     );
 
-    // setup shortcuts that don't depend on the urlData (`expandedUrlData`)
-    function setupNonUrlDataShortcuts() {
-
-        // First, bind `CUsShortcuts`...
-
-
-        // Then, bind `generalShortcuts`...
-        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
-        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, mod_utils.scrollDown);
-        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, mod_utils.scrollUp);
-        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, mod_utils.back);
-        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, mod_utils.forward);
-        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, mod_utils.openActiveElement);
-        mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
-            mod_utils.openActiveElement(true); // open in new tab
-        });
-        mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, mod_utils.focusFirstTextInput);
-        mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, mod_utils.focusNextTextInput);
-        mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, mod_utils.focusPrevTextInput);
-
-        // special shortcuts, based on the relative priority of shortcuts, these will get invoked only
-        // when the page has no CUs
-        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_utils.scrollDown);
-        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_utils.scrollUp);
-
-    }
-
-
-    /**
-     * Sets up the keyboard shortcuts.
-     * Note: Because of the order in which shortcuts are set up, the more specific ones (e.g: ones which need a CU
-     * to be selected, or CUs to be present on the page) will have priority over the general shortcuts, as long as
-     * the context they require is valid. That is, if 's' is defined as the shortcut for 'sharing' a CU and also for
-     * scrolling down on the page, it will do the former if a CU is selected, and the latter otherwise.
-     */
     function setupShortcuts() {
-        setupNonUrlDataShortcuts();
+
+        // This is required here in addition to within the disableExtension() function, since it would not
+        // be able to execute there the first time that function runs (because `generalShortcuts` is not available
+        // at that point)
+        mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
+        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
     }
 
 //    function setupExternalSearchEvents() {
@@ -250,5 +202,5 @@
 
     //return thisModule; // not required for main module
 
-})(jQuery, _u.mod_domEvents, _u.mod_utils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver, _u.mod_keyboardLib,
+})(jQuery, _u.mod_domEvents, _u.mod_basicPageUtils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver, _u.mod_keyboardLib,
         _u.mod_filterCUs, _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context);

@@ -25,10 +25,10 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset:reset,
+        init: init,
         bind: bind,
         isSpaceDown: isSpaceDown,
         shouldHandleShortcut: shouldHandleShortcut, // exposed publicly for Mousetrap library (mousetrap-modified.js)
-        setProtectedWebpageShortcuts: setProtectedWebpageShortcuts
     });
 
 
@@ -36,6 +36,15 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     Mousetrap.spaceUsedAsModifier = false;
     var protectedWebpageShortcuts;
 //    var protectedWebpageShortcuts_lowerCase;
+
+    function init(settings) {
+        protectedWebpageShortcuts = settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts;
+//        protectedWebpageShortcuts_lowerCase = [];
+//        for (var i = 0; i < protectedWebpageShortcuts.length; i++) {
+//            protectedWebpageShortcuts_lowerCase[i] = protectedWebpageShortcuts[i].toLowerCase();
+//        }
+
+    }
 
     /**
      * The bind function maps an array of keyboard shortcuts to a handler. Before the handler is triggered for a
@@ -91,22 +100,11 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     }
 
     function reset() {
-        protectedWebpageShortcuts = [];
+        protectedWebpageShortcuts = null;
         Mousetrap.reset();
     }
     function isSpaceDown() {
         return Mousetrap.isSpaceDown;
-    }
-    function setProtectedWebpageShortcuts(shortcuts) {
-        if (!shortcuts || !shortcuts.length)
-            protectedWebpageShortcuts = [];
-        else {
-            protectedWebpageShortcuts = shortcuts;
-        }
-//        protectedWebpageShortcuts_lowerCase = [];
-//        for (var i = 0; i < protectedWebpageShortcuts.length; i++) {
-//            protectedWebpageShortcuts_lowerCase[i] = protectedWebpageShortcuts[i].toLowerCase();
-//        }
     }
 
     /**
