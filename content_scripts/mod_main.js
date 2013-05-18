@@ -33,18 +33,6 @@
 
     /*-- Module implementation --*/
 
-    // don't need to wait till dom-ready. allows faster starting up of the extension's features
-    // (in certain sites at least. e.g. guardian.co.uk)
-    // this should not cause any issues since we are handling dom changes anyway.
-    (function initializeWhenReady (){
-        if (!document.body) {
-            setTimeout(initializeWhenReady, 100);
-            return;
-        }
-        $topLevelContainer.appendTo(document.body);
-        initializeExtension();
-    })();   // ** Main flow begins here!! **
-
     function _onUrlChange() {
         initializeExtension(); // resets the extension
     }
@@ -142,30 +130,6 @@
         );
     }
 
-    chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-
-            // re-initialize the extension when background script informs of change in settings
-            if (request.message === 'settingsChanged') {
-                !isDisabled_temporarily && initializeExtension();
-            }
-
-            // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
-            // This is used for setting the extension icon appropriately.
-            else if (request.message === "isContentScriptEnabled") {
-                sendResponse(!(isDisabled_fromSettings || isDisabled_temporarily));
-            }
-
-            else if(request.message === "isContentScriptTemporarilyDisabled") {
-                sendResponse(isDisabled_temporarily);
-            }
-            else if(request.message === "toggleContentScriptTemporarily") {
-                toggleExtensionTemporarily();
-                sendResponse(isDisabled_temporarily);
-            }
-        }
-    );
-
     function setupShortcuts() {
 
         // This is required here in addition to within the disableExtension() function, since it would not
@@ -199,6 +163,43 @@
 //        mod_domEvents.addEventListener(document, 'keyup', keyHandler, true);
 //
 //    }
+
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+
+            // re-initialize the extension when background script informs of change in settings
+            if (request.message === 'settingsChanged') {
+                !isDisabled_temporarily && initializeExtension();
+            }
+
+            // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
+            // This is used for setting the extension icon appropriately.
+            else if (request.message === "isContentScriptEnabled") {
+                sendResponse(!(isDisabled_fromSettings || isDisabled_temporarily));
+            }
+
+            else if(request.message === "isContentScriptTemporarilyDisabled") {
+                sendResponse(isDisabled_temporarily);
+            }
+            else if(request.message === "toggleContentScriptTemporarily") {
+                toggleExtensionTemporarily();
+                sendResponse(isDisabled_temporarily);
+            }
+        }
+    );
+
+    // don't need to wait till dom-ready. allows faster starting up of the extension's features
+    // (in certain sites at least. e.g. guardian.co.uk)
+    // this should not cause any issues since we are handling dom changes anyway.
+    (function initializeWhenReady (){
+        if (!document.body) {
+            setTimeout(initializeWhenReady, 100);
+            return;
+        }
+        $topLevelContainer.appendTo(document.body);
+        initializeExtension();
+    })();   // ** Main flow begins here!! **
+
 
     //return thisModule; // not required for main module
 
