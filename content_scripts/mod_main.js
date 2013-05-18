@@ -17,7 +17,6 @@
 
     var
         $topLevelContainer = _u.$topLevelContainer,
-        $document = $(document), // cached jQuery object
 
         // the following are objects are retrieved from the background script
         miscSettings,
