@@ -1,5 +1,7 @@
-
-
+/**
+ * This module sets up shortcuts that are based on the urlData (specified in urlDataMap.js) -- both for CUs and the
+ * overall page
+ */
 _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_commonHelper){
     var thisModule = {
         init: init
