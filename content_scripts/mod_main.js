@@ -28,8 +28,9 @@
         // modules that require init() and/or reset() to be called during extension initialization and disabling
         // respectively. All else being equal, modules should be initialized in relative order of priority of keyboard
         // shortcuts. init() is called in the order defined below, while reset() is called in the opposite order
-        modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_help,
-            mod_basicPageUtils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr, mod_chromeAltHack];
+        modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_chromeAltHack,
+            // modules which define keyboard shortcuts are listed next, in order of priority
+            mod_help, mod_basicPageUtils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr];
 
     /*-- Module implementation --*/
 
@@ -115,9 +116,9 @@
                 // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
                 /* setupExternalSearchEvents(); */
 
-                // Set up these essential shortcuts before setting up other modules, so that these get priority over
-                // shortcuts setup in them
-                setupShortcuts();
+                // do this before setting up other modules, so that it gets priority over shortcuts setup in them
+                mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
+
 
                 for (var i = 0; i < modulesToSetup.length; i++) {
                     var module = modulesToSetup[i];
@@ -128,15 +129,6 @@
 
             }
         );
-    }
-
-    function setupShortcuts() {
-
-        // This is required here in addition to within the disableExtension() function, since it would not
-        // be able to execute there the first time that function runs (because `generalShortcuts` is not available
-        // at that point)
-        mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
-        mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
     }
 
 //    function setupExternalSearchEvents() {

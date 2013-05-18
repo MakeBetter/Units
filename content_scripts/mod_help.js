@@ -1,7 +1,7 @@
 /***
  * Module for displaying the "help" modal UI
  */
-_u.mod_help = (function($, mod_contentHelper, CONSTS) {
+_u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -64,6 +64,7 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
 
         };
 
+        mod_keyboardLib.bind(settings.generalShortcuts.showHelp.kbdShortcuts, showHelp);
         document.addEventListener('keydown', onEscapeKeyDownOnHelp, true);
         $helpContainer.find(".close")[0].addEventListener('click', hideHelp);
 
@@ -229,7 +230,7 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
         //Add * message at the end of $help
 
         var messageHtml = "<p class=message>* These will scroll the page up/down only when there are no CUs on the page. Else, these are used to " +
-            "go to previous/next CU. </p>"
+            "go to previous/next CU. </p>";
         $helpModalBody.append(messageHtml);
     }
 
@@ -244,4 +245,4 @@ _u.mod_help = (function($, mod_contentHelper, CONSTS) {
 
     return thisModule;
 
-})(jQuery, _u.mod_contentHelper, _u.CONSTS);    // pass as input external modules that this modules depends on
+})(jQuery, _u.mod_contentHelper, _u.mod_keyboardLib, _u.CONSTS);    // pass as input external modules that this modules depends on
