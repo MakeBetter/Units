@@ -11,6 +11,9 @@
                     setIcon(request.isEnabled);
                 }
             }
+            else if (request.message === 'createTab') {
+                chrome.tabs.create({url: request.url});
+            }
         }
     );
 

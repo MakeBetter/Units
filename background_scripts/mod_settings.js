@@ -24,7 +24,8 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
                 generalShortcuts: defaultSettings.generalShortcuts,
                 CUsShortcuts: defaultSettings.CUsShortcuts,
                 disabledSites: defaultSettings.disabledSites,
-                expandedUrlData:getExpandedUrlData(defaultSettings, locationObj)
+                expandedUrlData:getExpandedUrlData(defaultSettings, locationObj),
+                quickSearchSelectedText_data: defaultSettings.quickSearchSelectedText_data
             },
             userSettings = getUserSettings(locationObj),
             settings = $.extend(true, {}, _defaultSettings, userSettings);

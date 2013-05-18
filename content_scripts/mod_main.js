@@ -3,8 +3,9 @@
 /**
  * main module (mod_main.js) This is the main module which runs the extension by using the other modules
  */
-(function($, mod_domEvents, mod_basicPageUtils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver, mod_keyboardLib,
-          mod_filterCUs, mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context) {
+(function($, mod_domEvents, mod_basicPageUtils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver,
+          mod_keyboardLib, mod_filterCUs, mod_help, mod_quickSearchSelectedText, mod_chromeAltHack,
+          mod_contentHelper, mod_commonHelper, mod_context) {
     "use strict";
 
     /*-- Public interface --*/
@@ -30,7 +31,7 @@
         // shortcuts. init() is called in the order defined below, while reset() is called in the opposite order
         modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_chromeAltHack,
             // modules which define keyboard shortcuts are listed next, in order of priority
-            mod_help, mod_basicPageUtils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr];
+            mod_quickSearchSelectedText, mod_help, mod_basicPageUtils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr];
 
     /*-- Module implementation --*/
 
@@ -112,10 +113,6 @@
 
                 $topLevelContainer.appendTo(document.body);
 
-                // this should be done  before binding other keydown/keypress/keyup events so that these event handlers get
-                // preference (i.e. [left-mouse-button+<key>] should get preference over <key>)
-                /* setupExternalSearchEvents(); */
-
                 // do this before setting up other modules, so that it gets priority over shortcuts setup in them
                 mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
 
@@ -131,30 +128,6 @@
         );
     }
 
-//    function setupExternalSearchEvents() {
-//
-//        var keyHandler = function(e) {
-//            var selection;
-//
-//            // If a kew is pressed while the left-mouse button is pressed down and some text is selected
-//            if (ltMouseBtnDown && (selection = document.getSelection().toString())) {
-//
-//                if (e.type === 'keydown') {
-//                    var code = e.which || e.keyCode;
-//
-//                    // the background script will determine which site to search on
-//                    chrome.runtime.sendMessage({message: "searchExternalSite", selection: selection, keyCode: code});
-//                }
-//
-//                suppressEvent(e); // for all types - keypress, keydown, keyup
-//            }
-//        };
-//
-//        mod_domEvents.addEventListener(document, 'keydown', keyHandler, true);
-//        mod_domEvents.addEventListener(document, 'keypress', keyHandler, true);
-//        mod_domEvents.addEventListener(document, 'keyup', keyHandler, true);
-//
-//    }
 
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
@@ -195,5 +168,6 @@
 
     //return thisModule; // not required for main module
 
-})(jQuery, _u.mod_domEvents, _u.mod_basicPageUtils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver, _u.mod_keyboardLib,
-        _u.mod_filterCUs, _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context);
+})(jQuery, _u.mod_domEvents, _u.mod_basicPageUtils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver,
+        _u.mod_keyboardLib, _u.mod_filterCUs, _u.mod_help, _u.mod_quickSearchSelectedText, _u.mod_chromeAltHack,
+        _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context);
