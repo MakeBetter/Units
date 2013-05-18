@@ -45,7 +45,7 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
                         kbdShortcuts = MU.kbdShortcuts;
 
                     if (selectors && kbdShortcuts) {
-                        mod_keyboardLib.bind(kbdShortcuts, _accessMU.bind(null, selectors, scope),
+                        mod_keyboardLib.bind(kbdShortcuts, accessMU.bind(null, selectors, scope),
                             scope === 'CUs'? {CUSelected: true}: undefined);
                     }
                 }
@@ -68,14 +68,14 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
                         fn = action.fn,
                         kbdShortcuts = action.kbdShortcuts;
                     if (typeof fn === "function" && kbdShortcuts) {
-                        mod_keyboardLib.bind(kbdShortcuts, _invokeAction.bind(null, fn, scope),
+                        mod_keyboardLib.bind(kbdShortcuts, invokeAction.bind(null, fn, scope),
                             scope === 'CUs'? {CUSelected: true}: undefined);
                     }
                 }
             }
         }
     }
-    function _invokeAction (fn, scope) {
+    function invokeAction (fn, scope) {
         var $selectedCU = mod_CUsMgr.$getSelectedCU() ;
         if (scope === 'CUs' && !$selectedCU) {
             return;
@@ -89,7 +89,7 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
      * @param selectors
      * @param {string} scope Can be either "page" or 'CUs'
      */
-    function _accessMU(selectors, scope) {
+    function accessMU(selectors, scope) {
         var $scope;
 
         if (scope === 'CUs') {
