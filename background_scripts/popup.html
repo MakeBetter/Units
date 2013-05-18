@@ -35,10 +35,10 @@
                 color: #666;
             }
 
-        div#goToOptions{
+        div#footer {
             padding: 6px 10px;
         }
-            #optionsLink {
+            #options {
                 font-size: 12;
                 float: right;
                 /*padding: 4px;*/
@@ -58,15 +58,12 @@
                 <p class="strong">Disable for this domain <sup>+</sup> </p>
                 <input type="text" id="url-pattern-to-disable"/>
                 <input type="button" id= "disable-url-permanently" value="Disable" tabindex="1">
+                <p class="advanced"><sup>+</sup>Or, tweak the URL pattern as needed.</p>
             </div>
             <div id="disableTemporarily" class="action">
                 <p class="strong">Disable on this page, for now</p>
                 <input type="button" id= "disable-temporarily" value="Disable for now">
             </div>
-        </div>
-        <div id="goToOptions">
-            <p class="advanced"><sup>+</sup>Or, tweak the URL pattern as needed.</p>
-            <a id="optionsLink" target="_blank" href="options_page/options_page.html">Options</a>
         </div>
     </div>
 
@@ -88,11 +85,12 @@
             </ol>
             </p>
         </div>
-        <div id="goToOptions">
-            <a id="optionsLink" target="_blank" href="options_page/options_page.html">Options</a>
-            <div style="clear: both"></div>
+    </div>
 
-        </div>
+    <div id="footer">
+        <a id="help" href="">Help?</a>
+        <a id="options" target="_blank" href="options_page/options_page.html">Options</a>
+        <div style="clear: both"></div>
     </div>
 
 </div>
