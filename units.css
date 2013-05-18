@@ -307,10 +307,13 @@ span#UnitsProj-search-close-icon:hover {
 #UnitsProj-help-container table tr:nth-child(2n+1) td.key {
 }
 
-#UnitsProj-help-container td {
+#UnitsProj-help-container td, #UnitsProj-help-container th {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     font-size: 13px !important;
     color: black !important;
+    border: none !important;
+    background-color: inherit !important;
+    background: inherit !important;
 }
 
 /*tr.subsection-end{*/
