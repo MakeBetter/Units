@@ -107,14 +107,15 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
         stopExistingScrollAnimation,
         animationInProgress,
 
-        expandedUrlData,
-    
+
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
         // the following objects are retrieved from the background script
-        miscSettings;
+        expandedUrlData,
+        miscSettings,
+        CUsShortcuts;
 
-    function $getSelectedCU() {
+        function $getSelectedCU() {
         return $CUsArray[selectedCUIndex];
     }
 
@@ -1686,6 +1687,7 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
         // assign from `settings` to global variables
         miscSettings = settings.miscSettings;
         expandedUrlData = settings.expandedUrlData;
+        CUsShortcuts = settings.CUsShortcuts;
 
         $scrollingMarker = $('<div></div>')
             .addClass(class_scrollingMarker)
@@ -1723,6 +1725,24 @@ _u.mod_CUsMgr = (function($, mod_utils, mod_domEvents, mod_mutationObserver, mod
         if (overlayCssHasTransition) {
             $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
                 '.' + class_CUOverlay, onTransitionEnd);
+        }
+
+        setupShortcuts();
+    }
+
+    function setupShortcuts() {
+        // the "if" condition below is redundant since this check is made when the CUsMgr module is being setup, but
+        // it's being left here since it would be useful this code was moved out of this module
+        if (expandedUrlData && expandedUrlData.CUs_specifier) {
+            mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
+                selectFirst(true, true);
+            }, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
+                selectLast(true, true);
+            }, {pageHasCUs: true});
+
         }
     }
 

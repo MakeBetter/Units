@@ -1,4 +1,4 @@
-_u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_domEvents, CONSTS) {
+_u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_domEvents, mod_keyboardLib, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -30,7 +30,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         lastFilterText_lowerCase = "";
     }
 
-    function init() {
+    function init(settings) {
         reset();
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);
@@ -57,6 +57,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
         mod_domEvents.addEventListener(document, 'keydown', onSearchBoxInput, true);
         $closeButton.on('click', closeSearchBox);
+
+        mod_keyboardLib.bind(settings.CUsShortcuts.search.kbdShortcuts, showSearchBox, {pageHasCUsSpecifier: true});
     }
 
     /**
@@ -283,4 +285,4 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     return thisModule;
 
-})(jQuery, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_domEvents, _u.CONSTS);
+})(jQuery, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_domEvents, _u.mod_keyboardLib, _u.CONSTS);

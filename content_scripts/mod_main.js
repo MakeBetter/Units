@@ -3,7 +3,7 @@
 /**
  * main module (mod_main.js) This is the main module which runs the extension by using the other modules
  */
-(function($, mod_domEvents, mod_utils, mod_CUsMgr, mod_mutationObserver, mod_keyboardLib,
+(function($, mod_domEvents, mod_utils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver, mod_keyboardLib,
           mod_filterCUs, mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context) {
     "use strict";
 
@@ -34,7 +34,7 @@
         // respectively. All else being equal, modules should be initialized in relative order of priority of keyboard
         // shortcuts. init() is called in the order defined below, while reset() is called in the opposite order
         modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_help,
-            mod_utils, mod_filterCUs, mod_CUsMgr, mod_chromeAltHack];
+            mod_utils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr, mod_chromeAltHack];
 
     /*-- Event bindings --*/
     // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
@@ -195,20 +195,7 @@
     function setupNonUrlDataShortcuts() {
 
         // First, bind `CUsShortcuts`...
-        if (expandedUrlData && expandedUrlData.CUs_specifier) {
-            mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, mod_CUsMgr.selectNext, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, mod_CUsMgr.selectPrev, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
-                mod_CUsMgr.selectFirst(true, true);
-            }, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
-                mod_CUsMgr.selectLast(true, true);
-            }, {pageHasCUs: true});
-            // the last parameter (context) is redundant due to the enclosing `if` condition, but its harmless
-            mod_filterCUs && mod_keyboardLib.bind(CUsShortcuts.search.kbdShortcuts, mod_filterCUs.showSearchBox,
-                {pageHasCUsSpecifier: true});
 
-        }
 
         // Then, bind `generalShortcuts`...
         mod_keyboardLib.bind(generalShortcuts.showHelp.kbdShortcuts, mod_help.showHelp);
@@ -231,107 +218,6 @@
 
     }
 
-    /**
-     * Sets up the shortcuts specified. Can be used to setup either page-specific or CU-specific shortcuts depending on
-     * whether the 'scope' passed is "page" or 'CUs'.
-     * @param scope
-     */
-    function _setupUrlDataShortcuts(scope) {
-        _setupMUsShortcuts(scope);
-        _setupActionShortcuts(scope);
-    }
-
-    function _setupMUsShortcuts(scope) {
-        var MUs;
-        if (scope === 'CUs') {
-            MUs = expandedUrlData.CUs_MUs;
-        }
-        else {
-            MUs = expandedUrlData.page_MUs;
-        }
-        if (MUs) {
-            for (var key in MUs) {
-                if (MUs.hasOwnProperty(key)) {
-                    var MU = MUs[key],
-                        selectors = MU.selector,
-                        kbdShortcuts = MU.kbdShortcuts;
-
-                    if (selectors && kbdShortcuts) {
-                        mod_keyboardLib.bind(kbdShortcuts, _accessMU.bind(null, selectors, scope),
-                            scope === 'CUs'? {CUSelected: true}: undefined);
-                    }
-                }
-            }
-        }
-    }
-
-    function _setupActionShortcuts(scope) {
-        var actions;
-        if (scope === 'CUs') {
-            actions = expandedUrlData.CUs_actions;
-        }
-        else {
-            actions = expandedUrlData.page_actions;
-        }
-        if (actions) {
-            for (var key in actions) {
-                if (actions.hasOwnProperty(key)) {
-                    var action = actions[key],
-                        fn = action.fn,
-                        kbdShortcuts = action.kbdShortcuts;
-                    if (typeof fn === "function" && kbdShortcuts) {
-                        mod_keyboardLib.bind(kbdShortcuts, _invokeAction.bind(null, fn, scope),
-                            scope === 'CUs'? {CUSelected: true}: undefined);
-                    }
-                }
-            }
-        }
-    }
-    function _invokeAction (fn, scope) {
-        var $selectedCU = mod_CUsMgr.$getSelectedCU() ;
-        if (scope === 'CUs' && !$selectedCU) {
-            return;
-        }
-        var urlDataDeepCopy =  $.extend(true, {}, expandedUrlData);
-        fn($selectedCU, document, urlDataDeepCopy);
-    }
-
-    /**
-     *
-     * @param selectors
-     * @param {string} scope Can be either "page" or 'CUs'
-     */
-    function _accessMU(selectors, scope) {
-        var $scope;
-
-        if (scope === 'CUs') {
-            $scope =  mod_CUsMgr.$getSelectedCU() ;
-        }
-        else  {
-            $scope = $document;
-        }
-        if ($scope) {
-            if (typeof selectors === 'string' ) {
-                selectors = [selectors];
-            }
-            (function invokeSequentialClicks (selectorsArr) {
-                if (selectorsArr.length) {
-                    mod_commonHelper.executeWhenConditionMet(
-                        function() {
-                            // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
-                            $scope.find(selectorsArr[0])[0].click();
-                            selectorsArr.splice(0, 1);
-                            invokeSequentialClicks(selectorsArr);
-                        },
-                        function() {
-                            return $scope.find(selectorsArr[0]).length;
-                        },
-                        2000
-                    );
-                }
-            })(selectors);
-        }
-    }
 
     /**
      * Sets up the keyboard shortcuts.
@@ -341,17 +227,7 @@
      * scrolling down on the page, it will do the former if a CU is selected, and the latter otherwise.
      */
     function setupShortcuts() {
-        setupUrlDataShortcuts();
         setupNonUrlDataShortcuts();
-    }
-
-    // setup shortcuts that depend on the urlData (`expandedUrlData`)
-    function setupUrlDataShortcuts() {
-
-        if (expandedUrlData) {
-            _setupUrlDataShortcuts('CUs'); // shortcuts for CUs
-            _setupUrlDataShortcuts('page'); // shortcuts for the rest of the page
-        }
     }
 
 //    function setupExternalSearchEvents() {
@@ -381,5 +257,5 @@
 
     //return thisModule; // not required for main module
 
-})(jQuery, _u.mod_domEvents, _u.mod_utils, _u.mod_CUsMgr, _u.mod_mutationObserver, _u.mod_keyboardLib,
+})(jQuery, _u.mod_domEvents, _u.mod_utils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver, _u.mod_keyboardLib,
         _u.mod_filterCUs, _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context);

@@ -55,6 +55,7 @@
                 "content_scripts/mod_filterCUs.js",
                 "content_scripts/mod_help.js",
                 "content_scripts/mod_CUsMgr.js",
+                "content_scripts/mod_urlSpecificShortcuts.js",
                 "content_scripts/mod_selectFocusables.js",
 
                 "content_scripts/mod_main.js"
