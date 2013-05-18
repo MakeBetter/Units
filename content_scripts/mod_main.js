@@ -179,6 +179,14 @@
             else if (request.message === "isContentScriptEnabled") {
                 sendResponse(!(isDisabled_fromSettings || isDisabled_temporarily));
             }
+
+            else if(request.message === "isContentScriptTemporarilyDisabled") {
+                sendResponse(isDisabled_temporarily);
+            }
+            else if(request.message === "toggleContentScriptTemporarily") {
+                toggleExtensionTemporarily();
+                sendResponse(isDisabled_temporarily);
+            }
         }
     );
 
