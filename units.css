@@ -339,7 +339,7 @@ span#UnitsProj-search-close-icon:hover {
 
 }
 
-td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td, #UnitsProj-help-container .message{
+td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td, #UnitsProj-help-container #UnitsProj-message{
     color: #777777 !important;
 }
 
@@ -351,11 +351,12 @@ td.key>span.separator {
     font-size: 11px !important;
 }
 
-#UnitsProj-help-container .message {
+#UnitsProj-help-container #UnitsProj-message {
     text-align: left !important;
     background-color: inherit !important;
     margin-top: 10px !important;
     border: none !important;
+    font-size: 12px !important;
 }
 
 #UnitsProj-help-container tr.subsection-title>td{
