@@ -81,9 +81,13 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
 
     var groupedMutations = [];
 
-    // Monitors dom changes. Responsible for triggering the events 'url-change', 'dom-mutation' and
+    // Responds to dom changes. In particular, triggersthe events 'url-change', 'dom-mutation' and
     // 'dom-mutations-grouped'.
     var _onDomChange = function(mutations) {
+
+        // This function is called, because,in theory, JS code on a page can replace the body element with a new one at
+        // any time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
+        ensureTopLevelContainerIsInDom();
 
         thisModule.trigger("dom-mutation", mutations);
 
@@ -143,7 +147,13 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         return false; // if not returned yet
     }
 
-
+    // Checks if document.body contains the $topLevelContainer element, and appends it to the body if it doesn't.
+    function ensureTopLevelContainerIsInDom() {
+        if (!document.body.contains(_u.$topLevelContainer[0])) {
+//        console.log('appending $topLevelContainer to body');
+            _u.$topLevelContainer.appendTo(document.body);
+        }
+    }
 
     return thisModule;
 

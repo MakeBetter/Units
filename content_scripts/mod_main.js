@@ -35,11 +35,6 @@
         modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_help,
             mod_utils, mod_filterCUs, mod_urlSpecificShortcuts, mod_CUsMgr, mod_chromeAltHack];
 
-    /*-- Event bindings --*/
-    // This binding exists because,in theory, JS code on a page can replace the body element with a new one at any
-    // time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutation', ensureTopLevelContainerIsInDom);
-
     /*-- Module implementation --*/
 
     // don't need to wait till dom-ready. allows faster starting up of the extension's features
@@ -188,15 +183,6 @@
             }
         }
     );
-
-    // Checks if document.body contains the $topLevelContainer element, and appends it to the body if it doesn't.
-    function ensureTopLevelContainerIsInDom() {
-        if (!document.body.contains($topLevelContainer[0])) {
-//        console.log('appending $topLevelContainer to body');
-            _u.$topLevelContainer.appendTo(document.body);
-        }
-    }
-
 
     // setup shortcuts that don't depend on the urlData (`expandedUrlData`)
     function setupNonUrlDataShortcuts() {
