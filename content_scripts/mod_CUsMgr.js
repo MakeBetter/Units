@@ -1377,16 +1377,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         }
     }
 
-    function isRtMouseButton(e) {
-        // following right code mostly taken from http://www.quirksmode.org/js/events_properties.html
-        var isRtButton;
-//    if (!e) var e = window.event;
-        if (e.which) isRtButton = (e.which == 3);
-        else if (e.button) isRtButton = (e.button == 2);
-
-        return isRtButton;
-    }
-
     /**
      * Special handler for the escape key
      * On pressing ESC:
@@ -1512,7 +1502,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
     function onMouseDown (e) {
 
-        if (isRtMouseButton(e)) {
+        if (mod_contentHelper.isRtMouseButton(e)) {
             return onRtMouseBtnDown();
         }
         else {
@@ -1523,7 +1513,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
     function onMouseUp(e) {
 
-        if (isRtMouseButton(e)) {
+        if (mod_contentHelper.isRtMouseButton(e)) {
 
             rtMouseBtnDown = false;
 

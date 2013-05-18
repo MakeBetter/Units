@@ -17,7 +17,8 @@ _u.mod_contentHelper = (function(CONSTS) {
         suppressEvent: suppressEvent,
         ancestorElements: ancestorElements,
         closestCommonAncestor: closestCommonAncestor,
-        isUnitsProjElement: isUnitsProjElement
+        isUnitsProjElement: isUnitsProjElement,
+        isRtMouseButton: isRtMouseButton
     };
 
     /*-- Module implementation --*/
@@ -161,6 +162,18 @@ _u.mod_contentHelper = (function(CONSTS) {
             return true;
         }
         return false;
+    }
+
+
+    // checks if the mouse event specified is for the right mouse button
+    function isRtMouseButton(e) {
+        // following right code mostly taken from http://www.quirksmode.org/js/events_properties.html
+        var isRtButton;
+//    if (!e) var e = window.event;
+        if (e.which) isRtButton = (e.which == 3);
+        else if (e.button) isRtButton = (e.button == 2);
+
+        return isRtButton;
     }
 
     return thisModule;
