@@ -8,7 +8,7 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
 
-        init: init,
+        setup: setup,
 
         scrollDown: scrollDown,
         scrollUp: scrollUp,
@@ -35,7 +35,7 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         elementToScroll = e.target;
     });
 
-    function init(settings) {
+    function setup(settings) {
         miscSettings = settings.miscSettings;
         setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
     }

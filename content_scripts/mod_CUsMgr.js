@@ -9,7 +9,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset,
-        init: init,
+        setup: setup,
         $getSelectedCU: $getSelectedCU,
         selectNext: selectNext,
         selectPrev: selectPrev,
@@ -1658,14 +1658,14 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         mod_context.setCUsCount(0);
     }
 
-    function init(settings) {
+    function setup(settings) {
         if (! (settings.expandedUrlData && settings.expandedUrlData.CUs_specifier)) {
             return;     // this module is not setup if there is no CUs_specifier in the urlData
         }
 
         // we need the body to exist before we can set overlayCssHasTransition
         if (!document.body) {
-            setTimeout(init.bind(null, settings), 100);
+            setTimeout(setup.bind(null, settings), 100);
             return;
         }
 

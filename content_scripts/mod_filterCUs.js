@@ -4,7 +4,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset,
-        init: init,
+        setup: setup,
         filterCUsArray: filterCUsArray,
         showSearchBox: showSearchBox
     });
@@ -23,14 +23,14 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     // reset state
     function reset() {
-        // the following two lines are conditional because otherwise they won't be valid till init() is called once
+        // the following two lines are conditional because otherwise they won't be valid till setup() is called once
         $searchBox && closeSearchBox(); // to call triggerFilteringIfRequired()
         $filterCUsContainer && $filterCUsContainer.remove();
         timeout_typing = null;
         lastFilterText_lowerCase = "";
     }
 
-    function init(settings) {
+    function setup(settings) {
         reset();
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);

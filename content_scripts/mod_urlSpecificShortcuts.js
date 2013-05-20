@@ -4,13 +4,13 @@
  */
 _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_commonHelper){
     var thisModule = {
-        init: init
+        setup: setup
     };
 
     var expandedUrlData,
         $document = $(document);
 
-    function init(settings) {
+    function setup(settings) {
         expandedUrlData = settings.expandedUrlData;
 
         if (expandedUrlData) {

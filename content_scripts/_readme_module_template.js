@@ -28,7 +28,7 @@
     * Within the module's code, public functions should be invoked directly with their local references (i.e. simply
     foo() instead of  thisModule.foo()). This makes it easier to change a function's type (from private to public, or
     vice-versa) when required.
-    * Two public methods `init` and `reset` should be provided by the modules which need them. These will be called
+    * Two public methods `setup` and `reset` should be provided by the modules which need them. These will be called
     by the main module to initialize (and reinitialize) and reset (and disable) the module
  - Events handlers
     Each module can respond to events of other modules and raise events of its own. Ideally, both these groups ("Events
@@ -42,7 +42,7 @@ _u.mod_moduleName = (function($/*, mod_1, mod_2*/) {
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset, // reset the module (and disable it if applicable/required)
-        init: init,   // (re) initialize the module
+        setup: setup,   // (re) initialize the module
         public_foo: public_foo
     });
 
@@ -52,7 +52,7 @@ _u.mod_moduleName = (function($/*, mod_1, mod_2*/) {
     function reset() {
 
     }
-    function init() {
+    function setup() {
         reset();    // typically called to reset state before proceeding with any other setting up required
         //... setup code
     }

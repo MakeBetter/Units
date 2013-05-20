@@ -28,7 +28,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
        /*-- Public interface --*/
         var thisModule = $.extend({}, _u.mod_pubSub, {
 
-            init: init,
+            setup: setup,
             reset: reset, // Resets state AND *undoes* the hack including reinstating accessKey removed earlier
             applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts
         });
@@ -68,7 +68,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             thisModule.stopListening();
         }
 
-        function init() {
+        function setup() {
             reset();
             thisModule.listenTo(mod_mutationObserver, 'dom-mutation', onDomMutation);
         }

@@ -7,13 +7,13 @@
  */
 _u.mod_quickSearchSelectedText = (function($, mod_contentHelper, mod_domEvents){
     var thisModule = {
-        init: init
+        setup: setup
     };
 
     var isLeftMouseButtonDown = false,
         quickSearchSelectedText_data;
 
-    function init(settings) {
+    function setup(settings) {
         quickSearchSelectedText_data = settings.quickSearchSelectedText_data;
 
         mod_domEvents.addEventListener(document, 'mousedown', onMouseDown, true);

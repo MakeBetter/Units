@@ -25,7 +25,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset:reset,
-        init: init,
+        setup: setup,
         bind: bind,
         isSpaceDown: isSpaceDown,
         shouldHandleShortcut: shouldHandleShortcut, // exposed publicly for Mousetrap library (mousetrap-modified.js)
@@ -37,7 +37,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
     var protectedWebpageShortcuts;
 //    var protectedWebpageShortcuts_lowerCase;
 
-    function init(settings) {
+    function setup(settings) {
         protectedWebpageShortcuts = settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts;
 //        protectedWebpageShortcuts_lowerCase = [];
 //        for (var i = 0; i < protectedWebpageShortcuts.length; i++) {

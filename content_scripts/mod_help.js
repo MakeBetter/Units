@@ -7,7 +7,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset,
-        init: init,
+        setup: setup,
         showHelp: showHelp,
         hideHelp: hideHelp
     });
@@ -49,7 +49,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
         $helpContainer && $helpContainer.remove();
     }
 
-    function init(settings) {
+    function setup(settings) {
         reset();
         setupHelpUI(settings);
 

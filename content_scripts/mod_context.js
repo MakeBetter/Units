@@ -16,7 +16,7 @@
 _u.mod_context = (function(mod_contentHelper){
 
     var thisModule = {
-        init: init,
+        setup: setup,
         isContextValid: isContextValid,
         setCUSelectedState: setCUSelectedState,
         setCUsCount: setCUsCount
@@ -50,7 +50,7 @@ _u.mod_context = (function(mod_contentHelper){
         }
     };
 
-    function init(settings) {
+    function setup(settings) {
         var expandedUrlData = settings.expandedUrlData;
         pageHasUrlData = expandedUrlData? true: false;
         pageHasCUsSpecifier = (expandedUrlData && expandedUrlData.CUs_specifier)? true: false;
