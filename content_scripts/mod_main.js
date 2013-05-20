@@ -37,7 +37,7 @@
     /*-- Module implementation --*/
 
     function _onUrlChange() {
-        initializeExtension(); // resets the extension
+        reinitializeIfNotDisabledTemporarily();
     }
 
     // used to enable/disable the extension temporarily on the page -- it only affects the current run of the page,
@@ -80,6 +80,10 @@
             message: 'setIcon',
             isEnabled: isEnabled
         });
+    }
+
+    function reinitializeIfNotDisabledTemporarily() {
+        !isDisabled_temporarily && initializeExtension();
     }
 
 // (reset and re-)initialize the extension.
@@ -135,7 +139,7 @@
 
             // re-initialize the extension when background script informs of change in settings
             if (request.message === 'settingsChanged') {
-                !isDisabled_temporarily && initializeExtension();
+                reinitializeIfNotDisabledTemporarily();
             }
 
             // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
