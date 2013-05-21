@@ -1347,7 +1347,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     function getEffectiveHeaderHeight() {
 
         var tmp;
-        var headerSelector = (tmp = expandedUrlData) && (tmp = tmp.CUs_MUs) && (tmp = tmp.std_header) && tmp.selector;
+        var headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_MUs) && (tmp = tmp.std_header) && tmp.selector;
         if (!headerSelector) {
             return 0;
         }
