@@ -34,13 +34,15 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     // start observing DOM mutations
     function start() {
         clearTimeout(timeout_warning);
-        // TODO2: tweak further to prevent triggering mutation changes for unneeded dom changes when possible
+        var attrFilter = ['style', 'class', 'id', 'height', 'width'];
+        _u.mod_chromeAltHack && attrFilter.push('accesskey'); // 'accesskey' required only for "chrome alt hack"
         var mutationObserverConfig = {
             childList: true,
-            subtree: true,
             attributes:true,
-            attributeFilter: _u.mod_chromeAltHack? ['style', 'accesskey']: ['style'], // 'accesskey' used for "chrome alt hack"
-            attributeOldValue: true
+            characterData: true,
+            subtree: true,
+            attributeFilter: attrFilter,
+//            attributeOldValue: true // TODO: not using this currently. consider if using this can help optimize updating CUs
         };
         mutationObserver.observe(document, mutationObserverConfig);
     }
@@ -83,7 +85,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
 
     // Responds to dom changes. In particular, triggersthe events 'url-change', 'dom-mutation' and
     // 'dom-mutations-grouped'.
-    var _onDomChange = function(mutations) {
+    function _onDomChange(mutations) {
 
         // This function is called, because,in theory, JS code on a page can replace the body element with a new one at
         // any time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
@@ -107,7 +109,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
             groupedMutations = []; // reset
         }, groupingInterval_for_DomMutations);
 
-    };
+    }
 
     // returns boolean
     function _canIgnoreMutation(mutationRecord) {
