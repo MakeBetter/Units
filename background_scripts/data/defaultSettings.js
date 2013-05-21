@@ -31,7 +31,7 @@ var defaultSettings = {
     miscSettings: {
         selectCUOnLoad: true, // whether the first CU should be selected when the page loads
         animatedCUScroll: true,
-        animatedCUScroll_Speed: 2, // pixels per millisecond
+        animatedCUScroll_Speed: 1, // pixels per millisecond
         animatedCUScroll_MaxDuration: 300, // milliseconds
 
         increaseFontInSelectedCU: false,
