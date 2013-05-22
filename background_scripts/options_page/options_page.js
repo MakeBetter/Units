@@ -17,7 +17,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
     var populateUserSettings = function() {
         // settings are divided into general settings and site-specific settings.
-        var generalSettings = mod_settings.getAllSettings(),
+        var generalSettings = mod_settings.getSettings(),
             siteSpecificSettings;
 
         if (!generalSettings) {

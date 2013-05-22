@@ -64,7 +64,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     // Helpers
 
     function renderPopupUI(activeTabURL) {
-        var settings = mod_settings.getAllSettings(),
+        var settings = mod_settings.getSettings(),
             disabledStatus = mod_settings.getDisabledStatus(activeTabURL, settings.disabledSites);
 
         if (!disabledStatus) {
