@@ -5,6 +5,8 @@
 
             if (request.message === 'getSettings') {
                 sendSettingsWhenReady(request, sender, sendResponse);
+                return true; // return true to indicate that the response will be sent asynchronously. Otherwise the message
+                // channel is closed.
             }
             else if (request.message === 'setIcon') {
                 if (sender.tab.active) {
@@ -31,8 +33,9 @@
     function sendSettingsWhenReady(request, sender, sendResponse) {
         (function _sendSettingsWhenReady() {
             if (mod_getMainDomain.publicSuffixMap) {
-                var settings = mod_settings.getSettings(request.locationObj);
-                sendResponse(settings);
+                mod_settings.getSettings(request.locationObj, function(settings) {
+                    sendResponse(settings);
+                });
             }
             else {
                 setTimeout(_sendSettingsWhenReady, 100);

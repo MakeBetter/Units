@@ -5,7 +5,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     /*-- Public interface --*/
     var thisModule ={
-        getSettings: getFinalSettings,
+        getSettings: getSettings, // final computed settings i.e. default settings extended by user settings
         setUserSettings: setUserSettings,
         getDefaultSettings: getDefaultSettings,
         addUrlPatternToUserDisabledSites: addUrlPatternToUserDisabledSites,
@@ -13,13 +13,15 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     };
 
     /***
-     * Return final settings (default settings overriden by user settings)
-     * If locationObj is specified, get URL specific data in the expandedUrlData property. Else get data for all URLs in
-     * the existing urlDataMap property
-     * @param locationObj
-     * @returns {{miscSettings: *, CUsShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
+     * Get applicable settings (computed by extending default settings by user settings). If locationObj is specified, then
+     * get location specific settings, else get settings for all sites.
+     *
+     * If locationObj is specified, the settings object is appended with properties expandedUrlData and isDisabled, and
+     * the urlDataMap property is removed.
+     * @param locationObj,
+     * @param callback Callback function returns the settings.
      */
-    function getFinalSettings(locationObj) {
+    function getSettings(locationObj, callback) {
 
         var userSettings = getUserSettings(locationObj),
             defaultSettings = getDefaultSettings();
@@ -35,7 +37,12 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             settings.isDisabled = getDisabledStatus(locationObj.href, settings.disabledSites);
         }
 
-        return settings;
+        // Append settings.globalChromeCommands - get the set chrome commands and append them to the settings object
+        chrome.commands.getAll(function(commands) {
+            settings.globalChromeCommands = commands;
+
+            callback && callback(settings);
+        });
     }
 
     /***
