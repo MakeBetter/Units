@@ -19,7 +19,7 @@
  3) Allowing alt+<key> type shortcuts to work well on Chrome+Windows (ref: mod_chromeAltHack)
  */
 
-_u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_chromeAltHack) {
+_u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_domEvents, mod_chromeAltHack) {
     "use strict";
 
     /*-- Public interface --*/
@@ -38,6 +38,9 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
 //    var protectedWebpageShortcuts_lowerCase;
 
     function setup(settings) {
+        mod_domEvents.addEventListener(document, 'keydown', handlerToEnableSpaceAsModifier, true);
+        mod_domEvents.addEventListener(document, 'keyup', handlerToEnableSpaceAsModifier, true);
+
         protectedWebpageShortcuts = settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts;
 //        protectedWebpageShortcuts_lowerCase = [];
 //        for (var i = 0; i < protectedWebpageShortcuts.length; i++) {
@@ -157,9 +160,6 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
         }
     }
 
-    document.addEventListener('keydown', handlerToEnableSpaceAsModifier, true);
-    document.addEventListener('keyup', handlerToEnableSpaceAsModifier, true);
-
     /**
      * (If the element would have got selected/toggled etc on space being pressed on it,) this function tries to simulate the
      * simulate that effect (currently simply by clicking it)
@@ -260,5 +260,5 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_ch
 
     return thisModule;
 
-})(Mousetrap, _u.mod_contentHelper, _u.mod_context, _u.mod_chromeAltHack);
+})(Mousetrap, _u.mod_contentHelper, _u.mod_context, _u.mod_domEvents, _u.mod_chromeAltHack);
 

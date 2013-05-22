@@ -1,15 +1,18 @@
-/*_u.mod_selectFocusables = */(function($, mod_keyboardLib, mod_CUsMgr, mod_contentHelper, CONSTS) {
+_u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMgr, mod_contentHelper, CONSTS) {
 
     "use strict";
 
     /*-- Public interface --*/
-//    var thisModule = $.extend({}, _u.mod_pubSub, {
-//
-//    });
+    var thisModule = $.extend({}, _u.mod_pubSub, {
+        setup: setup
+    });
 
     var $document = $(document);
 
-    document.addEventListener('keydown', onKeydown_selectFocusable, true);
+
+    function setup() {
+        mod_domEvents.addEventListener(document, 'keydown', onKeydown_selectFocusable, true);
+    }
 
 // to be used in conjunction with space. currently.
     function onKeydown_selectFocusable (e) {
@@ -100,7 +103,7 @@
         }
     }
 
-    // return thisModule;
+    return thisModule;
 
-})(jQuery, _u.mod_keyboardLib, _u.mod_CUsMgr, _u.mod_contentHelper, _u.CONSTS);
+})(jQuery, _u.mod_keyboardLib, _u.mod_domEvents, _u.mod_CUsMgr, _u.mod_contentHelper, _u.CONSTS);
 

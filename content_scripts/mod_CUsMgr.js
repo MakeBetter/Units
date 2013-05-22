@@ -275,12 +275,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     }
 
     /**
-     * Removes the 'selected' or 'hovered' css class from the CU, as specified by 'type'
+     * Removes the 'selected' or 'hovered' css class from the CU's overlay, as specified by 'type'. If both classes
+     * have been removed, recycles the overlay.
      * @param $CU
      * @param {string} type Can be 'selected' or 'hovered'
-     * @return {*} Returns $overlay (the jQuery wrapper overlay element)
      */
-    function removeOverlay ($CU, type) {
+    function removeOverlay($CU, type) {
+        mod_mutationObserver.stop();
+        _removeOverlay($CU, type);
+        mod_mutationObserver.start();
+    }
+
+    // meant to be called only by removeOverlay()
+    function _removeOverlay ($CU, type) {
         if (!$CU || !$CU.length) {
             return null;
         }
@@ -301,12 +308,21 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     }
 
     /**
-     *
+     * Displays the specified type of overlay (selected/hovered) for the CU specified and returns it (as a jQuery
+     * wrapped object)
      * @param $CU
      * @param {string} type Can be 'selected' or 'hovered'
-     * @return {*} Displays and returns $overlay (i.e. a jQuery wrapped overlay element)
+     * @return {*} the jQuery wrapper of the overlay element
      */
     function showOverlay($CU, type) {
+        mod_mutationObserver.stop();
+        var $overlay = _showOverlay($CU, type);
+        mod_mutationObserver.start();
+        return $overlay;
+    }
+
+    // meant to be called only by showOverlay()
+    function _showOverlay($CU, type) {
         if (!$CU || !$CU.length) {
             return null;
         }

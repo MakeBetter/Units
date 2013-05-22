@@ -1,7 +1,7 @@
 /***
  * Module for displaying the "help" modal UI
  */
-_u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
+_u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -65,9 +65,8 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
         };
 
         mod_keyboardLib.bind(settings.generalShortcuts.showHelp.kbdShortcuts, showHelp);
-        document.addEventListener('keydown', onEscapeKeyDownOnHelp, true);
-        $helpContainer.find(".close")[0].addEventListener('click', hideHelp);
-
+        mod_domEvents.addEventListener(document, 'keydown', onEscapeKeyDownOnHelp, true);
+        mod_domEvents.addEventListener($helpContainer.find(".close")[0], 'click', hideHelp);
     }
 
     function setupHelpUI(settings) {
@@ -246,4 +245,4 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, CONSTS) {
 
     return thisModule;
 
-})(jQuery, _u.mod_contentHelper, _u.mod_keyboardLib, _u.CONSTS);    // pass as input external modules that this modules depends on
+})(jQuery, _u.mod_contentHelper, _u.mod_keyboardLib, _u.mod_domEvents, _u.CONSTS);    // pass as input external modules that this modules depends on

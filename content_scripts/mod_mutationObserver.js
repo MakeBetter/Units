@@ -30,20 +30,21 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
 
     var mutationObserver = new MutationObserver(_processMutations),
         timeout_warning;
+//
+//    var attrFilter = ['style', 'class', 'id', 'height', 'width'];
+//    _u.mod_chromeAltHack && attrFilter.push('accesskey'); // 'accesskey' required only for "chrome alt hack"
+    var mutationObserverConfig = {
+        childList: true,
+        attributes:true,
+        characterData: true,
+        subtree: true,
+//        attributeFilter: attrFilter,
+//            attributeOldValue: true // TODO: not using this currently. consider if using this can help optimize updating CUs
+    };
 
     // start observing DOM mutations
     function start() {
         clearTimeout(timeout_warning);
-        var attrFilter = ['style', 'class', 'id', 'height', 'width'];
-        _u.mod_chromeAltHack && attrFilter.push('accesskey'); // 'accesskey' required only for "chrome alt hack"
-        var mutationObserverConfig = {
-            childList: true,
-            attributes:true,
-            characterData: true,
-            subtree: true,
-            attributeFilter: attrFilter,
-//            attributeOldValue: true // TODO: not using this currently. consider if using this can help optimize updating CUs
-        };
         mutationObserver.observe(document, mutationObserverConfig);
     }
 
