@@ -9,7 +9,8 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         reset: reset,
         setup: setup,
         showHelp: showHelp,
-        hideHelp: hideHelp
+        hideHelp: hideHelp,
+        toggleHelp: toggleHelp
     });
 
 
@@ -53,19 +54,8 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         reset();
         setupHelpUI(settings);
 
-        var onEscapeKeyDownOnHelp = function(e) {
-            var code = e.which || e.keyCode;
-            if (code === 27) { // ESc
-                if ($helpContainer.is(':visible')) {
-                    hideHelp();
-                    suppressEvent(e);
-                }
-            }
-
-        };
-
-        mod_keyboardLib.bind(settings.generalShortcuts.showHelp.kbdShortcuts, showHelp);
-        mod_domEvents.addEventListener(document, 'keydown', onEscapeKeyDownOnHelp, true);
+        mod_keyboardLib.bind(settings.generalShortcuts.showHelp.kbdShortcuts, toggleHelp);
+        mod_keyboardLib.bind('esc', hideHelp);
         mod_domEvents.addEventListener($helpContainer.find(".close")[0], 'click', hideHelp);
     }
 
@@ -251,6 +241,10 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
     function hideHelp() {
         $helpContainer.hide();
 
+    }
+
+    function toggleHelp() {
+        $helpContainer.toggle();
     }
 
     return thisModule;
