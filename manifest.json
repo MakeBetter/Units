@@ -76,19 +76,22 @@
     "commands": {
         "closeTab": {
             "suggested_key": {
-                "default": "Alt+X"
+                "default": "Alt+X",
+                "mac": "Command+W"
             },
             "description": "Close tab"
         },
         "prevTab": {
             "suggested_key": {
-                "default": "Alt+J"
+                "default": "Alt+J",
+                "mac": "Command+J"
             },
             "description": "Select previous tab"
         },
         "nextTab": {
             "suggested_key": {
-                "default": "Alt+K"
+                "default": "Alt+K",
+                "mac": "Command+K"
             },
             "description": "Select next tab"
         }
