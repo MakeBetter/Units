@@ -64,21 +64,22 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     // Helpers
 
     function renderPopupUI(activeTabURL) {
-        var settings = mod_settings.getAllSettings(),
-            disabledStatus = mod_settings.getDisabledStatus(activeTabURL, settings.disabledSites);
+        var updatePopupUI = function(settings) {
+            var disabledStatus = mod_settings.getDisabledStatus(activeTabURL, settings.disabledSites);
 
-        if (!disabledStatus) {
-            enableExtensionUI.style.display = "block";
-            disableExtensionUI.style.display = "none";
+            if (!disabledStatus) {
+                enableExtensionUI.style.display = "block";
+                disableExtensionUI.style.display = "none";
 
-            // populate textbox with the URL pattern for disabling the current domain
-            var hostname = getHost(activeTabURL);
-            disabledUrlPatternInput.value = hostname + "*";
-        }
-        else {
-            enableExtensionUI.style.display = "none";
-            disableExtensionUI.style.display = "block";
-        }
+                // populate textbox with the URL pattern for disabling the current domain
+                var hostname = getHost(activeTabURL);
+                disabledUrlPatternInput.value = hostname + "*";
+            }
+            else {
+                enableExtensionUI.style.display = "none";
+                disableExtensionUI.style.display = "block";
+            }
+        };
 
         var updateToggleExtensionUI = function(status) {
             if (status) {
@@ -89,11 +90,8 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             }
         };
 
-        getTemporarilyDisabledStatus(updateToggleExtensionUI);
+        mod_settings.getSettings(null, updatePopupUI);
 
-    }
-
-    function getTemporarilyDisabledStatus(updateToggleExtensionUI) {
         chrome.tabs.sendMessage(activeTabId, {message: 'isContentScriptTemporarilyDisabled'}, function(response) {
             updateToggleExtensionUI(response);
         });

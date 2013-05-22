@@ -110,7 +110,8 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
 
     function getGeneralShortcutsSection(settings) {
         var generalShortcuts = settings.generalShortcuts,
-            expandedUrlData = settings.expandedUrlData;
+            expandedUrlData = settings.expandedUrlData,
+            globalShortcuts = settings.globalChromeCommands;
 
         var page_MUs = expandedUrlData && expandedUrlData.page_MUs,
             page_actions = expandedUrlData && expandedUrlData.page_actions,
@@ -125,6 +126,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
 
         renderShortcutsInSectionTable(generalShortcuts, $shortcutsTable);
         renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Applicable for this page/ website");
+        renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Global shortcuts (applicable on any tab)");
 
         return $section;
     }
@@ -152,7 +154,11 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         }
 
         $.each(shortcutsObj, function(key, value) {
-            var kbdShortcuts = value.kbdShortcuts;
+            var kbdShortcuts = value.kbdShortcuts || value.shortcut; // property shortcut used by chrome.commands
+
+            if (kbdShortcuts && !Array.isArray(kbdShortcuts)) {
+                kbdShortcuts = [kbdShortcuts];
+            }
 
             if (kbdShortcuts) {
                 var kbdShortcutsHtml = "";
@@ -165,11 +171,15 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
                     }
                 }
 
+                var shortcutDesc = value.miniDescr || value.description || value.name || value; // properties description and
+                // name used by chrome.commands. miniDescr and the value are applicable for all the other settings defined
+                // in the project.
+
                 $("<tr></tr>")
                     .appendTo($shortcutsTable)
                     .attr("id", key)
                     .append($("<td class= key></td>").html(kbdShortcutsHtml))
-                    .append($("<td class = action></td>").text(value.miniDescr || key));
+                    .append($("<td class = action></td>").text(shortcutDesc));
 
                 hasAtLeastOneShortcut = true;
             }

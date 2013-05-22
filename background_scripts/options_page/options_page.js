@@ -16,8 +16,12 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         resetSettingsButton = document.getElementById("reset-settings");
 
     var populateUserSettings = function() {
+        mod_settings.getSettings(null, _populateUserSettings);
+    };
+
+    var _populateUserSettings = function(settings) {
         // settings are divided into general settings and site-specific settings.
-        var generalSettings = mod_settings.getAllSettings(),
+        var generalSettings = settings,
             siteSpecificSettings;
 
         if (!generalSettings) {

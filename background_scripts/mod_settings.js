@@ -5,8 +5,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     /*-- Public interface --*/
     var thisModule ={
-        getSettings: getSettings,
-        getAllSettings: getAllSettings,
+        getSettings: getSettings, // final computed settings i.e. default settings extended by user settings
         setUserSettings: setUserSettings,
         getDefaultSettings: getDefaultSettings,
         addUrlPatternToUserDisabledSites: addUrlPatternToUserDisabledSites,
@@ -14,37 +13,36 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     };
 
     /***
-     * Return final settings (default settings overriden by user settings) for the specified location object
-     * @param locationObj
-     * @returns {{miscSettings: *, CUsShortcuts: *, generalShortcuts: *, disabledSites: *, expandedUrlData: *}}
+     * Get applicable settings (computed by extending default settings by user settings). If locationObj is specified, then
+     * get location specific settings, else get settings for all sites.
+     *
+     * If locationObj is specified, the settings object is appended with properties expandedUrlData and isDisabled, and
+     * the urlDataMap property is removed.
+     * @param locationObj,
+     * @param callback Callback function returns the settings.
      */
-    function getSettings(locationObj) {
-        var _defaultSettings = {
-                miscSettings: defaultSettings.miscSettings,
-                generalShortcuts: defaultSettings.generalShortcuts,
-                CUsShortcuts: defaultSettings.CUsShortcuts,
-                disabledSites: defaultSettings.disabledSites,
-                expandedUrlData:getExpandedUrlData(defaultSettings, locationObj),
-                quickSearchSelectedText_data: defaultSettings.quickSearchSelectedText_data
-            },
-            userSettings = getUserSettings(locationObj),
-            settings = $.extend(true, {}, _defaultSettings, userSettings);
+    function getSettings(locationObj, callback) {
 
-        settings.isDisabled = getDisabledStatus(locationObj.href, settings.disabledSites);
+        var userSettings = getUserSettings(locationObj),
+            defaultSettings = getDefaultSettings();
 
-        return settings;
-    }
+        if (locationObj) {
+            defaultSettings.expandedUrlData = getExpandedUrlData(defaultSettings, locationObj);
+            delete defaultSettings.urlDataMap;
+        }
 
-    /***
-     * Get all the final settings (default settings overriden by user settings)
-     * This is used to display the final settings in the settings UI.
-     * @returns {*}
-     */
-    function getAllSettings() {
-        var userSettings = getUserSettings(),
-            settings = $.extend(true, {}, defaultSettings, userSettings);
+        var settings = $.extend(true, {}, defaultSettings, userSettings);
 
-        return settings;
+        if (locationObj) {
+            settings.isDisabled = getDisabledStatus(locationObj.href, settings.disabledSites);
+        }
+
+        // Append settings.globalChromeCommands - get the set chrome commands and append them to the settings object
+        chrome.commands.getAll(function(commands) {
+            settings.globalChromeCommands = commands;
+
+            callback && callback(settings);
+        });
     }
 
     /***
@@ -52,14 +50,15 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
      * @returns {*}
      */
     function getDefaultSettings() {
-        return defaultSettings;
+        return $.extend(true, {}, defaultSettings);
     }
 
     /***
      * Get user settings, stored in local storage.
+     * If locationObj is specified, get URL specific data in the expandedUrlData property. Else get data for all URLs in
+     * the existing urlDataMap property
      *
-     * @param [locationObj] If locationObj is specified, then settingsObj.expandedUrlData will have the data for the
-     * locationObj URL, if present. Otherwise, expandedUrlData will be null.
+     * @param [locationObj]
      * @returns {*}
      */
     function getUserSettings(locationObj) {
@@ -76,8 +75,13 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             }
 
             mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
-            settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
+
+            if (locationObj) {
+                settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
+                delete settingsObj.urlDataMap;
+            }
         }
+
         return settingsObj;
 
     }
