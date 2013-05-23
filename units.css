@@ -222,6 +222,8 @@ span#filter-message {
     bottom: 4px !important;
     line-height: 11px !important;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    text-align: center !important;
+    font-weight: normal !important;
 }
 
 .UnitsProj-modal {
