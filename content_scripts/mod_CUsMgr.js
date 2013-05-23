@@ -537,7 +537,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     function selectPrev () {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
-            mod_basicPageUtils.scrollUp();
+            mod_basicPageUtils.scroll("up");
             return;
         }
 
@@ -562,7 +562,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
                     return;
                 }
                 else if (selectedCUIndex === 0) { // special case for first CU
-                    mod_basicPageUtils.scrollUp();
+                    mod_basicPageUtils.scroll("up");
                 }
             }
 
@@ -583,7 +583,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     function selectNext() {
 
         if (!$CUsArray || !$CUsArray.length || $CUsArray.length == 1) {
-            mod_basicPageUtils.scrollDown();
+            mod_basicPageUtils.scroll("down");
             return;
         }
 
@@ -609,7 +609,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
                     return;
                 }
                 else  if (selectedCUIndex === $CUsArray.length-1) { // special case for last CU
-                    mod_basicPageUtils.scrollDown();
+                    mod_basicPageUtils.scroll("down");
                 }
             }
 

@@ -43,7 +43,7 @@ var defaultSettings = {
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
 
-        pageScrollDelta: 60 // pixels to scroll on each key press
+        pageScrollDelta: 150 // pixels to scroll on each key press
     },
 
     /*

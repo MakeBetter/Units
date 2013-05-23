@@ -7,11 +7,9 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
-
         setup: setup,
 
-        scrollDown: scrollDown,
-        scrollUp: scrollUp,
+        scroll: scroll,
 
         back: back,
         forward: forward,
@@ -21,32 +19,39 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         focusPrevTextInput: focusPrevTextInput,
 
         openActiveElement: openActiveElement
-
     });
 
     /*-- Module implementation --*/
     var miscSettings,
-        // tracks the element on which scrolling should be attempted first, when the user invokes scrolllDown/scrollUp
-        elementToScroll,
+        lastInteractedElement, // the last element which received user interaction (click, mouse over, focus etc)
         $document = $(document),
-        isMac = navigator.appVersion.indexOf("Mac")!=-1; // since macs have different key layouts/behaviors;
-
-    $document.on('click focus mouseover', function(e) {
-        elementToScroll = e.target;
-    });
+        isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
+        overlap_pgUpPgDn = 100,
+        scrollAnimationDuration = 150; // millisecs
 
     function setup(settings) {
+        $document.on('click focus mouseover', function(e) {
+            lastInteractedElement = e.target;
+        });
+
         miscSettings = settings.miscSettings;
         setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
     }
     
     function setupShortcuts(generalShortcuts, CUsShortcuts) {
-        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
-        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
-        mod_keyboardLib.bind(generalShortcuts.topOfPage.kbdShortcuts, topOfPage);
-        mod_keyboardLib.bind(generalShortcuts.bottomOfPage.kbdShortcuts, bottomOfPage);
-        mod_keyboardLib.bind(generalShortcuts.pageUp.kbdShortcuts, pageUp);
-        mod_keyboardLib.bind(generalShortcuts.pageDown.kbdShortcuts, pageDown);
+
+        mod_keyboardLib.bind(generalShortcuts.topOfPage.kbdShortcuts,  function() {
+            scroll("top");
+        });
+        mod_keyboardLib.bind(generalShortcuts.bottomOfPage.kbdShortcuts,  function() {
+            scroll("bottom");
+        });
+        mod_keyboardLib.bind(generalShortcuts.pageUp.kbdShortcuts,  function() {
+            scroll("pageUp");
+        });
+        mod_keyboardLib.bind(generalShortcuts.pageDown.kbdShortcuts,  function() {
+            scroll("pageDown");
+        });
         mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
         mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
         mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
@@ -57,16 +62,17 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
         mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
 
+        var scrollDown = function() {
+            scroll("down");
+        };
+        var scrollUp = function() {
+            scroll("up");
+        };
+        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
+        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
         // special shortcuts, these will get invoked only when the page has no CUs
         mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, scrollDown, {pageHasCUs: false});
         mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, scrollUp, {pageHasCUs: false});
-    }
-    function scrollDown() {
-        scroll(miscSettings.pageScrollDelta);
-    }
-
-    function scrollUp() {
-        scroll(-miscSettings.pageScrollDelta);
     }
 
     // invokes the browser's 'back' action
@@ -78,26 +84,60 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         window.history.forward();
     }
 
-    function topOfPage() {
-        $document.scrollTop(0);
-    }
+    /**
+     * Scroll the page as specified by `scrollType`
+     * The function will actually apply to the innermost sensible element that can be scrolled further in the
+     * appropriate direction.
+     * E.g: If there is an child element that has focus and can be scrolled up, the first invocation of scroll("top")
+     * will act on it, and the next one will act on a suitable ancestor (since the child can no longer be scrolled up)
+     * @param {string} scrollType One of "up", "down", "pageUp", "pageDown", "top", "bottom"
+     */
+    function scroll(scrollType) {
+        var areScrollingUp = ["up", "pageUp", "top"].indexOf(scrollType) >= 0;
+        var elToScroll = getElementToScroll(areScrollingUp);
 
-    function bottomOfPage() {
-        // self note: there seems to be no standard way in the DOM api to get the document/page's height
-        $document.scrollTop($document.height());
+        if (elToScroll) {
+            var $elToScroll = $(elToScroll);
+            $elToScroll.stop(true, true); // stop on-going animation, if any
+            switch(scrollType) {
+                case "down":  
+                    $elToScroll.animate({scrollTop: elToScroll.scrollTop + miscSettings.pageScrollDelta}, scrollAnimationDuration);
+                    break;
+                case "up":
+                    $elToScroll.animate({scrollTop: elToScroll.scrollTop - miscSettings.pageScrollDelta}, scrollAnimationDuration);
+                    break;
+                case "pageDown":
+                    $elToScroll.animate({scrollTop: elToScroll.scrollTop +
+                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn)}, scrollAnimationDuration);
+                    break;
+                case "pageUp":
+                    $elToScroll.animate({scrollTop: elToScroll.scrollTop -
+                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn)}, scrollAnimationDuration);
+                    break;
+                case "top":
+                    $elToScroll.animate({scrollTop: 0}, scrollAnimationDuration);
+                    break;
+                case "bottom":
+                    $elToScroll.animate({scrollTop: elToScroll.scrollHeight}, scrollAnimationDuration);
+                    break;
+            }
+        }
     }
-
-    // Positive value for 'delta' scrolls down, negative scrolls up
-    function scroll(delta) {
-        var scrollElement = elementToScroll || document.activeElement || document.body,
+    /**
+     * Gets the most sensible element to scroll based on  `areScrollingUp`
+     * @param {boolean} areScrollingUp true - scrolling up. false - scrolling down
+     */
+    function getElementToScroll(areScrollingUp) {
+        var scrollElement = lastInteractedElement || document.activeElement || document.body,
             oldScrollVal;
-
         while (scrollElement) {
             oldScrollVal = scrollElement.scrollTop;
-            scrollElement.scrollTop += delta;
 
+            scrollElement.scrollTop += areScrollingUp? -1: 1;
+
+            console.log(scrollElement);
             if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
-                return;
+                return scrollElement;
             }
             else {
                 scrollElement = scrollElement.parentElement;
@@ -105,42 +145,6 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         }
     }
 
-
-    function pageDown() {
-        var scrollElement = elementToScroll || document.activeElement || document.body,
-            oldScrollVal;
-
-        while (scrollElement) {
-            oldScrollVal = scrollElement.scrollTop;
-            scrollElement.scrollTop += (Math.min(scrollElement.clientHeight, window.innerHeight) - 100);
-
-            if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
-                return;
-            }
-            else {
-                scrollElement = scrollElement.parentElement;
-            }
-        }
-
-    }
-
-    function pageUp() {
-        var scrollElement = elementToScroll || document.activeElement || document.body,
-            oldScrollVal;
-
-        while (scrollElement) {
-            oldScrollVal = scrollElement.scrollTop;
-            scrollElement.scrollTop -= (Math.min(scrollElement.clientHeight, window.innerHeight) - 100);
-
-            if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
-                return;
-            }
-            else {
-                scrollElement = scrollElement.parentElement;
-            }
-        }
-
-    }
 
     function $getVisibleTextInputElements() {
         var $textInput = $document.find('input[type=text], input:not([type]), textarea, [contenteditable=true]').filter(function() {
