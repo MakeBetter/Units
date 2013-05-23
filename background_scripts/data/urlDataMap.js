@@ -199,15 +199,15 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
-//    "backbonejs.org":  {
-//        urlPatterns: ["backbonejs.org/"],
-//        CUs_specifier: {
-//            buildCUAround: ".container b.header",
-//        },
-//        CUs_style: {
-//            overlayPadding: "10px",
-//        }
-//    },
+    "backbonejs.org":  {
+        urlPatterns: ["backbonejs.org/"],
+        CUs_specifier: {
+            buildCUAround: ".container p:has(.header), h2",
+        },
+        CUs_style: {
+            overlayPadding: "10px",
+        }
+    },
     "facebook.com": {
 //        urlPatterns: ["www.facebook.com*"],
         urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type
@@ -487,7 +487,7 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["underscorejs.org/"],
             CUs_specifier: {
-                buildCUAround: "#documentation p",
+                buildCUAround: "#documentation p:has(.header), h2",
             },
             CUs_style: {
                 overlayPadding: "10px"
