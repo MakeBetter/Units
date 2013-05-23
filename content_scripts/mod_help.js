@@ -54,7 +54,14 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         setupHelpUI(settings);
 
         mod_keyboardLib.bind(settings.generalShortcuts.showHelp.kbdShortcuts, toggleHelp);
-        mod_keyboardLib.bind('esc', hideHelp);
+        mod_keyboardLib.bind('esc', hideHelp, function() {
+            if ($helpContainer.is(":visible")) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
         mod_domEvents.addEventListener($helpContainer.find(".close")[0], 'click', hideHelp);
     }
 
