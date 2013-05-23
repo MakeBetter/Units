@@ -199,6 +199,15 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
+//    "backbonejs.org":  {
+//        urlPatterns: ["backbonejs.org/"],
+//        CUs_specifier: {
+//            buildCUAround: ".container b.header",
+//        },
+//        CUs_style: {
+//            overlayPadding: "10px",
+//        }
+//    },
     "facebook.com": {
 //        urlPatterns: ["www.facebook.com*"],
         urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type
@@ -318,8 +327,8 @@ defaultSettings.urlDataMap = {
             // handled by the CU selector for www.quora.com/* pattern (specified later).
             urlRegexps: [/^www\.quora\.com\/.+\/(?!about$|questions$|new$|home$).+/],
             CUs_specifier: {
-                // separate selectors for the question and then the answers
-                selector: ".question.row, .main_col>div>.row .row" /*seems to be working well, as on May 13, 2013! */
+                // includes selectors for the question, answer, and "invite to answer" block
+                selector: ".question.row, .main_col>div>.row .row, .invite_to_answer" /*seems to be working well, as on May 13, 2013! */
             },
             CUs_style: {
                 overlayPadding: "2px 0 0 0"
@@ -478,7 +487,7 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["underscorejs.org/"],
             CUs_specifier: {
-                buildCUAround: "p",
+                buildCUAround: "#documentation p",
             },
             CUs_style: {
                 overlayPadding: "10px"
