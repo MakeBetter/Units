@@ -181,6 +181,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
      * @param {object} [options] Misc options. Can also be used to override miscSettings
      */
     function selectCU(CUOrItsIndex, setFocus, adjustScrolling, options) {
+        mod_mutationObserver.stop();
+        _selectCU(CUOrItsIndex, setFocus, adjustScrolling, options);
+        mod_mutationObserver.start();
+    }
+
+    // only meant to be called from within selectCU()
+    function _selectCU(CUOrItsIndex, setFocus, adjustScrolling, options) {
 
 //        console.log('selectCU() called. CUOrItsIndex: ', CUOrItsIndex);
         var $CU,
@@ -241,10 +248,18 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         }
     }
 
+
     /**
      * Deselects the currently selected CU, if there is one
      */
     function deselectCU(options) {
+        mod_mutationObserver.stop();
+        _deselectCU(options);
+        mod_mutationObserver.start();
+    }
+
+    // only meant to be called from within deselectCU()
+    function _deselectCU(options) {
 
         var $CU = $CUsArray[selectedCUIndex];
         if ($CU) {
@@ -1058,6 +1073,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
      * @param {string} invokedDueTo Should be one of "dom-change", "filtering-state-change", "initial-setup"
      */
     function updateCUsAndRelatedState(invokedDueTo) {
+        mod_mutationObserver.stop();
+        _updateCUsAndRelatedState(invokedDueTo);
+        mod_mutationObserver.start();
+    }
+
+    function _updateCUsAndRelatedState(invokedDueTo) {
 
         // Save the currently selected CU, to reselect it, if it is still present in the $CUsArray after the array is
         // updated. This needs to be done before calling deselectCU() and modifying the current $CUsArray
