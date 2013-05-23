@@ -71,7 +71,7 @@
             mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
         }
 
-        mod_mutationObserver.stop();
+        mod_mutationObserver.stop("disableExtension");
 
         $topLevelContainer.empty().remove();
     }

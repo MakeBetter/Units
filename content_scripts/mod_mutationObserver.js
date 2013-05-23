@@ -48,20 +48,27 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         mutationObserver.observe(document, mutationObserverConfig);
     }
 
-    // stop observing DOM mutations
-    function stop() {
+    /**
+     * stop observing DOM mutations
+     * @param {string} [flag] Optional. Is the string "disableExtension" if called as part of disableExtension()
+     */
+    function stop(flag) {
         var warnInSeconds = 30;
 
         mutationObserver.disconnect();
 
+        if (flag === "disableExtension") {
+            return;
+        }
+
         (function setWarningTimeout() {
+            clearTimeout(timeout_warning); // to handle cases where stop() gets called twice without a start() in between
             timeout_warning = setTimeout(function() {
                 console.warn('Mutation Observer was stopped (+)' + warnInSeconds + ' seconds ago and not restarted.');
                 setWarningTimeout();
             }, warnInSeconds * 1000);
 
         })();
-
     }
 
     function _processMutations(mutations) {
