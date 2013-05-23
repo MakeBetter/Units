@@ -298,6 +298,19 @@ defaultSettings.urlDataMap = {
             protectedWebpageShortcuts: ["j", "k", "g", "o", "f"]
         }
     ],
+
+    "linkedin.com": [
+        {
+            urlPatterns: ["www.linkedin.com/"],
+            CUs_specifier: "#my-feed-post .feed-item",
+            CUs_style: {
+                overlayPadding: "0 0 20px 0"
+            },
+            CUs_MUs: {
+                std_mainEl: ".new-miniprofile-container a"
+            }
+        }
+    ],
     "quora.com": [
         {
             // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
