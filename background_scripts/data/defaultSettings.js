@@ -98,6 +98,22 @@ var defaultSettings = {
         focusPrevTextInput: {
             miniDescr: "Focus previous text input element",
             kbdShortcuts: ['alt+shift+o']
+        },
+        topOfPage: {
+            miniDescr: "Navigate: Top of page",
+            kbdShortcuts: ['n t']
+        },
+        bottomOfPage: {
+            miniDescr: "Navigate: Bottom of page",
+            kbdShortcuts: ['n b']
+        },
+        pageUp: {
+            miniDescr: "Navigate: Up (fast scroll up)",
+            kbdShortcuts: ['n u']
+        },
+        pageDown: {
+            miniDescr: "Navigate: Down (fast scroll down)",
+            kbdShortcuts: ['n d']
         }
     },
 

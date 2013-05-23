@@ -43,6 +43,10 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
     function setupShortcuts(generalShortcuts, CUsShortcuts) {
         mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
         mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
+        mod_keyboardLib.bind(generalShortcuts.topOfPage.kbdShortcuts, topOfPage);
+        mod_keyboardLib.bind(generalShortcuts.bottomOfPage.kbdShortcuts, bottomOfPage);
+        mod_keyboardLib.bind(generalShortcuts.pageUp.kbdShortcuts, pageUp);
+        mod_keyboardLib.bind(generalShortcuts.pageDown.kbdShortcuts, pageDown);
         mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
         mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
         mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
@@ -74,6 +78,15 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         window.history.forward();
     }
 
+    function topOfPage() {
+        $document.scrollTop(0);
+    }
+
+    function bottomOfPage() {
+        // self note: there seems to be no standard way in the DOM api to get the document/page's height
+        $document.scrollTop($document.height());
+    }
+
     // Positive value for 'delta' scrolls down, negative scrolls up
     function scroll(delta) {
         var scrollElement = elementToScroll || document.activeElement || document.body,
@@ -92,6 +105,42 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         }
     }
 
+
+    function pageDown() {
+        var scrollElement = elementToScroll || document.activeElement || document.body,
+            oldScrollVal;
+
+        while (scrollElement) {
+            oldScrollVal = scrollElement.scrollTop;
+            scrollElement.scrollTop += (Math.min(scrollElement.clientHeight, window.innerHeight) - 100);
+
+            if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
+                return;
+            }
+            else {
+                scrollElement = scrollElement.parentElement;
+            }
+        }
+
+    }
+
+    function pageUp() {
+        var scrollElement = elementToScroll || document.activeElement || document.body,
+            oldScrollVal;
+
+        while (scrollElement) {
+            oldScrollVal = scrollElement.scrollTop;
+            scrollElement.scrollTop -= (Math.min(scrollElement.clientHeight, window.innerHeight) - 100);
+
+            if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
+                return;
+            }
+            else {
+                scrollElement = scrollElement.parentElement;
+            }
+        }
+
+    }
 
     function $getVisibleTextInputElements() {
         var $textInput = $document.find('input[type=text], input:not([type]), textarea, [contenteditable=true]').filter(function() {
