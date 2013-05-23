@@ -474,6 +474,18 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "underscorejs.org": [
+        {
+            urlPatterns: ["underscorejs.org/"],
+            CUs_specifier: {
+                buildCUAround: "p",
+            },
+            CUs_style: {
+                overlayPadding: "10px"
+            }
+        }
+    ],
+
     // only support on the first page
     "ycombinator.com": {
         urlPatterns: ["news.ycombinator.com*"],
