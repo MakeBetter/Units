@@ -21,17 +21,37 @@ button {
     display: table;
 }
 
+#user-settings p , .message{
+    margin-left: 10px;
+}
+
 #user-settings p {
-    margin-bottom: 0;
-    padding-bottom: 5px;
-    padding-left: 10px;
+    margin-bottom: 5px;
     font-style: italic;
-    /*background-color: #fafafa;*/
+}
+
+.message {
+    font-size: 12px;
+    color: #666;
+    background-color: lightgoldenrodyellow;
+    border: 1px solid #faf992;
+    padding: 3px;
+    display: block;
+}
+
+.message>a {
+    color: #1277dd
 }
 
 #user-settings textarea {
     border-color: #efefef;
     margin-bottom: 20px;
+    width: 750px;
+    /*resize: none;*/
+}
+
+#user-settings textarea[readonly=readonly]{
+    /*color: #999;*/
 }
 
 #settings-buttons-panel {
@@ -85,3 +105,4 @@ button {
     background-color: #3e801b;
     border: 1px solid #3e801b;
 }
+

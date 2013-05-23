@@ -12,8 +12,10 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
     var generalSettingsTextArea = document.getElementById("general-settings"),
         siteSettingsTextArea = document.getElementById("site-specific-settings"),
+        globalSettingsTextArea = document.getElementById("global-settings"),
         saveSettingsButton = document.getElementById("save-settings"),
-        resetSettingsButton = document.getElementById("reset-settings");
+        resetSettingsButton = document.getElementById("reset-settings"),
+        goToExtensionLink = document.getElementById("go-to-extensions");
 
     var populateUserSettings = function() {
         mod_settings.getSettings(null, _populateUserSettings);
@@ -22,7 +24,8 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var _populateUserSettings = function(settings) {
         // settings are divided into general settings and site-specific settings.
         var generalSettings = settings,
-            siteSpecificSettings;
+            siteSpecificSettings,
+            globalSettings;
 
         if (!generalSettings) {
             mod_UIHelper.showErrorMessage("Your settings are in a corrupt state. Try resetting to default options.");
@@ -32,15 +35,27 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
         siteSpecificSettings = generalSettings.urlDataMap;
         siteSpecificSettings = JSON.stringify(siteSpecificSettings, null, "\t");
-
         delete generalSettings.urlDataMap;
+
+        globalSettings = generalSettings.globalChromeCommands;
+
+        for (var i = 0; i < globalSettings.length; i++) {
+            var setting = globalSettings[i];
+            if (setting.shortcut === "") {
+                globalSettings.splice(i,1);
+            }
+        }
+        globalSettings = JSON.stringify(globalSettings, null, "\t");
+        delete  generalSettings.globalChromeCommands;
+
         generalSettings = JSON.stringify(generalSettings, null, "\t");
 
         generalSettingsTextArea.value = generalSettings;
         siteSettingsTextArea.value = siteSpecificSettings;
+        globalSettingsTextArea.value = globalSettings;
     };
 
-    var saveSettings = function(generalSettingsJSON, siteSpecificSettingsJSON) {
+    var _saveSettings = function(generalSettingsJSON, siteSpecificSettingsJSON) {
         var generalSettingsObj = null,
             siteSpecificSettingsObj = null;
 
@@ -72,8 +87,8 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     };
 
 
-    var eh_saveSettings = function() {
-        saveSettings(generalSettingsTextArea.value, siteSettingsTextArea.value);
+    var saveSettings = function() {
+        _saveSettings(generalSettingsTextArea.value, siteSettingsTextArea.value);
     };
 
     var resetSettings = function() {
@@ -85,8 +100,13 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         }
     };
 
+    var goToExtensionsPage = function() {
+        chrome.tabs.create({url: 'chrome://extensions/'});
+    };
+
     populateUserSettings();
-    saveSettingsButton.addEventListener("click", eh_saveSettings);
+    saveSettingsButton.addEventListener("click", saveSettings);
     resetSettingsButton.addEventListener("click", resetSettings);
+    goToExtensionLink.addEventListener("click", goToExtensionsPage);
 
 })(_u.mod_commonHelper, _u.mod_settings, mod_UIHelper);

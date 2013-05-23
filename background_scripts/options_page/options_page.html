@@ -15,17 +15,25 @@
             </div>
             <div>
                 <p>- General</p>
-                <textarea rows="50" cols="100" id="general-settings">
+                <textarea rows="50" id="general-settings">
 
                 </textarea>
             </div>
             <div>
                 <p>- Site specific</p>
-                <textarea rows="50" cols="100" id="site-specific-settings">
+                <textarea rows="50" id="site-specific-settings">
 
                 </textarea>
             </div>
+            <div>
+                <p>- Global (work on all tabs)</p>
+                <span class="message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
+                    Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
+                </span>
+                <textarea rows="25" cols="100" id="global-settings" readonly= "readonly">
 
+                </textarea>
+            </div>
         </div>
     </div>
     <div id="user-message" class="ui-corner-bottom" style="display:none;"></div>
