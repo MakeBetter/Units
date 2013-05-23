@@ -165,6 +165,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 //        $(mainEl).data('enclosingCUJustSelected', true);
             mainEl.focus();
         }
+        else {
+            document.activeElement.blur();
+        }
     }
 
     /**

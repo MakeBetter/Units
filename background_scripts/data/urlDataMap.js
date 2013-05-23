@@ -199,6 +199,15 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
+//    "backbonejs.org":  {
+//        urlPatterns: ["backbonejs.org/"],
+//        CUs_specifier: {
+//            buildCUAround: ".container b.header",
+//        },
+//        CUs_style: {
+//            overlayPadding: "10px",
+//        }
+//    },
     "facebook.com": {
 //        urlPatterns: ["www.facebook.com*"],
         urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type
@@ -298,6 +307,19 @@ defaultSettings.urlDataMap = {
             protectedWebpageShortcuts: ["j", "k", "g", "o", "f"]
         }
     ],
+
+    "linkedin.com": [
+        {
+            urlPatterns: ["www.linkedin.com/"],
+            CUs_specifier: "#my-feed-post .feed-item",
+            CUs_style: {
+                overlayPadding: "0 0 20px 0"
+            },
+            CUs_MUs: {
+                std_mainEl: ".new-miniprofile-container a"
+            }
+        }
+    ],
     "quora.com": [
         {
             // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
@@ -305,8 +327,8 @@ defaultSettings.urlDataMap = {
             // handled by the CU selector for www.quora.com/* pattern (specified later).
             urlRegexps: [/^www\.quora\.com\/.+\/(?!about$|questions$|new$|home$).+/],
             CUs_specifier: {
-                // separate selectors for the question and then the answers
-                selector: ".question.row, .main_col>div>.row .row" /*seems to be working well, as on May 13, 2013! */
+                // includes selectors for the question, answer, and "invite to answer" block
+                selector: ".question.row, .main_col>div>.row .row, .invite_to_answer" /*seems to be working well, as on May 13, 2013! */
             },
             CUs_style: {
                 overlayPadding: "2px 0 0 0"
@@ -322,6 +344,9 @@ defaultSettings.urlDataMap = {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"]
                 }
+            },
+            page_MUs: {
+                std_header: "#layout_header"
             }
         },
         {
@@ -331,7 +356,7 @@ defaultSettings.urlDataMap = {
             // the first selector for quora main page (and a few others), the second one for a page like this one:
             // http://www.quora.com/Front-End-Web-Development
             CUs_MUs: {
-                std_mainEl: " a.question_link",
+                std_mainEl: "a.question_link, h2.board_item_title a, a.topic_name",
                 "std_upvote": ".add_upvote, .remove_upvote",
                 "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".view_comments"},
                 "std_downvote": ".add_downvote, .remove_downvote",
@@ -455,6 +480,18 @@ defaultSettings.urlDataMap = {
 
             }
 
+        }
+    ],
+
+    "underscorejs.org": [
+        {
+            urlPatterns: ["underscorejs.org/"],
+            CUs_specifier: {
+                buildCUAround: "#documentation p",
+            },
+            CUs_style: {
+                overlayPadding: "10px"
+            }
         }
     ],
 
