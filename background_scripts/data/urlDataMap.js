@@ -322,6 +322,9 @@ defaultSettings.urlDataMap = {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"]
                 }
+            },
+            page_MUs: {
+                std_header: "#layout_header"
             }
         },
         {
@@ -331,7 +334,7 @@ defaultSettings.urlDataMap = {
             // the first selector for quora main page (and a few others), the second one for a page like this one:
             // http://www.quora.com/Front-End-Web-Development
             CUs_MUs: {
-                std_mainEl: " a.question_link",
+                std_mainEl: "a.question_link, h2.board_item_title a, a.topic_name",
                 "std_upvote": ".add_upvote, .remove_upvote",
                 "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".view_comments"},
                 "std_downvote": ".add_downvote, .remove_downvote",
