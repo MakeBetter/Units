@@ -39,10 +39,13 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             .attr("id", "UnitsProj-search-close-icon")
             .addClass(class_addedByUnitsProj);
 
+        var $message = $("<span id=filter-message>Press 'tab' to go to filtered units</span>");
+
         $filterCUsContainer = $('<div id = "UnitsProj-search-container">')
             .addClass(class_addedByUnitsProj)
             .append($searchBox)
             .append($closeButton)
+            .append($message)
             .hide()     // to prevent the search box from appearing when the page loads
             .appendTo(_u.$topLevelContainer);
         // Use a timeout to call .show(), otherwise the search box might appear briefly at the top of the page as

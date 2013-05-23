@@ -134,7 +134,7 @@ margin of the #UnitsProj-search-box or #UnitsProj-search-close-icon is changed 2
 box-sizing to border-box)*/
 div#UnitsProj-search-container {
     /*padding: 4px !important;*/
-    width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
+    width: 181px !important; height: 45px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
     box-sizing: border-box !important; /*using border-box to make calculations easier.*/
 
     text-align: left !important; /*this is important to be set to ensure that the input box and span align as required.*/
@@ -212,6 +212,16 @@ span#UnitsProj-search-close-icon:hover {
     background-color: #e38e83 !important;
     border: solid 1px #d1847b !important;
     color: #eee !important;
+}
+
+span#filter-message {
+    font-size: 11px !important;
+    color: #666 !important;
+    position: absolute !important;
+    left: 6px !important;
+    bottom: 4px !important;
+    line-height: 11px !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
 
 .UnitsProj-modal {
