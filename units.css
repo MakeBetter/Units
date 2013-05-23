@@ -220,11 +220,11 @@ span#UnitsProj-search-close-icon:hover {
     min-height: 400px !important;
     /*min-width: 400px !important;*/
     max-height: 600px !important;
-    width: 700px !important;
+    width: 800px !important;
     overflow: auto !important;
 
     position: fixed !important;
-    left: 50%; margin-left: -350px; /*center the div horizontally*/
+    left: 50%; margin-left: -400px; /*center the div horizontally*/
     top: 10%;
 
     z-index: 10000 !important;
@@ -281,7 +281,6 @@ span#UnitsProj-search-close-icon:hover {
 }
 
 #help {
-
 }
 
 .UnitsProj-modal-body {
@@ -362,8 +361,8 @@ td.key>span.separator {
     font-size: 12px !important;
 }
 
-#UnitsProj-help-container tr.subsection-title>td{
-
+#UnitsProj-help-container tr.subsection-end>td{
+    padding-bottom: 20px !important;
 }
 
 #UnitsProj-help-container th.section-title {

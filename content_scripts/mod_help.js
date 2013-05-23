@@ -19,7 +19,6 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
     var $helpContainer,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         $topLevelContainer = _u.$topLevelContainer,
-        suppressEvent = mod_contentHelper.suppressEvent,
         helpModalDialogHtml =
             '<div id = "UnitsProj-help-container">' +
                 '<div class = "UnitsProj-modal-backdrop">' +
@@ -87,7 +86,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         var $section = $(shortcutsSectionHtml);
         $section
             .attr("id", "CUs-shortcuts")
-            .find(".section-title").text("CUs based");
+            .find(".section-title").text("Content Unit (CU) based");
 
         var $shortcutsTable = $section.find("table");
 
@@ -122,7 +121,8 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
     }
 
     /***
-     *
+     * Append a subsection in the given $shortcutsTable by rendering shortcuts in shortcutsObj. Add a title to this
+     * subsection if specified as subsectionTitle.
      * @param shortcutsObj
      * @param $shortcutsTable
      * @param [subSectionTitle]
@@ -203,7 +203,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
 
         additionalShortcuts = "";
         for (i = 0; i < nextCUShortcuts.length; i++) {
-            additionalShortcuts += "<span class=key>"+ nextCUShortcuts[i] + "*" + "</span>";
+            additionalShortcuts += "<span class=key>"+ nextCUShortcuts[i] + "</span>" + "*" ;
             if (i !== nextCUShortcuts.length - 1) {
                 additionalShortcuts+= keysSeparatorHtml;
             }
@@ -218,7 +218,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
 
         additionalShortcuts = "";
         for (i = 0; i < prevCUShortcuts.length; i++) {
-            additionalShortcuts += "<span class=key>"+ prevCUShortcuts[i] + "*" + "</span>";
+            additionalShortcuts += "<span class=key>"+ prevCUShortcuts[i] + "</span>" + "*";
             if (i !== prevCUShortcuts.length - 1) {
                 additionalShortcuts+= keysSeparatorHtml;
             }

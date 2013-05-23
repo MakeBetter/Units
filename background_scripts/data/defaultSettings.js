@@ -55,7 +55,7 @@ var defaultSettings = {
     generalShortcuts: {
         
         toggleExtension: {
-            miniDescr: "Disable/enable Units on the current page",
+            miniDescr: "Disable/enable Units on current page",
             kbdShortcuts: ['ctrl+`']
         },
         scrollDown: {
