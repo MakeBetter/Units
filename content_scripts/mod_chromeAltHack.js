@@ -34,7 +34,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
         });
 
         // *Events Consumed* 
-        // 1. mod_mutationObserver: "dom-mutation" (to  apply the hack for conflicting accesskeys that come into existence)
+        // 1. mod_mutationObserver: "dom-mutations" (to  apply the hack for conflicting accesskeys that come into existence)
 
         
         /*-- Module implementation --*/
@@ -70,7 +70,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
         function setup() {
             reset();
-            thisModule.listenTo(mod_mutationObserver, 'dom-mutation', onDomMutation);
+            thisModule.listenTo(mod_mutationObserver, 'dom-mutations', onDomMutation);
         }
 
         /**

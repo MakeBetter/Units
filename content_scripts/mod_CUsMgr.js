@@ -20,9 +20,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     /*-- Module implementation --*/
 
     /*-- Event bindings --*/
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-grouped', function() {
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-with-childList', function() {
         updateCUsAndRelatedState("dom-change");
     });
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-without-childList', updateAnyCUOverlays);
     // if mod_filterCUs is not defined, rest of the extension still works fine
     if (mod_filterCUs) {
         thisModule.listenTo(mod_filterCUs, 'filtering-state-change', function() {
@@ -1069,6 +1070,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
         }
 
+    }
+
+    // updates the overlays of selected and hovered overlays
+    // (meant to be called in response to non-childList dom-mutations)
+    function updateAnyCUOverlays() {
+        $CUsArray[selectedCUIndex] && showOverlay($CUsArray[selectedCUIndex], "selected");
+        $CUsArray[hoveredCUIndex] && showOverlay($CUsArray[hoveredCUIndex], "hovered");
     }
 
     /**
