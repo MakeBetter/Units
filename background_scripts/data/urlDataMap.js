@@ -287,6 +287,7 @@ defaultSettings.urlDataMap = {
             },
             page_MUs: {
                 "within-last-year": {
+                    miniDescr: "Show results from last year",
                     kbdShortcuts: ["y"],
                     selector: ".q.qs:contains('Past year')"    // jQuery extensions to CSS selector syntax are supported
                 }
