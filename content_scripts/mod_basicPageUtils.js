@@ -135,7 +135,6 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
 
             scrollElement.scrollTop += areScrollingUp? -1: 1;
 
-            console.log(scrollElement);
             if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
                 return scrollElement;
             }
