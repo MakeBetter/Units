@@ -210,16 +210,16 @@ defaultSettings.urlDataMap = {
     },
     "facebook.com": {
 //        urlPatterns: ["www.facebook.com*"],
-        urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type
-        // facebook.com/pages*
-
+        urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type facebook.com/pages*
         CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._4_7u .fbTimelineUnit, a.uiMorePagerPrimary:contains('Show Older Stories')",
         CUs_MUs: {
             "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
             "std_comment": ".comment_link",
             "std_share": ".share_action_link",
-            "std_viewComments": ".UFIPagerLink",
-            std_mainEl: ".fbMainStreamAttachment a:first-child"
+            "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
+            //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
+            std_mainEl: ".fbMainStreamAttachment a:first-child, .uiStreamSubstory .pronoun-link, .uiStreamAttachments a, " +
+                ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a" // for the timeline page
         },
         page_MUs: {
             std_header: "#headNav, .stickyHeaderWrap",
