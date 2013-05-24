@@ -76,8 +76,7 @@
     "commands": {
         "closeTab": {
             "suggested_key": {
-                "default": "Alt+X",
-                "mac": "Command+W"
+                "default": "Alt+X"
             },
             "description": "Close tab"
         },
