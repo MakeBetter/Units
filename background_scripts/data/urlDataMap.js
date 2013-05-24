@@ -228,6 +228,15 @@ defaultSettings.urlDataMap = {
 
     },
 
+    "feedly.com": {
+        // Note: Feedly units seem to have a higher z-index than 0 (CU overlays whose z-index are not explicitly set
+        // are not visible on Feedly).
+        urlPatterns:["www.feedly.com*"],
+        CUs_specifier: {
+            selector: ".u0Entry, .u5entry, .u100Entry, .u4Entry"
+        }
+    },
+
     // the following key is redundant due to specialDomain_masterDomain_map array, but is included currently to serve
     // as an example
     "google.co.in": "google.com", // if the mapped value is a string, it is used as the key mapping to the actual value
@@ -352,11 +361,14 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["www.quora.com/", "www.quora.com/?share=1", "www.quora.com/*"], // The first two patterns match
             // with the main quora feed page.
-            CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5, .feed_item.row.p1",
+            CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
             // the first selector for quora main page (and a few others), the second one for a page like this one:
             // http://www.quora.com/Front-End-Web-Development
             CUs_MUs: {
-                std_mainEl: "a.question_link, h2.board_item_title a, a.topic_name",
+                // because Quora has many different kinds of units (and units with the same classes across units),
+                // it is important to have the main element data be very specific. otherwise, incorrect/ unexpected
+                // main elements will get selected.
+                std_mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
                 "std_upvote": ".add_upvote, .remove_upvote",
                 "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".view_comments"},
                 "std_downvote": ".add_downvote, .remove_downvote",
