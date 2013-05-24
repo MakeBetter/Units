@@ -90,7 +90,7 @@ _u.mod_contentHelper = (function(CONSTS) {
     /** Returns that DOM element which is the closest common ancestor of the elements specified,
      * or null if no common ancestor exists.
      * @param {array|jQuery} elements Array of DOM elements OR a jQuery set of one of more elements
-     * @return {DOM Element}
+     * @return {HtmlElement}
      */
     function closestCommonAncestor(elements) {
 

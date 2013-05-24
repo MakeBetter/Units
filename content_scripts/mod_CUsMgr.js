@@ -997,9 +997,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     /**
      * Scrolls the window such the specified element lies fully in the viewport (or as much as is
      * possible if the element is too large).
-     * //TODO3: consider if horizontal scrolling should be adjusted as well (some, very few, sites sites might, like an
-     * image gallery, might have CUs laid out horizontally)
-     * @param {DOM element|JQuery wrapper} $element
+     * //TODO3: consider if horizontal scrolling should be adjusted as well (some sites sites, like an image gallery,
+     * might have CUs laid out horizontally)
+     * @param {HtmlElement|jQuery} $element DOM element or a jQuery wrapper around it
      * @param {object} options Misc options. Can also be used to override miscSettings
      */
     function scrollIntoView($element, options) {
@@ -1229,9 +1229,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             // TODO: move the function below to a more apt place
             /**
              *
-             * @param {DOM Node|JQuery Wrapper} $container
+             * @param {HtmlElement|jQuery} $container DOM Element (or jQuery wrapper)
              */
-
             var buildCUsAroundCentralElement = function ($container) {
 //TODO: 1) rename child to sibling etc
 //            2) call currentGroupingIndex currentGroupingIndex etc.
@@ -1366,7 +1365,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
     /**
      *
-     * @param {DOM Element|JQuery wrapper} element
+     * @param {HtmlElement|jQuery} element
      * @param {object} point Should have the properties x and y.
      * @return {Boolean}
      */

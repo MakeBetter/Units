@@ -161,7 +161,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
          * shortcut's handler does not prevent the accesskey attribute's function from taking place. So any focusable
          * elements with conflicting accesskey's on the page needs to have their acccesskey attribute removed.
          * @param accessKey
-         * @param {DOMelement} element The DOM element within which (including its subtree) a conflicting accesskey will be
+         * @param {HtmlElement} element The DOM element within which (including its subtree) a conflicting accesskey will be
          * removed.
          */
         function removeAccessKey(accessKey, element) {
