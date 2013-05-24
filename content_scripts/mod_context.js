@@ -34,10 +34,10 @@ _u.mod_context = (function(mod_contentHelper){
             return isCUSelected;
         },
         pageUIHasFocus: function () {
-            return !mod_contentHelper.isUnitsProjElement(document.activeElement);
+            return !mod_contentHelper.isUnitsProjNode(document.activeElement);
         },
         unitsProjUIHasFocus: function () {
-            return mod_contentHelper.isUnitsProjElement(document.activeElement);
+            return mod_contentHelper.isUnitsProjNode(document.activeElement);
         },
         pageHasUrlData: function() {
             return pageHasUrlData;

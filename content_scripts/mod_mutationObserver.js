@@ -28,7 +28,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         groupingInterval_for_DomMutations = 150,
         currentUrl = window.location.href;
 
-    var mutationObserver = new MutationObserver(_processMutations),
+    var mutationObserver = new MutationObserver(mutationsHandler),
         timeout_warning;
 //
 //    var attrFilter = ['style', 'class', 'id', 'height', 'width'];
@@ -71,31 +71,30 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         })();
     }
 
-    function _processMutations(mutations) {
-        var mutationsLen = mutations.length;
-        for (var i = 0; i < mutationsLen; ++i) {
-
-            if (_canIgnoreMutation(mutations[i])) {
-                mutations.splice(i, 1); // remove current mutation from the array
-                --mutationsLen;
-                --i;
-            }
-        }
-
+    function mutationsHandler(mutations) {
+        filterMutations(mutations); // removes mutations that don't interest us
         // if there are mutations left still
         if (mutations.length) {
-//        console.log('dom changed. mutations: ', mutations);
-            _onDomChange(mutations);
+            handleRelevantMutations(mutations);
+        }
+    }
+   
+    // filters out mutations that don't interest us (currently it only removes mutations related to UnitsProj elements)
+    function filterMutations(mutations) {
+        for (var i = 0; i < mutations.length; ++i) {
+            if (canIgnoreMutation(mutations[i])) {
+                mutations.splice(i, 1); // remove current mutation from the array
+                --i;
+            }
         }
     }
 
     var groupedMutations = [];
-
-    // Responds to dom changes. In particular, triggersthe events 'url-change', 'dom-mutation' and
+    // Responds to dom changes. In particular, triggers the events 'url-change', 'dom-mutation' and
     // 'dom-mutations-grouped'.
-    function _onDomChange(mutations) {
+    function handleRelevantMutations(mutations) {
 
-        // This function is called, because,in theory, JS code on a page can replace the body element with a new one at
+        // Call this on every mutation, because,in theory, JS code on a page can replace the body element with a new one at
         // any time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
         ensureTopLevelContainerIsInDom();
 
@@ -116,45 +115,29 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
             thisModule.trigger("dom-mutations-grouped", groupedMutations);
             groupedMutations = []; // reset
         }, groupingInterval_for_DomMutations);
-
     }
 
-    // returns boolean
-    function _canIgnoreMutation(mutationRecord) {
-        if (mutationRecord.type === "attributes" && mod_contentHelper.isUnitsProjElement(mutationRecord.target)) {
+    function canIgnoreMutation(mutationRecord) {
+        if (mod_contentHelper.isUnitsProjNode(mutationRecord.target)) {
             return true;
         }
-
-        if (mutationRecord.type === "childList") {
-
-            // returns boolean
-            var canIgnoreAllNodes = function(nodes) {
-
-                var canIgnore = true; // assume true to start off
-
-                if (nodes && nodes.length) {
-                    for (var i = 0; i < nodes.length; ++i) {
-                        var node = nodes[i];
-                        if(!  ((node.nodeType === document.ELEMENT_NODE && mod_contentHelper.isUnitsProjElement(node)) ||
-                            node.nodeType === document.TEXT_NODE)  ) {
-                            canIgnore = false;
-                            break;
-                        }
-                    }
-                }
-
-                return canIgnore;
-            };
-
-            if (canIgnoreAllNodes(mutationRecord.addedNodes) && canIgnoreAllNodes(mutationRecord.removedNodes)) {
+        if (mutationRecord.type === "childList" && canIgnoreAllChildlistNodes(mutationRecord.addedNodes) &&
+            canIgnoreAllChildlistNodes(mutationRecord.removedNodes)) {
                 return true;
-            }
-            else {
-                return false;
-            }
-
         }
-        return false; // if not returned yet
+        return false; 
+    }
+
+    function canIgnoreAllChildlistNodes(nodes) {
+        if (nodes && nodes.length) {
+            for (var i = 0; i < nodes.length; ++i) {
+                var node = nodes[i];
+                if(!mod_contentHelper.isUnitsProjNode(node)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     // Checks if document.body contains the $topLevelContainer element, and appends it to the body if it doesn't.

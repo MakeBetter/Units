@@ -17,7 +17,7 @@ _u.mod_contentHelper = (function(CONSTS) {
         suppressEvent: suppressEvent,
         ancestorElements: ancestorElements,
         closestCommonAncestor: closestCommonAncestor,
-        isUnitsProjElement: isUnitsProjElement,
+        isUnitsProjNode: isUnitsProjNode,
         isRtMouseButton: isRtMouseButton
     };
 
@@ -89,7 +89,7 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     /** Returns that DOM element which is the closest common ancestor of the elements specified,
      * or null if no common ancestor exists.
-     * @param {Array of DOM Elements | jQuery wrapper} elements
+     * @param {array|jQuery} elements Array of DOM elements OR a jQuery set of one of more elements
      * @return {DOM Element}
      */
     function closestCommonAncestor(elements) {
@@ -159,15 +159,33 @@ _u.mod_contentHelper = (function(CONSTS) {
         return closestCommonAnstr;
     }
 
-    function isUnitsProjElement(element) {
-        if (_u.$topLevelContainer[0].contains(element) ||
-            element.classList.contains(CONSTS.class_addedByUnitsProj) ||
+    // gets the nearest containing (including itself) DOM Node that is a DOM Element
+    function getNearestElement(node) {
+        while(node) {
+            if (node.nodeType === document.ELEMENT_NODE) {
+                return node;
+            }
+            else {
+                node = node.parentElement || node.parentNode;
+            }
+        }
+    }
+
+    /**
+     * Checks if the specified DOM Node belongs to the UnitsProject
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    function isUnitsProjNode(node) {
+        var element = getNearestElement(node);
+        if (!element) return false;
+
+        if (_u.$topLevelContainer[0].contains(element) || element.classList.contains(CONSTS.class_addedByUnitsProj) ||
             $(element).parents().hasClass(CONSTS.class_addedByUnitsProj)) {
             return true;
         }
         return false;
     }
-
 
     // checks if the mouse event specified is for the right mouse button
     function isRtMouseButton(e) {
