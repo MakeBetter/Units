@@ -100,12 +100,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     // selected/last-selected, IF it is not in the viewport
         selectionTimeoutPeriod = 60000,
 
-        hasCUBeenSelectedOnce = false,
-
 // TODO: one of the following two is not needed
         stopExistingScrollAnimation,
         animationInProgress,
 
+        $commonCUsAncestor, // deepest common ancestor of the CUs
 
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
@@ -132,7 +131,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         deselectCU();
         $CUsArray = [];
         $lastSelectedCU = null;
-        hasCUBeenSelectedOnce = false;
         mod_context.setCUSelectedState(false);
         mod_context.setCUsCount(0);
     }
@@ -221,7 +219,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
         selectedCUIndex = indexOf$CU;
         var $overlaySelected = showOverlay($CU, 'selected');
-        hasCUBeenSelectedOnce = true;
 
         if (!$overlaySelected) {
             console.warn('UnitsProj: no $overlay returned by showOverlay');
@@ -1220,16 +1217,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         dehoverCU(); // to prevent a "ghost" hover overlay
         deselectCU({onDomChangeOrWindowResize: (invokedDueTo === "dom-change")});
         var $CUs = getAllCUsOnPage();
-        mod_filterCUs && mod_filterCUs.filterCUsArray($CUs, invokedDueTo === "filtering-state-change");
+        if (invokedDueTo !== "initial-setup") {
+            mod_filterCUs && mod_filterCUs.filterCUsArray($CUs, $commonCUsAncestor, invokedDueTo === "filtering-state-change");
+        }
+
         $CUsArray = $CUs;
         mod_context.setCUsCount($CUsArray.length);
 
         if ($CUsArray && $CUsArray.length) {
 
             var newSelectedCUIndex;
-            if (invokedDueTo === "dom-change" && miscSettings.selectCUOnLoad && !hasCUBeenSelectedOnce) {
-                invokedDueTo = "initial-setup";
-            }
+
 
             if (invokedDueTo === "initial-setup") {
                 if ( miscSettings.selectCUOnLoad) {
@@ -1566,6 +1564,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         }
     }
 
+    function getCommonCUsAncestor() {
+        var topLevelCUElements = [],    // a collection of the top level elements of all CUs
+            CUsArrLen = $CUsArray.length,
+            $CU;
+
+        for (var i = 0; i < CUsArrLen; ++i) {
+            $CU = $CUsArray[i];
+            topLevelCUElements = topLevelCUElements.concat($CU.get());
+        }
+
+        return $(mod_contentHelper.closestCommonAncestor(topLevelCUElements));
+    }
+
     /**
      * Special handler for the escape key
      * On pressing ESC:
@@ -1826,6 +1837,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
     function onDomReady() {
         updateCUsAndRelatedState("initial-setup");
+        $commonCUsAncestor = getCommonCUsAncestor();    // set this global variable for later use
     }
 
     function setupEvents() {

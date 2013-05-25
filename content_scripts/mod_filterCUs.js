@@ -69,24 +69,14 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
      * @param $CUsArr
      * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
      */
-    function filterCUsArray($CUsArr, userInvoked) {
+    function filterCUsArray($CUsArr, $commonCUsAncestor, userInvoked) {
 
         if (!$CUsArr || !$CUsArr.length) {
             return $CUsArr; // no filtering required
         }
 
         // ** --------- PRE FILTERING --------- **
-        var CUsNodes = [],
-            CUsArrLen = $CUsArr.length,
-            $CU;
-
-        for (var i = 0; i < CUsArrLen; ++i) {
-            $CU = $CUsArr[i];
-            CUsNodes = CUsNodes.concat($CU.get());
-        }
-
-        var $closestAncestor = $(mod_contentHelper.closestCommonAncestor(CUsNodes));
-
+        
         mod_mutationObserver.stop(); // ** stop monitoring mutations **
         var filterText_lowerCase = getSearchBoxText().toLowerCase();
         var savedScrollPos;
@@ -97,19 +87,21 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         else {
             savedScrollPos = 0;
         }
-        $closestAncestor.hide();
-        removeHighlighting($closestAncestor);
+        $commonCUsAncestor.hide();
+        removeHighlighting($commonCUsAncestor);
+
 
         // ** --------- FILTERING --------- **
 //        if (!filterText_lowerCase || !isVisible) {
         if (!filterText_lowerCase || !$filterCUsContainer.is(':visible')) {
-            var $hiddenByPriorFiltering = $closestAncestor.find('.hiddenByUnitsProj');
+            var $hiddenByPriorFiltering = $commonCUsAncestor.find('.hiddenByUnitsProj');
             $hiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
         }
         else {
 //            console.log('actual filtering taking place...');
-            for (i = 0, $CU; i < CUsArrLen; ++i) {
-                $CU = $CUsArr[i];
+            var CUsArrLen = $CUsArr.length;
+            for (var i = 0; i < CUsArrLen; ++i) {
+                var $CU = $CUsArr[i];
                 // if ($CU.text().toLowerCase().indexOf(filterText_lowerCase) >= 0) {
                 if (highlightInCU($CU, filterText_lowerCase)) {
 
@@ -131,7 +123,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         }
 
         // ** --------- POST FILTERING --------- **
-        $closestAncestor.show();
+        $commonCUsAncestor.show();
         $document.scrollTop(savedScrollPos);
         mod_mutationObserver.start(); // ** start monitoring mutations **
 
