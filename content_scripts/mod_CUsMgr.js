@@ -116,61 +116,58 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         CUsSpecifier,
         CUsSelector,    // holds a value if CUs are specified directly using a selector
         mainElementSelector, // selector for main element of a CU, if specified
+        CUStyleData,
         CUsShortcuts;
 
         function $getSelectedCU() {
         return $CUsArray[selectedCUIndex];
     }
 
-// returns a jQuery set composed of all focusable DOM elements contained in the
-// jQuery set ($CU) passed
-    function $getContainedFocusables($CU) {
-        var $allElements = $CU.find('*').addBack();
-        return $allElements.filter(CONSTS.focusablesSelector);
+    function reset() {
+        dehoverCU();
+        deselectCU();
+        $CUsArray = [];
+        $lastSelectedCU = null;
+        hasCUBeenSelectedOnce = false;
+        mod_context.setCUSelectedState(false);
+        mod_context.setCUsCount(0);
     }
 
-    /**
-     * Returns the "main" element in the specified $CU. This is determined using the "std_mainEl" MU specified in the expandedUrlData.
-     * If no std_mainEl is specified, this function simply returns the first focusable element in the $CU
-     *
-     * @param $CU
-     * @return {HtmlElement} Returns the "main" element, if one was found, else null.
-     */
-    function getMainElement($CU) {
-
-        if (!$CU || !$CU.length) {
-            return null;
+    function setup(settings) {
+        if (! (settings.expandedUrlData && settings.expandedUrlData.CUs_specifier)) {
+            return;     // this module is not setup if there is no CUs_specifier in the urlData
         }
 
-        var $containedFocusables = $getContainedFocusables($CU);
-
-        if (!$containedFocusables.length) {
-            return null;
+        // we need the body to exist before we can set overlayCssHasTransition
+        if (!document.body) {
+            setTimeout(setup.bind(null, settings), 100);
+            return;
         }
 
-        var $filteredFocusables;
+        reset();
 
-        if (mainElementSelector && ($filteredFocusables = $containedFocusables.filter(mainElementSelector)) &&
-            $filteredFocusables.length) {
+        // This is required before we call setupEvents();
+        overlayCssHasTransition = checkOverlayCssHasTransition();
 
-            return $filteredFocusables[0];
-        }
-        else {
-            return $containedFocusables[0];
-        }
-    }
+        var tmp;
+        // assign from `settings` to global variables
+        miscSettings = settings.miscSettings;
+        expandedUrlData = settings.expandedUrlData;
+        CUsSpecifier = expandedUrlData.CUs_specifier;
+        CUsSelector = CUsSpecifier.selector;
+        mainElementSelector = (tmp = expandedUrlData.CUs_MUs) && (tmp = tmp.std_mainEl) && tmp.selector;
+        CUStyleData = expandedUrlData.CUs_style;
+        CUsShortcuts = settings.CUsShortcuts;
 
-// Focuses the "main" focusable element in a CU, if one can be found.
-// See function "getMainElement" for more details.
-    function focusMainElement($CU) {
-        var mainEl = getMainElement($CU);
-        if (mainEl) {
-//        $(mainEl).data('enclosingCUJustSelected', true);
-            mainEl.focus();
-        }
-        else {
-            document.activeElement.blur();
-        }
+        $scrollingMarker = $('<div></div>')
+            .addClass(class_scrollingMarker)
+            .addClass(class_addedByUnitsProj)
+            .hide()
+            .appendTo($topLevelContainer);
+
+        setupEvents();
+
+        updateCUsAndRelatedState("initial-setup");
     }
 
     /**
@@ -295,6 +292,57 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         mod_context.setCUSelectedState(false);
     }
 
+    // returns a jQuery set composed of all focusable DOM elements contained in the
+    // jQuery set ($CU) passed
+    function $getContainedFocusables($CU) {
+        var $allElements = $CU.find('*').addBack();
+        return $allElements.filter(CONSTS.focusablesSelector);
+    }
+
+    /**
+     * Returns the "main" element in the specified $CU. This is determined using the "std_mainEl" MU specified in the expandedUrlData.
+     * If no std_mainEl is specified, this function simply returns the first focusable element in the $CU
+     *
+     * @param $CU
+     * @return {HtmlElement} Returns the "main" element, if one was found, else null.
+     */
+    function getMainElement($CU) {
+
+        if (!$CU || !$CU.length) {
+            return null;
+        }
+
+        var $containedFocusables = $getContainedFocusables($CU);
+
+        if (!$containedFocusables.length) {
+            return null;
+        }
+
+        var $filteredFocusables;
+
+        if (mainElementSelector && ($filteredFocusables = $containedFocusables.filter(mainElementSelector)) &&
+            $filteredFocusables.length) {
+
+            return $filteredFocusables[0];
+        }
+        else {
+            return $containedFocusables[0];
+        }
+    }
+
+    // Focuses the "main" focusable element in a CU, if one can be found.
+    // See function "getMainElement" for more details.
+    function focusMainElement($CU) {
+        var mainEl = getMainElement($CU);
+        if (mainEl) {
+//        $(mainEl).data('enclosingCUJustSelected', true);
+            mainEl.focus();
+        }
+        else {
+            document.activeElement.blur();
+        }
+    }
+
     /**
      * Removes the 'selected' or 'hovered' css class from the CU's overlay, as specified by 'type'. If both classes
      * have been removed, recycles the overlay.
@@ -359,8 +407,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             }
         }
 
-        var CUStyleData = expandedUrlData.CUs_style,
-            overlayPadding;
+        var overlayPadding;
 
         $overlay.data('$CU', $CU);
         $CU.data('$overlay', $overlay);
@@ -866,8 +913,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         if (!$CU || !$CU.length)
             return;
 
-        var CUStyleData = expandedUrlData.CUs_style,
-            elements = [];
+        var elements = [];
 
         // Use inner elements to get the overlay size when: 1) explicitly stated with useInnerElementsToGetOverlaySize = true
         // OR 2) when $CU has a height or width of 0 (i.e. !$CU.is(':visible'))
@@ -1781,52 +1827,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
             selectMostSensibleCU(true, false);
         }
-    }
-
-    function reset() {
-        dehoverCU();
-        deselectCU();
-        $CUsArray = [];
-        $lastSelectedCU = null;
-        hasCUBeenSelectedOnce = false;
-        mod_context.setCUSelectedState(false);
-        mod_context.setCUsCount(0);
-    }
-
-    function setup(settings) {
-        if (! (settings.expandedUrlData && settings.expandedUrlData.CUs_specifier)) {
-            return;     // this module is not setup if there is no CUs_specifier in the urlData
-        }
-
-        // we need the body to exist before we can set overlayCssHasTransition
-        if (!document.body) {
-            setTimeout(setup.bind(null, settings), 100);
-            return;
-        }
-
-        reset();
-
-        // This is required before we call setupEvents();
-        overlayCssHasTransition = checkOverlayCssHasTransition();
-
-        var tmp;
-        // assign from `settings` to global variables
-        miscSettings = settings.miscSettings;
-        expandedUrlData = settings.expandedUrlData;
-        CUsSpecifier = expandedUrlData.CUs_specifier;
-        CUsSelector = CUsSpecifier.selector;
-        mainElementSelector = (tmp = expandedUrlData.CUs_MUs) && (tmp = tmp.std_mainEl) && tmp.selector,
-        CUsShortcuts = settings.CUsShortcuts;
-
-        $scrollingMarker = $('<div></div>')
-            .addClass(class_scrollingMarker)
-            .addClass(class_addedByUnitsProj)
-            .hide()
-            .appendTo($topLevelContainer);
-
-        setupEvents();
-
-        updateCUsAndRelatedState("initial-setup");
     }
 
     function setupEvents() {
