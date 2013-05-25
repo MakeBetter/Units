@@ -20,10 +20,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     /*-- Module implementation --*/
 
     /*-- Event bindings --*/
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-with-childList', function() {
-        updateCUsAndRelatedState("dom-change");
-    });
-    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-without-childList', updateAnyCUOverlays);
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-with-childList', handleDomMutationsWithChildlist);
+    thisModule.listenTo(mod_mutationObserver, 'dom-mutations-without-childList', updateCUOverlays);
     // if mod_filterCUs is not defined, rest of the extension still works fine
     if (mod_filterCUs) {
         thisModule.listenTo(mod_filterCUs, 'filtering-state-change', function() {
@@ -111,9 +109,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // since macs have different key layouts/behaviors
 
-        // the following objects are retrieved from the background script
-        expandedUrlData,
+        // the following are set during setup(); most are sub-objects of expandedUrlData but we store global references
+        // to avoid having to read them each time there a DOM change and things need to be redrawn etc.
         miscSettings,
+        expandedUrlData,
+        CUsSpecifier,
+        CUsSelector,    // holds a value if CUs are specified directly using a selector
+        mainElementSelector, // selector for main element of a CU, if specified
         CUsShortcuts;
 
         function $getSelectedCU() {
@@ -146,10 +148,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             return null;
         }
 
-        var selector = expandedUrlData.CUs_MUs && expandedUrlData.CUs_MUs.std_mainEl && expandedUrlData.CUs_MUs.std_mainEl.selector,
-            $filteredFocusables;
+        var $filteredFocusables;
 
-        if (selector && ($filteredFocusables = $containedFocusables.filter(selector)) && $filteredFocusables.length) {
+        if (mainElementSelector && ($filteredFocusables = $containedFocusables.filter(mainElementSelector)) &&
+            $filteredFocusables.length) {
 
             return $filteredFocusables[0];
         }
@@ -393,7 +395,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
     /**
      * Shows as hovered the CU specified.
-     * @param {number|DOMElement (or jQuery wrapper)} CUOrItsIndex Specifies the CU.
+     * @param {number|jQuery} CUOrItsIndex Specifies the CU.
      * Can be an integer that specifies the index in $CUsArray or a jQuery object representing the CU.
      * (While performance isn't a major concern,) passing the index is preferable if it is already known.
      */
@@ -715,6 +717,56 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         return -1;
 
     }
+
+    /**
+     * If CUs are specified using a direct selector (which is the most common case), this function optimizes performance
+     * by calling updateCUsAndRelatedState() only if needed and otherwise simply calling updateCUOverlays()
+     * @param mutations
+     */
+    function handleDomMutationsWithChildlist(mutations) {
+        // if CUs are not specified using a selector, we cannot avoid calling updateCUsAndRelatedState()
+        if (!CUsSelector) {
+            updateCUsAndRelatedState("dom-change");
+            return;
+        }
+
+//        console.log('handleDomMutationsWithChildlist called at time: ', new Date());
+        var CUsChanged = false;
+        var mutationsLen = mutations.length;
+        for (var i = 0; i < mutationsLen; i++) {
+            if (muatationInvolves_selectorSpecifiedCUs(mutations[i])) {
+                CUsChanged = true;
+                break;
+            }
+        }
+
+        if (CUsChanged) {
+            updateCUsAndRelatedState("dom-change");
+        }
+        else {
+            updateCUOverlays(); // since the actual CUs won't be affected by this DOM change, this is enough
+        }
+    }
+    // Checks if the mutations adds or removes any CUs. This is only valid if the CUs are directly specified using a selector
+    // [Only meant to be called from within `handleDomMutationsWithChildlist`]
+    function muatationInvolves_selectorSpecifiedCUs(mutation) {
+        return nodeListHas_selectorSpecifiedCUs(mutation.addedNodes) || nodeListHas_selectorSpecifiedCUs(mutation.removedNodes);
+    }
+    // [Only meant to be called from within `muatationInvolves_selectorSpecifiedCUs`]
+    function nodeListHas_selectorSpecifiedCUs(nodeList) {
+        for (var i = 0; i < nodeList.length; i++) {
+            var node = nodeList[i];
+            if (node.nodeType === document.ELEMENT_NODE) {
+                var $el = $(node);
+                if ($el.is(CUsSelector) || $el.has(CUsSelector).length) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
 
     function onTabOnFilterSearchBox() {
         if ($CUsArray.length) {
@@ -1074,9 +1126,26 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
     // updates the overlays of selected and hovered overlays
     // (meant to be called in response to non-childList dom-mutations)
-    function updateAnyCUOverlays() {
-        $CUsArray[selectedCUIndex] && showOverlay($CUsArray[selectedCUIndex], "selected");
-        $CUsArray[hoveredCUIndex] && showOverlay($CUsArray[hoveredCUIndex], "hovered");
+    function updateCUOverlays() {
+        var $CU = $CUsArray[selectedCUIndex];
+        if ($CU) {
+            if (isCUInvisible($CU)) {
+                deselectCU();
+            }
+            else {
+                showOverlay($CUsArray[selectedCUIndex], "selected");
+            }
+        }
+
+        $CU = $CUsArray[hoveredCUIndex];
+        if ($CU) {
+            if (isCUInvisible($CU)) {
+                dehoverCU();
+            }
+            else {
+                showOverlay($CUsArray[hoveredCUIndex], "hovered");
+            }
+        }
     }
 
     /**
@@ -1152,21 +1221,18 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         }
 
         var $CUsArr,   // this will be hold the array to return
-            CUsSpecifier = expandedUrlData.CUs_specifier,
-            selector,
             firstSelector,
             lastSelector,
-            centralElementselector;
+            centralElementSelector;
 
 
-        if (typeof (selector = CUsSpecifier.selector) === "string") {
-            $CUsArr = $.map($(selector).get(), function(item, i) {
+        if (CUsSelector) {
+            $CUsArr = $.map($(CUsSelector).get(), function(item, i) {
                 return $(item);
             });
         }
 
-        else if (typeof (firstSelector = CUsSpecifier.first) === "string" &&
-            typeof (lastSelector = CUsSpecifier.last) === "string") {
+        else if ((firstSelector = CUsSpecifier.first) && (lastSelector = CUsSpecifier.last)) {
 
             $CUsArr = [];
             var $firstsArray = $.map($(firstSelector).get(), function(item, i) {
@@ -1220,12 +1286,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             }
         }
 
-        else if (typeof (centralElementselector = CUsSpecifier.buildCUAround) === "string"){
+        else if ((centralElementSelector = CUsSpecifier.buildCUAround)){
 
             $CUsArr = [];
             var currentGroupingIndex = 0;
 
-            var $container = mod_contentHelper.closestCommonAncestor($(CUsSpecifier.buildCUAround));
+            var $container = mod_contentHelper.closestCommonAncestor($(centralElementSelector));
             // TODO: move the function below to a more apt place
             /**
              *
@@ -1255,7 +1321,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
                     for (var i = 0; i < siblingsLength; ++i) {
                         $currentSibling = $siblings.eq(i);
-                        if ($currentSibling.is(centralElementselector)) {
+                        if ($currentSibling.is(centralElementSelector)) {
                             if (!firstCentralElementFound) {
                                 firstCentralElementFound = true;
                             }
@@ -1264,7 +1330,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
                             }
                             $CUsArr[currentGroupingIndex] = $currentSibling.add($CUsArr[currentGroupingIndex]);
                         }
-                        else if ((num_centralElementsInCurrentSibling = $currentSibling.find(centralElementselector).length)) {
+                        else if ((num_centralElementsInCurrentSibling = $currentSibling.find(centralElementSelector).length)) {
                             if (num_centralElementsInCurrentSibling === 1) {
                                 if (!firstCentralElementFound) {
                                     firstCentralElementFound = true;
@@ -1327,6 +1393,28 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     }
 
     /**
+     * Returns true if $CU is not visible on the page (ignoring its being made invisible due to mod_filterCUs).
+     * It considers both is(':visible') and the CSS 'visibility' property)
+     * @param $CU
+     * @returns {boolean|*}
+     */
+    function isCUInvisible($CU) {
+    
+        // Returns true if all (top level) constituents of $CU have css 'visibility' style equal to "hidden"
+        var _isCUVisibilityHidden = function($CU) {
+            for (var i = 0; i < $CU.length; ++i) {
+                if ($CU.eq(i).css('visibility') !== "hidden") {
+                    return false;
+                }
+            }
+            return true;
+        };
+        
+        return (!doesCUConsumeSpace($CU) && !$CU.hasClass('hiddenByUnitsProj')) ||
+            _isCUVisibilityHidden($CU);
+    }
+
+    /**
      * process all CUs in $CUsArr does the following
      1) remove any CU that is not visible in the DOM
      2) remove any CU that is fully contained within another
@@ -1341,7 +1429,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
         for (var i = 0; i < CUsArrLen; ++i) {
             var $CU = $CUsArr[i];
-            if ((hasNoChildrenVisible($CU) && !$CU.hasClass('hiddenByUnitsProj')) || isCUInvisible($CU)) {
+            if (isCUInvisible($CU)) {
                 $CUsArr.splice(i, 1);
                 --CUsArrLen;
                 --i;
@@ -1721,9 +1809,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         // This is required before we call setupEvents();
         overlayCssHasTransition = checkOverlayCssHasTransition();
 
+        var tmp;
         // assign from `settings` to global variables
         miscSettings = settings.miscSettings;
         expandedUrlData = settings.expandedUrlData;
+        CUsSpecifier = expandedUrlData.CUs_specifier;
+        CUsSelector = CUsSpecifier.selector;
+        mainElementSelector = (tmp = expandedUrlData.CUs_MUs) && (tmp = tmp.std_mainEl) && tmp.selector,
         CUsShortcuts = settings.CUsShortcuts;
 
         $scrollingMarker = $('<div></div>')
@@ -1783,21 +1875,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         }
     }
 
-    /**
-     * Returns true if all (top most) constituents of $CU have css 'visibility' style equal to "hidden"
-     * @param $CU
-     * @return {Boolean}
-     */
-    function isCUInvisible($CU) {
-
-        for (var i = 0; i < $CU.length; ++i) {
-            if ($CU.eq(i).css('visibility') !== "hidden") {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /***
      * Returns true if $CU and all its children have height or width that is zero.
      * Returns false if $CU or any of its children have a valid height/width (i.e. is(:visible)).
@@ -1807,9 +1884,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
      * @param $CU
      * @return {boolean}
      */
-    function hasNoChildrenVisible($CU) {
+    function doesCUConsumeSpace($CU) {
         if ($CU.is(':visible')) {
-            return false;
+            return true;    // if any (top level) element constituting the $CU is ':visible'
         }
 
         var allDescendants = $CU.find("*");
@@ -1817,11 +1894,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         for (var i = 0; i < allDescendants.length; i++) {
             var $element = allDescendants.eq(i);
             if ($element.is(':visible')) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
 // returns true if any part of $CU is in the viewport, false otherwise
