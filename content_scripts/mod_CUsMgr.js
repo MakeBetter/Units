@@ -117,11 +117,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         CUsSelector,    // holds a value if CUs are specified directly using a selector
         mainElementSelector, // selector for main element of a CU, if specified
         CUStyleData,
-        CUsShortcuts;
+        CUsShortcuts,
 
-        function $getSelectedCU() {
-        return $CUsArray[selectedCUIndex];
-    }
+        // the following variables are defined globally to allow `invokeIncrementalScroll` to be defined as a global
+        // function rather than an inner function of `animatedScroll` (which aids performance)
+        currentPosition_CURelatedScroll,
+        lastInvokedTime_CURelatedScroll, // will contain the time of the last invocation (of invokeIncrementalScroll)
+        intervalId_CURelatedScroll,
+        body, destination_CURelatedScroll, areScrollingDown, speed_CURelatedScroll;
+
 
     function reset() {
         dehoverCU();
@@ -168,6 +172,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         setupEvents();
 
         updateCUsAndRelatedState("initial-setup");
+    }
+
+    function $getSelectedCU() {
+        return $CUsArray[selectedCUIndex];
     }
 
     /**
@@ -561,17 +569,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
             if (options.animatedCUScroll) {
 
-                console.log('animated SAME CU scroll');
+//                console.log('animated SAME CU scroll');
 
                 var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
                     Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
 
                 animatedScroll(newWinTop, animationDuration);
-
-//            $('html, body').animate({scrollTop: newWinTop}, animatedScroll);
+//                animatedScroll_jQuery(newWinTop, animationDuration);
+//                $(document.body).animate({scrollTop: newWinTop}, animationDuration);
             }
             else {
-                console.log('NON animated SAME CU scroll');
+//                console.log('NON animated SAME CU scroll');
                 $document.scrollTop(newWinTop);
             }
 
@@ -1015,82 +1023,84 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         };
     }
 
+    function animatedScroll_jQuery(scrollTop, duration) {
+        var $body = $(document.body);
+        $body.stop(true, true); // stop on-going animation, if any
+        $body.animate({scrollTop: scrollTop}, duration);
+    }
+
 // sets the document's scrollTop to the value specified, using gradual changes in the scrollTop value.
     function animatedScroll(scrollTop, duration) {
 
-        var current = $document.scrollTop();
-        var destination = scrollTop;
+        /*var */destination_CURelatedScroll = scrollTop;
 
-        // ensure that destination scrollTop position is within the possible range
-        if (destination < 0) {
-            destination = 0;
+        // ensure that destination_CURelatedScroll scrollTop position is within the possible range
+        if (destination_CURelatedScroll < 0) {
+            destination_CURelatedScroll = 0;
         }
-        else if (destination > $document.height() - window.innerHeight) {
-            destination = $document.height() - window.innerHeight; // $(window).height does not work on HN
+        else if (destination_CURelatedScroll > $document.height() - window.innerHeight) {
+            destination_CURelatedScroll = $document.height() - window.innerHeight; // $(window).height does not work on HN
         }
 
-        var scrollingDown;
+        currentPosition_CURelatedScroll = $document.scrollTop();
+//        var areScrollingDown;
 
-        if (destination > current) {
-            scrollingDown = true;
+        if (destination_CURelatedScroll > currentPosition_CURelatedScroll) {
+            areScrollingDown = true;
         }
-        else if (destination < current) {
-            scrollingDown = false;
+        else if (destination_CURelatedScroll < currentPosition_CURelatedScroll) {
+            areScrollingDown = false;
         }
         else {
             return;
         }
 
-        var totalDisplacement = destination - current,
 
-            speed = totalDisplacement/duration, // pixels per millisec
+        var totalDisplacement = destination_CURelatedScroll - currentPosition_CURelatedScroll,
+
 
         // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
         // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
         // This is  handled by calculating the time diff. between invocations. See later.)
-            intervalPeriod = Math.min(100, miscSettings.animatedCUScroll_MaxDuration/4),
+            intervalPeriod = Math.min(25, miscSettings.animatedCUScroll_MaxDuration/4);
+        speed_CURelatedScroll = totalDisplacement/duration; // pixels per millisec
 
-            lastInvocationTime, // will contain the time of the last invocation (of invokeIncrementalScroll)
-
-            body = document.body,
-
-            intervalId;
-
-        var invokeIncrementalScroll = function () {
-
-            if (stopExistingScrollAnimation) {
-                console.log('interval CLEARED.');
-                clearInterval(intervalId);
-                body.scrollTop = destination;
-                animationInProgress = false;
-                return;
-            }
-
-//        scrollingDown? (current += scrollDelta): (current -= scrollDelta);
-            var now = new Date();
-            current += (now - lastInvocationTime) * speed;
-            lastInvocationTime = now;
-            if (scrollingDown? (current >= destination): (current <= destination)) {
-                body.scrollTop = destination;
-                clearInterval(intervalId);
-                animationInProgress = false;
-            }
-            else {
-                body.scrollTop = current;
-            }
-
-        };
+        body = document.body;
 
         animationInProgress = true;
-        // in the following lines, we call  'invokeIncrementalScroll' once, after setting 'lastInvocationTime' to the
+        // in the following lines, we call  'invokeIncrementalScroll' once, after setting 'lastInvokedTime_CURelatedScroll' to the
         // current time minus 'intervalPeriod'. This allows the first invocation of the function to take place immediately
         // rather than at the end of the 'intervalPeriod'.
-        lastInvocationTime = new Date() - intervalPeriod;
+        lastInvokedTime_CURelatedScroll = new Date() - intervalPeriod;
         invokeIncrementalScroll();   // invoke once immediately, before setting setInterval.
 
-        intervalId = setInterval (invokeIncrementalScroll , intervalPeriod);
+        intervalId_CURelatedScroll = setInterval (invokeIncrementalScroll, intervalPeriod);
     }
 
+    function invokeIncrementalScroll() {
+
+        if (stopExistingScrollAnimation) {
+//                console.log('interval CLEARED.');
+            clearInterval(intervalId_CURelatedScroll);
+            body.scrollTop = destination_CURelatedScroll;
+            animationInProgress = false;
+            return;
+        }
+
+//        areScrollingDown? (currentPosition_CURelatedScroll += scrollDelta): (currentPosition_CURelatedScroll -= scrollDelta);
+        var now = new Date();
+        currentPosition_CURelatedScroll += (now - lastInvokedTime_CURelatedScroll) * speed_CURelatedScroll;
+        lastInvokedTime_CURelatedScroll = now;
+        if (areScrollingDown? (currentPosition_CURelatedScroll >= destination_CURelatedScroll): (currentPosition_CURelatedScroll <= destination_CURelatedScroll)) {
+            body.scrollTop = destination_CURelatedScroll;
+            clearInterval(intervalId_CURelatedScroll);
+            animationInProgress = false;
+        }
+        else {
+            body.scrollTop = currentPosition_CURelatedScroll;
+        }
+
+    }
 
     /**
      * Scrolls the window such the specified element lies fully in the viewport (or as much as is
@@ -1160,7 +1170,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             var animationDuration = Math.min(options.animatedCUScroll_MaxDuration,
                 Math.abs(newWinTop-winTop) / options.animatedCUScroll_Speed);
             animatedScroll(newWinTop, animationDuration);
-//        $('html, body').animate({scrollTop: newWinTop}, animatedScroll);
+//            animatedScroll_jQuery(newWinTop, animationDuration);
         }
         else {
 //            console.log('NON animated CU scroll');
