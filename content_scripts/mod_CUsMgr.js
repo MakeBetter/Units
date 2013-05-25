@@ -170,8 +170,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             .appendTo($topLevelContainer);
 
         setupEvents();
-
-        updateCUsAndRelatedState("initial-setup");
     }
 
     function $getSelectedCU() {
@@ -1831,12 +1829,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     }
 
     function onDomReady() {
-
-        // if settings have been obtained from background script before dom ready takes place
-        if (miscSettings && miscSettings.selectCUOnLoad) {
-
-            selectMostSensibleCU(true, false);
-        }
+        updateCUsAndRelatedState("initial-setup");
     }
 
     function setupEvents() {
