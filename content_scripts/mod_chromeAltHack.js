@@ -48,7 +48,9 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
             class_dummyAccessKey = 'UnitsProj-dummyAccessKey',
             $topLevelContainer = _u.$topLevelContainer,
-            class_addedByUnitsProj = CONSTS.class_addedByUnitsProj;
+            class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+            groupedMutations,
+            timeout_domMutations;
 
         // Resets state AND *undoes* the effect of the hack including reinstating accessKey removed earlier
         function reset() {
@@ -64,6 +66,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             // reset state for the future...
             accesskeysRemoved = [];
             altShortcutKeys = [];
+            groupedMutations = [];
             
             thisModule.stopListening();
         }
@@ -115,16 +118,24 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
         /**
          * Removes any conflicting accesskey attributes that come into existence due to a DOM change, based on the
-         * stored list of keyboard shortcuts active on the page.
+         * stored list of keyboard shortcuts active on the page. Groups closely separated mutations together for
+         * performance.
          * @param mutations
          */
         function onDomMutation(mutations) {
+            // console.log('onDomMutation called');
+            clearTimeout(timeout_domMutations);
+            groupedMutations = groupedMutations.concat(mutations);
+            timeout_domMutations = setTimeout(_onDomMutation, 500);
+        }
+        function _onDomMutation() {
+//            console.log('grouped _onDomMutation called');
 
-            var mutationsLen = mutations.length,
+            var mutationsLen = groupedMutations.length,
                 mutationRecord,
                 addedNodes;
             for (var i = 0; i < mutationsLen; ++i) {
-                mutationRecord = mutations[i];
+                mutationRecord = groupedMutations[i];
 
                 if ((addedNodes = mutationRecord.addedNodes)) {
 
@@ -142,6 +153,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
                     removeAnyConflictingAccessKeyAttr(mutationRecord.target);
                 }
             }
+            groupedMutations = [];
         }
 
         /**
