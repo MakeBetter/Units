@@ -372,7 +372,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         if ($overlay) {
             $overlay.removeClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay);
 
-            if (!overlayCssHasTransition) {
+            if (!overlayCssHasTransition) { // else it is handled in onTransitionEnd()
                 tryRecycleOverlay($overlay);
             }
         }
@@ -1790,10 +1790,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
      */
     function tryRecycleOverlay($overlay) {
 
-        if (!$overlay.hasClass(class_CUOverlay)) {
-            console.warn("UnitsProj: Unexpected - $overlay doesn't have class '" + class_CUOverlay + "'");
-        }
-
         // check if the overlay is both in deselected and dehovered states
         if (!$overlay.hasClass(class_CUHoveredOverlay) && !$overlay.hasClass(class_CUSelectedOverlay)) {
 
@@ -1951,7 +1947,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
         // check if transitionDuration exists and has a non-zero value, while tolerating
         // precision errors with float (which should not occur for 0, but just in case)
-        return transitionDuration && transitionDuration > 0.00000001;
+        return (transitionDuration && transitionDuration > 0.00000001)? true: false;
     }
 
     function changeFontSize($jQuerySet, isBeingIncreased) {
