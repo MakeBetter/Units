@@ -208,25 +208,42 @@ defaultSettings.urlDataMap = {
             overlayPadding: "10px",
         }
     },
-    "facebook.com": {
-//        urlPatterns: ["www.facebook.com*"],
-        urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type facebook.com/pages*
-        CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._4_7u .fbTimelineUnit, a.uiMorePagerPrimary:contains('Show Older Stories')",
-        CUs_MUs: {
-            "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
-            "std_comment": ".comment_link",
-            "std_share": ".share_action_link",
-            "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
-            //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
-            std_mainEl: ".fbMainStreamAttachment a:first-child, .uiStreamSubstory .pronoun-link, .uiStreamAttachments a, " +
-                ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a" // for the timeline page
+    "facebook.com": [
+        {
+            // Facebook main feed page
+            urlPatterns: ["www.facebook.com/", "www.facebook.com/groups/*"],
+            CUs_specifier: ".genericStreamStory.uiUnifiedStory",
+            CUs_MUs: {
+                "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
+                "std_comment": ".comment_link",
+                "std_share": ".share_action_link",
+                "std_viewComments": ".UFIPagerLink, .mls", //.UFIPagerLink for "view more comments" link, .mls for the comment icon
+                std_mainEl: ".fbMainStreamAttachment a:first-child, .uiStreamSubstory .pronoun-link, .uiStreamAttachments a",
+                // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
+                // meant for the entire page, then they'd be bad! 
+            },
+            page_MUs: {
+                std_header: "#headNav",
+            }
         },
-        page_MUs: {
-            std_header: "#headNav, .stickyHeaderWrap",
-            std_nextOrMore: ".uiMorePagerPrimary"
-        }
+        {
+            urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type facebook.com/pages*
+            CUs_specifier: "._4_7u .fbTimelineUnit",
+            CUs_MUs: {
+                "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
+                "std_comment": ".comment_link",
+                "std_share": ".share_action_link",
+                //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
+                "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
+                std_mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a" // for the timeline page
+            },
+            page_MUs: {
+                std_header: "#headNav, .stickyHeaderWrap", // #headNav is the main header, the latter is a dynamic header that sometimes shows up.
+                std_nextOrMore: "a.uiMorePagerPrimary:contains('Show Older Stories')"
+            }
 
-    },
+        }
+    ],
 
     "feedly.com": {
         // Note: Feedly units seem to have a higher z-index than 0 (CU overlays whose z-index are not explicitly set
