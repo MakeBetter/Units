@@ -330,7 +330,7 @@ defaultSettings.urlDataMap = {
         {
             // for Gmail
             urlPatterns: ["gmail.com", "gmail.com/*", "mail.google.com", "mail.google.com/*"],
-            protectedWebpageShortcuts: ["j", "k", "g", "o", "f"]
+            protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
         }
     ],
 
