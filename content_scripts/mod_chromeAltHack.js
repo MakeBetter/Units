@@ -1,8 +1,8 @@
 /*
  A not on the "chrome Alt hack" used in this project.
- This "hack" is meant to allow shortcuts of the type 'Alt + <key>' to work (better) on Chrome.
- There are two problems with such shortcuts on Chrome:
- a) Windows only: They cause a beep/"ding" sound in chrome when invoked (even when the keyboard event is suppressed in
+ This "hack" is meant to allow shortcuts of the type 'Alt + <key>' to work (better) on Chrome in Windows.
+ There are two problems with such shortcuts on Chrome in Windows.
+ a) hey cause a beep/"ding" sound in chrome when invoked (even when the keyboard event is suppressed in
  the JS handler).
  (Ref: http://code.google.com/p/chromium/issues/detail?id=105500)k
  b) Since chrome implements the "accesskey" attribute as 'Alt + <key>' shortcuts, this can a conflict with shortcuts
@@ -21,8 +21,8 @@
  Note: this won't help with shortcuts like alt+shift+<key> etc, only of the type "alt+key"
  */
 
-if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-    _u.mod_chromeAltHack = (function($, mod_mutationObserver, CONSTS) {
+if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&  navigator.appVersion.indexOf("Mac")!=-1) {
+    _u.mod_chromeAltHack = (function($, CONSTS) {
         "use strict";
 
        /*-- Public interface --*/
@@ -33,10 +33,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts
         });
 
-        // *Events Consumed* 
-        // 1. mod_mutationObserver: "dom-mutations" (to  apply the hack for conflicting accesskeys that come into existence)
-
-        
         /*-- Module implementation --*/
         var 
             // when the extension is disabled, this is used to reinstate the conflicting access key attributes
@@ -49,11 +45,21 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             class_dummyAccessKey = 'UnitsProj-dummyAccessKey',
             $topLevelContainer = _u.$topLevelContainer,
             class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+
+            mutObs = new MutationObserver(onMuts), // mutation observer
+            // options for mutObs
+            mutOptions = {childList: true, attributes: true, attributeFilter: ['accesskey'], subtree: true},
             groupedMutations,
-            timeout_domMutations;
+            timeout_mutations,
+            lastMutationsHandledTime,
+        // don't run mutation handler more than once per these many milliseconds. we specify a high value for this
+            // module since accesskey
+            mutationGroupingInterval = 5000;
 
         // Resets state AND *undoes* the effect of the hack including reinstating accessKey removed earlier
         function reset() {
+            mutObs.disconnect();
+            
             // undo DOM changes due to hack...
             var len = accesskeysRemoved.length,
                 data;
@@ -67,13 +73,13 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             accesskeysRemoved = [];
             altShortcutKeys = [];
             groupedMutations = [];
-            
-            thisModule.stopListening();
+            lastMutationsHandledTime = 0;
+            timeout_mutations = false;
         }
 
         function setup() {
             reset();
-            thisModule.listenTo(mod_mutationObserver, 'dom-mutations', onDomMutation);
+            mutObs.observe(document, mutOptions);
         }
 
         /**
@@ -122,14 +128,18 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
          * performance.
          * @param mutations
          */
-        function onDomMutation(mutations) {
-            // console.log('onDomMutation called');
-            clearTimeout(timeout_domMutations);
+        function onMuts(mutations) {
             groupedMutations = groupedMutations.concat(mutations);
-            timeout_domMutations = setTimeout(_onDomMutation, 500);
+            if (timeout_mutations === false) { // compare explicitly with false, which is how we reset it
+                var now = Date.now();
+                // if timeout period is 0 or negative, will execute immediately (at the first opportunity after yielding)
+                timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (now - lastMutationsHandledTime));
+            }
         }
-        function _onDomMutation() {
-//            console.log('grouped _onDomMutation called');
+        function _onMuts() {
+            timeout_mutations = false;
+            lastMutationsHandledTime = Date.now();
+//            console.log('grouped _onMuts called');
 
             var mutationsLen = groupedMutations.length,
                 mutationRecord,
@@ -153,7 +163,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
                     removeAnyConflictingAccessKeyAttr(mutationRecord.target);
                 }
             }
-            groupedMutations = [];
+            groupedMutations = []; // reset
         }
 
         /**
@@ -179,7 +189,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
         function removeAccessKey(accessKey, element) {
 
             var $conflictingElements =  $(element).find('[accesskey="' + accessKey+ '"]:not(.' +
-                class_dummyAccessKey + ')');
+                class_dummyAccessKey + ')').addBack();
 
             $conflictingElements.each(
                 function(index, element) {
@@ -192,6 +202,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
 
         return thisModule;
 
-    })(jQuery, _u.mod_mutationObserver, _u.CONSTS);
+    })(jQuery, _u.CONSTS);
 }
 
