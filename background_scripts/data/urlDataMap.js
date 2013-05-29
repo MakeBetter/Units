@@ -37,10 +37,10 @@ should be the last one specified.)
 
 The regexps associated with a `urlData` object are specified using the `urlRegexp` property. Wildcard-like patterns
 can also be specified using the `urlPatterns` property, as explained below:
-TODO: use '*' with the consistent meaning of *zero or more*. Use '+' instead for "one or more" if required.
 They allow using *'s and @'s as "wildcards":
-- A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
-- A '*' matches any combination of *one or more* characters of *ANY* type.)
+ - A '*' matches any combination of *zero or more* characters of *ANY* type.
+ - A '**' matches any combination of *one or more* characters of *ANY* type.
+- A '@' matches any combination of *one or more* characters that are not 'slashes' or 'periods'.
 
 3) Only the part of the url after http(s):// is considered for matching with the provided patterns/regexps.
 
@@ -199,7 +199,7 @@ defaultSettings.urlDataMap = {
         }
     ],
     "backbonejs.org":  {
-        urlPatterns: ["backbonejs.org/"],
+        urlPatterns: ["backbonejs.org"],
         CUs_specifier: {
             buildCUAround: ".container p:has(.header), h2",
         },
@@ -210,7 +210,7 @@ defaultSettings.urlDataMap = {
     "facebook.com": [
         {
             // Facebook main feed page
-            urlPatterns: ["www.facebook.com/", "www.facebook.com/groups/*"],
+            urlPatterns: ["www.facebook.com", "www.facebook.com/groups/*"],
             CUs_specifier: ".genericStreamStory.uiUnifiedStory",
             CUs_MUs: {
                 "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
@@ -336,7 +336,7 @@ defaultSettings.urlDataMap = {
 
     "linkedin.com": [
         {
-            urlPatterns: ["www.linkedin.com/"],
+            urlPatterns: ["www.linkedin.com"],
             CUs_specifier: "#my-feed-post .feed-item",
             CUs_style: {
                 overlayPadding: "0 0 20px 0"
@@ -376,7 +376,7 @@ defaultSettings.urlDataMap = {
             }
         },
         {
-            urlPatterns: ["www.quora.com/", "www.quora.com/?share=1", "www.quora.com/*"], // The first two patterns match
+            urlPatterns: ["www.quora.com", "www.quora.com/?share=1", "www.quora.com/*"], // The first two patterns match
             // with the main quora feed page.
             CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
             // the first selector for quora main page (and a few others), the second one for a page like this one:
@@ -403,26 +403,26 @@ defaultSettings.urlDataMap = {
 
     // only support on the main page
     "reddit.com": [
-//        {
-//            urlPatterns: ["www.reddit.com/*/comments/*"],
-//            CUs_specifier: {
-//                buildCUAround: ".arrow.up, .usertext-edit",
-//                //                exclude: ".panestack-title, .menuarea"
-//
-//            },
-//            CUs_MUs: {
-//                //                std_mainEl: ".title",
-//                "std_upvote": ".arrow.up, .arrow.upmod",
-//                "std_downvote": ".arrow.down, .arrow.downmod",
-//                "std_share": ".share-button .active",
-//                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
-//                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
-//                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
-//                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
-//            }
-//        },
         {
-            urlPatterns: ["www.reddit.com/", "www.reddit.com/?*"],
+            urlPatterns: ["www.reddit.com/*/comments/*"],
+            CUs_specifier: {
+                buildCUAround: ".arrow.up, .usertext-edit",
+                //                exclude: ".panestack-title, .menuarea"
+
+            },
+            CUs_MUs: {
+                //                std_mainEl: ".title",
+                "std_upvote": ".arrow.up, .arrow.upmod",
+                "std_downvote": ".arrow.down, .arrow.downmod",
+                "std_share": ".share-button .active",
+                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
+                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
+                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
+            }
+        },
+        {
+            urlPatterns: ["www.reddit.com", "www.reddit.com/?*"],
             CUs_specifier: {
                 selector: "#siteTable>div.thing, .nextprev a[rel='nofollow next']" //works well. doesn't include the promoted article.
             },
@@ -457,10 +457,10 @@ defaultSettings.urlDataMap = {
             // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
             // http://stackoverflow.com/
             urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
-                "*.stackexchange.com\/"],
+                "*.stackexchange.com"],
             urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
-                /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/$/,
+                /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)$/,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/search?/,
 
                 /^(meta\.)?(mathoverflow\.net)\/questions$/,
@@ -512,9 +512,16 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "stackoverflow.com": "stackexchange.com",
+    "superuser.com": "stackexchange.com",
+    "serverfault.com": "stackexchange.com",
+    "stackapps.com": "stackexchange.com",
+    "askubuntu.com": "stackexchange.com",
+    "mathoverflow.net" : "stackexchange.com",
+
     "underscorejs.org": [
         {
-            urlPatterns: ["underscorejs.org/"],
+            urlPatterns: ["underscorejs.org/*"],
             CUs_specifier: {
                 buildCUAround: "#documentation p:has(.header), h2",
             },
@@ -524,9 +531,16 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "urbandictionary.com": {
+        urlPatterns: ["*.urbandictionary.com*"],
+        CUs_specifier: {
+            buildCUAround: "td.index"
+        }
+    },
+
     // only support on the first page
     "ycombinator.com": {
-        urlPatterns: ["news.ycombinator.com*"],
+        urlPatterns: ["news.ycombinator.com"],
         CUs_specifier: {
             buildCUAround: "td.title>a"
         },
@@ -547,13 +561,6 @@ defaultSettings.urlDataMap = {
         }
     },
 
-    "stackoverflow.com": "stackexchange.com",
-    "superuser.com": "stackexchange.com",
-    "serverfault.com": "stackexchange.com",
-    "stackapps.com": "stackexchange.com",
-    "askubuntu.com": "stackexchange.com",
-    "mathoverflow.net" : "stackexchange.com",
-
     "youtube.com": [
         {
             urlPatterns: ["www.youtube.com/results*"],
@@ -567,7 +574,7 @@ defaultSettings.urlDataMap = {
             }
         },
         {
-            urlPatterns:["www.youtube.com*"],
+            urlPatterns:["www.youtube.com/*"],
             CUs_specifier: ".feed-list-item",
             CUs_MUs: {
                 std_mainEl: ".feed-item-content a, .content-item-detail a"
@@ -578,7 +585,8 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-    // randomly supported.
+    //Data that may need to be removed for friend release. 1) These sites are either not very commonly known. 2) They are
+    // experimental and not well supported by Units.
     "sulekha.com": {
         urlPatterns: ["*.sulekha.com/*"],
         CUs_specifier: {
@@ -591,12 +599,7 @@ defaultSettings.urlDataMap = {
             selector: ".box>table tr"
         }
     },
-    "urbandictionary.com": {
-        urlPatterns: ["*.urbandictionary.com*"],
-        CUs_specifier: {
-            buildCUAround: "td.index"
-        }
-    }
+
 };
 
 // this array allows mapping a special domain to the corresponding "master domain"

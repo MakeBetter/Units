@@ -186,7 +186,6 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
                 currentUrl = locationObj.href,
                 strippedUrl = getStrippedUrl(currentUrl);
 
-
             if (Array.isArray(urlData.urlPatterns)) {
                 regexpsToTest = regexpsToTest.concat(getEquivalentRegexps(urlData.urlPatterns));
             }
@@ -195,12 +194,17 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             }
             var regexpsLen =  regexpsToTest.length;
 
+            if (strippedUrl.lastIndexOf("/") === strippedUrl.length - 1) {
+                var strippedUrlWithoutTrailingSlash = strippedUrl.substr(0, strippedUrl.length-1);
+            }
+
             for (var j = 0, regexp; j < regexpsLen; ++j) {
 
                 regexp = regexpsToTest[j];
-                if (regexp.test(strippedUrl)) {
+                if (regexp.test(strippedUrl) || regexp.test(strippedUrlWithoutTrailingSlash)) {
                     return urlData;
                 }
+
             }
 
         }
@@ -298,21 +302,26 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
      * Returns the regexp object corresponding the to the url pattern supplied.
      * @param {String} urlPattern This is a string that can contain '*'s and @'s as "wildcards":
      - A '@' matches any combination of *one or more* alphanumeric characters,  dashes, underscores and commas
-     - A '*' matches any combination of *one or more* characters of *ANY* type.)
+     - A '*' matches any combination of *zero or more* characters of *ANY* type.)
      * @return {RegExp}
      */
     function wildcardPatternToRegexp(urlPattern) {
 
         // get the corresponding "regular expression escaped" string.
         var regexpStr = urlPattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        console.log(regexpStr);
+
+        // replacing all instances of '\*\*' (to which '**'s would have been converted above) by the regexp equivalent
+        // to match any combination of one or more characters of any type
+        regexpStr = regexpStr.replace(/\\\*\\\*/g, '.+');
 
         // replacing all instances of '\*' (to which '*'s would have been converted above) by the regexp equivalent
         // to match any combination of zero or more characters of any type
-        regexpStr = regexpStr.replace(/\\\*/g, '.+');
+        regexpStr = regexpStr.replace(/\\\*/g, '.*');
 
-        // replacing all instances of '@' by the regexp equivalent to match any combination of one or more
-        // alphanumeric characters,  dashes, underscores and commas.
-        regexpStr = regexpStr.replace(/@/g, '[a-z\\-_,]+');
+        // replacing all instances of '@' by the regexp equivalent to match one or more combinations of characters that
+        // are not dots or slashes.
+        regexpStr = regexpStr.replace(/@/g, '[^\.\/]+');
 
         regexpStr = "^" + regexpStr + "$";
 
