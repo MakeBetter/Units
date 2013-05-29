@@ -81,7 +81,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
             mod_settings.setUserSettings(settingsObj);
 
-            mod_UIHelper.showSuccessMessage("Options successfully edited!");
+            mod_UIHelper.showSuccessMessage("All changes saved");
             populateUserSettings();
         }
     };
@@ -96,7 +96,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             mod_settings.setUserSettings(null);
             populateUserSettings();
 
-            mod_UIHelper.showSuccessMessage("Default options are reset!");
+            mod_UIHelper.showSuccessMessage("Default options are reset");
         }
     };
 

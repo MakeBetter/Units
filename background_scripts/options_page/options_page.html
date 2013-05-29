@@ -5,28 +5,33 @@
     <script type="text/javascript" src= ""></script>
 </head>
 <body>
-    <h1>Units Options</h1>
+    <div id="settings-header">
+        <h2>Units Options</h2>
+        <div id="buttons-panel">
+            <button id="save-settings">Save all changes</button>
+            <button id="reset-settings">Reset all options</button>
+            <div class="fixer"></div>
+        </div>
+    </div>
     <div id="settings-container">
         <div id="user-settings">
-            <div id="settings-buttons-panel">
-                <span>Override Default Options:</span>
-                <button id="save-settings">Save all changes</button>
-                <button id="reset-settings">Reset all options</button>
+            <div class="options-message" id="options-main-message">
+                <span> Edit values to override default options </span>
             </div>
             <div>
-                <p>- General</p>
+                <p>General</p>
                 <textarea rows="50" id="general-settings">
 
                 </textarea>
             </div>
             <div>
-                <p>- Site specific</p>
+                <p>Site specific</p>
                 <textarea rows="50" id="site-specific-settings">
 
                 </textarea>
             </div>
             <div>
-                <p>- Global (work on all tabs)</p>
+                <p>Global (work on all tabs)</p>
                 <span class="message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
                     Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
                 </span>
@@ -35,8 +40,8 @@
                 </textarea>
             </div>
         </div>
+        <div id="user-message" class="ui-corner-bottom" style="display:none;"></div>
     </div>
-    <div id="user-message" class="ui-corner-bottom" style="display:none;"></div>
     <script src="mod_UIHelper.js"></script>
     <script src="options_page.js"></script>
 </body>
