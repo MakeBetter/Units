@@ -74,21 +74,20 @@ opposed to supplementing them.) This allows complete control over what keyboard 
 // One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
 // in the content scripts
 defaultSettings.urlDataMap = {
-    // ** NOTE: domain-keys are listed alphabetically **
 
     // this domain key serves only as an example illustrating the structure of a domain-key and value pair. is named so to appear first among sorted keys
-    "0000-example.com": [
+    "example.com": [
         {
             // If any one of the url-patterns or url-regexps listed below match the actual URL, the corresponding
             // object is considered to be a match. The first matching object found within a domain-key found is returned.
-            urlPatterns: ["@.0000-example.com/images/*, www.example.com/archive/images/*"],
+            urlPatterns: ["@.example.com/images/*, www.example.com/archive/images/*"],
             // Use regexps for cases where a simple url-pattern using '*' and '@' won't suffice, for example:
             urlRegexps: [/^www\.000-example\.com\/image|images$/],
             CUs_specifier: ".image, .post"  // NOTE: currently CUs within others CUs are removed
         },
 
         {
-            urlPatterns: ["www.0000-example.com/*"],
+            urlPatterns: ["www.example.com/*"],
             urlRegexps: [], // since the array is empty this is redundant
 
             /*
