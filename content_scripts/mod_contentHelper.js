@@ -19,7 +19,7 @@ _u.mod_contentHelper = (function(CONSTS) {
         closestCommonAncestor: closestCommonAncestor,
         isUnitsProjNode: isUnitsProjNode,
         isRtMouseButton: isRtMouseButton,
-        processMutations: processMutations
+        filterOutUnneededMutations: filterOutUnneededMutations
     };
 
     /*-- Module implementation --*/
@@ -201,7 +201,7 @@ _u.mod_contentHelper = (function(CONSTS) {
     }
 
     //filters out unneeded mutations (currently it only removes mutations related to UnitsProj elements)
-    function processMutations (mutations) {
+    function filterOutUnneededMutations (mutations) {
         for (var i = 0; i < mutations.length; ++i) {
             var mutation = mutations[i];
             if (canIgnoreMutation(mutation)) {
@@ -224,7 +224,7 @@ _u.mod_contentHelper = (function(CONSTS) {
         if (nodes && nodes.length) {
             for (var i = 0; i < nodes.length; ++i) {
                 var node = nodes[i];
-                if(!mod_contentHelper.isUnitsProjNode(node)) {
+                if(!isUnitsProjNode(node)) {
                     return false;
                 }
             }

@@ -130,7 +130,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
          * @param mutations
          */
         function onMuts(mutations) {
-            mod_contentHelper.processMutations(mutations); // removes mutations that aren't of interest
+            mod_contentHelper.filterOutUnneededMutations(mutations); // removes mutations that aren't of interest
 
             if (mutations.length) {
                 groupedMutations = groupedMutations.concat(mutations);
