@@ -1,8 +1,8 @@
 /*
  A not on the "chrome Alt hack" used in this project.
  This "hack" is meant to allow shortcuts of the type 'Alt + <key>' to work (better) on Chrome in Windows.
- There are two problems with such shortcuts on Chrome in Windows.
- a) hey cause a beep/"ding" sound in chrome when invoked (even when the keyboard event is suppressed in
+ There are two problems with such shortcuts on Chrome in Windows/Linux.
+ a) Windows only: they cause a beep/"ding" sound in chrome when invoked (even when the keyboard event is suppressed in
  the JS handler).
  (Ref: http://code.google.com/p/chromium/issues/detail?id=105500)k
  b) Since chrome implements the "accesskey" attribute as 'Alt + <key>' shortcuts, this can a conflict with shortcuts
@@ -21,8 +21,9 @@
  Note: this won't help with shortcuts like alt+shift+<key> etc, only of the type "alt+key"
  */
 
-if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&  navigator.appVersion.indexOf("Mac")!=-1) {
-    _u.mod_chromeAltHack = (function($, CONSTS) {
+if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
+    (navigator.appVersion.indexOf("Win")!=-1 || navigator.appVersion.indexOf("Linux")!=-1)) {
+    _u.mod_chromeAltHack = (function($, mod_contentHelper, CONSTS) {
         "use strict";
 
        /*-- Public interface --*/
@@ -129,10 +130,14 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&  navigator.appV
          * @param mutations
          */
         function onMuts(mutations) {
-            groupedMutations = groupedMutations.concat(mutations);
-            if (timeout_mutations === false) { // compare explicitly with false, which is how we reset it
-                // if timeout period is 0 or negative, will execute immediately (at the first opportunity after yielding)
-                timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (Date.now() - lastMutationsHandledTime));
+            mod_contentHelper.processMutations(mutations); // removes mutations that aren't of interest
+
+            if (mutations.length) {
+                groupedMutations = groupedMutations.concat(mutations);
+                if (timeout_mutations === false) { // compare explicitly with false, which is how we reset it
+                    // if timeout period is 0 or negative, will execute immediately (at the first opportunity after yielding)
+                    timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (Date.now() - lastMutationsHandledTime));
+                }
             }
         }
         function _onMuts() {
@@ -201,6 +206,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&  navigator.appV
 
         return thisModule;
 
-    })(jQuery, _u.CONSTS);
+    })(jQuery, _u.mod_contentHelper, _u.CONSTS);
 }
 

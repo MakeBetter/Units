@@ -18,7 +18,8 @@ _u.mod_contentHelper = (function(CONSTS) {
         ancestorElements: ancestorElements,
         closestCommonAncestor: closestCommonAncestor,
         isUnitsProjNode: isUnitsProjNode,
-        isRtMouseButton: isRtMouseButton
+        isRtMouseButton: isRtMouseButton,
+        processMutations: processMutations
     };
 
     /*-- Module implementation --*/
@@ -112,27 +113,13 @@ _u.mod_contentHelper = (function(CONSTS) {
             ancestorsArray[i] = ancestorElements(elements[i]);
         }
 
-        var isAncestorAtSpecifiedIndexCommon = function(index) {
-
-            var referenceAncestor = ancestorsArray[0][index];
-
-            ancestorsArrLen = ancestorsArray.length;
-            for (var i = 1; i < ancestorsArrLen; ++i ) {
-                if (ancestorsArray[i][index] !== referenceAncestor) {
-                    return false;
-                }
-
-            }
-            return true;
-        };
-
         // check if all share the same topmost ancestor
-        if (!isAncestorAtSpecifiedIndexCommon(0)) {
+        if (!arraysHaveSameElementAtSpecifiedIndex(ancestorsArray, 0)) {
             return null;  // no common ancestor
         }
 
-        // This will hold the index of the element in 'elements' with the smallest number of ancestors (in other words,  the element
-        // that is highest in the DOM)
+        // This will hold the index of the element in 'elements' with the smallest number of ancestors (in other words,
+        // the element that is highest in the DOM)
         var highestElementIndex = 0;
 
 
@@ -148,7 +135,7 @@ _u.mod_contentHelper = (function(CONSTS) {
         var closestCommonAnstr = null,
             arrLen = ancestorArrayWithFewestElements.length;
         for (i = 0; i < arrLen; ++i) {
-            if (isAncestorAtSpecifiedIndexCommon(i)) {
+            if (arraysHaveSameElementAtSpecifiedIndex(ancestorsArray, i)) {
                 closestCommonAnstr = ancestorArrayWithFewestElements[i];
             }
             else {
@@ -157,6 +144,21 @@ _u.mod_contentHelper = (function(CONSTS) {
         }
 
         return closestCommonAnstr;
+    }
+
+    // an array containing ancestor elements in document order
+    function arraysHaveSameElementAtSpecifiedIndex(arrayOfArrays, index) {
+
+        var refElement = arrayOfArrays[0][index],
+        len = arrayOfArrays.length;
+
+        for (var i = 1; i < len; ++i ) {
+            if (arrayOfArrays[i][index] !== refElement) {
+                return false;
+            }
+
+        }
+        return true;
     }
 
     // gets the nearest containing (including itself) DOM Node that is a DOM Element
@@ -196,6 +198,38 @@ _u.mod_contentHelper = (function(CONSTS) {
         else if (e.button) isRtButton = (e.button == 2);
 
         return isRtButton;
+    }
+
+    //filters out unneeded mutations (currently it only removes mutations related to UnitsProj elements)
+    function processMutations (mutations) {
+        for (var i = 0; i < mutations.length; ++i) {
+            var mutation = mutations[i];
+            if (canIgnoreMutation(mutation)) {
+                mutations.splice(i, 1); // remove current mutation from the array
+                --i;
+            }
+        }
+    }
+    function canIgnoreMutation(mutationRecord) {
+        if (isUnitsProjNode(mutationRecord.target)) {
+            return true;
+        }
+        if (mutationRecord.type === "childList" && canIgnoreAllChildlistNodes(mutationRecord.addedNodes) &&
+            canIgnoreAllChildlistNodes(mutationRecord.removedNodes)) {
+            return true;
+        }
+        return false;
+    }
+    function canIgnoreAllChildlistNodes(nodes) {
+        if (nodes && nodes.length) {
+            for (var i = 0; i < nodes.length; ++i) {
+                var node = nodes[i];
+                if(!mod_contentHelper.isUnitsProjNode(node)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     return thisModule;
