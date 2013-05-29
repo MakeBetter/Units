@@ -131,9 +131,8 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&  navigator.appV
         function onMuts(mutations) {
             groupedMutations = groupedMutations.concat(mutations);
             if (timeout_mutations === false) { // compare explicitly with false, which is how we reset it
-                var now = Date.now();
                 // if timeout period is 0 or negative, will execute immediately (at the first opportunity after yielding)
-                timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (now - lastMutationsHandledTime));
+                timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (Date.now() - lastMutationsHandledTime));
             }
         }
         function _onMuts() {
