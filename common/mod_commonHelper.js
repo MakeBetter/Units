@@ -21,7 +21,8 @@ _u.mod_commonHelper = (function() {
         destringifyFunctions: destringifyFunctions,
         stringifyRegexps_inSettings: stringifyRegexps_inSettings,
         stringifyJSONUnsupportedTypes_inSettings: stringifyJSONUnsupportedTypes_inSettings,
-        destringifyJsonUnsupportedTypes_inSettings: destringifyJsonUnsupportedTypes_inSettings
+        destringifyJsonUnsupportedTypes_inSettings: destringifyJsonUnsupportedTypes_inSettings,
+        getHostname: getHostname
     };
 
     /**
@@ -267,6 +268,12 @@ _u.mod_commonHelper = (function() {
     function destringifyJsonUnsupportedTypes_inSettings(settingsObj) {
         destringifyFunctions(settingsObj);
         destringifyRegexps_inSettings(settingsObj);
+    }
+
+    function getHostname(url) {
+        var a = document.createElement('a');
+        a.href = url;
+        return a.hostname;
     }
 
     return thisModule;

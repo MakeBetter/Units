@@ -8,33 +8,32 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         getSettings: getSettings, // final computed settings i.e. default settings extended by user settings
         setUserSettings: setUserSettings,
         getDefaultSettings: getDefaultSettings,
-        addUrlPatternToUserDisabledSites: addUrlPatternToUserDisabledSites,
-        getDisabledStatus: getDisabledStatus
+        addUrlPatternToUserDisabledSites: addUrlPatternToUserDisabledSites
     };
 
     /***
-     * Get applicable settings (computed by extending default settings by user settings). If locationObj is specified, then
+     * Get applicable settings (computed by extending default settings by user settings). If url is specified, then
      * get location specific settings, else get settings for all sites.
      *
-     * If locationObj is specified, the settings object is appended with properties expandedUrlData and isDisabled, and
+     * If url is specified, the settings object is appended with properties expandedUrlData and isDisabled, and
      * the urlDataMap property is removed.
-     * @param locationObj,
+     * @param url,
      * @param callback Callback function returns the settings.
      */
-    function getSettings(locationObj, callback) {
+    function getSettings(url, callback) {
 
-        var userSettings = getUserSettings(locationObj),
+        var userSettings = getUserSettings(url),
             defaultSettings = getDefaultSettings();
 
-        if (locationObj) {
-            defaultSettings.expandedUrlData = getExpandedUrlData(defaultSettings, locationObj);
+        if (url) {
+            defaultSettings.expandedUrlData = getExpandedUrlData(defaultSettings, url);
             delete defaultSettings.urlDataMap;
         }
 
         var settings = $.extend(true, {}, defaultSettings, userSettings);
 
-        if (locationObj) {
-            settings.isDisabled = getDisabledStatus(locationObj.href, settings.disabledSites);
+        if (url) {
+            settings.isDisabled = getDisabledStatus(url, settings.disabledSites);
         }
 
         // Append settings.globalChromeCommands - get the set chrome commands and append them to the settings object
@@ -55,13 +54,13 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     /***
      * Get user settings, stored in local storage.
-     * If locationObj is specified, get URL specific data in the expandedUrlData property. Else get data for all URLs in
+     * If url is specified, get URL specific data in the expandedUrlData property. Else get data for all URLs in
      * the existing urlDataMap property
      *
-     * @param [locationObj]
+     * @param [url]
      * @returns {*}
      */
-    function getUserSettings(locationObj) {
+    function getUserSettings(url) {
         var settingsJSON = localStorage.userSettings,
             settingsObj = null;
 
@@ -76,8 +75,8 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
             mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
 
-            if (locationObj) {
-                settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, locationObj);
+            if (url) {
+                settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, url);
                 delete settingsObj.urlDataMap;
             }
         }
@@ -134,19 +133,19 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         }
     }
 
-    function getExpandedUrlData(settings, locationObj) {
+    function getExpandedUrlData(settings, url) {
 
-        if (!locationObj || !settings) {
+        if (!url || !settings) {
             return null;
         }
 
-        var domain = mod_getMainDomain.getMainDomain(locationObj);
-        var urlData = getUrlDataUsingDomainKey(settings, domain, locationObj);
+        var domain = mod_getMainDomain.getMainDomain(url);
+        var urlData = getUrlDataUsingDomainKey(settings, domain, url);
 
         if (!urlData) {
             var masterDomainKey = getMasterDomainKey(domain);
             if (masterDomainKey) {
-                urlData = getUrlDataUsingDomainKey(settings, masterDomainKey, locationObj);
+                urlData = getUrlDataUsingDomainKey(settings, masterDomainKey, url);
             }
         }
 
@@ -162,7 +161,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         }
     }
 
-    function getUrlDataUsingDomainKey(settings, domainKey, locationObj) {
+    function getUrlDataUsingDomainKey(settings, domainKey, url) {
 
         var urlDataArr = settings.urlDataMap[domainKey];
 
@@ -183,7 +182,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
             var urlData = urlDataArr[i],
                 regexpsToTest = [],
-                currentUrl = locationObj.href,
+                currentUrl = url,
                 strippedUrl = getStrippedUrl(currentUrl);
 
             if (Array.isArray(urlData.urlPatterns)) {

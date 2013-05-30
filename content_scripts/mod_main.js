@@ -94,7 +94,7 @@
 
         chrome.runtime.sendMessage({
                 message: "getSettings",
-                locationObj: window.location
+                url: window.location.href
             },
             function(settings) {
 

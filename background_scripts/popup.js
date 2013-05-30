@@ -1,7 +1,7 @@
 var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     _u = backgroundPageWindow._u;
 
-(function(mod_settings) {
+(function(mod_settings, mod_commonHelper) {
     // Since popup.js opens up
     var activeTabURL,
         activeTabId;
@@ -65,14 +65,14 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
     function renderPopupUI(activeTabURL) {
         var updatePopupUI = function(settings) {
-            var disabledStatus = mod_settings.getDisabledStatus(activeTabURL, settings.disabledSites);
+            var disabledStatus = settings.isDisabled;
 
             if (!disabledStatus) {
                 enableExtensionUI.style.display = "block";
                 disableExtensionUI.style.display = "none";
 
                 // populate textbox with the URL pattern for disabling the current domain
-                var hostname = getHost(activeTabURL);
+                var hostname = mod_commonHelper.getHostname(activeTabURL);
                 disabledUrlPatternInput.value = hostname + "/*";
             }
             else {
@@ -90,18 +90,11 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             }
         };
 
-        mod_settings.getSettings(null, updatePopupUI);
+        mod_settings.getSettings(activeTabURL, updatePopupUI);
 
         chrome.tabs.sendMessage(activeTabId, {message: 'isContentScriptTemporarilyDisabled'}, function(response) {
             updateToggleExtensionUI(response);
         });
     }
-
-    function getHost(url) {
-        var a = document.createElement('a');
-        a.href = url;
-        return a.hostname;
-    }
-
-})(_u.mod_settings);
+})(_u.mod_settings, _u.mod_commonHelper);
 

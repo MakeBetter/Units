@@ -1,5 +1,5 @@
 
-_u.mod_getMainDomain = (function() {
+_u.mod_getMainDomain = (function(mod_commonHelper) {
     "use strict";
 
     /*-- Public interface --*/
@@ -53,11 +53,11 @@ _u.mod_getMainDomain = (function() {
     /**
      * Returns the topmost "registrable" domain, based on the public suffix list, converted to all lowercase
      * letters for the sake of consistency, since domain names are case insensitive
-     * @param locationObj
+     * @param url
      * @returns {*}
      */
-    function getMainDomain(locationObj) {
-        var mainDomain = _getMainDomain(locationObj);
+    function getMainDomain(url) {
+        var mainDomain = _getMainDomain(url);
         if (typeof mainDomain === "string") {
             return mainDomain.toLowerCase();
         }
@@ -78,8 +78,8 @@ _u.mod_getMainDomain = (function() {
      * Similarly, for the domain, "en.wikipedia.org", "wikipedia.org" is the registrable domain
      *
      */
-    function _getMainDomain(locationObj) {
-        var domain = locationObj.hostname,
+    function _getMainDomain(url) {
+        var domain = mod_commonHelper.getHostname(url),
             domainTokens = domain.split("."),   // "data.gov.ac" -> ["data", "gov", "ac"]
             domainTokensLen = domainTokens.length,
             tld = domainTokens[domainTokensLen -1],
@@ -158,4 +158,4 @@ _u.mod_getMainDomain = (function() {
 
     return thisModule;
 
-})();
+})(_u.mod_commonHelper);

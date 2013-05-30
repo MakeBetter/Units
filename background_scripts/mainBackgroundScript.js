@@ -33,7 +33,7 @@
     function sendSettingsWhenReady(request, sender, sendResponse) {
         (function _sendSettingsWhenReady() {
             if (mod_getMainDomain.publicSuffixMap) {
-                mod_settings.getSettings(request.locationObj, function(settings) {
+                mod_settings.getSettings(request.url, function(settings) {
                     sendResponse(settings);
                 });
             }
