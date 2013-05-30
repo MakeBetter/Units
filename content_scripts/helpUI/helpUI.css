@@ -1,0 +1,172 @@
+.UnitsProj-modal {
+    background-color: white !important;
+
+    min-height: 400px !important;
+    /*min-width: 400px !important;*/
+    max-height: 600px !important;
+    width: 800px !important;
+    overflow: auto !important;
+
+    position: fixed !important;
+    left: 50%; margin-left: -400px; /*center the div horizontally*/
+    top: 10%;
+
+    z-index: 10000 !important;
+
+    border: 2px solid #999;
+    border-radius: 4px !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    color: black !important;
+}
+
+.UnitsProj-modal-header {
+    padding: 9px 15px !important;
+    border-bottom: 1px solid #eee !important;
+    background: none !important;
+    box-sizing: border-box !important;
+    position: relative;
+
+}
+
+
+.UnitsProj-modal-header>.close {
+    position: absolute !important;
+    top: 7px !important; right: 7px !important;
+
+    font-size: 20px !important;
+    font-family: Arial;
+    font-weight: bold !important;
+    line-height: 20px !important;
+    height: 20px !important;
+    width: 20px; !important;
+
+    color: #aaa !important;
+    text-shadow: 0 1px 0 #ffffff !important;
+    border: none;
+
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+.UnitsProj-modal-header>.close:hover {
+    color: #888 !important;
+}
+
+.UnitsProj-modal-title{
+    font-size: 18px !important;
+    font-weight: normal !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    text-align: center !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+}
+
+#help {
+}
+
+.UnitsProj-modal-body {
+    position: relative;
+    padding: 10px 20px 20px 20px;
+}
+
+.UnitsProj-modal-body .section {
+    width: 50%;
+    float: left;
+}
+
+
+#UnitsProj-help-container table {
+    text-align: left;
+    border-spacing: 0;
+}
+
+#UnitsProj-help-container table tr {
+    height: 25px !important;
+}
+
+#UnitsProj-help-container table tr:nth-child(2n+1) td.key {
+}
+
+#UnitsProj-help-container td, #UnitsProj-help-container th {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    font-size: 13px !important;
+    color: black !important;
+    border: none !important;
+    background-color: inherit !important;
+    background: inherit !important;
+}
+
+/*tr.subsection-end{*/
+/*margin-bottom: 30px;*/
+/*}*/
+
+#UnitsProj-help-container td.key {
+    padding-right: 10px;
+    text-align: right;
+    line-height: 25px !important;
+}
+
+#UnitsProj-help-container td.action {
+    vertical-align: top;
+    padding: 3px 0 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
+}
+
+#UnitsProj-help-container td.key>span.key {
+    /*margin-right: 2px;*/
+    background-color: #efefef;
+    border: 1px solid #ddd;
+    border-radius: 2px !important;
+    padding: 3px; /* Note: If you change this, then change td.action padding as well. They should be consistent. */
+    margin: 0 2px;
+    font-family: Georgia, "Times New Roman", Times, serif !important;
+
+}
+
+td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td, #UnitsProj-help-container #UnitsProj-message{
+    color: #777777 !important;
+}
+
+td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td {
+    text-align: center;
+}
+
+td.key>span.separator {
+    font-size: 11px !important;
+}
+
+#UnitsProj-help-container #UnitsProj-message {
+    text-align: left !important;
+    background-color: inherit !important;
+    margin-top: 10px !important;
+    border: none !important;
+    font-size: 12px !important;
+}
+
+#UnitsProj-help-container tr.subsection-end>td{
+    padding-bottom: 20px !important;
+}
+
+#UnitsProj-help-container th.section-title {
+    font-size: 12px !important;
+    color: black !important;
+    font-weight: bold !important;
+    text-align: center;
+}
+
+.UnitsProj-modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000000;
+    opacity: 0.5;
+}
+
+.UnitsProj-float-fixer {
+    clear: both;
+}
