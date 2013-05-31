@@ -33,9 +33,8 @@
     function sendSettingsWhenReady(request, sender, sendResponse) {
         (function _sendSettingsWhenReady() {
             if (mod_getMainDomain.publicSuffixMap) {
-                mod_settings.getSettings(request.url, function(settings) {
-                    sendResponse(settings);
-                });
+                var url = sender.tab.url;
+                mod_settings.getSettings(url, sendResponse);
             }
             else {
                 setTimeout(_sendSettingsWhenReady, 100);

@@ -1,20 +1,43 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="helpUI.css"/>
-        <script type="text/javascript" src="helpUI.js"></script>
+        <script type="text/javascript" src="../../vendor/jquery-2.0.0.min.js"></script>
     </head>
     <body>
-         <div id = "UnitsProj-help-container">
-             <div class = "UnitsProj-modal-backdrop">
+         <div id= "help">
+
+             <div class= "UnitsProj-modal-header">
+                 <h1 class="UnitsProj-modal-title">Units Shortcuts</h1>
+                 <button class= close>x</button>
              </div>
-             <div id= "help" class = "UnitsProj-modal">
-                 <div class= "UnitsProj-modal-header">
-                     <h1 class="UnitsProj-modal-title">Units Shortcuts</h1>
-                     <button class= close>×</button>
+             <div class = "UnitsProj-modal-body">
+                 <div class="section" id="CUs-shortcuts">
+                     <table>
+                         <thead>
+                            <tr>
+                                <th colspan="2" class="section-title">Content Unit (CU) based</th>
+                            </tr>
+
+                         </thead>
+                     </table>
                  </div>
-                 <div class = "UnitsProj-modal-body">
+
+                 <div class="section" id="general-shortcuts">
+                     <table>
+                         <thead>
+                         <tr>
+                             <th colspan="2" class="section-title"> General</th>
+                         </tr>
+
+                         </thead>
+                     </table>
                  </div>
+                 <div class=UnitsProj-float-fixer></div>
+                 <p id=UnitsProj-message>* These will scroll the page up/down only when there are no CUs on the page.
+                     Else, these are used to go to previous/next CU. </p>
+
              </div>
-          </div>
+         </div>
+         <script type="text/javascript" src="helpUI.js"></script>
     </body>
 </html>

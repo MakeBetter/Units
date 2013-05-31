@@ -94,7 +94,6 @@
 
         chrome.runtime.sendMessage({
                 message: "getSettings",
-                url: window.location.href
             },
             function(settings) {
 
@@ -163,6 +162,27 @@
             }
         }
     );
+
+    function onWindowMessage(event) {
+        var data = event.data,
+            isMessageOriginValid = (mod_commonHelper.getHostname(event.origin) === mod_commonHelper.getHostname(chrome.runtime.getURL("")));
+
+        if (!data ||  !isMessageOriginValid) {
+            return;
+        }
+
+        if (data.message === 'closeIFrame') {
+            mod_help.hideHelp(); // hide the help iframe
+            window.focus(); // restore focus to the window.
+        }
+        else if (data.message === 'setHelpUIHeight') {
+            mod_help.positionHelpUI(data.height);
+        }
+    }
+
+    // Used to communicate with the Help UI iframe. This event does not need to be bound using mod_domEvents because we
+    // don't need to remove it when extension is disabled.
+    window.addEventListener('message', onWindowMessage, false);
 
     function onDomReady() {
         initializeExtension();

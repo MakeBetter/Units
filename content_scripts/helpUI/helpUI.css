@@ -1,22 +1,38 @@
+/*TODO: Clean up this CSS. Now that we are inserting an iframe instead of a simple div into websites to show this,
+this CSS can be muuuch cleaner. */
+
 .UnitsProj-modal {
-    background-color: white !important;
+    /*background-color: white !important;*/
 
-    min-height: 400px !important;
+    /*min-height: 400px !important;*/
     /*min-width: 400px !important;*/
-    max-height: 600px !important;
-    width: 800px !important;
-    overflow: auto !important;
+    /*max-height: 600px !important;*/
+    /*width: 800px !important;*/
+    /*overflow: auto !important;*/
 
-    position: fixed !important;
-    left: 50%; margin-left: -400px; /*center the div horizontally*/
-    top: 10%;
+    /*position: fixed !important;*/
+    /*left: 50%; margin-left: -400px; *//*center the div horizontally*/
+    /*top: 10%;*/
 
-    z-index: 10000 !important;
+    /*z-index: 10000 !important;*/
 
-    border: 2px solid #999;
-    border-radius: 4px !important;
+    /*border: 2px solid #999;*/
+    /*border-radius: 4px !important;*/
+    /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;*/
+    /*color: black !important;*/
+}
+
+body {
+    height: 100%; width: 100%;
+    margin: 0; padding: 0;
+
+}
+
+#help {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     color: black !important;
+    overflow: auto !important;
+    background-color: white !important;
 }
 
 .UnitsProj-modal-header {
@@ -25,9 +41,7 @@
     background: none !important;
     box-sizing: border-box !important;
     position: relative;
-
 }
-
 
 .UnitsProj-modal-header>.close {
     position: absolute !important;
@@ -64,9 +78,6 @@
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
 
-#help {
-}
-
 .UnitsProj-modal-body {
     position: relative;
     padding: 10px 20px 20px 20px;
@@ -78,19 +89,19 @@
 }
 
 
-#UnitsProj-help-container table {
+table {
     text-align: left;
     border-spacing: 0;
 }
 
-#UnitsProj-help-container table tr {
+table tr {
     height: 25px !important;
 }
 
-#UnitsProj-help-container table tr:nth-child(2n+1) td.key {
+table tr:nth-child(2n+1) td.key {
 }
 
-#UnitsProj-help-container td, #UnitsProj-help-container th {
+td, th {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     font-size: 13px !important;
     color: black !important;
@@ -103,18 +114,18 @@
 /*margin-bottom: 30px;*/
 /*}*/
 
-#UnitsProj-help-container td.key {
+td.key {
     padding-right: 10px;
     text-align: right;
     line-height: 25px !important;
 }
 
-#UnitsProj-help-container td.action {
+td.action {
     vertical-align: top;
-    padding: 3px 0 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
+    padding: 3px 5px 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
 }
 
-#UnitsProj-help-container td.key>span.key {
+td.key>span.key {
     /*margin-right: 2px;*/
     background-color: #efefef;
     border: 1px solid #ddd;
@@ -125,11 +136,11 @@
 
 }
 
-td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td, #UnitsProj-help-container #UnitsProj-message{
+td.key>span.separator, tr.subsection-title>td, #UnitsProj-message{
     color: #777777 !important;
 }
 
-td.key>span.separator, #UnitsProj-help-container tr.subsection-title>td {
+td.key>span.separator, tr.subsection-title>td {
     text-align: center;
 }
 
@@ -137,35 +148,31 @@ td.key>span.separator {
     font-size: 11px !important;
 }
 
-#UnitsProj-help-container #UnitsProj-message {
-    text-align: left !important;
-    background-color: inherit !important;
-    margin-top: 10px !important;
-    border: none !important;
-    font-size: 12px !important;
+.page-specific {
+    background-color: #FFFFEA;
 }
 
-#UnitsProj-help-container tr.subsection-end>td{
+#UnitsProj-message {
+    text-align: left !important;
+    background-color: inherit !important;
+    /*margin-top: 10px !important;*/
+    border: none !important;
+    font-size: 12px !important;
+    margin: 0;
+}
+
+tr.subsection-end>td{
     padding-bottom: 20px !important;
 }
 
-#UnitsProj-help-container th.section-title {
+th.section-title {
     font-size: 12px !important;
     color: black !important;
     font-weight: bold !important;
     text-align: center;
 }
 
-.UnitsProj-modal-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1040;
-    background-color: #000000;
-    opacity: 0.5;
-}
+
 
 .UnitsProj-float-fixer {
     clear: both;

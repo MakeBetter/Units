@@ -228,3 +228,32 @@ span#filter-message {
     font-weight: normal !important;
 }
 
+#iframe-help {
+    /*min-height: 600px !important;*/
+    /*min-width: 400px !important;*/
+    /*height: 80% !important;*/
+    /*max-height: 80% !important;*/
+    width: 800px !important;
+    position: fixed !important;
+    left: 50%; margin-left: -400px; /*center the div horizontally*/
+    z-index: 10000 !important;
+
+    border: 2px solid #999;
+    border-radius: 4px !important;
+
+}
+
+.UnitsProj-modal {
+
+}
+
+.UnitsProj-modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000000;
+    opacity: 0.5;
+}
