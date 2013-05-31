@@ -202,11 +202,13 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     //filters out unneeded mutations (currently it only removes mutations related to UnitsProj elements)
     function filterOutUnneededMutations (mutations) {
-        for (var i = 0; i < mutations.length; ++i) {
+        var len = mutations.length;
+        for (var i = 0; i < len; ++i) {
             var mutation = mutations[i];
             if (canIgnoreMutation(mutation)) {
                 mutations.splice(i, 1); // remove current mutation from the array
                 --i;
+                --len;
             }
         }
     }
