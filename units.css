@@ -236,7 +236,7 @@ span#filter-message {
     width: 800px !important;
     position: fixed !important;
     left: 50%; margin-left: -400px; /*center the div horizontally*/
-    z-index: 10000 !important;
+    z-index: 2147483647 !important; /*highest z-index for a 32-bit int value*/
 
     border: 2px solid #999;
     border-radius: 4px !important;
@@ -253,7 +253,7 @@ span#filter-message {
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 1040;
+    z-index: 2147483646 !important; /* 1 less than the z-index of iframe help window */
     background-color: #000000;
     opacity: 0.5;
 }
