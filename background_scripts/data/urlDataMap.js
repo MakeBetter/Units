@@ -540,7 +540,7 @@ defaultSettings.urlDataMap = {
 
     // only support on the first page
     "ycombinator.com": {
-        urlPatterns: ["news.ycombinator.com"],
+        urlPatterns: ["news.ycombinator.com/*"],
         CUs_specifier: {
             buildCUAround: "td.title>a"
         },
