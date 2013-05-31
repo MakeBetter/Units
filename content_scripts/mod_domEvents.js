@@ -32,6 +32,10 @@ _u.mod_domEvents = (function($) {
      * in order to track event handlers set up by this extension, so that they can be removed if required.
      * A technique similar to the overriding of jQuery's 'on' function cannot be used for this, because the DOM, including
      * its functions, are shared with current web page.
+     *
+     * !!!!
+     * NOTE: Make sure to call this method from a module's setup() method only. Otherwise all handlers bound with this will
+     * get reset when the content script is initialized.
      * @param target
      * @param event
      * @param handler
