@@ -178,6 +178,7 @@
         else if (data.message === 'setHelpUIHeight') {
             mod_help.positionHelpUI(data.height);
         }
+        return false;
     }
 
     // Used to communicate with the Help UI iframe. This event does not need to be bound using mod_domEvents because we
