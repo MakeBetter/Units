@@ -30,6 +30,9 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
         scrollAnimationDuration = 150; // millisecs
 
     function setup(settings) {
+        // NOTE: The 'click' event is triggered whenever in response to invoking 'enter' or 'space' on a
+        // an "activatable" element as well. (The event 'DOMActivate' which was used for this purpose
+        // is now deprecated) [http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-activation]
         mod_domEvents.addEventListener(document, 'click', setLastInteractedElement, true);
         mod_domEvents.addEventListener(document, 'focus', setLastInteractedElement, true);
         mod_domEvents.addEventListener(document, 'mouseover', setLastInteractedElement, true);
