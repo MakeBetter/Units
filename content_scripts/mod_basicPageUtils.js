@@ -2,7 +2,7 @@
  * This module implements the basic utility features this extension provides by to a page, like scrolling, 
  * going back/forward, etc
  */
-_u.mod_basicPageUtils = (function($, mod_keyboardLib) {
+_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
     "use strict";
 
     /*-- Public interface --*/
@@ -30,9 +30,9 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         scrollAnimationDuration = 150; // millisecs
 
     function setup(settings) {
-        $document.on('click focus mouseover', function(e) {
-            lastInteractedElement = e.target;
-        });
+        mod_domEvents.addEventListener(document, 'click', setLastInteractedElement, true);
+        mod_domEvents.addEventListener(document, 'focus', setLastInteractedElement, true);
+        mod_domEvents.addEventListener(document, 'mouseover', setLastInteractedElement, true);
 
         miscSettings = settings.miscSettings;
         setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
@@ -144,6 +144,9 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         }
     }
 
+    function setLastInteractedElement(event) {
+        lastInteractedElement = event.target;
+    }
 
     function $getVisibleTextInputElements() {
         var $textInput = $document.find('input[type=text], input:not([type]), textarea, [contenteditable=true]').filter(function() {
@@ -220,7 +223,7 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
         if (newTab) {
             var ctrlClickEvent = document.createEvent("MouseEvents");
 
-            // detecting OS detection based on:
+            // detecting OS based on:
             // http://stackoverflow.com/questions/7044944/jquery-javascript-to-detect-os-without-a-plugin
             if (isMac) {
                 ctrlClickEvent.initMouseEvent("click", true, true, null,
@@ -240,4 +243,4 @@ _u.mod_basicPageUtils = (function($, mod_keyboardLib) {
     }
 
     return thisModule;
-})(jQuery, _u.mod_keyboardLib);
+})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib);
