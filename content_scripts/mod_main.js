@@ -163,7 +163,7 @@
         }
     );
 
-    function onWindowMessage(event) {
+    function onWindowMessage(event, targetOrigin) {
         var data = event.data,
             isMessageOriginValid = (mod_commonHelper.getHostname(event.origin) === mod_commonHelper.getHostname(chrome.runtime.getURL("")));
 
@@ -177,6 +177,12 @@
         }
         else if (data.message === 'setHelpUIHeight') {
             mod_help.positionHelpUI(data.height);
+        }
+        else if(data.message === 'doesPageHaveCUsSpecifier') {
+            var pageHasCUsSpecifier = mod_context.isContextValid({pageHasCUsSpecifier: true});
+
+            var iframeHelp = document.getElementById("iframe-help");
+            iframeHelp.contentWindow.postMessage({message: 'pageHasCUsSpecifier', value: pageHasCUsSpecifier}, '*');
         }
         return false;
     }

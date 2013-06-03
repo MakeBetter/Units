@@ -19,6 +19,34 @@ $closeButton.click(function() {
    parent.postMessage({message: "closeIFrame"}, "*");
 });
 
+
+window.addEventListener('message', function(event) {
+    var data = event.data,
+        sectionDisabledClass = "disabled",
+        $noCUsMessage = ("<span class='disabled'> No content units setup for this page</span>"),
+        $CUsShortcuts = $CUShortcutsSection.find("tbody");
+
+
+    // If the page does not have CUs specified, then hide the shortcuts and show a message.
+    if (data.message === 'pageHasCUsSpecifier') {
+        if (!data.value) {
+            // show the CU shortcuts as disabled
+            $CUShortcutsSection.addClass(sectionDisabledClass);
+            $CUShortcutsSection.append($noCUsMessage);
+            $CUsShortcuts.hide();
+
+            return;
+        }
+
+        $CUShortcutsSection.removeClass(sectionDisabledClass);
+        if ($noCUsMessage) {
+            $noCUsMessage.remove();
+        }
+        $CUsShortcuts.show();
+    }
+
+}, false);
+
 function renderHelpUI(settings) {
     renderCUShortcuts(settings);
     renderGeneralShortcuts(settings);
@@ -29,6 +57,10 @@ function renderHelpUI(settings) {
     parent.postMessage({
         message: "setHelpUIHeight",
         height: $help.height()
+    }, "*");
+
+    parent.postMessage({
+        message: "doesPageHaveCUsSpecifier"
     }, "*");
 }
 
