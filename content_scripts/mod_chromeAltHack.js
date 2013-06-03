@@ -148,16 +148,16 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
 
             var mutationsLen = groupedMutations.length,
                 mutationRecord,
-                addedNodes;
+                addedNodes,
+                len;
+
             for (var i = 0; i < mutationsLen; ++i) {
                 mutationRecord = groupedMutations[i];
 
-                if ((addedNodes = mutationRecord.addedNodes)) {
+                if ((addedNodes = mutationRecord.addedNodes) && (len = addedNodes.length)) {
 
-                    var addedNodesLen = addedNodes.length,
-                        node;
-                    for (var j = 0; j < addedNodesLen; ++j) {
-                        node = addedNodes[j];
+                    for (var j = 0; j < len; ++j) {
+                        var node = addedNodes[j];
                         if (node.nodeType === document.ELEMENT_NODE) {
                             removeAnyConflictingAccessKeyAttr(node);
                         }
