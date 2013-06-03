@@ -68,7 +68,7 @@ _u.mod_context = (function(mod_contentHelper){
      * hash, with the corresponding property being true or false as desired):
      *
      * Examples of `context` object:
-     * {CUSelected: true}, {CUSelected: true, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc
+     * {CUSelected: true}, {CUSelected: false, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc
      *
      * @param context
      * @returns {boolean}
