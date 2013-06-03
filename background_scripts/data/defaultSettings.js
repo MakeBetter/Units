@@ -200,7 +200,7 @@ var defaultSettings = {
                 kbdShortcuts: ["c"]
             },
             std_viewComments: {
-                miniDescr: "View comments",
+                miniDescr: "View (more) comments",
                 kbdShortcuts: ["v c"]
             },
             std_edit: {
