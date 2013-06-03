@@ -145,6 +145,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
                 scrollElement = scrollElement.parentElement;
             }
         }
+        return document.body;
     }
 
     function setLastInteractedElement(event) {
