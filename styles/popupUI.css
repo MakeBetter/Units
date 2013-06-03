@@ -1,0 +1,61 @@
+/* line 1, sass/popupUI.scss */
+body {
+  width: 300px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+/* line 7, sass/popupUI.scss */
+input[type=text] {
+  width: 150px;
+}
+
+/* line 10, sass/popupUI.scss */
+div.action {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* line 14, sass/popupUI.scss */
+div.action:nth-child(2n) {
+  background-color: #fafafa;
+}
+
+/* line 18, sass/popupUI.scss */
+p, ol {
+  color: #666;
+  font-size: 12px;
+  margin: 2px;
+}
+
+/* line 24, sass/popupUI.scss */
+p.strong {
+  /*color: black;*/
+  font-weight: 600;
+}
+
+/* line 29, sass/popupUI.scss */
+.advanced {
+  font-size: 10.5px;
+  display: inline-block;
+  color: #666;
+}
+
+/* line 35, sass/popupUI.scss */
+div#footer {
+  padding: 6px 10px;
+}
+
+/* line 38, sass/popupUI.scss */
+#options {
+  font-size: 12;
+  float: right;
+  /*padding: 4px;*/
+}
+
+/* line 44, sass/popupUI.scss */
+#enable-steps {
+  padding-left: 30px;
+}

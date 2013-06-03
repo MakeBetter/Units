@@ -1,0 +1,231 @@
+/*TODO: CSS needs cleanup! */
+/* line 3, sass/options_page.scss */
+body {
+  font-family: Helvetica Neue, Helvetica, Arial;
+  margin: 0;
+  padding: 0;
+}
+
+/* line 8, sass/options_page.scss */
+h1 {
+  font-weight: normal;
+  text-align: center;
+}
+
+/* line 13, sass/options_page.scss */
+textarea {
+  padding: 0;
+  margin-top: 10px;
+}
+
+/* Adapted from twitter bootstrap button style */
+/* line 19, sass/options_page.scss */
+button {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: 17px;
+  color: #333333;
+  text-align: center;
+  /*text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);*/
+  vertical-align: middle;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /*box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.0470588) 0px 1px 2px 0px;*/
+  background-color: #e6e6e6;
+  background-image: linear-gradient(#ffffff, #e6e6e6);
+  /*background-position: 0px -15px;*/
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  /*border-bottom-color: #b3b3b3;*/
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+/* line 44, sass/options_page.scss */
+button:hover {
+  /*color: #333333;*/
+  /*text-decoration: none;*/
+  /*background-position: 0 -15px;*/
+  /*-webkit-transition: background-position 0.1s linear;*/
+  /*-moz-transition: background-position 0.1s linear;*/
+  /*-o-transition: background-position 0.1s linear;*/
+  /*transition: background-position 0.1s linear;*/
+  background-color: #bbb;
+}
+
+/* line 55, sass/options_page.scss */
+#settings-container {
+  margin: 0 auto;
+  position: relative;
+  /*display: table;*/
+  /*margin-top: 20px;*/
+}
+
+/* line 62, sass/options_page.scss */
+#settings-header {
+  margin: 0 auto 20px auto;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  height: 40px;
+  width: 100%;
+  background-color: lightslategray;
+  /*margin: 0;*/
+  z-index: 2;
+  /*padding: 0 40px;*/
+}
+
+/* line 75, sass/options_page.scss */
+#settings-header > h2 {
+  width: 750px;
+  margin: 0 auto;
+  padding: 0;
+  color: white;
+  /*text-align: right;*/
+  font-weight: normal;
+  vertical-align: middle;
+  font-size: 20px;
+  line-height: 40px;
+}
+
+/* line 87, sass/options_page.scss */
+#buttons-panel {
+  max-width: 750px;
+  margin: 10px auto;
+  position: relative;
+  top: -45px;
+}
+
+/* line 94, sass/options_page.scss */
+#user-settings {
+  top: 60px;
+  position: relative;
+  margin: 0 auto;
+  width: 750px;
+}
+
+/* line 102, sass/options_page.scss */
+.options-message {
+  color: #888;
+  font-size: 15px;
+}
+
+/* line 107, sass/options_page.scss */
+#options-main-message {
+  margin-bottom: 10px;
+  text-align: middle;
+}
+
+/* line 112, sass/options_page.scss */
+#user-settings p {
+  /*margin-bottom: 5px;*/
+  /*font-style: italic;*/
+  font-family: Garamond "Times New Roman" SERIF;
+  font-weight: bold;
+  font-size: 15px;
+  margin: 0;
+}
+
+/* line 121, sass/options_page.scss */
+.message {
+  font-size: 12px;
+  color: #666;
+  background-color: lightgoldenrodyellow;
+  border: 1px solid #faf992;
+  padding: 3px;
+  display: block;
+}
+
+/* line 130, sass/options_page.scss */
+.message > a {
+  color: #1277dd;
+}
+
+/* line 134, sass/options_page.scss */
+#user-settings textarea {
+  border-color: #efefef;
+  margin-bottom: 40px;
+  width: 750px;
+  /*resize: none;*/
+}
+
+/* line 141, sass/options_page.scss */
+#user-settings textarea[readonly=readonly] {
+  /*color: #999;*/
+}
+
+/* line 145, sass/options_page.scss */
+#settings-buttons-panel {
+  /*margin-bottom: 30px;*/
+}
+
+/* line 149, sass/options_page.scss */
+#save-settings {
+  float: right;
+}
+
+/* line 153, sass/options_page.scss */
+#reset-settings {
+  float: right;
+}
+
+/* TODO: To be improved. Just some CSS for now. */
+/* line 158, sass/options_page.scss */
+#user-message {
+  box-sizing: border-box;
+  width: 400px;
+  position: fixed;
+  top: 0;
+  /*left: 0;*/
+  left: 50%;
+  margin-left: -375px;
+  z-index: 1501;
+  text-align: center;
+  padding: 5px 0;
+  /*min-height: 30px;*/
+  color: #ffffff;
+  opacity: 0.98;
+  font-size: 12px;
+  /*corner-bottom*/
+  -moz-border-radius-bottomleft: 2px;
+  -webkit-border-bottom-left-radius: 2px;
+  -khtml-border-bottom-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  -moz-border-radius-bottomright: 2px;
+  -webkit-border-bottom-right-radius: 2px;
+  -khtml-border-bottom-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+/* line 181, sass/options_page.scss */
+#user-message > p {
+  padding: 0;
+  margin: 0;
+}
+
+/* line 185, sass/options_page.scss */
+#user-message .json-error-message {
+  font-style: italic;
+}
+
+/* line 189, sass/options_page.scss */
+#user-message.error {
+  background: #e30202;
+  border: 1px solid #e60000;
+}
+
+/* line 194, sass/options_page.scss */
+#user-message.success {
+  background-color: #27805b;
+  border: 1px solid #3e801b;
+}
+
+/* line 199, sass/options_page.scss */
+.fixer {
+  clear: both;
+}

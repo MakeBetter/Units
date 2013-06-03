@@ -6,7 +6,7 @@
     "options_page": "background_scripts/options_page/options_page.html",
     "browser_action": {
         "default_icon": "icon-disabled.png",
-        "default_popup": "background_scripts/popup.html",
+        "default_popup": "background_scripts/popupUI/popup.html",
         "default_title": "Units"
     },
 
@@ -62,7 +62,7 @@
                 "content_scripts/mod_main.js"
             ],
 
-            "css": ["units.css"],
+            "css": ["styles/units.css"],
             "run_at": "document_start",
             "all_frames": false
         }
