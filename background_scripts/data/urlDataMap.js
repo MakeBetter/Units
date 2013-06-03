@@ -483,7 +483,7 @@ defaultSettings.urlDataMap = {
                 "std_share": ".short-link",
                 "std_edit": ".suggest-edit-post",
                 "std_comment": ".comments-link",
-                "star": {kbdShortcuts: ["r"],  selector: ".star-off" }
+                "star": {kbdShortcuts: ["r"],  selector: ".star-off", miniDescr: "Star question"}
 
             },
             CUs_actions: {
