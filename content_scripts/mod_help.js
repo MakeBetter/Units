@@ -38,7 +38,10 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
                 return false;
             }
         });
-//        mod_domEvents.addEventListener($helpContainer.find(".close")[0], 'click', hideHelp);
+
+        // clicking anywhere on the page should hide the help UI.
+        var modalBackdrop = document.getElementsByClassName('UnitsProj-modal-backdrop')[0];
+        modalBackdrop && mod_domEvents.addEventListener(modalBackdrop, 'click', hideHelp);
     }
 
     function setupHelpUI() {
