@@ -53,8 +53,8 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
             groupedMutations,
             timeout_mutations,
             lastMutationsHandledTime,
-        // don't run mutation handler more than once per these many milliseconds. we specify a high value for this
-            // module since accesskey
+            // don't run mutation handler more than once per these many milliseconds. we specify a high value here
+            // since accesskey are not expected to change frequently
             mutationGroupingInterval = 5000;
 
         // Resets state AND *undoes* the effect of the hack including reinstating accessKey removed earlier
@@ -102,7 +102,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
                 // this function is useful only when the following condition is true
                 if (tokens && tokens.length == 2 && tokens[0].toLowerCase() === "alt") {
 
-                    keyAfterAlt = tokens[1];
+                    keyAfterAlt = tokens[1].toLowerCase();
 
                     if (altShortcutKeys.indexOf(keyAfterAlt) === -1) {
                         altShortcutKeys.push(keyAfterAlt);
@@ -130,17 +130,18 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
          * @param mutations
          */
         function onMuts(mutations) {
-            mod_contentHelper.filterOutUnneededMutations(mutations); // removes mutations that aren't of interest
+//            mod_contentHelper.filterOutUnneededMutations(mutations); // removes mutations that aren't of interest
 
-            if (mutations.length) {
+//            if (mutations.length) {
                 groupedMutations = groupedMutations.concat(mutations);
                 if (timeout_mutations === false) { // compare explicitly with false, which is how we reset it
                     // if timeout period is 0 or negative, will execute immediately (at the first opportunity after yielding)
                     timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (Date.now() - lastMutationsHandledTime));
                 }
-            }
+//            }
         }
         function _onMuts() {
+            console.time("chromeAltHack-muts");
             timeout_mutations = false;
             lastMutationsHandledTime = Date.now();
 //            console.log('grouped _onMuts called');
@@ -164,10 +165,17 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
                 }
 
                 if (mutationRecord.attributeName && mutationRecord.attributeName.toLowerCase() === 'accesskey') {
-                    removeAnyConflictingAccessKeyAttr(mutationRecord.target);
+                    var accessKey = mutationRecord.target.getAttribute("accesskey");
+                    accessKey = accessKey && accessKey.toLowerCase();
+                    if (accessKey && altShortcutKeys.indexOf(accessKey) !== -1) {
+                        mutationRecord.target.setAttribute('accesskey', '');
+
+                    }
                 }
             }
             groupedMutations = []; // reset
+            console.timeEnd("chromeAltHack-muts");
+
         }
 
         /**
@@ -192,12 +200,17 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
          */
         function removeAccessKey(accessKey, element) {
 
-            var $conflictingElements =  $(element).find('[accesskey="' + accessKey+ '"]:not(.' +
-                class_dummyAccessKey + ')').addBack();
+            var $all =  $(element).find('[accesskey="' + accessKey+ '"]:not(.' +
+                class_dummyAccessKey + ')');
 
-            $conflictingElements.each(
+            // we make this check since `document` doesn't have the setAttribute method
+            if (element.setAttribute) {
+                $all = $all.add(element);
+            }
+
+            $all.each(
                 function(index, element) {
-                    $(element).attr('accesskey', '');
+                    element.setAttribute('accesskey', '');
                     accesskeysRemoved.push({element: element, accessKey: accessKey});
 //            console.log('accesskeysRemoved', accesskeysRemoved);
                 }
