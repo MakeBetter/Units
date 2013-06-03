@@ -9,7 +9,7 @@ chrome.runtime.sendMessage({
     renderHelpUI
 );
 
-var keysSeparatorHtml = "<span class=separator> or </span>",
+var keysSeparatorHtml = "<span class='separator UnitsProj-message'> or </span>",
     $help = $("#help"),
     $generalShortcutsSection = $("#general-shortcuts"),
     $CUShortcutsSection = $("#CUs-shortcuts"),
@@ -81,7 +81,7 @@ function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSection
         $subSectionTitle = $("<tr><td colspan='2'></td></tr>");
         $subSectionTitle
             .addClass('subsection-title')
-            .find("td").text(subSectionTitle);
+            .find("td").text(subSectionTitle).addClass('UnitsProj-message');
         $shortcutsTable.append($subSectionTitle);
     }
 
@@ -97,7 +97,7 @@ function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSection
 
             // Create spans for each keyboard shortcut. And spans with the text "or" to connect them.
             for (var i = 0; i < kbdShortcuts.length; i++) {
-                kbdShortcutsHtml += "<span class=key>"+ kbdShortcuts[i] + "</span>";
+                kbdShortcutsHtml += "<span class=key-text>"+ kbdShortcuts[i] + "</span>";
                 if (i !== kbdShortcuts.length -1) {
                     kbdShortcutsHtml+= keysSeparatorHtml;
                 }

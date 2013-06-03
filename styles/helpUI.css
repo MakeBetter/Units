@@ -1,63 +1,70 @@
-/*TODO: Clean up this CSS. Now that we are inserting an iframe instead of a simple div into websites to show this,
-this CSS can be muuuch cleaner. */
-/*test*/
-/* line 5, sass/helpUI.scss */
+/*
+Colors
+*/
+/* line 21, sass/_base.scss */
+a {
+  color: #1277dd;
+}
+
+/* line 25, sass/_base.scss */
+.UnitsProj-message {
+  color: #888888;
+}
+
+/*
+Fonts
+*/
+/*
+Miscellaneous
+*/
+/* line 39, sass/_base.scss */
+.UnitsProj-float-fixer {
+  clear: both !important;
+}
+
+/*
+This file contains styles for a modal window.
+*/
+/*
+Not in use at the moment. Since our modal needs an iframe, these properties need to be split between the iframe tag and
+its contents.
+
 .UnitsProj-modal {
-  /*background-color: white !important;*/
-  /*min-height: 400px !important;*/
-  /*min-width: 400px !important;*/
-  /*max-height: 600px !important;*/
-  /*width: 800px !important;*/
-  /*overflow: auto !important;*/
-  /*position: fixed !important;*/
-  /*left: 50%; margin-left: -400px; */
-  /*center the div horizontally*/
-  /*top: 10%;*/
-  /*z-index: 10000 !important;*/
-  /*border: 2px solid #999;*/
-  /*border-radius: 4px !important;*/
-  /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;*/
-  /*color: black !important;*/
-}
-
-/* line 26, sass/helpUI.scss */
-body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* line 32, sass/helpUI.scss */
-#help {
+  background-color: white !important;
+  width: 800px !important;
+  overflow: auto !important;
+  position: fixed !important;
+  left: 50%; margin-left: -400px;
+  center the div horizontally
+  z-index: 10000 !important;
+  border: 2px solid #999;
+  border-radius: 4px !important;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
   color: black !important;
-  overflow: auto !important;
-  background-color: white !important;
 }
-
-/* line 39, sass/helpUI.scss */
-.UnitsProj-modal-header {
-  padding: 9px 15px !important;
-  border-bottom: 1px solid #eee !important;
-  background: none !important;
-  box-sizing: border-box !important;
+*/
+/* line 25, sass/_modal.scss */
+.modal-header {
+  padding: 9px 15px;
+  border-bottom: 1px solid #eee;
+  background: none;
+  box-sizing: border-box;
   position: relative;
 }
 
-/* line 47, sass/helpUI.scss */
-.UnitsProj-modal-header > .close {
-  position: absolute !important;
-  top: 7px !important;
-  right: 7px !important;
-  font-size: 20px !important;
+/* line 33, sass/_modal.scss */
+.modal-header > .close {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  font-size: 20px;
   font-family: Arial;
-  font-weight: bold !important;
-  line-height: 20px !important;
-  height: 20px !important;
-  width: 20px !important;
-  color: #aaa !important;
-  text-shadow: 0 1px 0 #ffffff !important;
+  font-weight: bold;
+  line-height: 20px;
+  height: 20px;
+  width: 20px;
+  color: #aaa;
+  text-shadow: 0 1px 0 #ffffff;
   border: none;
   padding: 0;
   cursor: pointer;
@@ -65,129 +72,129 @@ body {
   border: 0;
   -webkit-appearance: none;
 }
-
-/* line 68, sass/helpUI.scss */
-.UnitsProj-modal-header > .close:hover {
-  color: #888 !important;
+/* line 54, sass/_modal.scss */
+.modal-header > .close:hover {
+  color: #888;
 }
 
-/* line 72, sass/helpUI.scss */
-.UnitsProj-modal-title {
-  font-size: 18px !important;
-  font-weight: normal !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  display: block !important;
-  text-align: center !important;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+/* line 59, sass/_modal.scss */
+.modal-title {
+  font-size: 18px;
+  font-weight: normal;
+  padding: 0;
+  margin: 0;
+  display: block;
+  text-align: center;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* line 82, sass/helpUI.scss */
-.UnitsProj-modal-body {
+/* line 69, sass/_modal.scss */
+.modal-body {
   position: relative;
   padding: 10px 20px 20px 20px;
 }
 
-/* line 87, sass/helpUI.scss */
-.UnitsProj-modal-body .section {
+/* line 4, sass/helpUI.scss */
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* line 10, sass/helpUI.scss */
+#help {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: black;
+  background-color: white;
+}
+
+/* line 17, sass/helpUI.scss */
+#help .section {
   width: 50%;
   float: left;
 }
 
-/* line 93, sass/helpUI.scss */
+/* line 23, sass/helpUI.scss */
 table {
   text-align: left;
   border-spacing: 0;
 }
 
-/* line 98, sass/helpUI.scss */
+/* line 28, sass/helpUI.scss */
 table tr {
-  height: 25px !important;
+  height: 25px;
 }
 
-/* line 105, sass/helpUI.scss */
+/* line 33, sass/helpUI.scss */
 td, th {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-  font-size: 13px !important;
-  color: black !important;
-  border: none !important;
-  background-color: inherit !important;
-  background: inherit !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: black;
+  border: none;
+  background-color: inherit;
+  background: inherit;
 }
 
-/*tr.subsection-end{*/
-/*margin-bottom: 30px;*/
-/*}*/
-/* line 118, sass/helpUI.scss */
-td.key {
+/* line 42, sass/helpUI.scss */
+.key {
   padding-right: 10px;
   text-align: right;
-  line-height: 25px !important;
+  line-height: 25px;
 }
 
-/* line 124, sass/helpUI.scss */
-td.action {
+/* line 48, sass/helpUI.scss */
+.action {
   vertical-align: top;
   padding: 3px 5px 3px 5px;
   /*padding top and bottom is 3px to be consistent with td.key>span.key*/
 }
 
-/* line 129, sass/helpUI.scss */
-td.key > span.key {
-  /*margin-right: 2px;*/
+/* line 53, sass/helpUI.scss */
+.key > .key-text {
   background-color: #efefef;
   border: 1px solid #ddd;
-  border-radius: 2px !important;
+  border-radius: 2px;
   padding: 3px;
   /* Note: If you change this, then change td.action padding as well. They should be consistent. */
   margin: 0 2px;
-  font-family: Georgia, "Times New Roman", Times, serif !important;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
-/* line 140, sass/helpUI.scss */
-td.key > span.separator, tr.subsection-title > td, #UnitsProj-message {
-  color: #777777 !important;
-}
-
-/* line 144, sass/helpUI.scss */
+/* line 62, sass/helpUI.scss */
 td.key > span.separator, tr.subsection-title > td {
   text-align: center;
 }
 
-/* line 148, sass/helpUI.scss */
+/* line 66, sass/helpUI.scss */
 td.key > span.separator {
-  font-size: 11px !important;
+  font-size: 11px;
 }
 
-/* line 152, sass/helpUI.scss */
+/* line 70, sass/helpUI.scss */
 .page-specific {
   background-color: #FFFFEA;
 }
 
-/* line 156, sass/helpUI.scss */
-#UnitsProj-message {
-  text-align: left !important;
-  background-color: inherit !important;
-  /*margin-top: 10px !important;*/
-  border: none !important;
-  font-size: 12px !important;
+/* line 74, sass/helpUI.scss */
+#footer-message {
+  text-align: left;
+  background-color: inherit;
+  border: none;
+  font-size: 12px;
   margin: 0;
 }
 
-/* line 165, sass/helpUI.scss */
+/* line 82, sass/helpUI.scss */
 tr.subsection-end > td {
-  padding-bottom: 20px !important;
+  padding-bottom: 20px;
 }
 
-/* line 169, sass/helpUI.scss */
+/* line 86, sass/helpUI.scss */
 th.section-title {
-  font-size: 12px !important;
-  color: black !important;
-  font-weight: bold !important;
+  font-size: 12px;
+  color: #333333;
+  font-weight: bold;
   text-align: center;
-}
-
-/* line 178, sass/helpUI.scss */
-.UnitsProj-float-fixer {
-  clear: both;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }

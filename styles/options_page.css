@@ -1,7 +1,30 @@
-/*TODO: CSS needs cleanup! */
+/*
+Colors
+*/
+/* line 21, sass/_base.scss */
+a {
+  color: #1277dd;
+}
+
+/* line 25, sass/_base.scss */
+.UnitsProj-message {
+  color: #888888;
+}
+
+/*
+Fonts
+*/
+/*
+Miscellaneous
+*/
+/* line 39, sass/_base.scss */
+.UnitsProj-float-fixer {
+  clear: both !important;
+}
+
 /* line 3, sass/options_page.scss */
 body {
-  font-family: Helvetica Neue, Helvetica, Arial;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -19,7 +42,7 @@ textarea {
 }
 
 /* Adapted from twitter bootstrap button style */
-/* line 19, sass/options_page.scss */
+/* line 20, sass/options_page.scss */
 button {
   display: inline-block;
   padding: 4px 12px;
@@ -43,22 +66,16 @@ button {
   /*border-bottom-color: #b3b3b3;*/
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
   border-radius: 4px;
 }
-
-/* line 44, sass/options_page.scss */
+/* line 42, sass/options_page.scss */
 button:hover {
-  /*color: #333333;*/
-  /*text-decoration: none;*/
-  /*background-position: 0 -15px;*/
-  /*-webkit-transition: background-position 0.1s linear;*/
-  /*-moz-transition: background-position 0.1s linear;*/
-  /*-o-transition: background-position 0.1s linear;*/
-  /*transition: background-position 0.1s linear;*/
   background-color: #bbb;
 }
 
-/* line 55, sass/options_page.scss */
+/* line 47, sass/options_page.scss */
 #settings-container {
   margin: 0 auto;
   position: relative;
@@ -66,7 +83,7 @@ button:hover {
   /*margin-top: 20px;*/
 }
 
-/* line 62, sass/options_page.scss */
+/* line 54, sass/options_page.scss */
 #settings-header {
   margin: 0 auto 20px auto;
   padding: 0;
@@ -80,7 +97,7 @@ button:hover {
   /*padding: 0 40px;*/
 }
 
-/* line 75, sass/options_page.scss */
+/* line 67, sass/options_page.scss */
 #settings-header > h2 {
   width: 750px;
   margin: 0 auto;
@@ -93,7 +110,7 @@ button:hover {
   line-height: 40px;
 }
 
-/* line 87, sass/options_page.scss */
+/* line 79, sass/options_page.scss */
 #buttons-panel {
   max-width: 750px;
   margin: 10px auto;
@@ -101,7 +118,7 @@ button:hover {
   top: -45px;
 }
 
-/* line 94, sass/options_page.scss */
+/* line 86, sass/options_page.scss */
 #user-settings {
   top: 60px;
   position: relative;
@@ -109,30 +126,31 @@ button:hover {
   width: 750px;
 }
 
-/* line 102, sass/options_page.scss */
+/* line 94, sass/options_page.scss */
 .options-message {
-  color: #888;
+  color: #888888;
   font-size: 15px;
 }
 
-/* line 107, sass/options_page.scss */
+/* line 99, sass/options_page.scss */
 #options-main-message {
   margin-bottom: 10px;
   text-align: middle;
 }
 
-/* line 112, sass/options_page.scss */
-#user-settings p {
+/* line 104, sass/options_page.scss */
+.subheading {
   /*margin-bottom: 5px;*/
   /*font-style: italic;*/
-  font-family: Garamond "Times New Roman" SERIF;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 14px;
   margin: 0;
+  color: #333333;
 }
 
-/* line 121, sass/options_page.scss */
-.message {
+/* line 114, sass/options_page.scss */
+.global-settings-message {
   font-size: 12px;
   color: #666;
   background-color: lightgoldenrodyellow;
@@ -141,12 +159,7 @@ button:hover {
   display: block;
 }
 
-/* line 130, sass/options_page.scss */
-.message > a {
-  color: #1277dd;
-}
-
-/* line 134, sass/options_page.scss */
+/* line 123, sass/options_page.scss */
 #user-settings textarea {
   border-color: #efefef;
   margin-bottom: 40px;
@@ -154,78 +167,58 @@ button:hover {
   /*resize: none;*/
 }
 
-/* line 141, sass/options_page.scss */
-#user-settings textarea[readonly=readonly] {
-  /*color: #999;*/
-}
-
-/* line 145, sass/options_page.scss */
-#settings-buttons-panel {
-  /*margin-bottom: 30px;*/
-}
-
-/* line 149, sass/options_page.scss */
+/* line 130, sass/options_page.scss */
 #save-settings {
   float: right;
 }
 
-/* line 153, sass/options_page.scss */
+/* line 134, sass/options_page.scss */
 #reset-settings {
   float: right;
 }
 
-/* TODO: To be improved. Just some CSS for now. */
-/* line 158, sass/options_page.scss */
+/* TODO: To be improved. Just something workable for now. */
+/* line 139, sass/options_page.scss */
 #user-message {
   box-sizing: border-box;
   width: 400px;
   position: fixed;
   top: 0;
-  /*left: 0;*/
   left: 50%;
   margin-left: -375px;
   z-index: 1501;
   text-align: center;
   padding: 5px 0;
-  /*min-height: 30px;*/
-  color: #ffffff;
+  color: white;
   opacity: 0.98;
   font-size: 12px;
   /*corner-bottom*/
-  -moz-border-radius-bottomleft: 2px;
-  -webkit-border-bottom-left-radius: 2px;
-  -khtml-border-bottom-left-radius: 2px;
-  border-bottom-left-radius: 2px;
-  -moz-border-radius-bottomright: 2px;
-  -webkit-border-bottom-right-radius: 2px;
-  -khtml-border-bottom-right-radius: 2px;
-  border-bottom-right-radius: 2px;
+  -webkit-border-radius: 0 0 2px 2px;
+  -moz-border-radius: 0 0 2px 2px;
+  -ms-border-radius: 0 0 2px 2px;
+  -o-border-radius: 0 0 2px 2px;
+  border-radius: 0 0 2px 2px;
 }
 
-/* line 181, sass/options_page.scss */
+/* line 159, sass/options_page.scss */
 #user-message > p {
   padding: 0;
   margin: 0;
 }
 
-/* line 185, sass/options_page.scss */
+/* line 163, sass/options_page.scss */
 #user-message .json-error-message {
   font-style: italic;
 }
 
-/* line 189, sass/options_page.scss */
+/* line 167, sass/options_page.scss */
 #user-message.error {
   background: #e30202;
   border: 1px solid #e60000;
 }
 
-/* line 194, sass/options_page.scss */
+/* line 172, sass/options_page.scss */
 #user-message.success {
   background-color: #27805b;
-  border: 1px solid #3e801b;
-}
-
-/* line 199, sass/options_page.scss */
-.fixer {
-  clear: both;
+  border: 1px solid #068065;
 }

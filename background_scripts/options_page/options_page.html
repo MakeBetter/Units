@@ -10,29 +10,29 @@
         <div id="buttons-panel">
             <button id="save-settings">Save all changes</button>
             <button id="reset-settings">Reset all options</button>
-            <div class="fixer"></div>
+            <div class="UnitsProj-float-fixer"></div>
         </div>
     </div>
     <div id="settings-container">
         <div id="user-settings">
-            <div class="options-message" id="options-main-message">
+            <div class="UnitsProj-message" id="options-main-message">
                 <span> Edit values to override default options </span>
             </div>
             <div>
-                <p>General</p>
+                <h2 class="subheading">General</h2>
                 <textarea rows="50" id="general-settings">
 
                 </textarea>
             </div>
             <div>
-                <p>Site specific</p>
+                <h2 class="subheading">Site specific</h2>
                 <textarea rows="50" id="site-specific-settings">
 
                 </textarea>
             </div>
             <div>
-                <p>Global (work on all tabs)</p>
-                <span class="message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
+                <h2 class="subheading">Global (work on all tabs)</h2>
+                <span class="global-settings-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
                     Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
                 </span>
                 <textarea rows="25" cols="100" id="global-settings" readonly= "readonly">
