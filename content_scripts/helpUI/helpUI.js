@@ -23,7 +23,7 @@ $closeButton.click(function() {
 window.addEventListener('message', function(event) {
     var data = event.data,
         sectionDisabledClass = "disabled",
-        $noCUsMessage = ("<span class='disabled'> No content units setup for this page</span>"),
+        $noCUsMessage = $("<span class='disabled'> No content units setup for this page</span>"),
         $CUsShortcuts = $CUShortcutsSection.find("tbody");
 
 
