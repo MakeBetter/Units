@@ -123,10 +123,14 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
         currentPosition_CURelatedScroll,
         lastInvokedTime_CURelatedScroll, // will contain the time of the last invocation (of invokeIncrementalScroll)
         intervalId_CURelatedScroll,
-        body, destination_CURelatedScroll, areScrollingDown, speed_CURelatedScroll;
+        body, destination_CURelatedScroll, areScrollingDown, speed_CURelatedScroll,
+
+        $pageOverlay_forZenMode,
+        isZenModeActive,
+        class_zenModeZIndex = 'zen-mode-z-index';
 
 
-    function reset() {
+        function reset() {
         dehoverCU();
         deselectCU();
         $CUsArray = [];
@@ -166,6 +170,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             .addClass(class_addedByUnitsProj)
             .hide()
             .appendTo($topLevelContainer);
+
+        $pageOverlay_forZenMode = $('<div class="UnitsProj-modal-backdrop" id="zen-modal-backdrop"></div>');
 
         setupEvents();
     }
@@ -408,6 +414,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             else {
                 $overlay = $('<div></div>').addClass(class_CUOverlay).addClass(class_addedByUnitsProj);
             }
+        }
+
+        /*If zen mode, then set the z-index of the overlay to be very high. Else, do not set/change the z-index.
+        It is important to not change the z-index of the overlay in the regular browsing/ non-zen mode for the extension
+        to function correctly.*/
+
+        if (isZenModeActive) {
+            $overlay.addClass(class_zenModeZIndex);
+        }
+        else {
+            $overlay.removeClass(class_zenModeZIndex);
         }
 
         var overlayPadding;
@@ -1882,7 +1899,85 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
                 selectLast(true, true);
             }, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.toggleZenMode.kbdShortcuts, function() {
+                toggleZenMode();
+            }, {pageHasCUs: true});
+        }
+    }
 
+    function toggleZenMode() {
+        var i, j, $CU, $el,
+            setDefaultBackground = false,
+            class_zenModePosition = "zen-mode-CU-position",
+            class_zenModeBackground = "zen-mode-background";
+
+        // if zen mode is currently off
+        if (!$pageOverlay_forZenMode[0].offsetHeight) {
+
+            isZenModeActive = true; // to be used in _showOverlay()
+
+            // get the value of the background property for a div with no styles. we are using this to get the value of
+            // "background" property for a transparent div (in a way that works cross-browser).
+            var $tempElement = $("<div></div>").hide().appendTo($topLevelContainer);
+            var baselineBackground = $tempElement.css("background");
+            $tempElement.remove();
+
+            // set z-index, position,
+            for (i = 0; i < $CUsArray.length; i++) {
+                $CU = $CUsArray[i];
+
+                for (j = 0; j < $CU.length; j++) {
+                    $el = $CU.eq(j);
+
+                    // CU needs to be positioned so that it can be set a z-index property
+                    // If not alredy positioned, then set position to relative
+                    if ($el.css("position") === "static") {
+                        $el.addClass(class_zenModePosition);
+                    }
+
+                    $el.addClass(class_zenModeZIndex);
+
+                    // If the background is not set/ is transparent, then set it to our default color (most likely white).
+                    if ($el.css("background") === baselineBackground) {
+                        $el.addClass(class_zenModeBackground);
+                        setDefaultBackground = true;
+                    }
+                }
+            }
+
+            $pageOverlay_forZenMode.appendTo($topLevelContainer);
+            // If background was explicitly set for any CU, then set the same color to the overlay. Else set the same
+            // background value as the first CU (with the thought that the page will generally look better if the overlay
+            // color is same as the CUs
+
+            if (!setDefaultBackground) {
+                $pageOverlay_forZenMode.css("background", $CUsArray[0].css("background"));
+            }
+            else {
+                $pageOverlay_forZenMode.addClass(class_zenModeBackground);
+            }
+        }
+
+        else {
+
+            // Reset all the changes made when applying zen mode
+            isZenModeActive = false;
+
+            for (i = 0; i < $CUsArray.length; i++) {
+                $CU = $CUsArray[i];
+                for (j = 0; j < $CU.length; j++) {
+                    $el = $CU.eq(j);
+
+                    $el
+                        .removeClass(class_zenModeZIndex)
+                        .removeClass(class_zenModePosition)
+                        .removeClass(class_zenModeBackground);
+                }
+            }
+
+            $pageOverlay_forZenMode.removeClass(class_zenModeBackground);
+            $pageOverlay_forZenMode.css("background", "");
+            $pageOverlay_forZenMode.remove();
         }
     }
 

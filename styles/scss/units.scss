@@ -56,9 +56,6 @@ defining this because compass transition mixin does not accept the !important pr
 
 /* ****** Filter module styles ***** */
 
-
-
-
 .UnitsProj-highlight { background-color: $filter-highlight-color }
 
 /* This class can be used for (re)setting properties of any text input element that we insert into webpages using content script,
@@ -131,6 +128,7 @@ div#UnitsProj-search-container {
 
   /*for the sliding effect*/
   @include transition-important(top, 0.1s, ease-out, !important);
+  z-index: $highest-z-index - 1 !important; /* More than the z-index of zen mode backdrop, and less than help backdrop */
 }
 
 input#UnitsProj-search-box {
@@ -200,25 +198,10 @@ span#filter-message {
   width: 800px !important;
   position: fixed !important;
   left: 50%; margin-left: -400px; /*center the div horizontally*/
-  z-index: 2147483647 !important; /*highest z-index for a 32-bit int value*/
+  z-index: $highest-z-index !important; /*highest z-index for a 32-bit int value*/
   border: 2px solid #999;
   border-radius: 4px !important;
   //visibility: hidden !important;
-}
-
-.UnitsProj-modal {
-
-}
-
-.UnitsProj-modal-backdrop {
-  position: fixed !important;
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  z-index: 2147483646 !important; /* 1 less than the z-index of iframe help window */
-  background-color: #000000 !important;
-  opacity: 0.5 !important;
 }
 
 /*
@@ -231,4 +214,43 @@ style more specific by using id's of the elements. Fix for #9.
 
 .hidden#UnitsProj-help-container, .hidden#UnitsProj-iframe-help {
   visibility: hidden !important;
+}
+
+
+/*********** Common syles *************/
+
+.UnitsProj-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+#UnitsProj-help-backdrop {
+  background-color: #000000 !important;
+  opacity: 0.5 !important;
+  z-index: $highest-z-index - 1 !important; /* 1 less than the z-index of iframe help window */
+}
+
+#zen-modal-backdrop {
+  opacity: 1 !important;
+  z-index: $highest-z-index - 10 !important; /* less than the z-index of help UI and help backdrop, AND z-index of
+  zen mode CUs, CUs overlay and filter UI*/
+}
+
+.zen-mode-z-index {
+  z-index: $highest-z-index - 1 !important;
+}
+
+.zen-mode-z-index-plus {
+  z-index: $highest-z-index !important;
+}
+
+.zen-mode-CU-position {
+  position: relative !important;
+}
+
+.zen-mode-background {
+  background: white !important;
 }

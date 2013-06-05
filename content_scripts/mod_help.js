@@ -43,7 +43,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         });
 
         // clicking anywhere on the page should hide the help UI.
-        var modalBackdrop = document.getElementsByClassName('UnitsProj-modal-backdrop')[0];
+        var modalBackdrop = document.getElementById('UnitsProj-help-backdrop');
         modalBackdrop && mod_domEvents.addEventListener(modalBackdrop, 'click', hideHelp);
     }
 
@@ -52,7 +52,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
                         .attr('id', id_iframeHelp)
                         .addClass(class_visibilityHidden)
                         .attr("src", chrome.runtime.getURL("content_scripts/helpUI/helpUI.html"));
-        var $modalBackdrop = $("<div class = UnitsProj-modal-backdrop></div>");
+        var $modalBackdrop = $("<div class = UnitsProj-modal-backdrop id='UnitsProj-help-backdrop'></div>");
 
         $helpContainer = $("<div id=UnitsProj-help-container></div>");
 

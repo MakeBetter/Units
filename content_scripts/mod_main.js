@@ -181,7 +181,7 @@
         else if(data.message === 'doesPageHaveCUsSpecifier') {
             var pageHasCUsSpecifier = mod_context.isContextValid({pageHasCUsSpecifier: true});
 
-            var iframeHelp = document.getElementById("iframe-help");
+            var iframeHelp = document.getElementById("UnitsProj-iframe-help");
             iframeHelp.contentWindow.postMessage({message: 'pageHasCUsSpecifier', value: pageHasCUsSpecifier}, '*');
         }
         return false;

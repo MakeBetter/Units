@@ -143,7 +143,12 @@ var defaultSettings = {
         lastCU: {
             miniDescr: "Select last CU",
             kbdShortcuts: ['$', 'alt+9']
-        }
+        },
+        toggleZenMode: {
+            miniDescr: "Toggle zen mode",
+            kbdShortcuts: ['z']
+        },
+
     },
 
     /*
