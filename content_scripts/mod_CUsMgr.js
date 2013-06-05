@@ -1906,7 +1906,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
     }
 
     function toggleZenMode() {
-        var i, j, $CU, $el,
+        var i, j, $CU, $el, $tableParent,
             setDefaultBackground = false,
             class_zenModePosition = "zen-mode-CU-position",
             class_zenModeBackground = "zen-mode-background";
@@ -1928,6 +1928,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
 
                 for (j = 0; j < $CU.length; j++) {
                     $el = $CU.eq(j);
+
+                    // For elements that are descendants of a table, apply all zen-mode related CSS to the parent table (and not the elements).
+                    // This is because z-index property with position:relative cannot be applied for a table's descendants.
+                    $tableParent = $el.parents("table");
+                    if ($tableParent.length) {
+                        $el = $tableParent.eq(0);
+                    }
 
                     // CU needs to be positioned so that it can be set a z-index property
                     // If not alredy positioned, then set position to relative
@@ -1967,6 +1974,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
                 $CU = $CUsArray[i];
                 for (j = 0; j < $CU.length; j++) {
                     $el = $CU.eq(j);
+                    $tableParent = $el.parents("table");
+                    if ($tableParent.length) {
+                        $el = $tableParent.eq(0);
+                    }
 
                     $el
                         .removeClass(class_zenModeZIndex)
