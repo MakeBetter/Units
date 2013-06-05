@@ -19,6 +19,9 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
 
     var $helpContainer,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_visibilityHidden = 'hidden',
+        class_visibilityVisible = 'visible',
+        id_iframeHelp = 'UnitsProj-iframe-help',
         $topLevelContainer = _u.$topLevelContainer;
 
     function reset() {
@@ -45,7 +48,10 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
     }
 
     function setupHelpUI() {
-        var $iframe = $("<iframe id=iframe-help></iframe>").attr("src", chrome.runtime.getURL("content_scripts/helpUI/helpUI.html"));
+        var $iframe = $("<iframe></iframe>")
+                        .attr('id', id_iframeHelp)
+                        .addClass(class_visibilityHidden)
+                        .attr("src", chrome.runtime.getURL("content_scripts/helpUI/helpUI.html"));
         var $modalBackdrop = $("<div class = UnitsProj-modal-backdrop></div>");
 
         $helpContainer = $("<div id=UnitsProj-help-container></div>");
@@ -53,18 +59,18 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         $helpContainer
             .append($iframe, $modalBackdrop)
             .addClass(class_addedByUnitsProj)
-            .appendTo($topLevelContainer)
-            .css("visibility", "hidden"); //Setting visibility:hidden instead of display:none since we need to get the height of the
+            .addClass(class_visibilityHidden) //Setting visibility:hidden instead of display:none since we need to get the height of the
             // contents of the iframe. When we hide the iframe using display:none, we don't seem to get the correct height of its container.
-            // Since the iframe is
+            .appendTo($topLevelContainer);
     }
 
     function showHelp() {
-        $helpContainer.css("visibility", "visible");
+        // set "visibility" class for both container and iframe. Setting styles on both as fix for #9.
+        $helpContainer.find("#" + id_iframeHelp).addBack().removeClass(class_visibilityHidden).addClass(class_visibilityVisible);
     }
 
     function hideHelp() {
-        $helpContainer.css("visibility", "hidden");
+        $helpContainer.find("#" + id_iframeHelp).addBack().removeClass(class_visibilityVisible).addClass(class_visibilityHidden);
     }
 
     function toggleHelp() {
@@ -84,7 +90,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
     function positionHelpUI(helpUIContentsHeight) {
         if ($helpContainer) {
 
-            var $iframe = $helpContainer.find("iframe"),
+            var $iframe = $helpContainer.find("#" + id_iframeHelp),
                 iframeHeight = Math.min(helpUIContentsHeight, 0.9 * window.innerHeight), //0.9 is randomly chosen
                 iframeTop = (window.innerHeight - iframeHeight)/2;
 

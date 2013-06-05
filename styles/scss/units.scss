@@ -218,9 +218,13 @@ span#filter-message {
   left: 0 !important;
   z-index: 2147483646 !important; /* 1 less than the z-index of iframe help window */
   background-color: #000000 !important;
-  opacity: 0.5 !importantHope;
+  opacity: 0.5 !important;
 }
 
+/*
+Important to set the visibility property as important for both the container and iframe. Also, important to make this
+style more specific by using id's of the elements. Fix for #9.
+*/
 .visible#UnitsProj-help-container, .visible#UnitsProj-iframe-help {
   visibility: visible !important;
 }
