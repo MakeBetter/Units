@@ -45,6 +45,8 @@ window.addEventListener('message', function(event) {
         $CUsShortcuts.show();
     }
 
+    return false;
+
 }, false);
 
 function renderHelpUI(settings) {
