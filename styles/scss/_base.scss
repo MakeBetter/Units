@@ -1,0 +1,44 @@
+@import "compass/css3";
+
+/*
+Colors
+*/
+$link-color: #1277dd;
+$message-color-grey: #888;
+$message-disabled-color: #aaa;
+$text-color: black;
+$text-color-light: white;
+$container-color: #d8d8d8;
+$subheading-color: #333;
+$border-color-grey: #999;
+
+//CUs
+$scrolling-marker-color:  #ff902b;
+$cu-hovered: #ddd;
+
+//Filter
+$filter-highlight-color: yellow;
+
+a {
+  color: $link-color;
+}
+
+.UnitsProj-message {
+  color: $message-color-grey;
+}
+
+/*
+Fonts
+*/
+$sans-serif-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$serif-font-family: Georgia, "Times New Roman", Times, serif;
+
+
+/*
+Miscellaneous
+*/
+.UnitsProj-float-fixer {
+  clear: both !important;
+}
+
+

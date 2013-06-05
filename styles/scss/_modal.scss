@@ -1,0 +1,72 @@
+/*
+This file contains styles for a modal window.
+*/
+
+
+/*
+Not in use at the moment. Since our modal needs an iframe, these properties need to be split between the iframe tag and
+its contents.
+
+.UnitsProj-modal {
+  background-color: white !important;
+  width: 800px !important;
+  overflow: auto !important;
+  position: fixed !important;
+  left: 50%; margin-left: -400px;
+  center the div horizontally
+  z-index: 10000 !important;
+  border: 2px solid #999;
+  border-radius: 4px !important;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  color: black !important;
+}
+*/
+
+.modal-header {
+  padding: 9px 15px;
+  border-bottom: 1px solid #eee;
+  background: none;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.modal-header>.close {
+  position: absolute;
+  top: 7px; right: 7px;
+
+  font-size: 20px;
+  font-family: Arial;
+  font-weight: bold;
+  line-height: 20px;
+  height: 20px;
+  width: 20px;
+
+  color: #aaa;
+  text-shadow: 0 1px 0 #ffffff;
+  border: none;
+
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+
+  &:hover {
+    color: #888;
+  }
+}
+
+.modal-title{
+  font-size: 18px;
+  font-weight: normal;
+  padding: 0;
+  margin: 0;
+  display: block;
+  text-align: center;
+  font-family: $sans-serif-font-family;
+}
+
+.modal-body {
+  position: relative;
+  padding: 10px 20px 20px 20px;
+}

@@ -1,0 +1,175 @@
+@import "base";
+
+body {
+    font-family: $sans-serif-font-family;
+    margin: 0; padding: 0;
+}
+
+h1 {
+    font-weight: normal;
+    text-align: center;
+}
+
+textarea {
+    padding: 0;
+    margin-top: 10px;
+}
+
+
+/* Adapted from twitter bootstrap button style */
+button {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: 17px;
+  color: #333333 /*#eee*/;
+  text-align: center;
+  /*text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);*/
+  vertical-align: middle;
+  cursor: pointer;
+  font-family: $sans-serif-font-family;
+  /*box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.0470588) 0px 1px 2px 0px;*/
+  background-color: /*#666*/ #e6e6e6;
+  background-image: linear-gradient(rgb(255, 255, 255), rgb(230, 230, 230));
+  /*background-position: 0px -15px;*/
+  background-repeat: repeat-x;    border: 1px solid #cccccc;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  /*border-bottom-color: #b3b3b3;*/
+  @include border-radius(4px);
+
+  &:hover {
+    background-color: #bbb;
+  }
+}
+
+#settings-container {
+    margin: 0 auto;
+    position: relative;
+    /*display: table;*/
+    /*margin-top: 20px;*/
+}
+
+#settings-header {
+    margin: 0 auto 20px auto;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    height: 40px;
+    width: 100%;
+    background-color: /*cadetblue*/ lightslategray;
+    /*margin: 0;*/
+    z-index: 2;
+    /*padding: 0 40px;*/
+}
+
+    #settings-header>h2 {
+        width: 750px;
+        margin: 0 auto;
+        padding: 0;
+        color: $text-color-light;
+        /*text-align: right;*/
+        font-weight: normal;
+        vertical-align: middle;
+        font-size: 20px;
+        line-height: 40px;
+    }
+
+    #buttons-panel {
+        max-width: 750px;
+        margin: 10px auto;
+        position: relative;
+        top: -45px;
+    }
+
+#user-settings {
+    top: 60px;
+    position: relative;
+    margin: 0 auto;
+    width: 750px;
+
+}
+
+    .options-message {
+        color: $message-color-grey;
+        font-size: 15px;
+    }
+
+    #options-main-message {
+        margin-bottom: 10px;
+        text-align: middle;
+    }
+
+.subheading {
+    /*margin-bottom: 5px;*/
+    /*font-style: italic;*/
+    font-family: $serif-font-family;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 0;
+    color: $subheading-color;
+}
+
+.global-settings-message {
+    font-size: 12px;
+    color: #666;
+    background-color: lightgoldenrodyellow;
+    border: 1px solid #faf992;
+    padding: 3px;
+    display: block;
+}
+
+#user-settings textarea {
+    border-color: #efefef;
+    margin-bottom: 40px;
+    width: 750px;
+    /*resize: none;*/
+}
+
+#save-settings{
+    float: right;
+}
+
+#reset-settings {
+    float: right;
+}
+
+/* TODO: To be improved. Just something workable for now. */
+#user-message {
+    box-sizing: border-box;
+    width: 400px;
+    position:fixed;
+    top:0;
+    left: 50%;
+    margin-left: -375px;
+    z-index: 1501;
+    text-align: center;
+
+    padding: 5px 0;
+
+    color: $text-color-light;
+    opacity: 0.98;
+    font-size: 12px;
+
+    /*corner-bottom*/
+    @include border-radius(0 0 2px 2px);
+}
+
+#user-message>p {
+    padding: 0; margin: 0;
+}
+
+#user-message .json-error-message {
+    font-style: italic;
+}
+
+#user-message.error {
+    background: #e30202;
+    border: 1px solid #e60000;
+}
+
+#user-message.success {
+    background-color: #27805b;
+    border: 1px solid #068065;
+}

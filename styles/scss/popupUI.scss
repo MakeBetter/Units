@@ -1,0 +1,48 @@
+@import "base";
+
+body {
+  width: 300px;
+  font-family: $sans-serif-font-family;
+  margin: 0; padding: 0;
+  font-size: 12px;
+}
+input[type=text] {
+  width: 150px;
+}
+div.action {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+div.action:nth-child(2n) {
+  background-color: #fafafa;
+}
+
+p, ol {
+  color: #666;
+  font-size: 12px;
+  margin: 2px;
+}
+
+p.strong {
+  /*color: black;*/
+  font-weight: 600;
+}
+
+.advanced {
+  font-size: 10.5px;
+  display: inline-block;
+  color: #666;
+}
+
+div#footer {
+  padding: 6px 10px;
+}
+#options {
+  font-size: 12;
+  float: right;
+  /*padding: 4px;*/
+}
+
+#enable-steps {
+  padding-left: 30px;
+}

@@ -1,0 +1,99 @@
+@import "base";
+@import "modal";
+
+body {
+    height: 100%; width: 100%;
+    margin: 0; padding: 0;
+    font-size: 13px;
+}
+
+#help {
+    font-family: $sans-serif-font-family;
+    color: $text-color;
+    background-color: white;
+}
+
+
+#help .section {
+    width: 50%;
+    float: left;
+}
+
+
+table {
+    text-align: left;
+    border-spacing: 0;
+}
+
+table tr {
+    height: 25px;
+}
+
+
+td, th {
+    font-family: $sans-serif-font-family;
+    font-size: 13px;
+    color: $text-color;
+    border: none;
+    background-color: inherit;
+    background: inherit;
+}
+
+.key {
+    padding-right: 10px;
+    text-align: right;
+    line-height: 25px;
+}
+
+.action {
+    vertical-align: top;
+    padding: 3px 5px 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
+}
+
+.key>.key-text {
+    background-color: #efefef;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 3px; /* Note: If you change this, then change td.action padding as well. They should be consistent. */
+    margin: 0 2px;
+    font-family:$serif-font-family;
+}
+
+td.key>span.separator, tr.subsection-title>td {
+    text-align: center;
+}
+
+td.key>span.separator {
+    font-size: 11px;
+}
+
+.page-specific {
+    background-color: #FFFFEA;
+}
+
+#footer-message {
+    text-align: left;
+    background-color: inherit;
+    border: none;
+    font-size: 12px;
+    margin: 0;
+}
+
+tr.subsection-end>td{
+    padding-bottom: 20px;
+}
+
+th.section-title {
+    font-size: 12px;
+    color: $subheading-color;
+    font-weight: bold;
+    text-align: center;
+    font-family: $serif-font-family;
+}
+
+.disabled {
+  color: $message-disabled-color;
+  td, th {
+    color: $message-disabled-color !important;
+  }
+}
