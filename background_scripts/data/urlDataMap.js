@@ -346,6 +346,15 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
+
+    // Experimental. Does not work well. 
+    "medium.com": [
+        {
+            urlPatterns: ["medium.com", "medium.com/@"],
+            CUs_specifier: ".post-item"
+        }
+    ],
+
     "quora.com": [
         {
             // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
