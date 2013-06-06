@@ -219,7 +219,8 @@ defaultSettings.urlDataMap = {
                 "std_viewComments": ".UFIPagerLink, .mls", //.UFIPagerLink for "view more comments" link, .mls for the comment icon
                 std_mainEl: ".fbMainStreamAttachment a:first-child, .uiStreamSubstory .pronoun-link, .uiStreamAttachments a",
                 // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
-                // meant for the entire page, then they'd be bad! 
+                // meant for the entire page, then they'd be bad!
+                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
             },
             page_MUs: {
                 std_header: "#headNav",
@@ -234,7 +235,8 @@ defaultSettings.urlDataMap = {
                 "std_share": ".share_action_link",
                 //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
                 "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
-                std_mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a" // for the timeline page
+                std_mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a", // for the timeline page
+                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
             },
             page_MUs: {
                 std_header: "#headNav, .stickyHeaderWrap", // #headNav is the main header, the latter is a dynamic header that sometimes shows up.
