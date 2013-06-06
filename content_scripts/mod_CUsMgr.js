@@ -1608,6 +1608,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_mutationObse
             hasModifier = e.altKey || e.ctrlKey|| e.metaKey || e.shiftKey;
 
         if (code === 27 && !hasModifier) { // ESC
+            // Priority of actions:
+            // If zen mode is on, then switch it off.
+            // Else, deselect CU, blur activeElement etc
+            
+            if (isZenModeActive) {
+                toggleZenMode();
+                return;
+            }
+
             var $selectedCU = $CUsArray[selectedCUIndex],
                 activeEl = document.activeElement || document.body;
             if (!$selectedCU) {
