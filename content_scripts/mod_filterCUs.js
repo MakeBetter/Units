@@ -5,7 +5,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     var thisModule = $.extend({}, _u.mod_pubSub, {
         reset: reset,
         setup: setup,
-        filterCUsArray: filterCUsArray,
+        isActive: isActive,
+        applyFiltering: applyFiltering,
         showSearchBox: showSearchBox
     });
 
@@ -64,21 +65,35 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         mod_keyboardLib.bind(settings.CUsShortcuts.search.kbdShortcuts, showSearchBox, {pageHasCUsSpecifier: true});
     }
 
-    /**
-     * Filters the passed array $CUsArr based on the text in the search box. Returns the filtered array.
-     * @param $CUsArr
-     * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
-     */
-    function filterCUsArray($CUsArr, $commonCUsAncestor, userInvoked) {
+    function isActive() {
+        return $filterCUsContainer.is(':visible') && getSearchBoxText_lowerCase();
+    }
 
-        if (!$CUsArr || !$CUsArr.length) {
-            return $CUsArr; // no filtering required
+    /**
+     * Applies filtering to the CUs within the the passed array. Specifically, it applies the class
+     * 'UnitsProj-HiddenByFiltering'  to CUs which do no match the text in the filtering search box.
+     * Returns an array containing only the filtered CUs.
+     * @param CUs_all
+     * @param $scope - jQuery set of dom elements which between themselves should contain all of the CUs in $CUsArr
+     * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
+     *
+     * @returns An array with the filtered CUs. If filtering was required, this this is a new array, which has a
+     * subset of elements of `CUs_all`. Else, if no filtering if required (`CUs_all` is empty or the filtering text
+     * is an empty string), it returns the same array `CUs_all`. (As per the assumption in mod_CUsMgr that when
+     * no filtering is active it's variables `CUs_main` and `_CUs_all` point to the same array)
+     */
+    function applyFiltering(CUs_all, $scope, userInvoked) {
+        var filterText_lowerCase = getSearchBoxText_lowerCase();
+
+        // if no filtering required
+        if (!CUs_all.length || !filterText_lowerCase) {
+            undoPreviousFiltering($scope);
+            return CUs_all;
         }
 
         // ** --------- PRE FILTERING --------- **
-        
-        mod_mutationObserver.stop(); // ** stop monitoring mutations **
-        var filterText_lowerCase = getSearchBoxText().toLowerCase();
+
+        var disabledByMe = mod_mutationObserver.disable();
         var savedScrollPos;
         if (!userInvoked) {
             // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
@@ -87,48 +102,63 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         else {
             savedScrollPos = 0;
         }
-        $commonCUsAncestor.hide();
-        removeHighlighting($commonCUsAncestor);
+        $scope.hide();
 
 
         // ** --------- FILTERING --------- **
-//        if (!filterText_lowerCase || !isVisible) {
-        if (!filterText_lowerCase || !$filterCUsContainer.is(':visible')) {
-            var $hiddenByPriorFiltering = $commonCUsAncestor.find('.hiddenByUnitsProj');
-            $hiddenByPriorFiltering.removeClass('hiddenByUnitsProj').show();
+
+        var CUs_filtered = [];
+        var reuseLastFiltering = filterText_lowerCase.indexOf(lastFilterText_lowerCase) !== -1;
+        lastFilterText_lowerCase = filterText_lowerCase;
+
+        if (!reuseLastFiltering) {
+            undoPreviousFiltering($scope);
         }
         else {
+            removeHighlighting($scope); //TODO: this is need at the moment. can we avoid this?
+        }
+
 //            console.log('actual filtering taking place...');
-            var CUsArrLen = $CUsArr.length;
+            var CUsArrLen = CUs_all.length;
             for (var i = 0; i < CUsArrLen; ++i) {
-                var $CU = $CUsArr[i];
+                var $CU = CUs_all[i];
                 // if ($CU.text().toLowerCase().indexOf(filterText_lowerCase) >= 0) {
+                if (reuseLastFiltering && $CU.hasClass('UnitsProj-HiddenByFiltering')) {
+                    continue;
+                }
                 if (highlightInCU($CU, filterText_lowerCase)) {
 
-                    //if ($CU.hasClass('hiddenByUnitsProj')) {
+                    //if ($CU.hasClass('UnitsProj-HiddenByFiltering')) {
 
-                    $CU.show().removeClass('hiddenByUnitsProj');
+                    $CU.show().removeClass('UnitsProj-HiddenByFiltering');
+                    CUs_filtered.push($CU);
                     //}
                 }
                 else {
                     //if ($CU.is(':visible')) {
-                    $CU.hide().addClass('hiddenByUnitsProj');
-                    $CUsArr.splice(i, 1);
-                    --CUsArrLen;
-                    --i;
+                    $CU.hide().addClass('UnitsProj-HiddenByFiltering');
+//                    $CUsArr.splice(i, 1);
+//                    --CUsArrLen;
+//                    --i;
 
                     //}
                 }
             }
-        }
+
 
         // ** --------- POST FILTERING --------- **
-        $commonCUsAncestor.show();
+        $scope.show();
         $document.scrollTop(savedScrollPos);
-        mod_mutationObserver.start(); // ** start monitoring mutations **
+        disabledByMe && mod_mutationObserver.enable();
 
-        return $CUsArr;
+        return CUs_filtered;
 
+    }
+
+    function undoPreviousFiltering($scope) {
+        removeHighlighting($scope);
+        var $hiddenByPriorFiltering = $scope.find('.UnitsProj-HiddenByFiltering');
+        $hiddenByPriorFiltering.removeClass('UnitsProj-HiddenByFiltering').show();
     }
 
     // based on http://johannburkard.de/blog/programming/javascript/highlight-javascript-text-higlighting-jquery-plugin.html
@@ -203,13 +233,16 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function removeHighlighting (container) {
         var $container = $(container);
 
-        $container.find(".UnitsProj-highlight").each(function() {
-            var parentNode = this.parentNode;
+        var $set = $container.find(".UnitsProj-highlight");
+        var len = $set.length;
+        for (var i = 0; i < len; i++) {
+            var el = $set[i];
+            var parentNode =  el.parentNode;
 
-            parentNode.replaceChild(this.firstChild, this);
+            parentNode.replaceChild(el.firstChild, el);
             parentNode.normalize();
 
-        });
+        }
     }
 
     function onSearchBoxInput(e) {
@@ -239,15 +272,14 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     }
 
     function triggerFilteringIfRequired() {
-        var filterText_lowerCase = getSearchBoxText().toLowerCase();
+        var filterText_lowerCase = getSearchBoxText_lowerCase();
         if (lastFilterText_lowerCase !== filterText_lowerCase) {
-            lastFilterText_lowerCase = filterText_lowerCase;
             thisModule.trigger('filtering-state-change');
         }
     }
 
-    function getSearchBoxText() {
-        return $searchBox.val();
+    function getSearchBoxText_lowerCase() {
+        return $searchBox.val().toLowerCase();
     }
 
     function showSearchBox() {

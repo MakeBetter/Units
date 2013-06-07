@@ -38,6 +38,7 @@
     /*-- Module implementation --*/
 
     function _onUrlChange() {
+        console.log('url change...');
         reinitializeIfNotDisabledTemporarily();
     }
 
@@ -71,7 +72,7 @@
             mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
         }
 
-        mod_mutationObserver.stop("disableExtension");
+        mod_mutationObserver.disable("disablingExtension");
 
         $topLevelContainer.empty().remove();
     }
@@ -104,7 +105,7 @@
                 if (isDisabled_fromSettings) {
                     disableExtension();
                     // the following lines exist to cater to url changes in single page apps etc.
-                    mod_mutationObserver.start();
+                    mod_mutationObserver.enable();
                     thisModule.stopListening(); // stop listening to all events from all modules...
                     thisModule.listenTo(mod_mutationObserver, 'url-change', _onUrlChange);// ...except 'url-change'
                     return;
@@ -127,7 +128,7 @@
                     module && module.setup && module.setup(settings);
                 }
 
-                mod_mutationObserver.start();
+                mod_mutationObserver.enable();
 
             }
         );
