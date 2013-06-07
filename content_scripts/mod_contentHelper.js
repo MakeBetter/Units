@@ -202,6 +202,7 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     //filters out unneeded mutations (currently it only removes mutations related to UnitsProj elements)
     function filterOutUnneededMutations (mutations) {
+        console.time("mutsFiltering");
         var len = mutations.length;
         for (var i = 0; i < len; ++i) {
             var mutation = mutations[i];
@@ -211,28 +212,29 @@ _u.mod_contentHelper = (function(CONSTS) {
                 --len;
             }
         }
+        console.timeEnd("mutsFiltering");
     }
     function canIgnoreMutation(mutationRecord) {
         if (isUnitsProjNode(mutationRecord.target)) {
             return true;
         }
-        if (mutationRecord.type === "childList" && canIgnoreAllChildlistNodes(mutationRecord.addedNodes) &&
-            canIgnoreAllChildlistNodes(mutationRecord.removedNodes)) {
-            return true;
-        }
+//        if (mutationRecord.type === "childList" && canIgnoreAllChildlistNodes(mutationRecord.addedNodes) &&
+//            canIgnoreAllChildlistNodes(mutationRecord.removedNodes)) {
+//            return true;
+//        }
         return false;
     }
-    function canIgnoreAllChildlistNodes(nodes) {
-        if (nodes && nodes.length) {
-            for (var i = 0; i < nodes.length; ++i) {
-                var node = nodes[i];
-                if(!isUnitsProjNode(node)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+//    function canIgnoreAllChildlistNodes(nodes) {
+//        if (nodes && nodes.length) {
+//            for (var i = 0; i < nodes.length; ++i) {
+//                var node = nodes[i];
+//                if(!isUnitsProjNode(node)) {
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
 
     return thisModule;
 
