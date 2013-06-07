@@ -130,13 +130,13 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
                     //if ($CU.hasClass('UnitsProj-HiddenByFiltering')) {
 
-                    $CU.show().removeClass('UnitsProj-HiddenByFiltering');
+                    $CU.removeClass('UnitsProj-HiddenByFiltering');
                     CUs_filtered.push($CU);
                     //}
                 }
                 else {
                     //if ($CU.is(':visible')) {
-                    $CU.hide().addClass('UnitsProj-HiddenByFiltering');
+                    $CU.addClass('UnitsProj-HiddenByFiltering');
 //                    $CUsArr.splice(i, 1);
 //                    --CUsArrLen;
 //                    --i;
@@ -158,7 +158,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function undoPreviousFiltering($scope) {
         removeHighlighting($scope);
         var $hiddenByPriorFiltering = $scope.find('.UnitsProj-HiddenByFiltering');
-        $hiddenByPriorFiltering.removeClass('UnitsProj-HiddenByFiltering').show();
+        $hiddenByPriorFiltering.removeClass('UnitsProj-HiddenByFiltering');
     }
 
     // based on http://johannburkard.de/blog/programming/javascript/highlight-javascript-text-higlighting-jquery-plugin.html

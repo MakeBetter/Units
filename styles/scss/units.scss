@@ -56,7 +56,9 @@ defining this because compass transition mixin does not accept the !important pr
 
 /* ****** Filter module styles ***** */
 
-.UnitsProj-highlight { background-color: $filter-highlight-color }
+.UnitsProj-highlight { background-color: $filter-highlight-color;}
+
+.UnitsProj-HiddenByFiltering {display: none !important;}
 
 /* This class can be used for (re)setting properties of any text input element that we insert into webpages using content script,
 and want to give a consistent look across webpages. That is, applying this class will override most/all styles associated with
