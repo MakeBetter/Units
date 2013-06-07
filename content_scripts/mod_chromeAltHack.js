@@ -23,18 +23,18 @@
 
 if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
     (navigator.appVersion.indexOf("Win")!=-1 || navigator.appVersion.indexOf("Linux")!=-1)) {
-    _u.mod_chromeAltHack = (function($, mod_contentHelper, CONSTS) {
+    _u.mod_chromeAltHack = (function($, mod_contentHelper, mod_mutationObserver, CONSTS) {
         "use strict";
 
        /*-- Public interface --*/
         var thisModule = $.extend({}, _u.mod_pubSub, {
-
-            setup: setup,
             reset: reset, // Resets state AND *undoes* the hack including reinstating accessKey removed earlier
             applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts
         });
 
         /*-- Module implementation --*/
+        /*-- Event bindings --*/
+        thisModule.listenTo(mod_mutationObserver, 'dom-mutations', onDomMutations);
         var 
             // when the extension is disabled, this is used to reinstate the conflicting access key attributes
             // that were removed from the original DOM
@@ -47,9 +47,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
             $topLevelContainer = _u.$topLevelContainer,
             class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
 
-            mutObs = new MutationObserver(onMuts), // mutation observer
             // options for mutObs
-            mutOptions = {childList: true, attributes: true, attributeFilter: ['accesskey'], subtree: true},
             groupedMutations,
             timeout_mutations,
             lastMutationsHandledTime,
@@ -59,8 +57,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
 
         // Resets state AND *undoes* the effect of the hack including reinstating accessKey removed earlier
         function reset() {
-            mutObs.disconnect();
-            
+
             // undo DOM changes due to hack...
             var len = accesskeysRemoved.length,
                 data;
@@ -76,11 +73,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
             groupedMutations = [];
             lastMutationsHandledTime = 0;
             timeout_mutations = false;
-        }
-
-        function setup() {
-            reset();
-            mutObs.observe(document, mutOptions);
         }
 
         /**
@@ -129,22 +121,22 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
          * performance.
          * @param mutations
          */
-        function onMuts(mutations) {
+        function onDomMutations(mutations) {
 //            mod_contentHelper.filterOutUnneededMutations(mutations); // removes mutations that aren't of interest
 
 //            if (mutations.length) {
                 groupedMutations = groupedMutations.concat(mutations);
                 if (timeout_mutations === false) { // compare explicitly with false, which is how we reset it
                     // if timeout period is 0 or negative, will execute immediately (at the first opportunity after yielding)
-                    timeout_mutations = setTimeout(_onMuts, mutationGroupingInterval - (Date.now() - lastMutationsHandledTime));
+                    timeout_mutations = setTimeout(_onDomMutations, mutationGroupingInterval - (Date.now() - lastMutationsHandledTime));
                 }
 //            }
         }
-        function _onMuts() {
+        function _onDomMutations() {
             console.time("chromeAltHack-muts");
             timeout_mutations = false;
             lastMutationsHandledTime = Date.now();
-//            console.log('grouped _onMuts called');
+//            console.log('grouped _onDomMutations called');
 
             var mutationsLen = groupedMutations.length,
                 mutationRecord,
@@ -164,7 +156,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
                     }
                 }
 
-                if (mutationRecord.attributeName && mutationRecord.attributeName.toLowerCase() === 'accesskey') {
+                if (/*mutationRecord.attributeName && */mutationRecord.attributeName.toLowerCase() === 'accesskey') {
                     var accessKey = mutationRecord.target.getAttribute("accesskey");
                     accessKey = accessKey && accessKey.toLowerCase();
                     if (accessKey && altShortcutKeys.indexOf(accessKey) !== -1) {
@@ -219,6 +211,6 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
 
         return thisModule;
 
-    })(jQuery, _u.mod_contentHelper, _u.CONSTS);
+    })(jQuery, _u.mod_contentHelper, _u.mod_mutationObserver, _u.CONSTS);
 }
 
