@@ -1365,6 +1365,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             class_zenModeHidden = CONSTS.class_zenModeHidden,
             zenModeActive = body.classList.contains(class_zenModeHidden);
 
+        // Zen mode sets visibility: hidden to the body using class_zenModeHidden. This interferes with processing of CUs
+        // correctly. So, we are removing the class before processing CUs and then adding the class back. 
         if (zenModeActive) {
             body.classList.remove(class_zenModeHidden);
         }
