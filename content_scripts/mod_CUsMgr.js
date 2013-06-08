@@ -112,10 +112,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // to enable grouping of the handing for closely spaced `document-mutations` events (in heavy sites, these will be emitted
         // a lot, but we rely on them only as a fallback, so we can group their handling (with the exception of ones which
         // cause scrollHeight changes; refer to `onMutations_fallback()`
-        groupingInterval_mainDomMutations = 1000,
+        groupingInterval_fallbackDomMutations = 1000,
 
-        timeout_onUpdatingCUs_delayed,
-                // We take this to be the element with the highest scrollHeight. Usually this is the body
+        // We take this to be the element with the highest scrollHeight. Usually this is the body
         mainScrollableElement,
         mainScrollableElement_prevScrollHeight,
         mainScrollableElement_prevScrollWidth,
@@ -146,7 +145,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
     function onMutations_fallback(mutations) {
 
-//        console.log("fallback mutations", mutations);
         if (mainScrollableElement.scrollHeight !== mainScrollableElement_prevScrollHeight ||
             mainScrollableElement.scrollWidth !== mainScrollableElement_prevScrollWidth) {
 
@@ -161,11 +159,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //        if (mutations.length) {
 
             if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
-                var xx = groupingInterval_mainDomMutations - (Date.now() - lastTime_updateCUsEtc);
-                console.log("grouping interval: ", groupingInterval_mainDomMutations, " xx: ", xx, "time: ", Date.now());
-
                 // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
-                timeout_updateCUs = setTimeout(updateCUsEtc_onDomChange, xx);
+                timeout_updateCUs = setTimeout(updateCUsEtc_onDomChange, groupingInterval_fallbackDomMutations -
+                    (Date.now() - lastTime_updateCUsEtc));
             }
 //        }
     }
@@ -180,8 +176,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         updateCUsAndRelatedState();
     }
 
-
-        function reset() {
+    function reset() {
         dehoverCU();
         deselectCU();
         CUs_filtered = CUs_all = [];   // these can point to the same array at this point
@@ -1231,21 +1226,28 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return $(x);
     }
    
-    function onUpdatingCUs_delayed() {
+    function onUpdatingCUs() {
+        console.time("onUpdatingCUs");
 
+        console.time("commonAncestor");
         $commonCUsAncestor = $getCommonCUsAncestor(CUs_all);
+        console.timeEnd("commonAncestor");
+
         mainScrollableElement  = getMainScrollableElement();
         mainScrollableElement_prevScrollHeight = mainScrollableElement.scrollHeight;
         mainScrollableElement_prevScrollWidth = mainScrollableElement.scrollWidth;
 
-        console.time('enableMOs_for_Ancestors');
+        if (CUs_all.length) {
+            console.time('enableMOs_for_Ancestors');
             // take ancestors of first, middle and last CUs (it's okay if we miss out some ancestors, since we have
             // a fall back mutation observer to handle those.
             var $CUAncestorsToObserve = CUs_all[0].parents()
                 .add(CUs_all[CUs_all.length-1].parents())
                 .add(CUs_all[Math.floor(CUs_all.length/2)].parents());
             mod_mutationObserver.enableFor_CUsAncestors($CUAncestorsToObserve);
-        console.timeEnd('enableMOs_for_Ancestors');
+            console.timeEnd('enableMOs_for_Ancestors');
+        }
+        console.timeEnd("onUpdatingCUs");
     }
 
     // updates the overlays of selected and hovered overlays
@@ -1316,12 +1318,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         dehoverCU();
 
         CUs_filtered = CUs_all = getValidCUs();
+        onUpdatingCUs();
 
-        // not doing this when filtering is active to help performance (and its not really needed then)
-        if (CUs_all.length && !mod_filterCUs.isActive()) {
-            clearTimeout(timeout_onUpdatingCUs_delayed);
-            timeout_onUpdatingCUs_delayed = setTimeout(onUpdatingCUs_delayed, 1000);
-        }
         if (mod_filterCUs.isActive()) {
             CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, $commonCUsAncestor, false);
         }
