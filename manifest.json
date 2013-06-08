@@ -33,7 +33,7 @@
             "matches": ["<all_urls>"],
 
             "js": [
-                "vendor/jquery-2.0.0.min.js",
+                "vendor/jquery-2.0.0.js",
                 "vendor/underscore-dependencies.js",
                 "vendor/backbone-events.js",
                 "vendor/mousetrap-modified.js",
