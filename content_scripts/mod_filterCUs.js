@@ -275,6 +275,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     }
 
     function showSearchBox() {
+        var disabledByMe = mod_mutationObserver.disable();
         if(!$filterCUsContainer.is(':visible')) {
             $searchBox.val('');
             $filterCUsContainer.show();
@@ -283,13 +284,16 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         else {
             $searchBox.focus();
         }
+        disabledByMe && mod_mutationObserver.enable();
     }
 
     function closeSearchBox() {
+        var disabledByMe = mod_mutationObserver.disable();
         $searchBox.val('');
         $searchBox.blur();
         $filterCUsContainer.hide();
         triggerFilteringIfRequired();
+        disabledByMe && mod_mutationObserver.enable();
     }
 
     return thisModule;
