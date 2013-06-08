@@ -1191,7 +1191,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
          */
 
         if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) && // CU is fully in viewport
-            !scrollIntoView.tryCenteringCUOnEachScroll) {
+            !miscSettings.tryCenteringCUOnEachScroll) {
 
             return false;
         }
