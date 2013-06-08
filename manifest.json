@@ -58,6 +58,7 @@
                 "content_scripts/mod_CUsMgr.js",
                 "content_scripts/mod_urlSpecificShortcuts.js",
                 "content_scripts/mod_selectFocusables.js",
+                "content_scripts/mod_zenMode.js",
 
                 "content_scripts/mod_main.js"
             ],

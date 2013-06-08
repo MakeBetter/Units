@@ -15,6 +15,9 @@ _u.CONSTS = (function(mod_commonHelper){
         class_CUSelectedOverlay : "CU-overlay-selected",    // class applied to overlay on a selected CU
         class_CUHoveredOverlay : "CU-overlay-hovered",      // class applied to overlay on a hovered CU
 
+        class_zenModeVisible: "UnitsProj-zen-mode-visible", // class added to all elements hidden in the 'zen mode'
+        class_zenModeHidden: "UnitsProj-zen-mode-hidden", // class added to all elements made visible in the zen mode
+
         // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
         // with the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
         focusablesSelector: 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:visible, *[contenteditable]'

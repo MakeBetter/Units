@@ -218,9 +218,6 @@ style more specific by using id's of the elements. Fix for #9.
   visibility: hidden !important;
 }
 
-
-/*********** Common syles *************/
-
 .UnitsProj-modal-backdrop {
   position: fixed !important;
   top: 0 !important;
@@ -235,24 +232,13 @@ style more specific by using id's of the elements. Fix for #9.
   z-index: $highest-z-index - 1 !important; /* 1 less than the z-index of iframe help window */
 }
 
-#zen-modal-backdrop {
-  opacity: 1 !important;
-  z-index: $highest-z-index - 10 !important; /* less than the z-index of help UI and help backdrop, AND z-index of
-  zen mode CUs, CUs overlay and filter UI*/
+/*********** Common syles *************/
+
+.UnitsProj-zen-mode-hidden {
+  visibility: hidden !important;
 }
 
-.zen-mode-z-index {
-  z-index: $highest-z-index - 1 !important;
+.UnitsProj-zen-mode-visible {
+  visibility: visible !important;
 }
 
-.zen-mode-z-index-plus {
-  z-index: $highest-z-index !important;
-}
-
-.zen-mode-CU-position {
-  position: relative !important;
-}
-
-.zen-mode-background {
-  background: white !important;
-}

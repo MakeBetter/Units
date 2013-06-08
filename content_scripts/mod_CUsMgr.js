@@ -14,7 +14,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         selectNext: selectNext,
         selectPrev: selectPrev,
         selectFirst: selectFirst,
-        selectLast: selectLast
+        selectLast: selectLast,
+        getAllCUs: getAllCUs
     });
 
     /*-- Module implementation --*/
@@ -80,6 +81,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         overlayCssHasTransition,
 
         $document = $(document), // cached jQuery object
+        $body = $(document.body),
 
         rtMouseBtnDown,         // boolean holding the state of the right mouse button
 //        ltMouseBtnDown,         // boolean holding the state of the left mouse button
@@ -136,11 +138,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         currentPosition_CURelatedScroll,
         lastInvokedTime_CURelatedScroll, // will contain the time of the last invocation (of invokeIncrementalScroll)
         intervalId_CURelatedScroll,
-        body, destination_CURelatedScroll, areScrollingDown, speed_CURelatedScroll,
-
-        $pageOverlay_forZenMode,
-        isZenModeActive,
-        class_zenModeZIndex = 'zen-mode-z-index';
+        body, destination_CURelatedScroll, areScrollingDown, speed_CURelatedScroll;
 
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
     function onMutations_fallback(mutations) {
@@ -220,8 +218,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             .addClass(class_addedByUnitsProj)
             .hide()
             .appendTo($topLevelContainer);
-
-        $pageOverlay_forZenMode = $('<div class="UnitsProj-modal-backdrop" id="zen-modal-backdrop"></div>');
 
         setupEvents();
 
@@ -481,17 +477,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             else {
                 $overlay = $('<div></div>').addClass(class_CUOverlay).addClass(class_addedByUnitsProj);
             }
-        }
-
-        /*If zen mode, then set the z-index of the overlay to be very high. Else, do not set/change the z-index.
-        It is important to not change the z-index of the overlay in the regular browsing/ non-zen mode for the extension
-        to function correctly.*/
-
-        if (isZenModeActive) {
-            $overlay.addClass(class_zenModeZIndex);
-        }
-        else {
-            $overlay.removeClass(class_zenModeZIndex);
         }
 
         var overlayPadding;
@@ -1320,6 +1305,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUs_filtered = CUs_all = getValidCUs();
         onUpdatingCUs();
 
+        thisModule.trigger("CUs-all-change");
+
         if (mod_filterCUs.isActive()) {
             CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, $commonCUsAncestor, false);
         }
@@ -1374,7 +1361,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function getValidCUs() {
         var $CUsArr = _getAllCUs();
+        var body = document.body,
+            class_zenModeHidden = CONSTS.class_zenModeHidden,
+            zenModeActive = body.classList.contains(class_zenModeHidden);
+
+        if (zenModeActive) {
+            body.classList.remove(class_zenModeHidden);
+        }
+
         processCUs($CUsArr);
+
+        if (zenModeActive) {
+            body.classList.add(class_zenModeHidden);
+        }
         return $CUsArr;
     }
 
@@ -1729,15 +1728,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             hasModifier = e.altKey || e.ctrlKey|| e.metaKey || e.shiftKey;
 
         if (code === 27 && !hasModifier) { // ESC
-            // Priority of actions:
-            // If zen mode is on, then switch it off.
-            // Else, deselect CU, blur activeElement etc
-
-            if (isZenModeActive) {
-                toggleZenMode();
-                return;
-            }
-
             var $selectedCU = CUs_filtered[selectedCUIndex],
                 activeEl = document.activeElement || document.body;
             if (!$selectedCU) {
@@ -2021,95 +2011,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
                 selectLast(true, true);
             }, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.toggleZenMode.kbdShortcuts, function() {
-                toggleZenMode();
-            }, {pageHasCUs: true});
-        }
-    }
-
-    function toggleZenMode() {
-        var i, j, $CU, $el, $tableParent,
-            setDefaultBackground = false,
-            class_zenModePosition = "zen-mode-CU-position",
-            class_zenModeBackground = "zen-mode-background";
-
-        // if zen mode is currently off
-        if (!$pageOverlay_forZenMode[0].offsetHeight) {
-
-            isZenModeActive = true; // to be used in _showOverlay()
-
-            // get the value of the background property for a div with no styles. we are using this to get the value of
-            // "background" property for a transparent div (in a way that works cross-browser).
-            var $tempElement = $("<div></div>").hide().appendTo($topLevelContainer);
-            var baselineBackground = $tempElement.css("background");
-            $tempElement.remove();
-
-            // set z-index, position,
-            for (i = 0; i < CUs_all.length; i++) {
-                $CU = CUs_all[i];
-
-                for (j = 0; j < $CU.length; j++) {
-                    $el = $CU.eq(j);
-
-                    // For elements that are descendants of a table, apply all zen-mode related CSS to the parent table (and not the elements).
-                    // This is because z-index property with position:relative cannot be applied for a table's descendants.
-                    $tableParent = $el.parents("table");
-                    if ($tableParent.length) {
-                        $el = $tableParent.eq(0);
-                    }
-
-                    // CU needs to be positioned so that it can be set a z-index property
-                    // If not alredy positioned, then set position to relative
-                    if ($el.css("position") === "static") {
-                        $el.addClass(class_zenModePosition);
-                    }
-
-                    $el.addClass(class_zenModeZIndex);
-
-                    // If the background is not set/ is transparent, then set it to our default color (most likely white).
-                    if ($el.css("background") === baselineBackground) {
-                        $el.addClass(class_zenModeBackground);
-                        setDefaultBackground = true;
-                    }
-                }
-            }
-
-            $pageOverlay_forZenMode.appendTo($topLevelContainer);
-            // If background was explicitly set for any CU, then set the same color to the overlay. Else set the same
-            // background value as the first CU (with the thought that the page will generally look better if the overlay
-            // color is same as the CUs
-
-            if (!setDefaultBackground) {
-                $pageOverlay_forZenMode.css("background", CUs_all[0].css("background"));
-            }
-            else {
-                $pageOverlay_forZenMode.addClass(class_zenModeBackground);
-            }
-        }
-
-        else {
-
-            // Reset all the changes made when applying zen mode
-            isZenModeActive = false;
-
-            for (i = 0; i < CUs_all.length; i++) {
-                $CU = CUs_all[i];
-                for (j = 0; j < $CU.length; j++) {
-                    $el = $CU.eq(j);
-                    $tableParent = $el.parents("table");
-                    if ($tableParent.length) {
-                        $el = $tableParent.eq(0);
-                    }
-
-                    $el.removeClass(class_zenModeZIndex)
-                        .removeClass(class_zenModePosition)
-                        .removeClass(class_zenModeBackground);
-                }
-            }
-
-            $pageOverlay_forZenMode.removeClass(class_zenModeBackground);
-            $pageOverlay_forZenMode.css("background", "");
-            $pageOverlay_forZenMode.remove();
         }
     }
 
@@ -2185,6 +2086,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function decreaseFont($jQuerySet) {
         changeFontSize($jQuerySet, false);
+    }
+
+    function getAllCUs() {
+        return CUs_all;
     }
 
     return thisModule;
