@@ -38,7 +38,7 @@ var defaultSettings = {
 
         // determines if while scrolling a CU should always be centered (whenever possible) or only if it lies
         // outside the view port
-        tryCenteringCUOnEachScroll: true,
+        keepSelectedCUCentered: true,
 
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
