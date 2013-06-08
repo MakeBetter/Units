@@ -224,7 +224,8 @@ defaultSettings.urlDataMap = {
             },
             page_MUs: {
                 std_header: "#headNav",
-            }
+            },
+            zenModeWhiteList: ".uiLayer"
         },
         {
             urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type facebook.com/pages*
@@ -354,6 +355,14 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["medium.com", "medium.com/@"],
             CUs_specifier: ".post-item"
+        }
+    ],
+
+    "nytimes.com": [
+        {
+            urlPatterns: ["www.nytimes.com/**"],
+            zenModeWhiteList: "#article"
+
         }
     ],
 
