@@ -51,11 +51,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             .append($message)
             .hide()     // to prevent the search box from appearing when the page loads
             .appendTo(_u.$topLevelContainer);
-        // Use a timeout to call .show(), otherwise the search box might appear briefly at the top of the page as
-        // it loads
-//            setTimeout(function() {$filterCUsContainer.show();}, 500);
-
-//            $filterCUsContainer.css({top: -$filterCUsContainer.outerHeight(true) + "px"}); // seems to work only after it's in DOM
 
         $searchBox.on('paste input', onSearchBoxInput);
         // Instead of specifying 'keydown' as part of the on() call above, use addEventListener to have priority over
@@ -122,32 +117,22 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             removeHighlighting($scope_prevFiltering); //TODO: this is need at the moment. can we avoid this?
         }
 
-//            console.log('actual filtering taking place...');
-            var CUsArrLen = CUs_all.length;
-            for (var i = 0; i < CUsArrLen; ++i) {
-                var $CU = CUs_all[i];
-                // if ($CU.text().toLowerCase().indexOf(filterText_lowerCase) >= 0) {
-                if (reuseLastFiltering && $CU.hasClass('UnitsProj-HiddenByFiltering')) {
-                    continue;
-                }
-                if (highlightInCU($CU, filterText_lowerCase)) {
-
-                    //if ($CU.hasClass('UnitsProj-HiddenByFiltering')) {
-
-                    $CU.removeClass('UnitsProj-HiddenByFiltering');
-                    CUs_filtered.push($CU);
-                    //}
-                }
-                else {
-                    //if ($CU.is(':visible')) {
-                    $CU.addClass('UnitsProj-HiddenByFiltering');
-//                    $CUsArr.splice(i, 1);
-//                    --CUsArrLen;
-//                    --i;
-
-                    //}
-                }
+//      console.log('actual filtering taking place...');
+        var CUsArrLen = CUs_all.length;
+        for (var i = 0; i < CUsArrLen; ++i) {
+            var $CU = CUs_all[i];
+            // if ($CU.text().toLowerCase().indexOf(filterText_lowerCase) >= 0) {
+            if (reuseLastFiltering && $CU.hasClass('UnitsProj-HiddenByFiltering')) {
+                continue;
             }
+            if (highlightInCU($CU, filterText_lowerCase)) {
+                $CU.removeClass('UnitsProj-HiddenByFiltering');
+                CUs_filtered.push($CU);
+            }
+            else {
+                $CU.addClass('UnitsProj-HiddenByFiltering');
+            }
+        }
 
 
         // ** --------- POST FILTERING --------- **
@@ -290,29 +275,19 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     }
 
     function showSearchBox() {
-//        if (!isVisible) {
         if(!$filterCUsContainer.is(':visible')) {
             $searchBox.val('');
-//            $filterCUsContainer.css({top: "0px"});
-//            var savedScrollPos = $document.scrollTop();
             $filterCUsContainer.show();
             $searchBox.focus();
-            // Setting the focus to the search box scrolls the page up slightly because the searchbox lies above the visible
-            // part of the page (i.e. till its 'sliding' effect due to css transition completes). This is undesirable.
-            // Hence we restore the scroll position:
-//            $document.scrollTop(savedScrollPos);
         }
         else {
             $searchBox.focus();
         }
-//        isVisible = true;
     }
 
     function closeSearchBox() {
         $searchBox.val('');
         $searchBox.blur();
-//        $filterCUsContainer.css({top: -$filterCUsContainer.outerHeight(true) + "px"});
-//        isVisible = false;
         $filterCUsContainer.hide();
         triggerFilteringIfRequired();
     }
