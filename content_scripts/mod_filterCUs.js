@@ -20,7 +20,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
         $document = $(document),
-        lastFilterText_lowerCase;
+        lastFilterText_lowerCase,
+        $scope_prevFiltering;
 
     // reset state
     function reset() {
@@ -29,6 +30,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         $filterCUsContainer && $filterCUsContainer.remove();
         timeout_typing = null;
         lastFilterText_lowerCase = "";
+        $scope_prevFiltering = "";
     }
 
     function setup(settings) {
@@ -77,7 +79,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
      * @param $scope - jQuery set of dom elements which between themselves should contain all of the CUs in $CUsArr
      * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
      *
-     * @returns An array with the filtered CUs. If filtering was required, this this is a new array, which has a
+     * @returns {Array} Array of filtered CUs. If filtering was required, this this is a new array, which has a
      * subset of elements of `CUs_all`. Else, if no filtering if required (`CUs_all` is empty or the filtering text
      * is an empty string), it returns the same array `CUs_all`. (As per the assumption in mod_CUsMgr that when
      * no filtering is active it's variables `CUs_main` and `_CUs_all` point to the same array)
@@ -87,7 +89,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         // if no filtering required
         if (!CUs_all.length || !filterText_lowerCase) {
-            undoPreviousFiltering($scope);
+            undoPreviousFiltering();
             return CUs_all;
         }
 
@@ -112,10 +114,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         lastFilterText_lowerCase = filterText_lowerCase;
 
         if (!reuseLastFiltering) {
-            undoPreviousFiltering($scope);
+            // undo all effects of the previous filtering
+            undoPreviousFiltering();
         }
         else {
-            removeHighlighting($scope); //TODO: this is need at the moment. can we avoid this?
+            // remove highlighting (but don't undo other actions of previous filtering)
+            removeHighlighting($scope_prevFiltering); //TODO: this is need at the moment. can we avoid this?
         }
 
 //            console.log('actual filtering taking place...');
@@ -148,6 +152,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         // ** --------- POST FILTERING --------- **
         $scope.show();
+        $scope_prevFiltering = $scope;
         $document.scrollTop(savedScrollPos);
         disabledByMe && mod_mutationObserver.enable();
 
@@ -155,10 +160,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     }
 
-    function undoPreviousFiltering($scope) {
-        removeHighlighting($scope);
-        var $hiddenByPriorFiltering = $scope.find('.UnitsProj-HiddenByFiltering');
-        $hiddenByPriorFiltering.removeClass('UnitsProj-HiddenByFiltering');
+    function undoPreviousFiltering() {
+        if ($scope_prevFiltering) {
+            removeHighlighting($scope_prevFiltering);
+            var $hiddenByPrevFiltering = $scope_prevFiltering.find('.UnitsProj-HiddenByFiltering');
+            $hiddenByPrevFiltering.removeClass('UnitsProj-HiddenByFiltering');
+        }
     }
 
     // based on http://johannburkard.de/blog/programming/javascript/highlight-javascript-text-higlighting-jquery-plugin.html
@@ -229,19 +236,19 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         return numHighlighted;
     }
 
-// container - dom node or jQuery set within which highlighting should be removed
-    function removeHighlighting (container) {
-        var $container = $(container);
+// $scope - dom node or jQuery set within which highlighting should be removed
+    function removeHighlighting ($scope) {
+        if ($scope) {
+            var $set = $scope.find(".UnitsProj-highlight");
+            var len = $set.length;
+            for (var i = 0; i < len; i++) {
+                var el = $set[i];
+                var parentNode = el.parentNode;
 
-        var $set = $container.find(".UnitsProj-highlight");
-        var len = $set.length;
-        for (var i = 0; i < len; i++) {
-            var el = $set[i];
-            var parentNode =  el.parentNode;
+                parentNode.replaceChild(el.firstChild, el);
+                parentNode.normalize();
 
-            parentNode.replaceChild(el.firstChild, el);
-            parentNode.normalize();
-
+            }
         }
     }
 
