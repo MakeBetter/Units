@@ -202,6 +202,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // This is required before we call setupEvents();
         overlayCssHasTransition = checkOverlayCssHasTransition();
+        body = document.body;
 
         var tmp;
         // assign from `settings` to global variables
@@ -578,7 +579,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var pageHeaderHeight = getEffectiveHeaderHeight();
 
         var // for the window:
-            winTop = $document.scrollTop(),
+            winTop = body.scrollTop,
             winHeight = /*$(window).height()*/ window.innerHeight,// $(window).height() does not work on HN
             winBottom = winTop + winHeight;
 
@@ -641,7 +642,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             }
             else {
 //                console.log('NON animated SAME CU scroll');
-                $document.scrollTop(newWinTop);
+                body.scrollTop = newWinTop;
             }
 
             return true;
@@ -814,7 +815,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function selectFirstCUInViewport (setFocus, adjustScrolling) {
 
         if (CUs_filtered && CUs_filtered.length) {
-            var winTop = $document.scrollTop(),
+            var winTop = body.scrollTop,
                 CUsArrLen = CUs_filtered.length;
 
             for (var i = 0; i < CUsArrLen; ++i) {
@@ -1075,7 +1076,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             destination_CURelatedScroll = $document.height() - window.innerHeight; // $(window).height does not work on HN
         }
 
-        currentPosition_CURelatedScroll = $document.scrollTop();
+        currentPosition_CURelatedScroll = body.scrollTop;
 //        var areScrollingDown;
 
         if (destination_CURelatedScroll > currentPosition_CURelatedScroll) {
@@ -1096,8 +1097,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // This is  handled by calculating the time diff. between invocations. See later.)
             intervalPeriod = Math.min(25, miscSettings.animatedCUScroll_MaxDuration/4);
         speed_CURelatedScroll = totalDisplacement/duration; // pixels per millisec
-
-        body = document.body;
 
         animationInProgress = true;
         // in the following lines, we call  'invokeIncrementalScroll' once, after setting 'lastInvokedTime_CURelatedScroll' to the
@@ -1149,7 +1148,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         var // for the window:
-            winTop = $document.scrollTop(),
+            winTop = body.scrollTop,
         // winHeight = $(window).height(), // this doesn't seem to work correctly on news.ycombinator.com
             winHeight = window.innerHeight,
             winBottom = winTop + winHeight,
@@ -1203,7 +1202,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         else {
 //            console.log('NON animated CU scroll');
-            $document.scrollTop(newWinTop);
+            body.scrollTop = newWinTop;
         }
     }
 
@@ -1278,13 +1277,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function updateCUsAndRelatedState() {
         var disabledByMe = mod_mutationObserver.disable();
-//        var savedScrollPos = $document.scrollTop();
+//        var savedScrollPos = body.scrollTop;
 //        $commonCUsAncestor && $commonCUsAncestor.hide();
         console.time("update CUs");
         _updateCUsAndRelatedState();
         console.timeEnd("update CUs");
 //        $commonCUsAncestor && $commonCUsAncestor.show();
-//        $document.scrollTop(savedScrollPos);
+//        body.scrollTop = savedScrollPos;
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -1361,8 +1360,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function getValidCUs() {
         var $CUsArr = _getAllCUs();
-        var body = document.body,
-            class_zenModeHidden = CONSTS.class_zenModeHidden,
+        var class_zenModeHidden = CONSTS.class_zenModeHidden,
             zenModeActive = body.classList.contains(class_zenModeHidden);
 
         // Zen mode sets visibility: hidden to the body using class_zenModeHidden. This interferes with processing of CUs
@@ -1692,7 +1690,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 }
 
             }
-            var  winTop = $document.scrollTop();
+            var  winTop = body.scrollTop;
             return Math.max(0, maxHeaderBottom-winTop);
         }
         else {
@@ -2026,7 +2024,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUBottom = CUTop + CUHeight;
 
         var // for the window:
-            winTop = $document.scrollTop(),
+            winTop = body.scrollTop,
         // winHeight = $(window).height(), // this doesn't seem to work correctly on news.ycombinator.com
             winHeight = window.innerHeight,
             winBottom = winTop + winHeight;
