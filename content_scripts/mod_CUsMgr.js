@@ -317,7 +317,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         time_lastCUSelectOrDeselect = Date.now();
 
         if (adjustScrolling) {
-            scrollIntoView($overlaySelected);
+            scrollCUIntoView($overlaySelected);
         }
 
         if (setFocus) {
@@ -672,7 +672,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $scrollingMarker.hide();
 
-        if (selectedCUIndex >=0 && (isCUInViewport(CUs_filtered[selectedCUIndex]) ||
+        var $selectedCU = CUs_filtered[selectedCUIndex];
+        
+        // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
+        // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
+        if ($selectedCU && (isAnyPartofCUinViewport($selectedCU) || 
             Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
             if (miscSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('up');
@@ -722,8 +726,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $scrollingMarker.hide();
 
+        var $selectedCU = CUs_filtered[selectedCUIndex];
 
-        if (selectedCUIndex >=0 && (isCUInViewport(CUs_filtered[selectedCUIndex]) ||
+        // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
+        // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
+        if ($selectedCU && (isAnyPartofCUinViewport($selectedCU) ||
             Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
 
             if (miscSettings.sameCUScroll) {
@@ -784,7 +791,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // if a CU is already selected AND (is present in the viewport OR was selected only recently)...
         if (selectedCUIndex >= 0 &&
-            (isCUInViewport(CUs_filtered[selectedCUIndex]) ||
+            (isAnyPartofCUinViewport(CUs_filtered[selectedCUIndex]) ||
                 Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
 
 
@@ -793,7 +800,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
         else if( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
-            (isCUInViewport($lastSelectedCU) ||
+            (isAnyPartofCUinViewport($lastSelectedCU) ||
                 Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
 
             selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
@@ -1138,12 +1145,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * possible if the element is too large).
      * //TODO3: consider if horizontal scrolling should be adjusted as well (some sites sites, like an image gallery,
      * might have CUs laid out horizontally)
-     * @param {HtmlElement|jQuery} $element DOM element or a jQuery wrapper around it
+     * @param {jQuery} $CUOverlay
      */
-    function scrollIntoView($element) {
+    function scrollCUIntoView($CUOverlay) {
 
-        $element = $($element);
-        if (!$element || !$element.length) {
+        if (!$CUOverlay || !$CUOverlay.length) {
             return;
         }
 
@@ -1154,8 +1160,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             winBottom = winTop + winHeight,
 
         // for the element:
-            elTop = $element.offset().top,
-            elHeight = $element.height(),
+            elTop = $CUOverlay.offset().top,
+            elHeight = $CUOverlay.height(),
             elBottom = elTop + elHeight;
 
         var newWinTop, // once determined, we will scroll the window top to this value
@@ -1163,25 +1169,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         var pageHeaderHeight = getEffectiveHeaderHeight();
 
-        /*
-         if (elBottom >= winBottom) { // element is overflowing from the bottom
-
-         newWinTop = elTop - Math.max(pageHeaderHeight, Math.min(winHeight - elHeight, winHeight/2));
-         }
-         else if (elTop <= winTop + pageHeaderHeight) { // element is overflowing from the top
-
-         newWinTop = elTop - Math.max(pageHeaderHeight, winHeight/2 - elHeight);
-         }
-         */
-
-        if ( (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin) && // CU is fully in viewport
-            !miscSettings.keepSelectedCUCentered) {
+        if (!miscSettings.keepSelectedCUCentered &&
+            (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin)) { // CU is fully in viewport
 
             return false;
         }
-
         else {
-
             // center the element based on this equation equating the space left in the (visible part of the) viewport above
             // the element to the space left below it:
             // elTop - (newWinTop + pageHeaderHeight) = newWinBottom - elBottom = newWinTop + winHeight - elBottom
@@ -1690,8 +1683,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 }
 
             }
-            var  winTop = body.scrollTop;
-            return Math.max(0, maxHeaderBottom-winTop);
+            return Math.max(0, maxHeaderBottom - body.scrollTop);
         }
         else {
             return 0;
@@ -2015,7 +2007,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
 // returns true if any part of $CU is in the viewport, false otherwise
-    function isCUInViewport($CU) {
+    function isAnyPartofCUinViewport($CU) {
 
         // for the CU
         var boundingRect = getBoundingRectangle($CU),
