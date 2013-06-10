@@ -117,9 +117,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         groupingInterval_fallbackDomMutations = 1000,
 
         // We take this to be the element with the highest scrollHeight. Usually this is the body
-        mainScrollableElement,
-        mainScrollableElement_prevScrollHeight,
-        mainScrollableElement_prevScrollWidth,
+        mainContainer,
+        mainContainer_prevScrollHeight,
+        mainContainer_prevScrollWidth,
 
     // the following are set during setup(); most are sub-objects of expandedUrlData but we store global references
         // to avoid having to read them each time there a DOM change and things need to be redrawn etc.
@@ -143,11 +143,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
     function onMutations_fallback(mutations) {
 
-        if (mainScrollableElement.scrollHeight !== mainScrollableElement_prevScrollHeight ||
-            mainScrollableElement.scrollWidth !== mainScrollableElement_prevScrollWidth) {
+        if (mainContainer.scrollHeight !== mainContainer_prevScrollHeight ||
+            mainContainer.scrollWidth !== mainContainer_prevScrollWidth) {
 
-            mainScrollableElement_prevScrollHeight = mainScrollableElement.scrollHeight;
-            mainScrollableElement_prevScrollWidth = mainScrollableElement.scrollWidth;
+            mainContainer_prevScrollHeight = mainContainer.scrollHeight;
+            mainContainer_prevScrollWidth = mainContainer.scrollWidth;
             updateCUsEtc_onDomChange(); // execute immediately
             return;
         }
@@ -227,7 +227,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function onDomReady() {
         // assume these to be body for now
-         mainScrollableElement = document.body;
+        mainContainer = document.body;
         $commonCUsAncestor = $(document.body);
 
         thisModule.listenTo(mod_mutationObserver, 'document-mutations', onMutations_fallback);
@@ -237,8 +237,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         updateCUsAndRelatedState();
     }
 
-    function getMainScrollableElement() {
-        var mainScrollableEl;
+    function getMainContainer() {
+        var _mainContainer;
         var $CU = CUs_all[Math.floor(CUs_all.length/2)]; // use the middle CU
         if ($CU) {
             var ancestors = $CU.parents().get(),
@@ -249,12 +249,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 var current = ancestors[i];
                 if (current.scrollHeight > max) {
                     max = current.scrollHeight;
-                    mainScrollableEl = current;
+                    _mainContainer = current;
                 }
             }
         }
 
-        return mainScrollableEl || document.body;
+        return _mainContainer || document.body;
     }
 
     function $getSelectedCU() {
@@ -1212,9 +1212,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $commonCUsAncestor = $getCommonCUsAncestor(CUs_all);
         console.timeEnd("commonAncestor");
 
-        mainScrollableElement  = getMainScrollableElement();
-        mainScrollableElement_prevScrollHeight = mainScrollableElement.scrollHeight;
-        mainScrollableElement_prevScrollWidth = mainScrollableElement.scrollWidth;
+        mainContainer  = getMainContainer();
+        mainContainer_prevScrollHeight = mainContainer.scrollHeight;
+        mainContainer_prevScrollWidth = mainContainer.scrollWidth;
 
         if (CUs_all.length) {
             console.time('enableMOs_for_Ancestors');
@@ -1511,7 +1511,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return $CUsArr;
     }
 
-    /* Returns true if all constituent elements of $CU1 are contained within (the constituents) of $CU2, false
+    /* Returns true if all constituent elements of $CU1 are contained within (the constituents of) $CU2, false
      otherwise. (An element is considered to 'contain' itself and all its descendants)
      */
     function isCUContainedInAnother($CU1, $CU2) {
@@ -1606,27 +1606,47 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             return;
         }
 
-        var CUsArrLen = $CUsArr.length;
+        var CUsArrLen = $CUsArr.length,
+            i;
+        
+        var removeCurrentCU = function() {
+            $CUsArr.splice(i, 1);
+            --CUsArrLen;
+            --i; 
+        };
 
-        for (var i = 0; i < CUsArrLen; ++i) {
+        for (i = 0; i < CUsArrLen; ++i) {
             var $CU = $CUsArr[i];
             if (!$CU.hasClass('UnitsProj-HiddenByFiltering') && isCUInvisible($CU)) {
-                $CUsArr.splice(i, 1);
-                --CUsArrLen;
-                --i;
+                removeCurrentCU();
                 continue;
             }
 
-            for (var j = 0; j < CUsArrLen; ++j) {
-                if (i === j) {
-                    continue;
-                }
+            // reuse previously determined value if available (since CUs are re-determined on each DOM change)
+            // (we don't do this for the visibility since that is something that might change. OTOH, a potential CU
+            // found to be contained within another (and hence not deemed a CU) is something that isn't expected to change.
+            var isContained = $CU.data('isContainedInAnother');
+            if (isContained) {
+                removeCurrentCU();
+            }
+            else if (isContained === false) {
+                // nothing needs to be done if found to have been explicitly set to false
+            }
+            else {
+                for (var j = 0; j < CUsArrLen; ++j) {
 
-                if (isCUContainedInAnother($CU, $CUsArr[j])) {
-                    $CUsArr.splice(i, 1);
-                    --CUsArrLen;
-                    --i;
-                    break;
+                    if (i === j) {
+                        continue;
+                    }
+
+                    if (isCUContainedInAnother($CU, $CUsArr[j])) {
+                        removeCurrentCU();
+                        $CU.data('isContainedInAnother', true);
+                        break;
+                    }
+                    else {
+                        $CU.data('isContainedInAnother', false);
+                    }
                 }
             }
         }
