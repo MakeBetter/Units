@@ -374,7 +374,7 @@ defaultSettings.urlDataMap = {
             urlRegexps: [/^www\.quora\.com\/.+\/(?!about$|questions$|new$|home$).+/],
             CUs_specifier: {
                 // includes selectors for the question, answer, and "invite to answer" block
-                selector: ".question.row, .main_col>div>.row .row, .invite_to_answer" /*seems to be working well, as on May 13, 2013! */
+                selector: ".question.row, .main_col>div>.row .row, .invite_to_answer, .wiki_section" /*seems to be working well, as on May 13, 2013! */
             },
             CUs_style: {
                 overlayPadding: "2px 0 0 0"
