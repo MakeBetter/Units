@@ -466,6 +466,13 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "scribd.com": [
+        {
+            urlPatterns: ["www.scribd.com/*"],
+            zenModeWhiteList: "#document_column, .sticky_bar"
+        }
+    ],
+
     // Sites included: "*.stackexchange.com", "stackoverflow.com", "superuser.com", "serverfault.com", "stackapps.com",
     // "askubuntu.com"
     // Also, "meta.stackoverflow.com", "meta.superuser.com","meta.stackoverflow.com", etc.
