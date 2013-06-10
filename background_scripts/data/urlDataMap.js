@@ -473,6 +473,13 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "guardian.co.uk": [
+        {
+            urlPatterns: ["www.guardian.co.uk/**"],
+            zenModeWhiteList: "#main-article-info, #content, .share-links.b3"
+        }
+    ],
+
     // Sites included: "*.stackexchange.com", "stackoverflow.com", "superuser.com", "serverfault.com", "stackapps.com",
     // "askubuntu.com"
     // Also, "meta.stackoverflow.com", "meta.superuser.com","meta.stackoverflow.com", etc.
