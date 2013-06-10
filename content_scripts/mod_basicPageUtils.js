@@ -8,7 +8,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         setup: setup,
-
+        reset: reset,
         scroll: scroll,
 
         back: back,
@@ -29,12 +29,18 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
         overlap_pgUpPgDn = 100,
         scrollAnimationDuration = 150; // millisecs
 
+    function reset() {
+    }
+
     function setup(settings) {
+        reset();
         // NOTE: The 'click' event is triggered whenever in response to invoking 'enter' or 'space' on a
         // an "activatable" element as well. (The event 'DOMActivate' which was used for this purpose
         // is now deprecated) [http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-activation]
         mod_domEvents.addEventListener(document, 'click', setLastInteractedElement, true);
         mod_domEvents.addEventListener(document, 'focus', setLastInteractedElement, true);
+        mod_domEvents.addEventListener(document, 'focus', styleActiveElement, true);
+        mod_domEvents.addEventListener(document, 'blur', removeActiveElementStyle, true);
         mod_domEvents.addEventListener(document, 'mouseover', setLastInteractedElement, true);
 
         miscSettings = settings.miscSettings;
@@ -244,6 +250,25 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
             document.activeElement.click();
         }
 
+    }
+
+    function styleActiveElement(event) {
+        var $el = $(document.activeElement);
+
+        $el.addClass("UnitsProj-focused-element");
+
+        if ($el.find("img, embed, video").length) {
+            $el.addClass("UnitsProj-focused-embed");
+        }
+        else if ($el.is("a, button, input[type=button]")) {
+            $el.addClass("UnitsProj-focused-link-or-button");
+        }
+
+        return;
+    }
+
+    function removeActiveElementStyle(event) {
+        $(event.target).removeClass("UnitsProj-embed-focused UnitsProj-focused-embed UnitsProj-focused-link-or-button");
     }
 
     return thisModule;

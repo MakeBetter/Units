@@ -232,7 +232,7 @@ style more specific by using id's of the elements. Fix for #9.
   z-index: $highest-z-index - 1 !important; /* 1 less than the z-index of iframe help window */
 }
 
-/*********** Common syles *************/
+/*********** Zen mode *************/
 
 .UnitsProj-zen-mode-hidden {
   visibility: hidden !important;
@@ -242,3 +242,18 @@ style more specific by using id's of the elements. Fix for #9.
   visibility: visible !important;
 }
 
+/************* Focused element styles *************/
+
+.UnitsProj-focused-element:focus {
+  outline: 5px auto saddlebrown !important;
+}
+
+/* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
+.UnitsProj-focused-embed:focus {
+  outline-offset: 2px !important;
+}
+
+/* Set background for all a's and buttons */
+.UnitsProj-focused-link-or-button:focus {
+  background-color: #ffe5ca !important;
+}
