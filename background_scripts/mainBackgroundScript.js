@@ -19,16 +19,15 @@
         }
     );
 
-    // Whenever the active tab  or active window is changed, set the extension icon as enabled or disabled, as valid for the currently
-    // active tab.
-    chrome.tabs.onActivated.addListener(setCurrentTabIcon);
-    chrome.windows.onFocusChanged.addListener(setCurrentTabIcon);
-    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-        if (changeInfo.url) {
-           setCurrentTabIcon();
-        }
-    });
+    chrome.tabs.onActivated.addListener(sendActiveTabChangedMessage);
+    chrome.windows.onFocusChanged.addListener(sendActiveTabChangedMessage);
 
+    // NOTE: we don't seem to need this at the moment. 
+//    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+//        if (changeInfo.url) {
+//           setCurrentTabIcon();
+//        }
+//    });
 
     function sendSettingsWhenReady(request, sender, sendResponse) {
         (function _sendSettingsWhenReady() {
@@ -43,22 +42,6 @@
     }
 
     /***
-     * Gets the status of the currently active tab, and sets the extension icon appropriately
-     */
-    function setCurrentTabIcon() {
-
-            // Get the status of the current tab.
-            chrome.tabs.query({active: true, currentWindow:true}, function(tabs){
-                var tabId = tabs[0] && tabs[0].id;
-                chrome.tabs.sendMessage(tabId, {message: 'isContentScriptEnabled'}, function(response) {
-                    // If no response received from the content script (for example, for a new tab), then the icon will be
-                    // set to disabled. 
-                    setIcon(response);
-                });
-            });
-    }
-
-    /***
      * Set the browser action icon of the extension as enabled or disabled
      * @param {boolean} isEnabled Status of the extension on the active tab
      */
@@ -67,6 +50,26 @@
 
         chrome.browserAction.setIcon({
            path: iconPath
+        });
+    }
+
+    /***
+     * This method is executed when the active tab or window is changed. Sends a message to content scripts in all tabs.
+     */
+    function sendActiveTabChangedMessage() {
+        // get all tabs
+        chrome.tabs.query({}, function(tabs){
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];
+
+                if (tab.active) {
+                    chrome.tabs.sendMessage(tab.id, {message: 'tabActivated'}, setIcon); // callback that sets the extension
+                    // icon based on whether content script is enabled or disabled.
+                }
+                else {
+                    chrome.tabs.sendMessage(tab.id, {message: 'tabDeactivated'});
+                }
+            }
         });
     }
 

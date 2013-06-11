@@ -145,7 +145,7 @@
 
             // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
             // This is used for setting the extension icon appropriately.
-            else if (request.message === "isContentScriptEnabled") {
+            else if (request.message === "tabActivated") {
                 sendResponse(!(isDisabled_fromSettings || isDisabled_temporarily));
             }
 
