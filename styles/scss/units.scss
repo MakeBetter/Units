@@ -245,12 +245,13 @@ style more specific by using id's of the elements. Fix for #9.
 /************* Focused element styles *************/
 
 .UnitsProj-focused-element:focus {
-  outline: 3px auto #068065 !important;
+  outline: 2px auto #068065 !important;
 }
 
 /* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
 .UnitsProj-focused-embed:focus {
   outline-offset: 2px !important;
+  outline: 3px auto #068065 !important;
 }
 
 /* Set background for all a's and buttons */
