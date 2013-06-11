@@ -210,11 +210,11 @@ span#filter-message {
 Important to set the visibility property as important for both the container and iframe. Also, important to make this
 style more specific by using id's of the elements. Fix for #9.
 */
-.visible#UnitsProj-help-container, .visible#UnitsProj-iframe-help {
+.UnitsProj-visible#UnitsProj-help-container, .UnitsProj-visible#UnitsProj-iframe-help {
   visibility: visible !important;
 }
 
-.hidden#UnitsProj-help-container, .hidden#UnitsProj-iframe-help {
+.UnitsProj-hidden#UnitsProj-help-container, .UnitsProj-hidden#UnitsProj-iframe-help {
   visibility: hidden !important;
 }
 
