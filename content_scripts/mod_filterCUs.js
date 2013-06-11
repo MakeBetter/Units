@@ -12,7 +12,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     });
 
     // *Events Raised*
-    // "filtering-state-change", "tab-on-filter-search-box"
+    // "filter-text-change", "tab-on-filter-search-box"
 
     var $filterCUsContainer,
         $searchBox,
@@ -270,7 +270,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function triggerFilteringIfRequired() {
         clearTimeout(timeout_typing); // clears timeout if it is set
         if (lastFilterText_lowerCase !== getSearchBoxText_lowerCase()) {
-            thisModule.trigger('filtering-state-change');
+            thisModule.trigger('filter-text-change');
         }
         else {
             console.log("!! no filtering required, because ", lastFilterText_lowerCase, " === ", getSearchBoxText_lowerCase());

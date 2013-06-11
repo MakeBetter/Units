@@ -22,7 +22,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     /*-- Module implementation --*/
 
     if (mod_filterCUs) {
-        thisModule.listenTo(mod_filterCUs, 'filtering-state-change', onFilteringStateChange);
+        thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilteringStateChange);
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
         thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
         thisModule.listenTo(mod_filterCUs, 'filter-UI-show', setCommonCUsAncestor);
