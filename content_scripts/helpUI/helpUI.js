@@ -137,8 +137,8 @@ function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSection
                 }
             }
 
-            var shortcutDesc = value.miniDescr || value.description || value.name || value; // properties description and
-            // name used by chrome.commands. miniDescr and the value are applicable for all the other settings defined
+            var shortcutDesc = value.miniDescr || value.description || value.name || key; // properties description and
+            // name used by chrome.commands. miniDescr and key are applicable for all the other settings defined
             // in the project.
 
             $("<tr></tr>")

@@ -412,7 +412,8 @@ defaultSettings.urlDataMap = {
                 "std_share": ".share_link",
                 "follow": {
                     selector: ".follow_question",
-                    kbdShortcuts:["shift+f"]
+                    kbdShortcuts:["shift+f"],
+                    miniDescr: "Follow"
                 }
             },
             CUs_style: {
