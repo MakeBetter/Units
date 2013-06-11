@@ -255,13 +255,15 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
     function styleActiveElement(event) {
         var $el = $(document.activeElement);
 
-        $el.addClass("UnitsProj-focused-element");
-
         if ($el.find("img, embed, video").length) {
-            $el.addClass("UnitsProj-focused-embed");
+            $el
+                .addClass("UnitsProj-focused-element")
+                .addClass("UnitsProj-focused-embed");
         }
         else if ($el.is("a, button, input[type=button]")) {
-            $el.addClass("UnitsProj-focused-link-or-button");
+            $el
+                .addClass("UnitsProj-focused-element")
+                .addClass("UnitsProj-focused-link-or-button");
         }
 
         return;
