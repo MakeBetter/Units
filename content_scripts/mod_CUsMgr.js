@@ -890,12 +890,22 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return $all;
     };
 
+    /**
+     * This will find and return the index of the passed jQuery set ($CU) in the CUs_filtered. However, unlike JavaScript's
+     * Array#indexOf() method, a match will be found even if the passed jQuery set is "equivalent" (i.e has the same
+     * contents) to a member of the CUs array, even if they are not the *same* object.
+     * Returns -1 if not found.
+     * @param {jQuery} $CU
+     * @param {Array} CUs
+     * @param {number} [suggestedIndex] If provided, we match against this first (for better performance)
+     * @returns {number} The index of $CU in CUs if found, else -1
+     */
+    function findCUInArray($CU, CUs, suggestedIndex)  {
 
-// This will find and return the index of the passed jQuery set ($CU) in the CUs_filtered. However, unlike JavaScript's
-// Array#indexOf() method, a match will be found even if the passed jQuery set is "equivalent" (i.e has the same
-// contents) to a member of the CUs array, even if they are not the *same* object.
-// Returns -1 if not found.
-    function findCUInArray($CU, CUs)  {
+        if (suggestedIndex && areCUsSame($CU, CUs[suggestedIndex])) {
+            console.log("shortcut");
+            return suggestedIndex;
+        }
 
         var len;
 
@@ -1306,7 +1316,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function _updateCUsAndRelatedState() {
         // Save the currently selected CU, to reselect it, if it is still present in the CUs_filtered after the array is
         // updated. This needs to be done before calling deselectCU() and modifying the current CUs_filtered
-        var $prevSelectedCU = CUs_filtered[selectedCUIndex];
+        var $prevSelectedCU = CUs_filtered[selectedCUIndex],
+            prevSelectedIndex = selectedCUIndex;
 
         // we don't call deselectCU() instead because we want to reserve that for actual CU deselections, instead
         // of calling it every time DOM changes. 
@@ -1345,7 +1356,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 // 2) if the selected CU isn't found and the option `selectCUOnLoad` is true, select a sensible CU,
                 // 3) if no CU was selected (perhaps the user pressed `Esc` earlier) don't select any CU
                     if ($prevSelectedCU) {
-                        if ((newSelectedCUIndex = findCUInArray($prevSelectedCU, CUs_filtered)) >= 0) {
+                        if ((newSelectedCUIndex = findCUInArray($prevSelectedCU, CUs_filtered, prevSelectedIndex)) >= 0) {
                             // we don't call selectCU() instead because we want to reserve that for actual CU selections, 
                             // instead of calling it on (almost) every DOM change. 
                             CUs_filtered[newSelectedCUIndex] = $prevSelectedCU;                           
