@@ -114,7 +114,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // cause scrollHeight changes; refer to `onMutations_fallback()`
         groupingInterval_fallbackDomMutations = 1000,
 
-        // This is checked for height changes on DOM mutations since that's a good indication that the CUs on the page
+        // This is checked for height changes on DOM mutations since that's a good indication that the CUs on the page 
         // have changed. We take this to be the element with the highest scrollHeight. Usually this is the body.
         mainContainer,
         mainContainer_prevScrollHeight,
@@ -1272,7 +1272,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function getValidCUs() {
-        var $CUsArr = _getAllCUs();
+        var CUsArr = _getAllCUs();
         var class_zenModeHidden = CONSTS.class_zenModeHidden,
             zenModeActive = body.classList.contains(class_zenModeHidden);
 
@@ -1282,35 +1282,35 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             body.classList.remove(class_zenModeHidden);
         }
 
-        processCUs($CUsArr);
+        processCUs(CUsArr);
 
         if (zenModeActive) {
             body.classList.add(class_zenModeHidden);
         }
-        return $CUsArr;
+        return CUsArr;
     }
 
     // Finds the set of all the CUs on the current page, and returns it as an array
     // NOTE: This is meant to be called only from within getValidCUs()
     function _getAllCUs() {
 
-        var $CUsArr,   // this will be hold the array to return
+        var CUsArr,   // this will be hold the array to return
             firstSelector,
             lastSelector,
             centralElementSelector;
 
         if (CUsSelector) {
-            $CUsArr = $.map($(CUsSelector).get(), getJQueryWrapper);
+            CUsArr = $.map($(CUsSelector).get(), getJQueryWrapper);
         }
         else if ((centralElementSelector = CUsSpecifier.buildCUAround)){
             var  $container = $(mod_contentHelper.closestCommonAncestor($(centralElementSelector)));
-            $CUsArr = [];
-            $CUsArr.currentGroupingIndex = 0;
-            buildCUsAroundCentralElement(centralElementSelector, $container, $CUsArr);
+            CUsArr = [];
+            CUsArr.currentGroupingIndex = 0;
+            buildCUsAroundCentralElement(centralElementSelector, $container, CUsArr);
         }
         else if ((firstSelector = CUsSpecifier.first) && (lastSelector = CUsSpecifier.last)) {
 
-            $CUsArr = [];
+            CUsArr = [];
             var $firstsArray = $.map($(firstSelector).get(), getJQueryWrapper());
 
             // TODO: add a comment somewhere explaining how "first" and "last" work "smartly" (i.e. find the respective
@@ -1355,18 +1355,18 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
                     $first = $closestCommonAncestor.children().filter(filterFirst);
                     $last = $closestCommonAncestor.children().filter(filterLast);
-                    $CUsArr[i] = $first.add($first.nextUntil($last)).add($last);
+                    CUsArr[i] = $first.add($first.nextUntil($last)).add($last);
                 }
             }
         }
 
         // returning an empty array instead of undefined means accessing CUs_filtered[selectedCUIndex] (which
         // is done a lot) doesn't need to be prepended with a check against null in each case.
-        return $CUsArr || [];
+        return CUsArr || [];
     }
 
     // returns an array of CUs built around a "central element selector" (`buildCUAround` in urlDataMap)
-    function buildCUsAroundCentralElement (centralElementSelector, $container, $CUsArr) {
+    function buildCUsAroundCentralElement (centralElementSelector, $container, CUsArr) {
 
         //TODO: 1) rename child to sibling etc
         // 2) can `currentGroupingIndex` be named better?
@@ -1396,9 +1396,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                         firstCentralElementFound = true;
                     }
                     else {
-                        ++$CUsArr.currentGroupingIndex;
+                        ++CUsArr.currentGroupingIndex;
                     }
-                    $CUsArr[$CUsArr.currentGroupingIndex] = $currentSibling.add($CUsArr[$CUsArr.currentGroupingIndex]);
+                    CUsArr[CUsArr.currentGroupingIndex] = $currentSibling.add(CUsArr[CUsArr.currentGroupingIndex]);
                 }
                 else if ((num_centralElementsInCurrentSibling = $currentSibling.find(centralElementSelector).length)) {
                     if (num_centralElementsInCurrentSibling === 1) {
@@ -1406,27 +1406,27 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                             firstCentralElementFound = true;
                         }
                         else {
-                            ++$CUsArr.currentGroupingIndex;
+                            ++CUsArr.currentGroupingIndex;
                         }
-                        $CUsArr[$CUsArr.currentGroupingIndex] = $currentSibling.add($CUsArr[$CUsArr.currentGroupingIndex]);
+                        CUsArr[CUsArr.currentGroupingIndex] = $currentSibling.add(CUsArr[CUsArr.currentGroupingIndex]);
                     }
                     else { // >= 2
                         if (!firstCentralElementFound) {
                             firstCentralElementFound = true;
                         }
                         else {
-                            ++$CUsArr.currentGroupingIndex;
+                            ++CUsArr.currentGroupingIndex;
                         }
 
-                        buildCUsAroundCentralElement(centralElementSelector, $currentSibling, $CUsArr);
+                        buildCUsAroundCentralElement(centralElementSelector, $currentSibling, CUsArr);
                     }
                 }
                 else {
-                    $CUsArr[$CUsArr.currentGroupingIndex] = $currentSibling.add($CUsArr[$CUsArr.currentGroupingIndex]);
+                    CUsArr[CUsArr.currentGroupingIndex] = $currentSibling.add(CUsArr[CUsArr.currentGroupingIndex]);
                 }
             }
         }
-        return $CUsArr;
+        return CUsArr;
     }
 
     /* Returns true if all constituent elements of $CU1 are contained within (the constituents of) $CU2, false
@@ -1514,27 +1514,27 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //    }
 
     /**
-     * process all CUs in $CUsArr does the following
+     * process all CUs in CUsArr does the following
      1) remove any CU that is not visible in the DOM
      2) remove any CU that is fully contained within another
      */
-    function processCUs($CUsArr) {
+    function processCUs(CUsArr) {
 
-        if (!$CUsArr || !$CUsArr.length) {
+        if (!CUsArr || !CUsArr.length) {
             return;
         }
 
-        var CUsArrLen = $CUsArr.length,
+        var CUsArrLen = CUsArr.length,
             i;
         
         var removeCurrentCU = function() {
-            $CUsArr.splice(i, 1);
+            CUsArr.splice(i, 1);
             --CUsArrLen;
             --i; 
         };
 
         for (i = 0; i < CUsArrLen; ++i) {
-            var $CU = $CUsArr[i];
+            var $CU = CUsArr[i];
             if (!$CU.hasClass('UnitsProj-HiddenByFiltering') && isCUInvisible($CU)) {
                 removeCurrentCU();
                 continue;
@@ -1557,7 +1557,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                         continue;
                     }
 
-                    if (isCUContainedInAnother($CU, $CUsArr[j])) {
+                    if (isCUContainedInAnother($CU, CUsArr[j])) {
                         removeCurrentCU();
                         $CU.data('isContainedInAnother', true);
                         break;
@@ -1630,16 +1630,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    function $getCommonCUsAncestor($CUs) {
-        if (!$CUs || !$CUs.length)
+    function $getCommonCUsAncestor(CUs) {
+        if (!CUs || !CUs.length)
             return $(document.body);    // use this as the common ancestor for now
         
         var topLevelCUElements = [],    // a collection of the top level elements of all CUs
-            CUsArrLen = $CUs.length,
+            CUsArrLen = CUs.length,
             $CU;
 
         for (var i = 0; i < CUsArrLen; ++i) {
-            $CU = $CUs[i];
+            $CU = CUs[i];
             topLevelCUElements = topLevelCUElements.concat($CU.get());
         }
 
