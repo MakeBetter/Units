@@ -2,7 +2,7 @@
  * This module implements the basic utility features this extension provides by to a page, like scrolling, 
  * going back/forward, etc
  */
-_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
+_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll) {
     "use strict";
 
     /*-- Public interface --*/
@@ -106,28 +106,26 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
         var elToScroll = getElementToScroll(areScrollingUp);
 
         if (elToScroll) {
-            var $elToScroll = $(elToScroll);
-            $elToScroll.stop(true, true); // stop on-going animation, if any
             switch(scrollType) {
-                case "down":  
-                    $elToScroll.animate({scrollTop: elToScroll.scrollTop + miscSettings.pageScrollDelta}, scrollAnimationDuration);
+                case "down":
+                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop + miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "up":
-                    $elToScroll.animate({scrollTop: elToScroll.scrollTop - miscSettings.pageScrollDelta}, scrollAnimationDuration);
+                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "pageDown":
-                    $elToScroll.animate({scrollTop: elToScroll.scrollTop +
-                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn)}, scrollAnimationDuration);
+                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop +
+                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
                     break;
                 case "pageUp":
-                    $elToScroll.animate({scrollTop: elToScroll.scrollTop -
-                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn)}, scrollAnimationDuration);
+                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop -
+                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
                     break;
                 case "top":
-                    $elToScroll.animate({scrollTop: 0}, scrollAnimationDuration);
+                    mod_smoothScroll.smoothScroll(elToScroll, 0, scrollAnimationDuration);
                     break;
                 case "bottom":
-                    $elToScroll.animate({scrollTop: elToScroll.scrollHeight}, scrollAnimationDuration);
+                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollHeight, scrollAnimationDuration);
                     break;
             }
         }
@@ -274,4 +272,4 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib) {
     }
 
     return thisModule;
-})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib);
+})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll);

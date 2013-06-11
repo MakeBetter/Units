@@ -44,6 +44,7 @@
                 "content_scripts/CONSTS.js",
                 "content_scripts/initializeTopLevelContainer.js",
 
+                "content_scripts/mod_smoothScroll.js",
                 "content_scripts/mod_contentHelper.js",
                 "content_scripts/mod_context.js",
                 "content_scripts/mod_pubSub.js",

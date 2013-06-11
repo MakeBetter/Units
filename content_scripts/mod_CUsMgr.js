@@ -2,7 +2,8 @@
 
 
 _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib, mod_mutationObserver, mod_filterCUs,
-                          mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context, CONSTS) {
+                          mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context,
+                          mod_smoothScroll, CONSTS) {
 
     "use strict";
 
@@ -82,7 +83,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         overlayCssHasTransition,
 
         $document = $(document), // cached jQuery object
-        $body = $(document.body),
+        body,
 
         rtMouseBtnDown,         // boolean holding the state of the right mouse button
 //        ltMouseBtnDown,         // boolean holding the state of the left mouse button
@@ -101,10 +102,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // selected/last-selected, IF it is not in the viewport
         selectionTimeoutPeriod = 60000,
 
-// TODO: one of the following two is not needed
-        stopExistingScrollAnimation,
-        animationInProgress,
-
         CUsFoundOnce,
 
         $commonCUsAncestor, // closest common ancestor of the CUs
@@ -117,7 +114,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // cause scrollHeight changes; refer to `onMutations_fallback()`
         groupingInterval_fallbackDomMutations = 1000,
 
-        // We take this to be the element with the highest scrollHeight. Usually this is the body
+        // This is checked for height changes on DOM mutations since that's a good indication that the CUs on the page
+        // have changed. We take this to be the element with the highest scrollHeight. Usually this is the body.
         mainContainer,
         mainContainer_prevScrollHeight,
         mainContainer_prevScrollWidth,
@@ -130,16 +128,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsSelector,    // holds a value if CUs are specified directly using a selector
         mainElementSelector, // selector for main element of a CU, if specified
         CUStyleData,
-        CUsShortcuts,
+        CUsShortcuts;
 
-//        lastInvocationTime_updateCUs,
-
-        // the following variables are defined globally to allow `invokeIncrementalScroll` to be defined as a global
-        // function rather than an inner function of `animatedScroll` (which aids performance)
-        currentPosition_CURelatedScroll,
-        lastInvokedTime_CURelatedScroll, // will contain the time of the last invocation (of invokeIncrementalScroll)
-        intervalId_CURelatedScroll,
-        body, destination_CURelatedScroll, areScrollingDown, speed_CURelatedScroll;
 
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
     function onMutations_fallback(mutations) {
@@ -334,7 +324,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUSelection) && (fn_onCUSelection = temp.fn)) {
             fn_onCUSelection($CU, document, $.extend(true, {}, expandedUrlData));
         }
-
     }
 
     /**
@@ -623,26 +612,21 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 }
 
                 // ensure value is not more then the max possible
-                if (newWinTop > $document.height() - winHeight) {
-                    newWinTop = $document.height() - winHeight;
+                if (newWinTop > document.height - winHeight) {
+                    newWinTop = document.height - winHeight;
                 }
 
                 showScrollingMarker(boundingRect.left, winBottom - overlapAfterScroll, overlapAfterScroll);
             }
 
             if (miscSettings.animatedCUScroll) {
-
-//                console.log('animated SAME CU scroll');
-
                 var animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
                     Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
 
-                animatedScroll(newWinTop, animationDuration);
-//                animatedScroll_jQuery(newWinTop, animationDuration);
-//                $(document.body).animate({scrollTop: newWinTop}, animationDuration);
+                mod_smoothScroll.smoothScroll(body, newWinTop, animationDuration);
+
             }
             else {
-//                console.log('NON animated SAME CU scroll');
                 body.scrollTop = newWinTop;
             }
 
@@ -660,15 +644,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (!CUs_filtered || !CUs_filtered.length || CUs_filtered.length == 1) {
             mod_basicPageUtils.scroll("up");
             return;
-        }
-
-        // to handle quick repeated invocations...
-        if (animationInProgress) {
-            stopExistingScrollAnimation = true;
-            return;
-        }
-        else {
-            stopExistingScrollAnimation = false;
         }
 
         $scrollingMarker.hide();
@@ -715,16 +690,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             mod_basicPageUtils.scroll("down");
             return;
         }
-
-        // to handle quick repeated invocations...
-        if (animationInProgress) {
-            stopExistingScrollAnimation = true;
-            return;
-        }
-        else {
-            stopExistingScrollAnimation = false;
-        }
-
         $scrollingMarker.hide();
 
         var $selectedCU = CUs_filtered[selectedCUIndex];
@@ -1075,82 +1040,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         };
     }
 
-    function animatedScroll_jQuery(scrollTop, duration) {
-        var $body = $(document.body);
-        $body.stop(true, true); // stop on-going animation, if any
-        $body.animate({scrollTop: scrollTop}, duration);
-    }
-
-// sets the document's scrollTop to the value specified, using gradual changes in the scrollTop value.
-    function animatedScroll(scrollTop, duration) {
-
-        /*var */destination_CURelatedScroll = scrollTop;
-
-        // ensure that destination_CURelatedScroll scrollTop position is within the possible range
-        if (destination_CURelatedScroll < 0) {
-            destination_CURelatedScroll = 0;
-        }
-        else if (destination_CURelatedScroll > $document.height() - window.innerHeight) {
-            destination_CURelatedScroll = $document.height() - window.innerHeight; // $(window).height does not work on HN
-        }
-
-        currentPosition_CURelatedScroll = body.scrollTop;
-//        var areScrollingDown;
-
-        if (destination_CURelatedScroll > currentPosition_CURelatedScroll) {
-            areScrollingDown = true;
-        }
-        else if (destination_CURelatedScroll < currentPosition_CURelatedScroll) {
-            areScrollingDown = false;
-        }
-        else {
-            return;
-        }
-
-        var totalDisplacement = destination_CURelatedScroll - currentPosition_CURelatedScroll,
-
-
-        // millisecs (actually this is the *minimum* interval between any two consecutive invocations of
-        // invokeIncrementalScroll, not necessarily the actual period between any two consecutive ones.
-        // This is  handled by calculating the time diff. between invocations. See later.)
-            intervalPeriod = Math.min(25, miscSettings.animatedCUScroll_MaxDuration/4);
-        speed_CURelatedScroll = totalDisplacement/duration; // pixels per millisec
-
-        animationInProgress = true;
-        // in the following lines, we call  'invokeIncrementalScroll' once, after setting 'lastInvokedTime_CURelatedScroll' to the
-        // current time minus 'intervalPeriod'. This allows the first invocation of the function to take place immediately
-        // rather than at the end of the 'intervalPeriod'.
-        lastInvokedTime_CURelatedScroll = Date.now() - intervalPeriod;
-        invokeIncrementalScroll();   // invoke once immediately, before setting setInterval.
-
-        intervalId_CURelatedScroll = setInterval (invokeIncrementalScroll, intervalPeriod);
-    }
-
-    function invokeIncrementalScroll() {
-
-        if (stopExistingScrollAnimation) {
-//                console.log('interval CLEARED.');
-            clearInterval(intervalId_CURelatedScroll);
-            body.scrollTop = destination_CURelatedScroll;
-            animationInProgress = false;
-            return;
-        }
-
-//        areScrollingDown? (currentPosition_CURelatedScroll += scrollDelta): (currentPosition_CURelatedScroll -= scrollDelta);
-        var now = Date.now();
-        currentPosition_CURelatedScroll += (now - lastInvokedTime_CURelatedScroll) * speed_CURelatedScroll;
-        lastInvokedTime_CURelatedScroll = now;
-        if (areScrollingDown? (currentPosition_CURelatedScroll >= destination_CURelatedScroll): (currentPosition_CURelatedScroll <= destination_CURelatedScroll)) {
-            body.scrollTop = destination_CURelatedScroll;
-            clearInterval(intervalId_CURelatedScroll);
-            animationInProgress = false;
-        }
-        else {
-            body.scrollTop = currentPosition_CURelatedScroll;
-        }
-
-    }
-
     /**
      * Scrolls the window such the specified element lies fully in the viewport (or as much as is
      * possible if the element is too large).
@@ -1200,14 +1089,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         if (miscSettings.animatedCUScroll) {
-//            console.log('animated CU scroll');
             var animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
                 Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
-            animatedScroll(newWinTop, animationDuration);
-//            animatedScroll_jQuery(newWinTop, animationDuration);
+
+            mod_smoothScroll.smoothScroll(body, newWinTop, animationDuration);
         }
         else {
-//            console.log('NON animated CU scroll');
             body.scrollTop = newWinTop;
         }
     }
@@ -2140,7 +2027,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     return thisModule;
 
 })(jQuery, _u.mod_basicPageUtils, _u.mod_domEvents, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_filterCUs,
-        _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context, _u.CONSTS);
+        _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context,
+        _u.mod_smoothScroll, _u.CONSTS);
 
 
 
