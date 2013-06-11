@@ -31,8 +31,8 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
             return;     // don't setup this module if no elements are specified to be shown in this mode.
         }
 
-        var CUsShortcuts = settings.CUsShortcuts;
-        mod_keyboardLib.bind(CUsShortcuts.toggleZenMode.kbdShortcuts, toggle);
+        var generalShortcuts = settings.generalShortcuts;
+        mod_keyboardLib.bind(generalShortcuts.toggleZenMode.kbdShortcuts, toggle);
 
         thisModule.listenTo(mod_CUsMgr, 'CUs-all-change', function() {
             if (_isActive) {

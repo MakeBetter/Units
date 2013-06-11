@@ -114,6 +114,10 @@ var defaultSettings = {
         pageDown: {
             miniDescr: "Navigate: Down (fast scroll down)",
             kbdShortcuts: ['n d']
+        },
+        toggleZenMode: {
+            miniDescr: "Toggle zen mode",
+            kbdShortcuts: ['z']
         }
     },
 
@@ -143,12 +147,7 @@ var defaultSettings = {
         lastCU: {
             miniDescr: "Select last CU",
             kbdShortcuts: ['$', 'alt+9']
-        },
-        toggleZenMode: {
-            miniDescr: "Toggle zen mode",
-            kbdShortcuts: ['z']
-        },
-
+        }
     },
 
     /*
