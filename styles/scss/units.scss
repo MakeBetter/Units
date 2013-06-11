@@ -255,5 +255,6 @@ style more specific by using id's of the elements. Fix for #9.
 
 /* Set background for all a's and buttons */
 .UnitsProj-focused-link-or-button:focus {
-  background-color: #e6ffe5 !important;
+  background-color: #caffd6 !important;
+  color: $text-color !important;
 }
