@@ -25,6 +25,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         thisModule.listenTo(mod_filterCUs, 'filtering-state-change', onFilteringStateChange);
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
         thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
+        thisModule.listenTo(mod_filterCUs, 'filter-UI-show', setCommonCUsAncestor);
     }
 
     /* NOTES
@@ -82,8 +83,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // boolean, holds a value indicating where the css specifies a transition style for overlays
         overlayCssHasTransition,
 
-        $document = $(document), // cached jQuery object
+        $document = $(document),    // cached jQuery object
         body,
+        $body,                      // cached jQuery object
 
         rtMouseBtnDown,         // boolean holding the state of the right mouse button
 //        ltMouseBtnDown,         // boolean holding the state of the left mouse button
@@ -194,6 +196,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // This is required before we call setupEvents();
         overlayCssHasTransition = checkOverlayCssHasTransition();
         body = document.body;
+        $body = $(body);
 
         var tmp;
         // assign from `settings` to global variables
@@ -1106,9 +1109,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function onUpdatingCUs() {
         console.time("onUpdatingCUs");
 
-        console.time("commonAncestor");
-        $commonCUsAncestor = $getCommonCUsAncestor(CUs_all);
-        console.timeEnd("commonAncestor");
+//        console.time("commonAncestor");
+//        $commonCUsAncestor = $getCommonCUsAncestor(CUs_all);
+//        console.timeEnd("commonAncestor");
 
         mainContainer  = getMainContainer();
         mainContainer_prevScrollHeight = mainContainer.scrollHeight;
@@ -1190,11 +1193,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function updateCUsAndRelatedState() {
         var disabledByMe = mod_mutationObserver.disable();
 //        var savedScrollPos = body.scrollTop;
+//        $(body).hide();
 //        $commonCUsAncestor && $commonCUsAncestor.hide();
         console.time("update CUs");
         _updateCUsAndRelatedState();
         console.timeEnd("update CUs");
 //        $commonCUsAncestor && $commonCUsAncestor.show();
+//        $(body).show();
 //        body.scrollTop = savedScrollPos;
         disabledByMe && mod_mutationObserver.enable();
     }
@@ -1630,20 +1635,20 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    function $getCommonCUsAncestor(CUs) {
-        if (!CUs || !CUs.length)
-            return $(document.body);    // use this as the common ancestor for now
-        
+    function setCommonCUsAncestor () {
+        if (!CUs_all || !CUs_all.length) {
+            $commonCUsAncestor = $body;  // body is chosen being a "safe" choice
+            return;
+        }
         var topLevelCUElements = [],    // a collection of the top level elements of all CUs
-            CUsArrLen = CUs.length,
+            CUsArrLen = CUs_all.length,
             $CU;
 
         for (var i = 0; i < CUsArrLen; ++i) {
-            $CU = CUs[i];
+            $CU = CUs_all[i];
             topLevelCUElements = topLevelCUElements.concat($CU.get());
         }
-
-        return $(mod_contentHelper.closestCommonAncestor(topLevelCUElements));
+        $commonCUsAncestor = $(mod_contentHelper.closestCommonAncestor(topLevelCUElements));
     }
 
     /**

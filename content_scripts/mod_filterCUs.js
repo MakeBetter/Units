@@ -96,7 +96,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         var savedScrollPos;
         if (!userInvoked) {
             // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
-            savedScrollPos = $document.scrollTop();
+            savedScrollPos = document.body.scrollTop;
         }
         else {
             savedScrollPos = 0;
@@ -140,7 +140,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         // ** --------- POST FILTERING --------- **
         $scope.show();
         $scope_prevFiltering = $scope;
-        $document.scrollTop(savedScrollPos);
+        document.body.scrollTop = savedScrollPos;
         disabledByMe && mod_mutationObserver.enable();
 
         return CUs_filtered;
@@ -291,6 +291,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         else {
             $searchBox.focus();
         }
+        thisModule.trigger('filter-UI-show');
         disabledByMe && mod_mutationObserver.enable();
     }
 
