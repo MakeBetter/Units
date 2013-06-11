@@ -23,6 +23,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     if (mod_filterCUs) {
         thisModule.listenTo(mod_filterCUs, 'filtering-state-change', onFilteringStateChange);
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
+        thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
     }
 
     /* NOTES
@@ -1264,6 +1265,25 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         deselectCU();
         CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, $commonCUsAncestor, true);
         miscSettings.selectCUOnLoad && selectFirst(false, false);
+    }
+
+    function onFilterUIClose() {
+        var $CUToSelect = CUs_filtered[selectedCUIndex];
+        mod_filterCUs.undoPreviousFiltering();
+        dehoverCU();
+        deselectCU();
+        CUs_filtered = CUs_all;
+
+        if ($CUToSelect) {
+            var index = findCUInArray($CUToSelect, CUs_filtered);
+            if (index >= 0) {
+                // if filtering search box has been closed, focus should be set on the CU
+                selectCU(index, true, true);
+            }
+        }
+        else if (miscSettings.selectCUOnLoad){
+            selectFirst(true, true);
+        }
     }
 
     /**

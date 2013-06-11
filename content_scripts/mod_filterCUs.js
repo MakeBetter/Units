@@ -7,6 +7,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         setup: setup,
         isActive: isActive,
         applyFiltering: applyFiltering,
+        undoPreviousFiltering: undoPreviousFiltering,
         showSearchBox: showSearchBox
     });
 
@@ -16,7 +17,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     var $filterCUsContainer,
         $searchBox,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
-//        isVisible = false,
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
         $document = $(document),
@@ -26,7 +26,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     // reset state
     function reset() {
         // the following two lines are conditional because otherwise they won't be valid till setup() is called once
-        $searchBox && closeSearchBox(); // to call triggerFilteringIfRequired()
+        $searchBox && closeSearchBox(); // to deactivate filtering if it was active
         $filterCUsContainer && $filterCUsContainer.remove();
         timeout_typing = null;
         lastFilterText_lowerCase = "";
@@ -52,11 +52,13 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             .hide()     // to prevent the search box from appearing when the page loads
             .appendTo(_u.$topLevelContainer);
 
-        $searchBox.on('paste input', onSearchBoxInput);
-        // Instead of specifying 'keydown' as part of the on() call above, use addEventListener to have priority over
+        // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $searchBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
-        mod_domEvents.addEventListener(document, 'keydown', onSearchBoxInput, true);
+        mod_domEvents.addEventListener(document, 'keydown', onSearchBoxKeydown, true);
+
+        $searchBox.on('input', onSearchBoxInput);
+
         $closeButton.on('click', closeSearchBox);
 
         mod_keyboardLib.bind(settings.CUsShortcuts.search.kbdShortcuts, showSearchBox, {pageHasCUsSpecifier: true});
@@ -148,8 +150,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function undoPreviousFiltering() {
         if ($scope_prevFiltering) {
             removeHighlighting($scope_prevFiltering);
-            var $hiddenByPrevFiltering = $scope_prevFiltering.find('.UnitsProj-HiddenByFiltering');
-            $hiddenByPrevFiltering.removeClass('UnitsProj-HiddenByFiltering');
+            $scope_prevFiltering.find('.UnitsProj-HiddenByFiltering').removeClass('UnitsProj-HiddenByFiltering');
         }
     }
 
@@ -237,14 +238,13 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         }
     }
 
-    function onSearchBoxInput(e) {
-        clearTimeout(timeout_typing); // clears timeout if it is set
+    function onSearchBoxKeydown(e) {
+        var code = e.which;
+        console.log("which: ", e.which);
+        // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
+        if (e.target === $searchBox[0] && [17, 18, 91, 93].indexOf(code) == -1) {
 
-        if (e.target === $searchBox[0] && e.type === 'keydown') {
-
-            var code = e.which || e.keyCode;
-
-            if (code === 27) { // ESc
+            if (code === 27) { // Esc
                 suppressEvent(e);
                 closeSearchBox();
             }
@@ -254,19 +254,26 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             }
             else if (code === 9) { // Tab
                 suppressEvent(e);
+                triggerFilteringIfRequired();
                 thisModule.trigger('tab-on-filter-search-box');
             }
         }
+    }
 
-        // setting the time out below, in conjunction with the clearTimeout() earlier, allows search-as-you-type, while
-        // not executing the filtering related code till there is a brief pause in the typing
+    function onSearchBoxInput() {
+        // to allow search-as-you-type, while not executing the filtering related code till there is a brief pause in the typing
+        clearTimeout(timeout_typing); // clears timeout if it is set
+        console.log('cleared timeout');
         timeout_typing = setTimeout (triggerFilteringIfRequired, 400);
     }
 
     function triggerFilteringIfRequired() {
-        var filterText_lowerCase = getSearchBoxText_lowerCase();
-        if (lastFilterText_lowerCase !== filterText_lowerCase) {
+        clearTimeout(timeout_typing); // clears timeout if it is set
+        if (lastFilterText_lowerCase !== getSearchBoxText_lowerCase()) {
             thisModule.trigger('filtering-state-change');
+        }
+        else {
+            console.log("!! no filtering required, because ", lastFilterText_lowerCase, " === ", getSearchBoxText_lowerCase());
         }
     }
 
@@ -289,10 +296,11 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     function closeSearchBox() {
         var disabledByMe = mod_mutationObserver.disable();
+        clearTimeout(timeout_typing); // clears timeout if it is set
         $searchBox.val('');
         $searchBox.blur();
         $filterCUsContainer.hide();
-        triggerFilteringIfRequired();
+        thisModule.trigger('filter-UI-close');
         disabledByMe && mod_mutationObserver.enable();
     }
 
