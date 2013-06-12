@@ -264,9 +264,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         if (lastFilterText_lowerCase !== getSearchBoxText_lowerCase()) {
             thisModule.trigger('filter-text-change');
         }
-        else {
-            console.log("!! no filtering required, because ", lastFilterText_lowerCase, " === ", getSearchBoxText_lowerCase());
-        }
     }
 
     function getSearchBoxText_lowerCase() {
