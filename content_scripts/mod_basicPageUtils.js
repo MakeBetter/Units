@@ -30,6 +30,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         scrollAnimationDuration = 150; // millisecs
 
     function reset() {
+        removeActiveElementStyle();
     }
 
     function setup(settings) {
@@ -39,11 +40,14 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         // is now deprecated) [http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-activation]
         mod_domEvents.addEventListener(document, 'click', setLastInteractedElement, true);
         mod_domEvents.addEventListener(document, 'focus', setLastInteractedElement, true);
-        mod_domEvents.addEventListener(document, 'focus', styleActiveElement, true);
-        mod_domEvents.addEventListener(document, 'blur', removeActiveElementStyle, true);
         mod_domEvents.addEventListener(document, 'mouseover', setLastInteractedElement, true);
 
         miscSettings = settings.miscSettings;
+        if (miscSettings.enhanceActiveElementVisibility) {
+            mod_domEvents.addEventListener(document, 'focus', styleActiveElement, true);
+            mod_domEvents.addEventListener(document, 'blur', removeActiveElementStyle, true);
+        }
+
         setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
     }
     
@@ -268,7 +272,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
     }
 
     function removeActiveElementStyle(event) {
-        $(event.target).removeClass("UnitsProj-embed-focused UnitsProj-focused-embed UnitsProj-focused-link-or-button");
+        var element = (event && event.target) || document.activeElement;
+        $(element).removeClass("UnitsProj-focused-element UnitsProj-focused-embed UnitsProj-focused-link-or-button");
     }
 
     return thisModule;
