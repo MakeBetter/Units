@@ -32,6 +32,10 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     }
 
     function setup(settings) {
+        if (! (settings.expandedUrlData && settings.expandedUrlData.CUs_specifier)) {
+            return;     // this module is not setup if there is no CUs_specifier in the urlData
+        }
+        
         reset();
         $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);
