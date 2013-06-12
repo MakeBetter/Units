@@ -25,7 +25,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilteringStateChange);
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
         thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
-        thisModule.listenTo(mod_filterCUs, 'filter-UI-show', setCommonCUsAncestor);
+//        thisModule.listenTo(mod_filterCUs, 'filter-UI-show', setCommonCUsAncestor);
     }
 
     /* NOTES
@@ -106,7 +106,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         CUsFoundOnce,
 
-        $commonCUsAncestor, // closest common ancestor of the CUs
+//        $commonCUsAncestor, // closest common ancestor of the CUs
 
         lastTime_updateCUsEtc,
         timeout_updateCUs,
@@ -222,7 +222,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function onDomReady() {
         // assume these to be body for now
         mainContainer = document.body;
-        $commonCUsAncestor = $(document.body);
 
         thisModule.listenTo(mod_mutationObserver, 'document-mutations', onMutations_fallback);
         thisModule.listenTo(mod_mutationObserver, 'CU-mutations', updateCUOverlays);
@@ -1163,13 +1162,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function onFilteringStateChange() {
         dehoverCU();
         deselectCU();
-        CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, $commonCUsAncestor, true);
+        CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, true);
         miscSettings.selectCUOnLoad && selectFirst(false, false);
     }
 
     function onFilterUIClose() {
         var $CUToSelect = CUs_filtered[selectedCUIndex];
-        mod_filterCUs.undoPreviousFiltering();
+        mod_filterCUs.undoPrevFiltering();
         dehoverCU();
         deselectCU();
         CUs_filtered = CUs_all;
@@ -1225,7 +1224,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         thisModule.trigger("CUs-all-change");
 
         if (mod_filterCUs.isActive()) {
-            CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, $commonCUsAncestor, false);
+            CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, false);
         }
 
         mod_context.setCUsCount(CUs_filtered.length);   // do this after filtering is applied
@@ -1635,21 +1634,21 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    function setCommonCUsAncestor () {
-        if (!CUs_all || !CUs_all.length) {
-            $commonCUsAncestor = $body;  // body is chosen being a "safe" choice
-            return;
-        }
-        var topLevelCUElements = [],    // a collection of the top level elements of all CUs
-            CUsArrLen = CUs_all.length,
-            $CU;
-
-        for (var i = 0; i < CUsArrLen; ++i) {
-            $CU = CUs_all[i];
-            topLevelCUElements = topLevelCUElements.concat($CU.get());
-        }
-        $commonCUsAncestor = $(mod_contentHelper.closestCommonAncestor(topLevelCUElements));
-    }
+//    function setCommonCUsAncestor () {
+//        if (!CUs_all || !CUs_all.length) {
+//            $commonCUsAncestor = $body;  // body is chosen being a "safe" choice
+//            return;
+//        }
+//        var topLevelCUElements = [],    // a collection of the top level elements of all CUs
+//            CUsArrLen = CUs_all.length,
+//            $CU;
+//
+//        for (var i = 0; i < CUsArrLen; ++i) {
+//            $CU = CUs_all[i];
+//            topLevelCUElements = topLevelCUElements.concat($CU.get());
+//        }
+//        $commonCUsAncestor = $(mod_contentHelper.closestCommonAncestor(topLevelCUElements));
+//    }
 
     /**
      * Special handler for the escape key

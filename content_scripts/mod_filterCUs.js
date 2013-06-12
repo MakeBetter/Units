@@ -7,7 +7,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         setup: setup,
         isActive: isActive,
         applyFiltering: applyFiltering,
-        undoPreviousFiltering: undoPreviousFiltering,
+        undoPrevFiltering: undoPrevFiltering,
         showSearchBox: showSearchBox
     });
 
@@ -20,9 +20,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
         $document = $(document),
-        lastFilterText_lowerCase,
-        $scope_prevFiltering;
-
+        lastFilterText_lowerCase;
+    
     // reset state
     function reset() {
         // the following two lines are conditional because otherwise they won't be valid till setup() is called once
@@ -30,7 +29,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         $filterCUsContainer && $filterCUsContainer.remove();
         timeout_typing = null;
         lastFilterText_lowerCase = "";
-        $scope_prevFiltering = "";
     }
 
     function setup(settings) {
@@ -73,7 +71,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
      * 'UnitsProj-HiddenByFiltering'  to CUs which do no match the text in the filtering search box.
      * Returns an array containing only the filtered CUs.
      * @param CUs_all
-     * @param $scope - jQuery set of dom elements which between themselves should contain all of the CUs in $CUsArr
      * @param userInvoked Pass true to indicate that the user invoked the filtering (as opposed to dom-change etc).
      *
      * @returns {Array} Array of filtered CUs. If filtering was required, this this is a new array, which has a
@@ -81,12 +78,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
      * is an empty string), it returns the same array `CUs_all`. (As per the assumption in mod_CUsMgr that when
      * no filtering is active it's variables `CUs_main` and `_CUs_all` point to the same array)
      */
-    function applyFiltering(CUs_all, $scope, userInvoked) {
+    function applyFiltering(CUs_all, userInvoked) {
         var filterText_lowerCase = getSearchBoxText_lowerCase();
 
         // if no filtering required
         if (!CUs_all.length || !filterText_lowerCase) {
-            undoPreviousFiltering();
+            undoPrevFiltering();
             return CUs_all;
         }
 
@@ -101,7 +98,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         else {
             savedScrollPos = 0;
         }
-        $scope.hide();
+        $document.hide();
 
 
         // ** --------- FILTERING --------- **
@@ -112,11 +109,11 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         if (!reuseLastFiltering) {
             // undo all effects of the previous filtering
-            undoPreviousFiltering();
+            undoPrevFiltering();
         }
         else {
             // remove highlighting (but don't undo other actions of previous filtering)
-            removeHighlighting($scope_prevFiltering); //TODO: this is need at the moment. can we avoid this?
+            removePrevHighlighting(); //TODO: this is need at the moment. can we avoid this?
         }
 
 //      console.log('actual filtering taking place...');
@@ -136,22 +133,17 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             }
         }
 
-
         // ** --------- POST FILTERING --------- **
-        $scope.show();
-        $scope_prevFiltering = $scope;
+        $document.show();
         document.body.scrollTop = savedScrollPos;
         disabledByMe && mod_mutationObserver.enable();
 
         return CUs_filtered;
-
     }
 
-    function undoPreviousFiltering() {
-        if ($scope_prevFiltering) {
-            removeHighlighting($scope_prevFiltering);
-            $scope_prevFiltering.find('.UnitsProj-HiddenByFiltering').removeClass('UnitsProj-HiddenByFiltering');
-        }
+    function undoPrevFiltering() {
+        removePrevHighlighting();
+        $document.find('.UnitsProj-HiddenByFiltering').removeClass('UnitsProj-HiddenByFiltering');
     }
 
     // based on http://johannburkard.de/blog/programming/javascript/highlight-javascript-text-higlighting-jquery-plugin.html
@@ -222,10 +214,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         return numHighlighted;
     }
 
-// $scope - dom node or jQuery set within which highlighting should be removed
-    function removeHighlighting ($scope) {
-        if ($scope) {
-            var $set = $scope.find(".UnitsProj-highlight");
+    function removePrevHighlighting () {
+            var $set = $document.find(".UnitsProj-highlight");
             var len = $set.length;
             for (var i = 0; i < len; i++) {
                 var el = $set[i];
@@ -235,7 +225,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
                 parentNode.normalize();
 
             }
-        }
     }
 
     function onSearchBoxKeydown(e) {
@@ -291,7 +280,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         else {
             $searchBox.focus();
         }
-        thisModule.trigger('filter-UI-show');
         disabledByMe && mod_mutationObserver.enable();
     }
 
