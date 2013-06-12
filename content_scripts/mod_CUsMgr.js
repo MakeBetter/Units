@@ -870,7 +870,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function findCUInArray($CU, CUs, suggestedIndex)  {
 
         if (suggestedIndex && areCUsSame($CU, CUs[suggestedIndex])) {
-            console.log("shortcut");
             return suggestedIndex;
         }
 
@@ -1223,6 +1222,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
                 selectMostSensibleCU(true, false);
             }
+            mainContainer  = getMainContainer();
         }
         else {
             if (CUs_filtered && CUs_filtered.length) {
