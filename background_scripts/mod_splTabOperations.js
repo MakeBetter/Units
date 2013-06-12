@@ -57,9 +57,20 @@
                     currentIndex = activeTab.index;
                 // next, get number of tabs in the window, in order to allow cyclic next
                 chrome.tabs.query({currentWindow: true}, function (tabs) {
-                    var numTabs = tabs.length;
+
                     // finally, determine index of tab to activate and activate tab based on it
-                    chrome.tabs.query({currentWindow:true, index: (currentIndex + ((which === "next")? 1: -1)) % numTabs}, function(tabs) {
+                    var numTabs = tabs.length,
+                        index = currentIndex + ((which === "next")? 1: -1);
+
+                    //cycle from the other side if we have reached an edge tab
+                    if (index === -1) {
+                        index = numTabs - 1;
+                    }
+                    else if (index === numTabs) {
+                        index = 0;
+                    }
+
+                    chrome.tabs.query({currentWindow:true, index: index}, function(tabs) {
                         if (tabs.length) {
                             var tabToActivate = tabs[0],
                                 tabToActivate_Id = tabToActivate.id;
