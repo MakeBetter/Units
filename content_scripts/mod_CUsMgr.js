@@ -1106,27 +1106,22 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
    
     function onUpdatingCUs() {
-        console.time("onUpdatingCUs");
 
 //        console.time("commonAncestor");
 //        $commonCUsAncestor = $getCommonCUsAncestor(CUs_all);
 //        console.timeEnd("commonAncestor");
 
-        mainContainer  = getMainContainer();
+        if (!document.contains(mainContainer)) {
+            mainContainer  = getMainContainer();
+        }
         mainContainer_prevScrollHeight = mainContainer.scrollHeight;
         mainContainer_prevScrollWidth = mainContainer.scrollWidth;
 
         if (CUs_all.length) {
-            console.time('enableMOs_for_Ancestors');
-            // take ancestors of first, middle and last CUs (it's okay if we miss out some ancestors, since we have
-            // a fall back mutation observer to handle those.
-            var $CUAncestorsToObserve = CUs_all[0].parents()
-                .add(CUs_all[CUs_all.length-1].parents())
-                .add(CUs_all[Math.floor(CUs_all.length/2)].parents());
-            mod_mutationObserver.enableFor_CUsAncestors($CUAncestorsToObserve);
-            console.timeEnd('enableMOs_for_Ancestors');
+            // take ancestors of middle CU (it's okay if we miss out some ancestors, since we have a fallback
+            // mutation observer as well
+            mod_mutationObserver.enableFor_CUsAncestors(CUs_all[Math.floor(CUs_all.length/2)].parents());
         }
-        console.timeEnd("onUpdatingCUs");
     }
 
     // updates the overlays of selected and hovered overlays
