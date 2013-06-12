@@ -388,7 +388,8 @@ defaultSettings.urlDataMap = {
                 "std_share": ".share_link",
                 "follow": {
                     selector: ".follow_question",
-                    kbdShortcuts:["shift+f"]
+                    kbdShortcuts:["shift+f"],
+                    miniDescr: "Follow"
                 }
             },
             page_MUs: {
@@ -634,6 +635,31 @@ defaultSettings.urlDataMap = {
             selector: ".box>table tr"
         }
     },
+
+    // pages that have their own units.
+
+    "twitter.com": {
+        urlPatterns: ["twitter.com/*"],
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+    },
+
+    "github.com": {
+        urlPatterns: ["github.com/*"],
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+    },
+
+     "duckduckgo.com": {
+        urlPatterns: ["duckduckgo.com/*"],
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+    },
+
+     "delicious.com": {
+        urlPatterns: ["delicious.com/*"],
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+    },
+
+
+
 
 };
 
