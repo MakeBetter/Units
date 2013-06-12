@@ -1735,12 +1735,25 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         if (indexToSelect >= 0) {
             selectCU(indexToSelect, false, false);
-            var activeEl = document.activeElement,
-                indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
 
-            if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
-                activeEl.blur();
-            }
+            var focusMainElementIfRequired = function() {
+
+                /* If the current active element is already inside the selected CU, then do nothing.
+                   Else focus the main element of the selected CU.
+                   (Say, the user clicked on a textbox inside a unit. In that case, you don't want to steal the focus
+                   from the textbox to the main element.) */
+
+                var activeEl = document.activeElement,
+                    indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
+
+                if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
+                    focusMainElement(CUs_filtered[indexToSelect]);
+                }
+            };
+
+            setTimeout(focusMainElementIfRequired, 0); // delay = 0. Execute this after the event is processed. We need
+            // the clicked-on element to get focus first before
+
         }
         else {
             deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
