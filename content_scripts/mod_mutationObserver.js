@@ -126,12 +126,12 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     }
 
     function handler_selectedCU(mutations) {
-        console.log("!!!selectedCU-mutations !!!");
+//        console.log("!!!selectedCU-mutations !!!");
         thisModule.trigger("CU-mutations", mutations);
     }
 
     function handler_CUsAncestors(mutations) {
-        console.log("!!ancestor muts!!");
+//        console.log("!!ancestor muts!!");
         thisModule.trigger("CUsAncestors-mutations", mutations);
     }
 

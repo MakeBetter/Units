@@ -1186,15 +1186,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function updateCUsAndRelatedState() {
         var disabledByMe = mod_mutationObserver.disable();
-//        var savedScrollPos = body.scrollTop;
-//        $(body).hide();
-//        $commonCUsAncestor && $commonCUsAncestor.hide();
-        console.time("update CUs");
         _updateCUsAndRelatedState();
-        console.timeEnd("update CUs");
-//        $commonCUsAncestor && $commonCUsAncestor.show();
-//        $(body).show();
-//        body.scrollTop = savedScrollPos;
         disabledByMe && mod_mutationObserver.enable();
     }
 

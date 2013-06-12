@@ -229,7 +229,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     function onSearchBoxKeydown(e) {
         var code = e.which;
-        console.log("which: ", e.which);
         // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
         if (e.target === $searchBox[0] && [17, 18, 91, 93].indexOf(code) == -1) {
 
