@@ -133,7 +133,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
 
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
-    function onMutations_fallback(mutations) {
+    function onMutations_fallback() {
 
         if (mainContainer.scrollHeight !== mainContainer_prevScrollHeight || 
             mainContainer.scrollWidth !== mainContainer_prevScrollWidth) {
@@ -147,7 +147,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
 //            mod_contentHelper.filterOutUnneededMutations(mutations);
 //        if (mutations.length) {
-            delayed_onDomChange_updateCUsEtc();
+            delayed_updateCUsEtc_onMuts();
 //        }
         }
     }
@@ -155,38 +155,38 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function onSelectedCUTopLevelMuts() {
         // if selected CU has become invisible due to the mutations
         if (selectedCUIndex >= 0 && isCUInvisible(CUs_filtered[selectedCUIndex]) ) {
-            onDomChange_updateCUsEtc();
+            updateCUsEtc_onMuts();
         }
         else {
-            delayed_onDomChange_updateCUsEtc();
+            delayed_updateCUsEtc_onMuts();
         }
     }
 
     function updateOverlays_and_delayedUpdateCUs() {
         updateCUOverlays();
-        delayed_onDomChange_updateCUsEtc();
+        delayed_updateCUsEtc_onMuts();
     }
 
     function updateBasedOnLastCUPosition() {
         if (isLastCUFullyInViewport()) {
-            onDomChange_updateCUsEtc(); // update CUs immediately in this case 
+            updateCUsEtc_onMuts(); // update CUs immediately in this case 
         }
         else {
             updateOverlays_and_delayedUpdateCUs();
         }
     }
 
-    // Calls `onDomChange_updateCUsEtc` with a maximum delay of `maxDelay_nonImportantMuts`
-    function delayed_onDomChange_updateCUsEtc() {
+    // Calls `updateCUsEtc_onMuts` with a maximum delay of `maxDelay_nonImportantMuts`
+    function delayed_updateCUsEtc_onMuts() {
         if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
             // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
-            timeout_updateCUs = setTimeout(onDomChange_updateCUsEtc, maxDelay_nonImportantMuts -
+            timeout_updateCUs = setTimeout(updateCUsEtc_onMuts, maxDelay_nonImportantMuts -
                 (Date.now() - lastTime_updateCUsEtc));
         }
     }
 
-    // updates CUs etc in response to a dom-change event
-    function onDomChange_updateCUsEtc() {
+    // updates CUs etc in response to a dom mutations
+    function updateCUsEtc_onMuts() {
         if (timeout_updateCUs) {
             clearTimeout(timeout_updateCUs);
             timeout_updateCUs = false;    // reset
