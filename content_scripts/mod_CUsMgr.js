@@ -25,7 +25,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilteringStateChange);
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
         thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
-//        thisModule.listenTo(mod_filterCUs, 'filter-UI-show', setCommonCUsAncestor);
     }
 
     /* NOTES
@@ -114,7 +113,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // to enable "grouped" handing of mutations deemed non-essential (in heavy sites, a lot of dom mutations
         // are generated; handling all of them instantly slows down performance on heavy sites like facebook, esp.
         // when invoking filtering which often leads to the page fetching new content from the server continuously)  
-        maxDelay_nonImportantMuts = 250,
+        maxDelay_nonImportantMuts = 333,
 
         // This is checked for height changes on DOM mutations since that's a good indication that the CUs on the page 
         // have changed. We take this to be the element with the highest scrollHeight. Usually this is the body.
@@ -150,6 +149,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //        if (mutations.length) {
             delayed_onDomChange_updateCUsEtc();
 //        }
+        }
+    }
+
+    function onSelectedCUTopLevelMuts() {
+        // if selected CU has become invisible due to the mutations
+        if (selectedCUIndex >= 0 && isCUInvisible(CUs_filtered[selectedCUIndex]) ) {
+            onDomChange_updateCUsEtc();
+        }
+        else {
+            delayed_onDomChange_updateCUsEtc();
         }
     }
 
@@ -255,9 +264,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // and 'CUsAncestorsMuts'. Hence as a fallback, they should all update the CUs state within a short period.
         // At the same time, we can treat slightly  differently with the hope that on most websites they
         // will indeed be distinct in the way we hope, thereby giving us a slight performance boost.
-        thisModule.listenTo(mod_mutationObserver, 'selectedCUTopLevelMuts', onDomChange_updateCUsEtc);
-        thisModule.listenTo(mod_mutationObserver, 'selectedCUDescendantsMuts', updateOverlays_and_delayedUpdateCUs);
+        thisModule.listenTo(mod_mutationObserver, 'selectedCUTopLevelMuts', onSelectedCUTopLevelMuts);
         thisModule.listenTo(mod_mutationObserver, 'CUsAncestorsMuts', updateBasedOnLastCUPosition);
+        thisModule.listenTo(mod_mutationObserver, 'selectedCUDescendantsMuts', updateOverlays_and_delayedUpdateCUs);
 
         updateCUsAndRelatedState();
     }
