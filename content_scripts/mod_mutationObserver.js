@@ -113,7 +113,6 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     }
 
     function handler_fallback(mutations) {
-//        console.log("fallback muts");
         // Call this on every mutation, because,in theory, JS code on a page can replace the body element with a new one at
         // any time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
         //ensureTopLevelContainerIsInDom();
@@ -129,15 +128,12 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     }
 
     function handler_selectedCUTopLevel(mutations) {
-        console.log("!!!selectedCU-mutations !!!");
         thisModule.trigger("selectedCUTopLevelMuts", mutations);
     }
     function handler_selectedCUDescendants(mutations) {
-//        console.log("!!!selectedCUDescendants-mutations !!!");
         thisModule.trigger("selectedCUDescendantsMuts", mutations);
     }
     function handler_CUsAncestors(mutations) {
-//        console.log("!!ancestor muts!!");
         thisModule.trigger("CUsAncestorsMuts", mutations);
     }
 

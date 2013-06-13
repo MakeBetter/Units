@@ -57,9 +57,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
          Note: If the search feature has been invoked, this contains only the filtered CUs that are visible on the page.
          This helps keep things simple.
-     */
+        */
 
-        // the set of *all* CUs. NOTE: In most cases, you would want to use `CUs_filtered` instead, so please make sure.
+        // the set of *all* CUs. NOTE: In most (but not all) cases, you would want to use `CUs_filtered` instead, so
+        // please be careful.
         CUs_all = [],
 
         selectedCUIndex  = -1, // Index of the selected CU in CUs_filtered
@@ -201,7 +202,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // At the same time, we can treat slightly  differently with the hope that on most websites they
         // will indeed be distinct in the way we hope, thereby giving us a slight performance boost.
         thisModule.listenTo(mod_mutationObserver, 'selectedCUTopLevelMuts', onSelectedCUTopLevelMuts);
-        thisModule.listenTo(mod_mutationObserver, 'CUsAncestorsMuts', updateBasedOnLastCUPosition);
+        thisModule.listenTo(mod_mutationObserver, 'CUsAncestorsMuts', handleBasedOnLastCUPosition);
         thisModule.listenTo(mod_mutationObserver, 'selectedCUDescendantsMuts', updateOverlays_and_delayedUpdateCUs);
 
         updateCUsAndRelatedState();
@@ -1593,7 +1594,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             mainContainer_prevScrollHeight = mainContainer.scrollHeight;
             mainContainer_prevScrollWidth = mainContainer.scrollWidth;
 
-            updateBasedOnLastCUPosition();
+            handleBasedOnLastCUPosition();
         }
 
         else {
@@ -1619,7 +1620,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         delayed_updateCUsEtc_onMuts();
     }
 
-    function updateBasedOnLastCUPosition() {
+    function handleBasedOnLastCUPosition() {
         if (isLastCUFullyInViewport()) {
             updateCUsEtc_onMuts(); // update CUs immediately in this case
         }
