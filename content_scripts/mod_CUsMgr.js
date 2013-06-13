@@ -131,70 +131,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUStyleData,
         CUsShortcuts;
 
-
-    // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
-    function onMutations_fallback() {
-
-        if (mainContainer.scrollHeight !== mainContainer_prevScrollHeight || 
-            mainContainer.scrollWidth !== mainContainer_prevScrollWidth) {
-
-            mainContainer_prevScrollHeight = mainContainer.scrollHeight;
-            mainContainer_prevScrollWidth = mainContainer.scrollWidth;
-            
-            updateBasedOnLastCUPosition();
-        }
-
-        else {
-//            mod_contentHelper.filterOutUnneededMutations(mutations);
-//        if (mutations.length) {
-            delayed_updateCUsEtc_onMuts();
-//        }
-        }
-    }
-
-    function onSelectedCUTopLevelMuts() {
-        // if selected CU has become invisible due to the mutations
-        if (selectedCUIndex >= 0 && isCUInvisible(CUs_filtered[selectedCUIndex]) ) {
-            updateCUsEtc_onMuts();
-        }
-        else {
-            delayed_updateCUsEtc_onMuts();
-        }
-    }
-
-    function updateOverlays_and_delayedUpdateCUs() {
-        updateCUOverlays();
-        delayed_updateCUsEtc_onMuts();
-    }
-
-    function updateBasedOnLastCUPosition() {
-        if (isLastCUFullyInViewport()) {
-            updateCUsEtc_onMuts(); // update CUs immediately in this case 
-        }
-        else {
-            updateOverlays_and_delayedUpdateCUs();
-        }
-    }
-
-    // Calls `updateCUsEtc_onMuts` with a maximum delay of `maxDelay_nonImportantMuts`
-    function delayed_updateCUsEtc_onMuts() {
-        if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
-            // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
-            timeout_updateCUs = setTimeout(updateCUsEtc_onMuts, maxDelay_nonImportantMuts -
-                (Date.now() - lastTime_updateCUsEtc));
-        }
-    }
-
-    // updates CUs etc in response to a dom mutations
-    function updateCUsEtc_onMuts() {
-        if (timeout_updateCUs) {
-            clearTimeout(timeout_updateCUs);
-            timeout_updateCUs = false;    // reset
-        }
-        lastTime_updateCUsEtc = Date.now();
-        updateCUsAndRelatedState();
-    }
-
     function reset() {
         dehoverCU();
         deselectCU();
@@ -1646,6 +1582,69 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             return 0;
         }
+    }
+
+    // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
+    function onMutations_fallback() {
+
+        if (mainContainer.scrollHeight !== mainContainer_prevScrollHeight ||
+            mainContainer.scrollWidth !== mainContainer_prevScrollWidth) {
+
+            mainContainer_prevScrollHeight = mainContainer.scrollHeight;
+            mainContainer_prevScrollWidth = mainContainer.scrollWidth;
+
+            updateBasedOnLastCUPosition();
+        }
+
+        else {
+//            mod_contentHelper.filterOutUnneededMutations(mutations);
+//        if (mutations.length) {
+            delayed_updateCUsEtc_onMuts();
+//        }
+        }
+    }
+
+    function onSelectedCUTopLevelMuts() {
+        // if selected CU has become invisible due to the mutations
+        if (selectedCUIndex >= 0 && isCUInvisible(CUs_filtered[selectedCUIndex]) ) {
+            updateCUsEtc_onMuts();
+        }
+        else {
+            delayed_updateCUsEtc_onMuts();
+        }
+    }
+
+    function updateOverlays_and_delayedUpdateCUs() {
+        updateCUOverlays();
+        delayed_updateCUsEtc_onMuts();
+    }
+
+    function updateBasedOnLastCUPosition() {
+        if (isLastCUFullyInViewport()) {
+            updateCUsEtc_onMuts(); // update CUs immediately in this case
+        }
+        else {
+            updateOverlays_and_delayedUpdateCUs();
+        }
+    }
+
+    // Calls `updateCUsEtc_onMuts` with a maximum delay of `maxDelay_nonImportantMuts`
+    function delayed_updateCUsEtc_onMuts() {
+        if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
+            // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
+            timeout_updateCUs = setTimeout(updateCUsEtc_onMuts, maxDelay_nonImportantMuts -
+                (Date.now() - lastTime_updateCUsEtc));
+        }
+    }
+
+    // updates CUs etc in response to a dom mutations
+    function updateCUsEtc_onMuts() {
+        if (timeout_updateCUs) {
+            clearTimeout(timeout_updateCUs);
+            timeout_updateCUs = false;    // reset
+        }
+        lastTime_updateCUsEtc = Date.now();
+        updateCUsAndRelatedState();
     }
 
 //    function setCommonCUsAncestor () {
