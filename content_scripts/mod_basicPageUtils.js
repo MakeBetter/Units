@@ -2,7 +2,7 @@
  * This module implements the basic utility features this extension provides by to a page, like scrolling, 
  * going back/forward, etc
  */
-_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll) {
+_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -257,7 +257,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
     function styleActiveElement(event) {
         var $el = $(document.activeElement);
 
-        if ($el.find("img, embed, video").length) {
+        if ($el.is(CONSTS.focusablesSelector) && $el.find("img, embed, video").length) {
             $el
                 .addClass("UnitsProj-focused-element")
                 .addClass("UnitsProj-focused-embed");
@@ -277,4 +277,4 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
     }
 
     return thisModule;
-})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll);
+})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll, _u.CONSTS);

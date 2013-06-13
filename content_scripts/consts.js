@@ -20,7 +20,8 @@ _u.CONSTS = (function(mod_commonHelper){
 
         // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
         // with the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
-        focusablesSelector: 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:visible, *[contenteditable]'
+        // AND tabindex = -1 is being filtered out: *[tabindex]:not(*[tabindex=-1]
+        focusablesSelector: 'a[href]:visible, area[href]:visible, input:not([disabled]):visible, select:not([disabled]):visible, textarea:not([disabled]):visible, button:not([disabled]):visible, iframe:visible, object:visible, embed:visible, *[tabindex]:not(*[tabindex=-1]:visible), *[contenteditable]'
 
         };
     return mod_commonHelper.makeImmutable(CONSTS);
