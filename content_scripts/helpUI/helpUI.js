@@ -89,6 +89,12 @@ function renderCUShortcuts(settings) {
         CUs_actions = expandedUrlData && expandedUrlData.CUs_actions,
         CUsShortcuts_URLBased = $.extend({}, CUs_MUs, CUs_actions);
 
+    // Additional shortcut to be displayed
+    CUsShortcuts_Default.selectAnyLink= {
+        miniDescr: "Select any link",
+            kbdShortcuts: ["Space + [letter that link starts with]"]
+    };
+
     var $shortcutsTable = $CUShortcutsSection.find("table");
 
     renderShortcutsInSectionTable(CUsShortcuts_Default, $shortcutsTable);
