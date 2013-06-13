@@ -217,7 +217,10 @@ defaultSettings.urlDataMap = {
                 "std_comment": ".comment_link",
                 "std_share": ".share_action_link",
                 "std_viewComments": ".UFIPagerLink, .mls", //.UFIPagerLink for "view more comments" link, .mls for the comment icon
-                std_mainEl: ".fbMainStreamAttachment a:first-child, .uiStreamSubstory .pronoun-link, .uiStreamAttachments a",
+
+                // .highlightSelectorButton is the button on the top right of a post. We don't want it to be selected as
+                // a main element. In some posts (such as the "suggested" posts), it is the "a" first child in the post. Hence, the not selector.  
+                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton), .uiStreamSubstory .pronoun-link, .uiStreamAttachments a:not(.highlightSelectorButton)",
                 // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
                 // meant for the entire page, then they'd be bad!
                 "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
