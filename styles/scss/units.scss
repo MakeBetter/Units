@@ -249,7 +249,7 @@ style more specific by using id's of the elements. Fix for #9.
 }
 
 /* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
-.UnitsProj-focused-embed:focus {
+.UnitsProj-focused-image:focus {
   outline-offset: 2px !important;
   outline: 4px auto #068065 !important;
 }

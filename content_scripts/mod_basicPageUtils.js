@@ -44,7 +44,10 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
         miscSettings = settings.miscSettings;
         if (miscSettings.enhanceActiveElementVisibility) {
-            mod_domEvents.addEventListener(document, 'focus', styleActiveElement, true);
+            mod_domEvents.addEventListener(document, 'focus', function() {
+                setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
+                // applied its own focus
+            }, true);
             mod_domEvents.addEventListener(document, 'blur', removeActiveElementStyle, true);
         }
 
@@ -254,26 +257,46 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
     }
 
-    function styleActiveElement(event) {
-        var $el = $(document.activeElement);
+    /***
+     * This method executes on document.focus after a timeout. The browser would have applied its default browser focus
+     * style when this executes.
+     */
+    function styleActiveElement() {
+        var el = document.activeElement,
+            $el = $(el);
 
-        if ($el.is(CONSTS.focusablesSelector) && $el.find("img, embed, video").length) {
+        // Don't apply any Units-specific styles to element with tabindex = -1 and if outline is set to 0 explicitly by the
+        // website.
+        // This is for elements such as the tweet container on Twitter, and email container on Gmail that have tabindex = -1
+        // but the outline is set to 0 explicitly. Showing the Units elements on such elements can tend to be distracting.
+        if (el.tabIndex === -1 && parseInt($el.css("outline-width"), 10) === 0) {
+            return;
+        }
+
+        // If it contains an image, show the outline with an offset.
+        // TODO: Can put a better check to ensure that the element contains only ONE leaf child image/embed etc and no other
+        // elements.
+        var $img = $el.find("img");
+        if ($el.is("a") && $img.length && ($img.height() > 50 || $img.width() > 50)) {
             $el
                 .addClass("UnitsProj-focused-element")
-                .addClass("UnitsProj-focused-embed");
+                .addClass("UnitsProj-focused-image");
         }
+        // if link or button, add styles.
         else if ($el.is("a, button, input[type=button]")) {
             $el
                 .addClass("UnitsProj-focused-element")
                 .addClass("UnitsProj-focused-link-or-button");
         }
 
+        // for any other types of elements, no styles added.
+
         return;
     }
 
     function removeActiveElementStyle(event) {
         var element = (event && event.target) || document.activeElement;
-        $(element).removeClass("UnitsProj-focused-element UnitsProj-focused-embed UnitsProj-focused-link-or-button");
+        $(element).removeClass("UnitsProj-focused-element UnitsProj-focused-image UnitsProj-focused-link-or-button");
     }
 
     return thisModule;
