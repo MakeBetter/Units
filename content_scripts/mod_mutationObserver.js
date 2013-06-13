@@ -27,7 +27,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     /* NOTE: Throughout this file, mutation observer related variables have suffixes as follows:
     1. "fallback": This is for the "fallback" MO, which is applied to `document`. It exists to allow
     handling of mutations that are missed by the other, more specific, MOs. It also tracks url change.
-    2. "selectedCU": For the MO(s) on the selected CU's top-level element(s)
+    2. "selectedCUTopLevel": For the MO(s) on the selected CU's top-level element(s)
     3. "selectedCUDescendants": For the MOs on the descendants of the selected CU
     4. "CUsAncestors": For the MOs on all the ancestors of the selected CU/middle CU (in most cases,
     (most of) these ancestors will be shared by all the the CUs)

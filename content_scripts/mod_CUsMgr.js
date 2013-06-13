@@ -114,7 +114,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // to enable "grouped" handing of mutations deemed non-essential (in heavy sites, a lot of dom mutations
         // are generated; handling all of them instantly slows down performance on heavy sites like facebook, esp.
         // when invoking filtering which often leads to the page fetching new content from the server continuously)  
-        groupingInterval_nonImportantMuts = 250,
+        maxDelay_nonImportantMuts = 250,
 
         // This is checked for height changes on DOM mutations since that's a good indication that the CUs on the page 
         // have changed. We take this to be the element with the highest scrollHeight. Usually this is the body.
@@ -159,20 +159,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function updateBasedOnLastCUPosition() {
-        if (!isLastCUFullyInViewport()) {
-            updateOverlays_and_delayedUpdateCUs();
+        if (isLastCUFullyInViewport()) {
+            onDomChange_updateCUsEtc(); // update CUs immediately in this case 
         }
         else {
-            onDomChange_updateCUsEtc();
-
+            updateOverlays_and_delayedUpdateCUs();
         }
     }
 
-    // Calls `onDomChange_updateCUsEtc` potentially with a delay
+    // Calls `onDomChange_updateCUsEtc` with a maximum delay of `maxDelay_nonImportantMuts`
     function delayed_onDomChange_updateCUsEtc() {
         if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
             // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
-            timeout_updateCUs = setTimeout(onDomChange_updateCUsEtc, groupingInterval_nonImportantMuts -
+            timeout_updateCUs = setTimeout(onDomChange_updateCUsEtc, maxDelay_nonImportantMuts -
                 (Date.now() - lastTime_updateCUsEtc));
         }
     }
@@ -246,8 +245,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // NOTE: *Important* Keep in mind that the first mutation handler to execute that calls mod_mutationObserver.disable()
         // will prevent any queued mutation observer event in any other mutation observer from triggering.
         thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onMutations_fallback);
+        
         // this event signifies mutations ONLY on the "top level" CU element(s). Since these aren't going
-        // to occur too often, but might include the CU being "hidden" etc, handle them immediately
+        // to occur too often, but might include the CU top level element being "hidden" etc, we handle 
+        // them immediately.
+        // Note: Since what we consider a CU (based on the selector etc), and what the actual "CU" for the 
+        // page is might be slightly different (since one might be enclosed inside the other etc),
+        // we can't rely too much on the distinction between 'selectedCUTopLevelMuts', 'selectedCUDescendantMuts' 
+        // and 'CUsAncestorsMuts'. Hence as a fallback, they should all update the CUs state within a short period.
+        // At the same time, we can treat slightly  differently with the hope that on most websites they
+        // will indeed be distinct in the way we hope, thereby giving us a slight performance boost.
         thisModule.listenTo(mod_mutationObserver, 'selectedCUTopLevelMuts', onDomChange_updateCUsEtc);
         thisModule.listenTo(mod_mutationObserver, 'selectedCUDescendantsMuts', updateOverlays_and_delayedUpdateCUs);
         thisModule.listenTo(mod_mutationObserver, 'CUsAncestorsMuts', updateBasedOnLastCUPosition);
