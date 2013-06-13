@@ -111,10 +111,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lastTime_updateCUsEtc,
         timeout_updateCUs,
         
-        // to enable grouping of the handing for closely spaced `document-mutations` events (in heavy sites, these will be emitted
-        // a lot, but we rely on them only as a fallback, so we can group their handling (with the exception of ones which
-        // cause scrollHeight changes; refer to `onMutations_fallback()`
-        groupingInterval_fallbackDomMutations = 1000,
+        // to enable "grouped" handing of mutations deemed non-essential (in heavy sites, a lot of dom mutations
+        // are generated; handling all of them instantly slows down performance on heavy sites like facebook, esp.
+        // when invoking filtering which often leads to the page fetching new content from the server continuously)  
+        groupingInterval_nonImportantMuts = 250,
 
         // This is checked for height changes on DOM mutations since that's a good indication that the CUs on the page 
         // have changed. We take this to be the element with the highest scrollHeight. Usually this is the body.
@@ -136,29 +136,49 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
     function onMutations_fallback(mutations) {
 
-        if (mainContainer.scrollHeight !== mainContainer_prevScrollHeight ||
+        if (mainContainer.scrollHeight !== mainContainer_prevScrollHeight || 
             mainContainer.scrollWidth !== mainContainer_prevScrollWidth) {
 
             mainContainer_prevScrollHeight = mainContainer.scrollHeight;
             mainContainer_prevScrollWidth = mainContainer.scrollWidth;
-            updateCUsEtc_onDomChange(); // execute immediately
-            return;
+            
+            updateBasedOnLastCUPosition();
         }
 
-        // else...
-//        mod_contentHelper.filterOutUnneededMutations(mutations);
+        else {
+//            mod_contentHelper.filterOutUnneededMutations(mutations);
 //        if (mutations.length) {
-
-            if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
-                // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
-                timeout_updateCUs = setTimeout(updateCUsEtc_onDomChange, groupingInterval_fallbackDomMutations -
-                    (Date.now() - lastTime_updateCUsEtc));
-            }
+            delayed_onDomChange_updateCUsEtc();
 //        }
+        }
+    }
+
+    function updateOverlays_and_delayedUpdateCUs() {
+        updateCUOverlays();
+        delayed_onDomChange_updateCUsEtc();
+    }
+
+    function updateBasedOnLastCUPosition() {
+        if (!isLastCUFullyInViewport()) {
+            updateOverlays_and_delayedUpdateCUs();
+        }
+        else {
+            onDomChange_updateCUsEtc();
+
+        }
+    }
+
+    // Calls `onDomChange_updateCUsEtc` potentially with a delay
+    function delayed_onDomChange_updateCUsEtc() {
+        if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
+            // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
+            timeout_updateCUs = setTimeout(onDomChange_updateCUsEtc, groupingInterval_nonImportantMuts -
+                (Date.now() - lastTime_updateCUsEtc));
+        }
     }
 
     // updates CUs etc in response to a dom-change event
-    function updateCUsEtc_onDomChange() {
+    function onDomChange_updateCUsEtc() {
         if (timeout_updateCUs) {
             clearTimeout(timeout_updateCUs);
             timeout_updateCUs = false;    // reset
@@ -223,9 +243,14 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // assume these to be body for now
         mainContainer = document.body;
 
-        thisModule.listenTo(mod_mutationObserver, 'document-mutations', onMutations_fallback);
-        thisModule.listenTo(mod_mutationObserver, 'CU-mutations', updateCUOverlays);
-        thisModule.listenTo(mod_mutationObserver, 'CUsAncestors-mutations', updateCUsEtc_onDomChange);
+        // NOTE: *Important* Keep in mind that the first mutation handler to execute that calls mod_mutationObserver.disable()
+        // will prevent any queued mutation observer event in any other mutation observer from triggering.
+        thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onMutations_fallback);
+        // this event signifies mutations ONLY on the "top level" CU element(s). Since these aren't going
+        // to occur too often, but might include the CU being "hidden" etc, handle them immediately
+        thisModule.listenTo(mod_mutationObserver, 'selectedCUTopLevelMuts', onDomChange_updateCUsEtc);
+        thisModule.listenTo(mod_mutationObserver, 'selectedCUDescendantsMuts', updateOverlays_and_delayedUpdateCUs);
+        thisModule.listenTo(mod_mutationObserver, 'CUsAncestorsMuts', updateBasedOnLastCUPosition);
 
         updateCUsAndRelatedState();
     }
@@ -304,7 +329,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_context.setCUSelectedState(true);
 
 
-        mod_mutationObserver.enableFor_selectedCU($CU);
+        mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
         $lastSelectedCU = $CU;
         time_lastCUSelectOrDeselect = Date.now();
@@ -654,7 +679,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (isAnyPartofCUinViewport($selectedCU) || 
+        if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
             Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
             if (miscSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('up');
@@ -698,7 +723,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (isAnyPartofCUinViewport($selectedCU) ||
+        if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) ||
             Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
 
             if (miscSettings.sameCUScroll) {
@@ -759,7 +784,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // if a CU is already selected AND (is present in the viewport OR was selected only recently)...
         if (selectedCUIndex >= 0 &&
-            (isAnyPartofCUinViewport(CUs_filtered[selectedCUIndex]) ||
+            (isAnyPartOfCUinViewport(CUs_filtered[selectedCUIndex]) ||
                 Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
 
 
@@ -768,7 +793,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
         else if( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
-            (isAnyPartofCUinViewport($lastSelectedCU) ||
+            (isAnyPartOfCUinViewport($lastSelectedCU) ||
                 Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
 
             selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
@@ -1117,9 +1142,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mainContainer_prevScrollWidth = mainContainer.scrollWidth;
 
         if (CUs_all.length) {
-            // take ancestors of middle CU (it's okay if we miss out some ancestors, since we have a fallback
-            // mutation observer as well
-            mod_mutationObserver.enableFor_CUsAncestors(CUs_all[Math.floor(CUs_all.length/2)].parents());
+            // Use the selected CU. If there isn't one, use the middle CU (it's okay if we miss out some ancestors, since
+            // we have a fallback mutation observer as well)
+            var $CU = CUs_filtered[selectedCUIndex] || CUs_all[Math.floor(CUs_all.length/2)];
+            mod_mutationObserver.enableFor_CUsAncestors($CU.parents());
         }
     }
 
@@ -1133,24 +1159,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // (meant to be called only be updateCUOverlays)
     function _updateCUOverlays() {
         var $CU = CUs_filtered[selectedCUIndex];
-        if ($CU) {
-            if (isCUInvisible($CU)) {
-                deselectCU();
-            }
-            else {
-                showOverlay(CUs_filtered[selectedCUIndex], "selected");
-            }
-        }
+        $CU &&  showOverlay($CU, "selected");
 
         $CU = CUs_filtered[hoveredCUIndex];
-        if ($CU) {
-            if (isCUInvisible($CU)) {
-                dehoverCU();
-            }
-            else {
-                showOverlay(CUs_filtered[hoveredCUIndex], "hovered");
-            }
-        }
+        $CU &&  showOverlay($CU, "hovered");
     }
 
     function onFilteringStateChange() {
@@ -1186,6 +1198,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function updateCUsAndRelatedState() {
         var disabledByMe = mod_mutationObserver.disable();
         _updateCUsAndRelatedState();
+        onUpdatingCUs();
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -1205,8 +1218,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         dehoverCU();
 
         CUs_filtered = CUs_all = getValidCUs();
-        onUpdatingCUs();
-
         thisModule.trigger("CUs-all-change");
 
         if (mod_filterCUs.isActive()) {
@@ -1950,24 +1961,39 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-// returns true if any part of $CU is in the viewport, false otherwise
-    function isAnyPartofCUinViewport($CU) {
+    function isLastCUFullyInViewport() {
+        return ( CUs_filtered.length === 0) || isCUFullyInViewport(CUs_filtered[CUs_filtered.length-1]);
+    }
+
+
+    // returns true if any part of $CU is in the viewport, false otherwise
+    function isAnyPartOfCUinViewport($CU) {
 
         // for the CU
         var boundingRect = getBoundingRectangle($CU),
             CUTop = boundingRect.top,
-            CUHeight = boundingRect.height,
-            CUBottom = CUTop + CUHeight;
+            CUBottom = CUTop + boundingRect.height;
 
         var // for the window:
             winTop = body.scrollTop,
-        // winHeight = $(window).height(), // this doesn't seem to work correctly on news.ycombinator.com
-            winHeight = window.innerHeight,
-            winBottom = winTop + winHeight;
+            winBottom = winTop + window.innerHeight;
 
+        return ( (CUTop > winTop && CUTop < winBottom) || (CUBottom > winTop && CUBottom < winBottom) );
+    }
 
-        return ( (CUTop > winTop && CUTop < winBottom) ||
-            (CUBottom > winTop && CUBottom < winBottom) );
+    // returns true if the specified CU is completely in the viewport, false otherwise
+    function isCUFullyInViewport($CU) {
+
+        // for the CU
+        var boundingRect = getBoundingRectangle($CU),
+            CUTop = boundingRect.top,
+            CUBottom = CUTop + boundingRect.height;
+
+        var // for the window:
+            winTop = body.scrollTop,
+            winBottom = winTop + window.innerHeight;
+
+        return (CUTop > winTop && CUBottom < winBottom);
     }
 
     function checkOverlayCssHasTransition() {

@@ -5,8 +5,9 @@
  *
  * Events triggered:
  * 'url-change' args passed: new-url, old-url
- * 'document-mutations' args passed: mutations
- * 'CU-mutations' args passed: mutations
+ * 'documentMuts_fallback' args passed: mutations
+ * 'selectedCUTopLevelMuts' args passed: mutations
+ * 'selectedCUDescendantsMuts' args passed: mutations
  *
  * Dependencies:
  * mod_chromeAltHack: (Just in order to determine whether the 'accesskey' attribute needs to be observed for
@@ -19,15 +20,17 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     var thisModule = $.extend({}, _u.mod_pubSub, {
         enable: enable,
         disable: disable,
-        enableFor_selectedCU: enableFor_selectedCU,
+        enableFor_selectedCUAndDescendants: enableFor_selectedCUAndDescendants,
         enableFor_CUsAncestors: enableFor_CUsAncestors
     });
 
-    /* NOTE: in this function mutation observer related variables have suffixes as follows:
-    1. "fallback": This is for the "fallback" mutation observer, which is applied to `document`. It exists to allow
-    handling of mutations that are missed by the other, more specific, mutation observers. It also tracks url change.
-    2. "selectedCU": For the mutation observer(s) on the selected CU
-    3. "CUsAncestors": For the mutation observer on the common ancestor of the CUs
+    /* NOTE: Throughout this file, mutation observer related variables have suffixes as follows:
+    1. "fallback": This is for the "fallback" MO, which is applied to `document`. It exists to allow
+    handling of mutations that are missed by the other, more specific, MOs. It also tracks url change.
+    2. "selectedCU": For the MO(s) on the selected CU's top-level element(s)
+    3. "selectedCUDescendants": For the MOs on the descendants of the selected CU
+    4. "CUsAncestors": For the MOs on all the ancestors of the selected CU/middle CU (in most cases,
+    (most of) these ancestors will be shared by all the the CUs)
 
 
     /*-- Module implementation --*/
@@ -36,34 +39,33 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         currentUrl = window.location.href,
         timeout_disabledWarning;
 
-    var attrFilter_fallback = ['class', 'style', 'height', 'width', 'cols', 'colspan', 'rows', 'rowspan', 'shape', 'size'];
-    mod_chromeAltHack && attrFilter_fallback.push('accesskey'); // 'accesskey' required only for "chrome alt hack"
+    var attrFilter = ['class', 'style', 'height', 'width', 'cols', 'colspan', 'rows', 'rowspan', 'shape', 'size'];
+    // 'accesskey' required only for "chrome alt hack". It should be okay adding it to the entire list since the 'accesskey'
+    // attribute hardly changes. (In mod_chromeAltHack we specifically check that an "attribute" mutation should be a 
+    // mutation mutation in the 'accesskey' attr.
+    mod_chromeAltHack && attrFilter.push('accesskey'); 
 
-    var init_fallback = {
+    var init_withSubtree = {
         childList: true,
         attributes:true,
-        attributeFilter: attrFilter_fallback,
+        attributeFilter: attrFilter,
         characterData: true,
         subtree: true,
+    };
+
+    var init_withOUTSubtree = {
+        childList: true,
+        attributes:true,
+        attributeFilter: attrFilter,
+        characterData: true,
     };
 
     var MO_fallback = new MutationObserver(handler_fallback);
-
-    var init_selectedCU = {
-        childList: true,
-        attributes:true,
-        characterData: true,
-        subtree: true,
-    };
-    var MOsArr_selectedCU = [];
-    var $selectedCU;
-
-    var init_CUsAncestors = {
-        childList: true,
-        attributes:true,
-        characterData: true,
-    };
+    var MOsArr_selectedCUTopLevel = [];
+    var MOsArr_selectedCUDescendants = [];
     var MOsArr_CUsAncestors = [];
+
+    var $selectedCU;
     var $CUsAncestors;
 
     // enable observing of DOM mutations
@@ -71,13 +73,13 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         isEnabled = true;
         clearTimeout(timeout_disabledWarning);
 
-        $selectedCU && enableFor_selectedCU();
+        $selectedCU && enableFor_selectedCUAndDescendants();
         $CUsAncestors && enableFor_CUsAncestors();
 
         // Notes: Even to track (visual and state) changes to the set of CUs, we need to observe changes on the entire
         // *document* (as opposed to the common ancestor of the CUs). An example of why this is necessary: if an element
         // is added/resized near the top of the page, the position of the CUs would change.
-        MO_fallback.observe(document, init_fallback);
+        MO_fallback.observe(document, init_withSubtree);
     }
 
     /**
@@ -103,7 +105,8 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
 
             MO_fallback.disconnect();
             disableMOsInArray(MOsArr_CUsAncestors);
-            disableMOsInArray(MOsArr_selectedCU);
+            disableMOsInArray(MOsArr_selectedCUDescendants);
+            disableMOsInArray(MOsArr_selectedCUTopLevel);
             isEnabled = false;
             return true;    // to indicate that it mod_mutationObserver was disabled due to this call to disable()
         }
@@ -121,27 +124,31 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
             currentUrl = newUrl;
         }
         else {
-            thisModule.trigger("document-mutations", mutations);
+            thisModule.trigger("documentMuts_fallback", mutations);
         }
     }
 
-    function handler_selectedCU(mutations) {
-//        console.log("!!!selectedCU-mutations !!!");
-        thisModule.trigger("CU-mutations", mutations);
+    function handler_selectedCUTopLevel(mutations) {
+        console.log("!!!selectedCU-mutations !!!");
+        thisModule.trigger("selectedCUTopLevelMuts", mutations);
     }
-
+    function handler_selectedCUDescendants(mutations) {
+//        console.log("!!!selectedCUDescendants-mutations !!!");
+        thisModule.trigger("selectedCUDescendantsMuts", mutations);
+    }
     function handler_CUsAncestors(mutations) {
 //        console.log("!!ancestor muts!!");
-        thisModule.trigger("CUsAncestors-mutations", mutations);
+        thisModule.trigger("CUsAncestorsMuts", mutations);
     }
 
     // if $CU is passed use it to set $selectedCU, else use whatever $selectedCU is already set to
-    function enableFor_selectedCU($CU) {
+    function enableFor_selectedCUAndDescendants($CU) {
         if ($CU) {
             $selectedCU = $CU;
         }
         if (isEnabled) {
-            enableMOsForSet_and_saveRefs($selectedCU, handler_selectedCU, init_selectedCU, MOsArr_selectedCU);
+            enableMOsForSet_and_saveRefs($selectedCU, handler_selectedCUTopLevel, init_withOUTSubtree, MOsArr_selectedCUTopLevel);
+            enableMOsForSet_and_saveRefs($selectedCU.children(), handler_selectedCUDescendants, init_withSubtree, MOsArr_selectedCUDescendants);
         }
     }
 
@@ -151,7 +158,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
             $CUsAncestors = $ancestors;
         }
         if (isEnabled) {
-            enableMOsForSet_and_saveRefs($CUsAncestors, handler_CUsAncestors, init_CUsAncestors, MOsArr_CUsAncestors);
+            enableMOsForSet_and_saveRefs($CUsAncestors, handler_CUsAncestors, init_withOUTSubtree, MOsArr_CUsAncestors);
         }
     }
 
