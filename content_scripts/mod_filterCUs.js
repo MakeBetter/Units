@@ -255,7 +255,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function onSearchBoxInput() {
         // to allow search-as-you-type, while not executing the filtering related code till there is a brief pause in the typing
         clearTimeout(timeout_typing); // clears timeout if it is set
-        console.log('cleared timeout');
         timeout_typing = setTimeout (triggerFilteringIfRequired, 400);
     }
 
