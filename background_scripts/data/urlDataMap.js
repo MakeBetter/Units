@@ -646,20 +646,20 @@ defaultSettings.urlDataMap = {
         protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
     },
 
-    "github.com": {
-        urlPatterns: ["github.com/*"],
-        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
-    },
+//    "github.com": {
+//        urlPatterns: ["github.com/*"],
+//        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+//    },
 
      "duckduckgo.com": {
         urlPatterns: ["duckduckgo.com/*"],
         protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
     },
 
-     "delicious.com": {
-        urlPatterns: ["delicious.com/*"],
-        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
-    },
+//     "delicious.com": {
+//        urlPatterns: ["delicious.com/*"],
+//        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+//    },
 
 
 
