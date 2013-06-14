@@ -34,7 +34,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
 
         /*-- Module implementation --*/
         /*-- Event bindings --*/
-        thisModule.listenTo(mod_mutationObserver, 'dom-mutations', onDomMutations);
+        thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onDomMutations);
         var 
             // when the extension is disabled, this is used to reinstate the conflicting access key attributes
             // that were removed from the original DOM
@@ -156,7 +156,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
                     }
                 }
 
-                if (/*mutationRecord.attributeName && */mutationRecord.attributeName.toLowerCase() === 'accesskey') {
+                if (mutationRecord.attributeName && mutationRecord.attributeName.toLowerCase() === 'accesskey') {
                     var accessKey = mutationRecord.target.getAttribute("accesskey");
                     accessKey = accessKey && accessKey.toLowerCase();
                     if (accessKey && altShortcutKeys.indexOf(accessKey) !== -1) {
