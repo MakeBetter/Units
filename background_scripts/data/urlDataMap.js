@@ -281,6 +281,7 @@ defaultSettings.urlDataMap = {
                 /*std_mainEl: "a.l"*/
             },
             CUs_actions: {
+//                // This feature has now been removed since google removed the "preview" feature
 //                "toggle-preview": {
 //                    kbdShortcuts: ["p"],
 //                    // this function is meant to work in conjunction with std_onCUDeselection (see below)
