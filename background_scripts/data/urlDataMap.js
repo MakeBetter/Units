@@ -570,7 +570,29 @@ defaultSettings.urlDataMap = {
 //                kbdShortcuts: ["e"],
 //                miniDescr: "Expand/Collapse"
 //            },
-            std_mainEl: ".js-details"
+            std_mainEl: '.js-details',
+            reply: {
+                selector: '.js-action-reply',
+                kbdShortcuts: ["r"],
+                miniDescr: "Reply"
+            },
+            retweet: {
+                selector: '.retweet',
+                kbdShortcuts: ["t"],
+                miniDescr: "Retweet"
+            },
+            favorite: {
+                selector: '.favorite, .unfavorite',
+                kbdShortcuts: ["v"],
+                miniDescr: "Favorite/ Un-favorite"
+            },
+            expand: {
+                selector: '.js-details',
+                kbdShortcuts: ["e"],
+                miniDescr: "Expand/ Collapse"
+            },
+            std_profile: '.js-user-profile-link'
+
         },
         page_MUs: {
             std_header: ".global-nav"

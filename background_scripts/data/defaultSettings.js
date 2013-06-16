@@ -208,6 +208,10 @@ var defaultSettings = {
             std_edit: {
                 miniDescr: "Edit",
                 kbdShortcuts: ["e"]
+            },
+            std_profile: {
+                miniDescr: "Go to user profile",
+                kbdShortcuts: ["p"]
             }
         }
     },
