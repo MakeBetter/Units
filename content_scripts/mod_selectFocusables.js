@@ -31,7 +31,6 @@ _u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMg
 
             mod_contentHelper.suppressEvent(e);
         }
-
     }
 
 // Focuses next/prev focusable beginning with the specified char. If beginningChar is not specified/null, it selects
@@ -55,12 +54,11 @@ _u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMg
             }
         };
 
-
         var $matchedFocusables = $scope.find(CONSTS.focusablesSelector).filter(function() {
             return elementMatchesBeginningChar(this);
         });
 
-        console.log('matched focusables: ', $matchedFocusables);
+//        console.log('matched focusables: ', $matchedFocusables);
 
         if ($matchedFocusables && $matchedFocusables.length) {
 
@@ -79,11 +77,9 @@ _u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMg
 
                 var index = ((nextOrPrev === "prev")? -1: 1) + $matchedFocusables.index(focusedElementInScope);
 
-                console.log("$matchedFocusables.index(focusedElementInScope): ", $matchedFocusables.index(focusedElementInScope));
-
-                console.log("index: ", index);
-
-                console.log("$matchedFocusables.length: ", $matchedFocusables.length);
+//                console.log("$matchedFocusables.index(focusedElementInScope): ", $matchedFocusables.index(focusedElementInScope));
+//                console.log("index: ", index);
+//                console.log("$matchedFocusables.length: ", $matchedFocusables.length);
 
                 if (index >=  $matchedFocusables.length) {
                     index = 0;
@@ -96,8 +92,6 @@ _u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMg
             else {
                 $matchedFocusables[0].focus();
             }
-
-
         }
     }
 
