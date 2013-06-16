@@ -1183,7 +1183,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (!CUsFoundOnce && CUs_filtered.length) {
             CUsFoundOnce = true;
             if ( miscSettings.selectCUOnLoad) {
-                // this is done at DOM ready as well in case by then the page's JS has set focus elsewhere.
                 selectMostSensibleCU(true, false);
             }
             mainContainer  = getMainContainer();
