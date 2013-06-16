@@ -1145,8 +1145,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Sets/updates the global variables CUs_filtered and CUs_all and other related state. Called once on dom-ready, thereafter
-     * whenever the CUs need to be updated based on DOM changes
+     * Sets/updates the global variables CUs_filtered and CUs_all and other related state. Called once on dom-ready,
+     * thereafter whenever the CUs need to be updated based on DOM changes
      */
     function updateCUsAndRelatedState() {
         var disabledByMe = mod_mutationObserver.disable();
@@ -1187,40 +1187,36 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             }
             mainContainer  = getMainContainer();
         }
-        else {
+
+        // on updating the CUs after a dom-change:
+        // if a CU was previously selected
+        //  - if it still exists the CUs_filtered, it should remain selected
+        //  - if it no longer exists in CUs_filtered
+        //      - deselect it
+        //      - if the option `selectCUOnLoad` is true, select a sensible CU,
+        // if no CU was selected (perhaps the user pressed `Esc` earlier), don't select any CU, i.e. nothing needs to be done
+        else if ($prevSelectedCU) {
             if (CUs_filtered && CUs_filtered.length) {
-                mod_context.setCUsCount(CUs_filtered.length);
                 var newSelectedCUIndex;
 
-                // on a dom-change:
-                // 1) if CU was already selected, it should remain selected
-                // 2) if the selected CU isn't found and the option `selectCUOnLoad` is true, select a sensible CU,
-                // 3) if no CU was selected (perhaps the user pressed `Esc` earlier) don't select any CU
-                    if ($prevSelectedCU) {
-                        if ((newSelectedCUIndex = findCUInArray($prevSelectedCU, CUs_filtered, prevSelectedIndex)) >= 0) {
-                            // we don't call selectCU() instead because we want to reserve that for actual CU selections, 
-                            // instead of calling it on (almost) every DOM change. 
-                            CUs_filtered[newSelectedCUIndex] = $prevSelectedCU;                           
-                            selectedCUIndex = newSelectedCUIndex;
-                            showOverlay($prevSelectedCU, "selected");    // to update the overlay in case of resize etc
-                        }
-                        else {
-                            deselectCU($prevSelectedCU);
-                            selectedCUIndex = -1;
-                            if (miscSettings.selectCUOnLoad) {
-                                selectMostSensibleCU(false, false);
-                            }
-                        }
+                    if ((newSelectedCUIndex = findCUInArray($prevSelectedCU, CUs_filtered, prevSelectedIndex)) >= 0) {
+                        // we don't call selectCU() instead because we want to reserve that for actual CU selections,
+                        // instead of calling it on (almost) every DOM change.
+                        CUs_filtered[newSelectedCUIndex] = $prevSelectedCU;
+                        selectedCUIndex = newSelectedCUIndex;
+                        showOverlay($prevSelectedCU, "selected");    // to update the overlay in case of resize etc
                     }
                     else {
-                        // do nothing
+                        deselectCU($prevSelectedCU);
+                        selectedCUIndex = -1;
+                        if (miscSettings.selectCUOnLoad) {
+                            selectMostSensibleCU(false, false);
+                        }
                     }
+
             }
             else {
-                if ($prevSelectedCU) {
-                    deselectCU($prevSelectedCU);
-                }
-                mod_context.setCUsCount(0);
+                deselectCU($prevSelectedCU);
             }
         }
     }
