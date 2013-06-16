@@ -212,6 +212,10 @@ var defaultSettings = {
             std_profile: {
                 miniDescr: "Go to user profile",
                 kbdShortcuts: ["p"]
+            },
+            std_sharedContent: {
+                miniDescr: "Open the shared content",
+                kbdShortcuts: ["v s"]
             }
         }
     },
