@@ -37,7 +37,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     var
         isEnabled,
         currentUrl = window.location.href,
-        timeout_disabledWarning;
+        timemout_reenable;
 
     var attrFilter = ['class', 'style', 'height', 'width', 'cols', 'colspan', 'rows', 'rowspan', 'shape', 'size'];
     // 'accesskey' required only for "chrome alt hack". It should be okay adding it to the entire list since the 'accesskey'
@@ -71,7 +71,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     // enable observing of DOM mutations
     function enable() {
         isEnabled = true;
-        clearTimeout(timeout_disabledWarning);
+        clearTimeout(timemout_reenable);
 
         $selectedCU && enableFor_selectedCUAndDescendants();
         $CUsAncestors && enableFor_CUsAncestors();
@@ -85,22 +85,20 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     /**
      * disable observing of DOM mutations. Returns 'true' if mod_mutationObserver was disabled due to this call, 'false'
      * if it was already dsiabled.
-     * @param {string} [flag] Optional. Is the string "disableExtension" if called as part of disableExtension()
+     * @param {string} [flag] Optional. If this is true, we don't automatically re-enable after a specified period
      */
-    function disable(flag) {
+    function disable(allowLongDisable) {
         if (!isEnabled) {
             return false;   // already disabled, so return `false` to indicate that
         }
         else {
-            var warnInSeconds = 30;
-            if (flag !== "disablingExtension") {
-                (function setWarningTimeout() {
-                    clearTimeout(timeout_disabledWarning); // just in case it is set
-                    timeout_disabledWarning = setTimeout(function() {
-                        console.warn('Mutation Observer was stopped (+)' + warnInSeconds + ' seconds ago and not restarted.');
-                        setWarningTimeout();
-                    }, warnInSeconds * 1000);
-                })();
+            if (!allowLongDisable) {
+                var enableAgainPeriod = 30000; // millisecs
+                clearTimeout(timemout_reenable); // just in case it is set
+                timemout_reenable = setTimeout(function() {
+                    console.warn('Mutation Observer was stopped ' + enableAgainPeriod + ' ms ago and not restarted. Is being re-enabled');
+                    enable();
+                }, enableAgainPeriod);
             }
 
             MO_fallback.disconnect();

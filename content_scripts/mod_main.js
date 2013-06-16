@@ -37,8 +37,8 @@
 
     /*-- Module implementation --*/
 
-    function _onUrlChange() {
-        console.log('url change...');
+    function _onUrlChange(newUrl, currentUrl) {
+        console.log("url changed from ", currentUrl, " to ", newUrl);
         reinitializeIfNotDisabledTemporarily();
     }
 
@@ -72,7 +72,7 @@
             mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
         }
 
-        mod_mutationObserver.disable("disablingExtension");
+        mod_mutationObserver.disable(true);
 
         $topLevelContainer.empty().remove();
     }
@@ -134,6 +134,9 @@
         );
     }
 
+    function isDisabled() {
+        return isDisabled_fromSettings || isDisabled_temporarily;
+    }
 
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
@@ -146,9 +149,14 @@
             // respond with the enabled/ disabled status of the current URL, when asked for by the background script.
             // This is used for setting the extension icon appropriately.
             else if (request.message === "tabActivated") {
-                sendResponse(!(isDisabled_fromSettings || isDisabled_temporarily));
+                sendResponse(!isDisabled());
+                clearTimeout(timeout_onTabActivation);
+                timeout_onTabActivation = setTimeout(onTabActivation, 800);
             }
-
+            else if (request.message === "tabDeactivated") {
+                clearTimeout(timeout_onTabActivation);
+                onTabDeactivation();
+            }
             else if(request.message === "isContentScriptTemporarilyDisabled") {
                 sendResponse(isDisabled_temporarily);
             }
@@ -163,6 +171,21 @@
             }
         }
     );
+
+    var timeout_onTabActivation;
+
+    // triggers after the user has activated on the tab and continued to keep it active
+    // (to prevent against running for tabs that are briefly activated in the process
+    // of moving through a bunch of tabs to reach a final one)
+    function onTabActivation() {
+        mod_mutationObserver.enable();
+        mod_CUsMgr && mod_CUsMgr.updateCUsAndRelatedState();
+        mod_chromeAltHack && mod_chromeAltHack.removeAnyConflictingAccessKeyAttr(document);
+    }
+
+    function onTabDeactivation() {
+        mod_mutationObserver.disable(true);
+    }
 
     function onWindowMessage(event, targetOrigin) {
         var data = event.data,

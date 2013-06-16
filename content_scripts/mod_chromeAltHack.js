@@ -29,13 +29,14 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
        /*-- Public interface --*/
         var thisModule = $.extend({}, _u.mod_pubSub, {
             reset: reset, // Resets state AND *undoes* the hack including reinstating accessKey removed earlier
-            applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts
+            applyHackForSpecifiedShortcuts: applyHackForSpecifiedShortcuts,
+            removeAnyConflictingAccessKeyAttr: removeAnyConflictingAccessKeyAttr
         });
 
         /*-- Module implementation --*/
         /*-- Event bindings --*/
         thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onDomMutations);
-        var 
+        var
             // when the extension is disabled, this is used to reinstate the conflicting access key attributes
             // that were removed from the original DOM
             accesskeysRemoved = [],
