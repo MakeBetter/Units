@@ -565,11 +565,6 @@ defaultSettings.urlDataMap = {
             selector: ".stream-item"
         },
         CUs_MUs: {
-//            expand: {
-//                selector: ".original-tweet",
-//                kbdShortcuts: ["e"],
-//                miniDescr: "Expand/Collapse"
-//            },
             std_mainEl: '.js-details',
             reply: {
                 selector: '.js-action-reply',
