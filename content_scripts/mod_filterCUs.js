@@ -7,7 +7,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         setup: setup,
         isActive: isActive,
         applyFiltering: applyFiltering,
-        undoPrevFiltering: undoPrevFiltering,
         showSearchBox: showSearchBox
     });
 
@@ -288,6 +287,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         $searchBox.val('');
         $searchBox.blur();
         $filterCUsContainer.hide();
+        undoPrevFiltering();
+        lastFilterText_lowerCase = ""; // reset
         thisModule.trigger('filter-UI-close');
         disabledByMe && mod_mutationObserver.enable();
     }

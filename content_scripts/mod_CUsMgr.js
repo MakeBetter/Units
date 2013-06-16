@@ -22,7 +22,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     /*-- Module implementation --*/
 
     if (mod_filterCUs) {
-        thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilteringStateChange);
+        thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilterTextChange);
         thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
         thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
     }
@@ -1118,7 +1118,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $CU &&  showOverlay($CU, "hovered");
     }
 
-    function onFilteringStateChange() {
+    function onFilterTextChange() {
         dehoverCU();
         deselectCU();
         CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, true);
@@ -1127,7 +1127,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function onFilterUIClose() {
         var $CUToSelect = CUs_filtered[selectedCUIndex];
-        mod_filterCUs.undoPrevFiltering();
         dehoverCU();
         deselectCU();
         CUs_filtered = CUs_all;
