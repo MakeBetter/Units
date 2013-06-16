@@ -219,7 +219,7 @@ defaultSettings.urlDataMap = {
                 "std_viewComments": ".UFIPagerLink, .mls", //.UFIPagerLink for "view more comments" link, .mls for the comment icon
 
                 // .highlightSelectorButton is the button on the top right of a post. We don't want it to be selected as
-                // a main element. In some posts (such as the "suggested" posts), it is the "a" first child in the post. Hence, the not selector.  
+                // a main element. In some posts (such as the "suggested" posts), it is the "a" first child in the post. Hence, the 'not' selector.
                 std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a), .uiStreamSubstory .pronoun-link, .uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a)",
                 // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
                 // meant for the entire page, then they'd be bad!
@@ -558,6 +558,25 @@ defaultSettings.urlDataMap = {
     "askubuntu.com": "stackexchange.com",
     "mathoverflow.net" : "stackexchange.com",
 
+    "twitter.com": {
+        urlPatterns: ["twitter.com/*"],
+//        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+        CUs_specifier: {
+            selector: ".stream-item"
+        },
+        CUs_MUs: {
+//            expand: {
+//                selector: ".original-tweet",
+//                kbdShortcuts: ["e"],
+//                miniDescr: "Expand/Collapse"
+//            },
+            std_mainEl: ".js-details"
+        },
+        page_MUs: {
+            std_header: ".global-nav"
+        },
+    },
+
     "underscorejs.org": [
         {
             urlPatterns: ["underscorejs.org/*"],
@@ -640,11 +659,6 @@ defaultSettings.urlDataMap = {
     },
 
     // pages that have their own units.
-
-    "twitter.com": {
-        urlPatterns: ["twitter.com/*"],
-        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
-    },
 
 //    "github.com": {
 //        urlPatterns: ["github.com/*"],
