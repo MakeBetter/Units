@@ -43,10 +43,8 @@ _u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMg
         var $scope =  $selectedCU || $document;
 
         var elementMatchesBeginningChar = function(element) {
-            var text = $(element).text();
-            if (!text && $(element).is('input[type = "button"]')) {
-                text = element.value;
-            }
+            var text = mod_contentHelper.getVisibleInnerText(element);
+
             if (beginningChar) {
                 if (text && text[0].toLowerCase() === beginningChar) {
                     return true;

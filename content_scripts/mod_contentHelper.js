@@ -19,7 +19,8 @@ _u.mod_contentHelper = (function(CONSTS) {
         closestCommonAncestor: closestCommonAncestor,
         isUnitsProjNode: isUnitsProjNode,
         isRtMouseButton: isRtMouseButton,
-        filterOutUnneededMutations: filterOutUnneededMutations
+        filterOutUnneededMutations: filterOutUnneededMutations,
+        getVisibleInnerText: getVisibleInnerText
     };
 
     /*-- Module implementation --*/
@@ -223,6 +224,30 @@ _u.mod_contentHelper = (function(CONSTS) {
 //            return true;
 //        }
         return false;
+    }
+
+    /***
+     * Get the inner text of an element after removing any descendants that are not visible.
+     * @param element Parent element to get the inner text of
+     * @returns {string} text
+     */
+    function getVisibleInnerText(element) {
+        var $element = $(element),
+            class_invisibleElements = "UnitsProj-invisible-text";
+
+        $element.find(":not(:visible)").addClass(class_invisibleElements); // add class to all invisible descendants
+
+        var $elementClone = $element.clone();
+        $elementClone.find("." + class_invisibleElements).remove();
+
+        $element.find(class_invisibleElements).removeClass(class_invisibleElements); // revert any changes made to the page's DOM
+
+        var text = $elementClone.text();
+        if (!text && $element.is('input[type = "button"]')) {
+            text = element.value;
+        }
+
+        return text;
     }
 //    function canIgnoreAllChildlistNodes(nodes) {
 //        if (nodes && nodes.length) {
