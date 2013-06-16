@@ -69,7 +69,8 @@ _u.mod_smoothScroll = (function() {
         // current time minus 'intervalPeriod'. This allows the first invocation of the function to take place immediately
         // rather than at the end of the 'intervalPeriod'.
         lastInvokedTime = Date.now() - intervalPeriod;
-        invokeIncrementalScroll();   // invoke once immediately, before setting setInterval.
+        invokeIncrementalScroll();      // invoke once immediately, before setting setInterval.
+        clearInterval(intervalId);      // clear any existing interval
         intervalId = setInterval (invokeIncrementalScroll, intervalPeriod);
     }
 
