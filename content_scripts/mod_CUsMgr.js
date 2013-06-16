@@ -622,7 +622,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function selectPrev () {
 
-        if (!CUs_filtered || !CUs_filtered.length || CUs_filtered.length == 1) {
+        if (CUs_filtered.length < 2) {
             mod_basicPageUtils.scroll("up");
             return;
         }
@@ -667,7 +667,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function selectNext() {
 
-        if (!CUs_filtered || !CUs_filtered.length || CUs_filtered.length == 1) {
+        if (CUs_filtered.length < 2) {
             mod_basicPageUtils.scroll("down");
             return;
         }
@@ -677,8 +677,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) ||
-            Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
+        if ($selectedCU && (Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod) ||
+            isAnyPartOfCUinViewport($selectedCU)) {
 
             if (miscSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('down');
@@ -944,7 +944,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //        return $el.is(':visible') && $el.css('visibility') !== "hidden";
 
         //NOTE: ussing the jquery eqivalent especially .is(':visible') was found to be comparatively slower
-        return el.offsetHeight && el.offsetWidth && document.defaultView.getComputedStyle(el).getPropertyValue("visibility") !== "hidden";
+        return el.offsetHeight && el.offsetWidth &&
+            document.defaultView.getComputedStyle(el).getPropertyValue("visibility") !== "hidden";
 
     }
 
