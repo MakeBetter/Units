@@ -1,5 +1,7 @@
 (function(mod_settings, mod_getMainDomain) {
 
+    var id_lastActiveTab;
+
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
 
@@ -54,22 +56,20 @@
     }
 
     /***
-     * This method is executed when the active tab or window is changed. Sends a message to content scripts in all tabs.
+     * This method is executed when the active tab or window is changed. Sends a message to content script of the
+     * tab that was just activated, and deactivated.
      */
     function sendActiveTabChangedMessage() {
-        // get all tabs
-        chrome.tabs.query({}, function(tabs){
-            for (var i = 0; i < tabs.length; i++) {
-                var tab = tabs[i];
+        chrome.tabs.query({active:true, currentWindow: true}, function(tabs){
 
-                if (tab.active) {
-                    chrome.tabs.sendMessage(tab.id, {message: 'tabActivated'}, setIcon); // callback that sets the extension
-                    // icon based on whether content script is enabled or disabled.
+                var id_currentActiveTab = tabs[0].id;
+
+                if (id_currentActiveTab !== id_lastActiveTab) {
+                    chrome.tabs.sendMessage(id_currentActiveTab, {message: 'tabActivated'}, setIcon);
+                    id_lastActiveTab && chrome.tabs.sendMessage(id_lastActiveTab, {message: 'tabDeactivated'});
+
+                    id_lastActiveTab = id_currentActiveTab;
                 }
-                else {
-                    chrome.tabs.sendMessage(tab.id, {message: 'tabDeactivated'});
-                }
-            }
         });
     }
 
