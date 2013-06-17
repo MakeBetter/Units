@@ -135,7 +135,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsShortcuts,
 
         lit_directionalSelectCU,    // last invoked time ("lit") for selectNext, selectPrev etc
-        minInterval_directionalSelectCU = 100;
+        minInterval_directionalSelectCU = 70;
 
     function reset() {
         dehoverCU();
