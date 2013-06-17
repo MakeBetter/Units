@@ -23,6 +23,7 @@ _u.mod_smoothScroll = (function() {
         lastInvokedTime,        // last time an incremental scroll movement was made as part of the overall animation
         startedTime,            // time the current animation was started
         maxDuration,            // max duration that this animation should end in
+        onAnimationEnd,         // function to be called once the animation is over
 
         // millisecs - interval between consecutive incremental scroll invocations (actually this is the *minimum*
         // interval - the actual interval might be higher due to javascript's single threaded nature. We account for
@@ -37,13 +38,15 @@ _u.mod_smoothScroll = (function() {
      * @param elementToScroll The element whose scrollTop is to be changed in smooth increments
      * @param scrollTop Destination scrollTop value at the end of animation
      * @param duration Duration of smooth scroll animation (millisecs)
+     * @param {Function} [callback] Optional. Function to be called once the animation is over
      */
-    function smoothScroll(elementToScroll, scrollTop, duration) {
+    function smoothScroll(elementToScroll, scrollTop, duration, callback) {
         if (animationInProgress) {
             endAnimationAtDestination();
         }
         element = elementToScroll;
         destination = scrollTop;
+        onAnimationEnd = callback;
 
         currentPosition = element.scrollTop;
 //        var areScrollingDown;
@@ -78,6 +81,7 @@ _u.mod_smoothScroll = (function() {
         clearInterval(intervalId);
         element.scrollTop = destination;
         animationInProgress = false;
+        onAnimationEnd && onAnimationEnd();
     }
 
     function invokeIncrementalScroll() {
