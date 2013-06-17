@@ -97,9 +97,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $lastSelectedCU = null,   // to store a reference to the last selected CU
 
-    // If a CU is currently selected, this stores the time it was selected, else this stores the time the last
-    // selected CU was deselected.
-        time_lastCUSelectOrDeselect,
+    // last invoked time ("lit") for selectCU or deselectCU. If a CU is currently selected, this stores the time it was 
+    // selected, else this stores the time the last selected CU was deselected.
+        lit_CUSelectOrDeselect,
 
     // number of milliseconds since its last selection/deselection after which a CU is no longer deemed to be
     // selected/last-selected, IF it is not in the viewport
@@ -109,7 +109,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
 //        $commonCUsAncestor, // closest common ancestor of the CUs
 
-        lastTime_updateCUsEtc,
+        lit_updateCUsEtc, // last invoked time ("lit") of updateCUsEtc_onMuts()
         timeout_updateCUs,
         
         // to enable "grouped" handing of mutations deemed non-essential (in heavy sites, a lot of dom mutations
@@ -144,11 +144,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_context.setCUSelectedState(false);
         mod_context.setCUsCount(0);
 
-        lastTime_updateCUsEtc = 0;
+        lit_updateCUsEtc = lit_directionalSelectCU = lit_CUSelectOrDeselect = 0;
         timeout_updateCUs = false;
         CUsFoundOnce = false;
-
-        lit_directionalSelectCU = Date.now();
     }
 
     function setup(settings) {
@@ -291,7 +289,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
         $lastSelectedCU = $CU;
-        time_lastCUSelectOrDeselect = Date.now();
+        lit_CUSelectOrDeselect = Date.now();
 
         if (adjustScrolling) {
             scrollCUIntoView($overlaySelected);
@@ -333,7 +331,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             // console.log('deselecting CU...');
             removeOverlay($CU, 'selected');
 
-            time_lastCUSelectOrDeselect = Date.now();
+            lit_CUSelectOrDeselect = Date.now();
 
             if ($CU.data('fontIncreasedOnSelection')) {
                 decreaseFont($CU);
@@ -647,7 +645,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
         if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
-            Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
+            Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
             if (miscSettings.sameCUScroll) {
                 var scrolled = scrollSelectedCUIfRequired('up');
                 if (scrolled) {
@@ -699,7 +697,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod) ||
+        if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) ||
             isAnyPartOfCUinViewport($selectedCU)) {
 
             if (miscSettings.sameCUScroll) {
@@ -761,7 +759,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // if a CU is already selected AND (is present in the viewport OR was selected only recently)...
         if (selectedCUIndex >= 0 &&
             (isAnyPartOfCUinViewport(CUs_filtered[selectedCUIndex]) ||
-                Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
+                Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
 
 
             //...call selectCU() on it again passing on the provided parameters
@@ -770,7 +768,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
         else if( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
             (isAnyPartOfCUinViewport($lastSelectedCU) ||
-                Date.now() - time_lastCUSelectOrDeselect < selectionTimeoutPeriod)) {
+                Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
 
             selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
 
@@ -1652,7 +1650,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
             // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
             timeout_updateCUs = setTimeout(updateCUsEtc_onMuts, maxDelay_nonImportantMuts -
-                (Date.now() - lastTime_updateCUsEtc));
+                (Date.now() - lit_updateCUsEtc));
         }
     }
 
@@ -1662,7 +1660,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             clearTimeout(timeout_updateCUs);
             timeout_updateCUs = false;    // reset
         }
-        lastTime_updateCUsEtc = Date.now();
+        lit_updateCUsEtc = Date.now();
         updateCUsAndRelatedState();
     }
 
