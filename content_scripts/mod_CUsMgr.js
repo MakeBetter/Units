@@ -92,9 +92,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //        ltMouseBtnDown,         // boolean holding the state of the left mouse button
         scrolledWithRtMouseBtn, // boolean indicating if right mouse button was used to modify scrolling
 
-        class_scrollingMarker = 'CU-scrolling-marker',
-        $scrollingMarker,
-
         $lastSelectedCU = null,   // to store a reference to the last selected CU
 
     // last invoked time ("lit") for selectCU or deselectCU. If a CU is currently selected, this stores the time it was 
@@ -178,12 +175,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_SUs) && (tmp = tmp.std_header) && tmp.selector;
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
-
-        $scrollingMarker = $('<div></div>')
-            .addClass(class_scrollingMarker)
-            .addClass(class_addedByUnitsProj)
-            .hide()
-            .appendTo($topLevelContainer);
 
         setupEvents();
 
@@ -422,7 +413,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             console.warn('UnitsProj: no $overlay found');
         }
-
     }
 
     /**
@@ -527,17 +517,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         hoveredCUIndex = -1;
     }
 
-    function showScrollingMarker(x, y, height) {
-
-        clearTimeout($scrollingMarker.timeoutId); // clear a previously set timeout out, if one exists...
-
-        $scrollingMarker.timeoutId = setTimeout(function() { // ... before setting a new one
-            $scrollingMarker.hide();
-        }, 3000);
-
-        $scrollingMarker.css({top: y, left: x-$scrollingMarker.width()-5, height: height}).show();
-    }
-
     /**
      * Scrolls more of the specified CU into view if required (i.e. if the CU is too large),
      * in the direction specified.
@@ -547,73 +526,30 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function scrollCUIfRequired ($CU, direction) {
 
-        var pageHeaderHeight = getEffectiveHeaderHeight();
-
-        var // for the window:
+        var pageHeaderHeight,
+        // for the window:
             winTop = body.scrollTop,
-            winHeight = /*$(window).height()*/ window.innerHeight,// $(window).height() does not work on HN
-            winBottom = winTop + winHeight;
-
+            winBottom,
         // for the CU
-        var boundingRect = getBoundingRectangle($CU),
+            boundingRect = getBoundingRectangle($CU),
             CUTop = boundingRect.top,
-            CUHeight = boundingRect.height,
-            CUBottom = CUTop + CUHeight;
+            CUBottom;
 
-        var newWinTop, // new value of scrollTop
-            overlapAfterScroll = 40,
-            margin = 30;
-
-        direction = direction.toLowerCase();
-        if ( (direction === 'up' && CUTop < winTop + pageHeaderHeight) ||
-            (direction === 'down' && CUBottom > winBottom) ) {
-            if (direction === 'up' ) { // implies CUTop < winTop + pageHeaderHeight
-                newWinTop = winTop - (winHeight - pageHeaderHeight) + overlapAfterScroll; //TODO: verify the math
-
-                // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
-                // increase it to the max value required to show the entire CU with some margin left.
-                if (newWinTop + pageHeaderHeight < CUTop) {
-                    newWinTop = CUTop - pageHeaderHeight - margin;
-                }
-
-                if (newWinTop < 0) {
-                    newWinTop = 0;
-                }
-                showScrollingMarker(boundingRect.left, winTop+pageHeaderHeight, overlapAfterScroll);
+        if (direction === 'up') {
+            pageHeaderHeight = getEffectiveHeaderHeight();
+            if (CUTop < winTop + pageHeaderHeight) {
+                mod_basicPageUtils.scroll('up', body);
+                return true;
             }
-
-            else  { //direction === 'down' && CUBottom > winBottom
-
-                newWinTop = winBottom - overlapAfterScroll - pageHeaderHeight;
-
-                // if newWinTop calculated would scroll the CU more than required for it to get completely in the view,
-                // reduce it to the min value required to show the entire CU with some margin left.
-                if (newWinTop + winHeight > CUBottom) {
-                    newWinTop = CUBottom - winHeight + margin;
-                }
-
-                // ensure value is not more then the max possible
-                if (newWinTop > document.height - winHeight) {
-                    newWinTop = document.height - winHeight;
-                }
-
-                showScrollingMarker(boundingRect.left, winBottom - overlapAfterScroll, overlapAfterScroll);
-            }
-
-            if (miscSettings.animatedCUScroll) {
-                var animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
-                    Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
-
-                mod_smoothScroll.smoothScroll(body, newWinTop, animationDuration);
-
-            }
-            else {
-                body.scrollTop = newWinTop;
-            }
-
-            return true;
         }
-
+        else { // direction === 'down'
+            winBottom = winTop + window.innerHeight;
+            CUBottom = CUTop + boundingRect.height;
+            if (CUBottom > winBottom) {
+                mod_basicPageUtils.scroll('down', body);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -631,11 +567,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
     function _selectPrev () {
         if (CUs_filtered.length < 2) {
-            mod_basicPageUtils.scroll("up");
+            mod_basicPageUtils.scroll("up", body);
             return;
         }
-
-        $scrollingMarker.hide();
 
         var $selectedCU = CUs_filtered[selectedCUIndex];
         
@@ -644,12 +578,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
             Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
             if (miscSettings.sameCUScroll) {
-                var scrolled = scrollCUIfRequired($selectedCU, 'up');
-                if (scrolled) {
+                // if scrolled
+                if (scrollCUIfRequired($selectedCU, 'up')) {
                     return;
                 }
                 else if (selectedCUIndex === 0) { // special case for first CU
-                    mod_basicPageUtils.scroll("up");
+                    mod_basicPageUtils.scroll("up", body);
                 }
             }
 
@@ -685,10 +619,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function _selectNext() {
 
         if (CUs_filtered.length < 2) {
-            mod_basicPageUtils.scroll("down");
+            mod_basicPageUtils.scroll("down", body);
             return;
         }
-        $scrollingMarker.hide();
 
         var $selectedCU = CUs_filtered[selectedCUIndex];
 
@@ -698,12 +631,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             isAnyPartOfCUinViewport($selectedCU)) {
 
             if (miscSettings.sameCUScroll) {
-                var scrolled = scrollCUIfRequired($selectedCU, 'down');
-                if (scrolled) {
+                // if scrolled
+                if (scrollCUIfRequired($selectedCU, 'down')) {
                     return;
                 }
                 else  if (selectedCUIndex === CUs_filtered.length-1) { // special case for last CU
-                    mod_basicPageUtils.scroll("down");
+                    mod_basicPageUtils.scroll("down", body);
                 }
             }
 

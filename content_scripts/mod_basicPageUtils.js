@@ -107,10 +107,12 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
      * E.g: If there is an child element that has focus and can be scrolled up, the first invocation of scroll("top")
      * will act on it, and the next one will act on a suitable ancestor (since the child can no longer be scrolled up)
      * @param {string} scrollType One of "up", "down", "pageUp", "pageDown", "top", "bottom"
+     * @param {HtmlElement} [element] element whose scrollTop is to be modified. If not provided, we determine
+     * the most appropriate one ourselves.
      */
-    function scroll(scrollType) {
+    function scroll(scrollType, element) {
         var areScrollingUp = ["up", "pageUp", "top"].indexOf(scrollType) >= 0;
-        var elToScroll = getElementToScroll(areScrollingUp);
+        var elToScroll = element || getElementToScroll(areScrollingUp);
 
         if (elToScroll) {
             switch(scrollType) {
