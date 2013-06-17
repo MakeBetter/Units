@@ -363,10 +363,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function getMainElement($CU) {
 
-        if (!$CU || !$CU.length) {
-            return null;
-        }
-
         var $containedFocusables = $getContainedFocusables($CU);
 
         if (!$containedFocusables.length) {
@@ -1755,6 +1751,20 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //        }
 //    }
 
+    /* If the active element is already inside the selected CU, then do nothing.
+     Else focus the main element of the selected CU.
+     (This exists so that when a CU is selected using a mouse click, we can select its main element,
+     if the mouse click itself did not lead to an element within the CU getting selected (like an input box)
+     */
+    function focusMainElelementInSelectedCU_ifRequired() {
+        var activeEl = document.activeElement,
+            indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
+
+        if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
+            focusMainElement(CUs_filtered[selectedCUIndex]);
+        }
+    }
+
     function onLtMouseBtnDown(e) {
         // first update the following global variables
 //        ltMouseBtnDown = true;
@@ -1779,24 +1789,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (indexToSelect >= 0) {
             selectCU(indexToSelect, false, false);
 
-            var focusMainElementIfRequired = function() {
-
-                /* If the current active element is already inside the selected CU, then do nothing.
-                   Else focus the main element of the selected CU.
-                   (Say, the user clicked on a textbox inside a unit. In that case, you don't want to steal the focus
-                   from the textbox to the main element.) */
-
-                var activeEl = document.activeElement,
-                    indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
-
-                if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
-                    focusMainElement(CUs_filtered[indexToSelect]);
-                }
-            };
-
-            setTimeout(focusMainElementIfRequired, 0); // delay = 0. Execute this after the event is processed. We need
-            // the clicked-on element to get focus first before
-
+            // delay = 0 to yield execution, so that this executes after the click event is processed.
+            // We need the clicked-on element to get focus first executing this.
+            setTimeout(focusMainElelementInSelectedCU_ifRequired, 0);
         }
         else {
             deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
