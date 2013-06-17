@@ -130,6 +130,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsSpecifier,
         CUsSelector,    // holds a value if CUs are specified directly using a selector
         mainElementSelector, // selector for main element of a CU, if specified
+        headerSelector,
         CUStyleData,
         CUsShortcuts,
 
@@ -174,6 +175,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsSpecifier = expandedUrlData.CUs_specifier;
         CUsSelector = CUsSpecifier.selector;
         mainElementSelector = (tmp = expandedUrlData.CUs_MUs) && (tmp = tmp.std_mainEl) && tmp.selector;
+        headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_MUs) && (tmp = tmp.std_header) && tmp.selector;
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
 
@@ -537,14 +539,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Scrolls more of the currently selected CU into view if required (i.e. if the CU is too large),
+     * Scrolls more of the specified CU into view if required (i.e. if the CU is too large),
      * in the direction specified.
+     * @param {jQuery} $CU
      * @param {string} direction Can be either 'up' or 'down'
      * @return {Boolean} value indicating whether scroll took place
      */
-    function scrollSelectedCUIfRequired (direction) {
-
-        var $CU = CUs_filtered[selectedCUIndex];
+    function scrollCUIfRequired ($CU, direction) {
 
         var pageHeaderHeight = getEffectiveHeaderHeight();
 
@@ -643,7 +644,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
             Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
             if (miscSettings.sameCUScroll) {
-                var scrolled = scrollSelectedCUIfRequired('up');
+                var scrolled = scrollCUIfRequired($selectedCU, 'up');
                 if (scrolled) {
                     return;
                 }
@@ -697,7 +698,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             isAnyPartOfCUinViewport($selectedCU)) {
 
             if (miscSettings.sameCUScroll) {
-                var scrolled = scrollSelectedCUIfRequired('down');
+                var scrolled = scrollCUIfRequired($selectedCU, 'down');
                 if (scrolled) {
                     return;
                 }
@@ -1566,13 +1567,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 // Only the part of the header below the view's top is considered, and its size returned. If there is more than one
 // header element, we do the same thing, but for the bottommost one.
     function getEffectiveHeaderHeight() {
-
-        var tmp;
-        var headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_MUs) && (tmp = tmp.std_header) && tmp.selector;
         if (!headerSelector) {
             return 0;
         }
-
         var $headers = $(headerSelector).filter(':visible'),
             headersLen;
 
