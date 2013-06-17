@@ -131,8 +131,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUStyleData,
         CUsShortcuts,
 
-        lit_directionalSelectCU,    // last invoked time ("lit") for selectNext, selectPrev etc
-        minInterval_directionalSelectCU = 70;
+        lit_selectCU,    // last invoked time ("lit") for _selectCU()
+        minInterval_selectCU = 70;
 
     function reset() {
         dehoverCU();
@@ -142,7 +142,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_context.setCUSelectedState(false);
         mod_context.setCUsCount(0);
 
-        lit_updateCUsEtc = lit_directionalSelectCU = lit_CUSelectOrDeselect = 0;
+        lit_updateCUsEtc = lit_selectCU = lit_CUSelectOrDeselect = 0;
         timeout_updateCUs = false;
         CUsFoundOnce = false;
     }
@@ -242,9 +242,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
      */
     function selectCU(CUOrItsIndex, setFocus, adjustScrolling) {
-        var disabledByMe = mod_mutationObserver.disable();
-        _selectCU(CUOrItsIndex, setFocus, adjustScrolling);
-        disabledByMe && mod_mutationObserver.enable();
+        var now = Date.now();
+        if (now - lit_selectCU > minInterval_selectCU) {
+            lit_selectCU = now;
+            var disabledByMe = mod_mutationObserver.disable();
+            _selectCU(CUOrItsIndex, setFocus, adjustScrolling);
+            disabledByMe && mod_mutationObserver.enable();
+        }
     }
 
     // only meant to be called from within selectCU()
@@ -557,13 +561,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * Selects the previous CU to the currently selected one.
      */
     function selectPrev () {
-        var now = Date.now();
-        if (now - lit_directionalSelectCU > minInterval_directionalSelectCU) {
-            lit_directionalSelectCU = now;
-            var disabledByMe = mod_mutationObserver.disable();
-            _selectPrev();
-            disabledByMe && mod_mutationObserver.enable();
-        }
+        var disabledByMe = mod_mutationObserver.disable();
+        _selectPrev();
+        disabledByMe && mod_mutationObserver.enable();
     }
     function _selectPrev () {
         if (CUs_filtered.length < 2) {
@@ -577,7 +577,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
         if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
             Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
-            
+
             if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
                 return;
             }
@@ -605,13 +605,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * Selects the next CU to the currently selected one.
      */
     function selectNext() {
-        var now = Date.now();
-        if (now - lit_directionalSelectCU > minInterval_directionalSelectCU) {
-            lit_directionalSelectCU = now;
-            var disabledByMe = mod_mutationObserver.disable();
-            _selectNext();
-            disabledByMe && mod_mutationObserver.enable();
-        }
+        var disabledByMe = mod_mutationObserver.disable();
+        _selectNext();
+        disabledByMe && mod_mutationObserver.enable();
     }
     function _selectNext() {
 
