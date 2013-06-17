@@ -1679,7 +1679,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
 
         if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
+            var savedScrollPos = body.scrollTop;
             focusMainElement(CUs_filtered[selectedCUIndex]);
+            body.scrollTop = savedScrollPos;
         }
     }
 
