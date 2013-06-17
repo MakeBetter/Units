@@ -131,7 +131,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsSelector,    // holds a value if CUs are specified directly using a selector
         mainElementSelector, // selector for main element of a CU, if specified
         CUStyleData,
-        CUsShortcuts;
+        CUsShortcuts,
+
+        lit_directionalSelectCU,    // last invoked time ("lit") for selectNext, selectPrev etc
+        minInterval_directionalSelectCU = 100;
 
     function reset() {
         dehoverCU();
@@ -144,6 +147,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lastTime_updateCUsEtc = 0;
         timeout_updateCUs = false;
         CUsFoundOnce = false;
+
+        lit_directionalSelectCU = Date.now();
     }
 
     function setup(settings) {
@@ -621,7 +626,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * Selects the previous CU to the currently selected one.
      */
     function selectPrev () {
-
+        var now = Date.now();
+        if (now - lit_directionalSelectCU > minInterval_directionalSelectCU) {
+            lit_directionalSelectCU = now;
+            var disabledByMe = mod_mutationObserver.disable();
+            _selectPrev();
+            disabledByMe && mod_mutationObserver.enable();
+        }
+    }
+    function _selectPrev () {
         if (CUs_filtered.length < 2) {
             mod_basicPageUtils.scroll("up");
             return;
@@ -666,6 +679,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * Selects the next CU to the currently selected one.
      */
     function selectNext() {
+        var now = Date.now();
+        if (now - lit_directionalSelectCU > minInterval_directionalSelectCU) {
+            lit_directionalSelectCU = now;
+            var disabledByMe = mod_mutationObserver.disable();
+            _selectNext();
+            disabledByMe && mod_mutationObserver.enable();
+        }
+    }
+    function _selectNext() {
 
         if (CUs_filtered.length < 2) {
             mod_basicPageUtils.scroll("down");
