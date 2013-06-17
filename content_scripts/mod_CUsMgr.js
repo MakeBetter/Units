@@ -577,14 +577,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
         if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
             Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
-            if (miscSettings.sameCUScroll) {
-                // if scrolled
-                if (scrollCUIfRequired($selectedCU, 'up')) {
-                    return;
-                }
-                else if (selectedCUIndex === 0) { // special case for first CU
-                    mod_basicPageUtils.scroll("up", body);
-                }
+            
+            if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
+                return;
             }
 
 //            for (var i = selectedCUIndex-1; i >= 0; i--) {
@@ -597,7 +592,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             if (newIndex >= 0) {
                 selectCU(newIndex, true, true);
             }
-            // else do nothing
+            else {
+                mod_basicPageUtils.scroll("up", body);
+            }
         }
         else {
             selectMostSensibleCU(true, true);
@@ -630,14 +627,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) ||
             isAnyPartOfCUinViewport($selectedCU)) {
 
-            if (miscSettings.sameCUScroll) {
-                // if scrolled
-                if (scrollCUIfRequired($selectedCU, 'down')) {
-                    return;
-                }
-                else  if (selectedCUIndex === CUs_filtered.length-1) { // special case for last CU
-                    mod_basicPageUtils.scroll("down", body);
-                }
+            if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
+                return;
             }
 
 //            var len = CUs_filtered.length;
@@ -651,8 +642,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             if (newIndex < CUs_filtered.length) {
                 selectCU(newIndex, true, true);
             }
-            // else do nothing
-
+            else {
+                mod_basicPageUtils.scroll("down", body);
+            }
         }
         else {
             selectMostSensibleCU(true, true);
