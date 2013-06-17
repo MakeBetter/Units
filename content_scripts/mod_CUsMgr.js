@@ -1796,7 +1796,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
         }
-
     }
 
     function onRtMouseBtnDown() {
@@ -1819,7 +1818,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             return onLtMouseBtnDown(e);
         }
-
     }
 
     function onMouseUp(e) {
@@ -1859,7 +1857,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
             hoverCU(CUIndex);
         }
-
     }
 
     function onMouseOver(e) {
@@ -1933,7 +1930,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         mod_keyboardLib.bind(['tab', 'shift+tab'], function() {focusMainElement(CUs_filtered[selectedCUIndex]);},
             isContextApplicable);
-
     }
 
     function setupEvents() {
