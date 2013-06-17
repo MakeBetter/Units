@@ -27,27 +27,27 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
      * @param scope
      */
     function setupUrlDataShortcuts(scope) {
-        setupMUsShortcuts(scope);
+        setupSUsShortcuts(scope);
         setupActionShortcuts(scope);
     }
 
-    function setupMUsShortcuts(scope) {
-        var MUs;
+    function setupSUsShortcuts(scope) {
+        var SUs;
         if (scope === 'CUs') {
-            MUs = expandedUrlData.CUs_MUs;
+            SUs = expandedUrlData.CUs_SUs;
         }
         else {
-            MUs = expandedUrlData.page_MUs;
+            SUs = expandedUrlData.page_SUs;
         }
-        if (MUs) {
-            for (var key in MUs) {
-                if (MUs.hasOwnProperty(key)) {
-                    var MU = MUs[key],
-                        selectors = MU.selector,
-                        kbdShortcuts = MU.kbdShortcuts;
+        if (SUs) {
+            for (var key in SUs) {
+                if (SUs.hasOwnProperty(key)) {
+                    var SU = SUs[key],
+                        selectors = SU.selector,
+                        kbdShortcuts = SU.kbdShortcuts;
 
                     if (selectors && kbdShortcuts) {
-                        mod_keyboardLib.bind(kbdShortcuts, accessMU.bind(null, selectors, scope),
+                        mod_keyboardLib.bind(kbdShortcuts, accessSU.bind(null, selectors, scope),
                             scope === 'CUs'? {CUSelected: true}: undefined);
                     }
                 }
@@ -91,7 +91,7 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
      * @param selectors
      * @param {string} scope Can be either "page" or 'CUs'
      */
-    function accessMU(selectors, scope) {
+    function accessSU(selectors, scope) {
         var $scope;
 
         if (scope === 'CUs') {

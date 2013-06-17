@@ -174,8 +174,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         expandedUrlData = settings.expandedUrlData;
         CUsSpecifier = expandedUrlData.CUs_specifier;
         CUsSelector = CUsSpecifier.selector;
-        mainElementSelector = (tmp = expandedUrlData.CUs_MUs) && (tmp = tmp.std_mainEl) && tmp.selector;
-        headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_MUs) && (tmp = tmp.std_header) && tmp.selector;
+        mainElementSelector = (tmp = expandedUrlData.CUs_SUs) && (tmp = tmp.std_mainEl) && tmp.selector;
+        headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_SUs) && (tmp = tmp.std_header) && tmp.selector;
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
 
@@ -357,7 +357,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Returns the "main" element in the specified $CU. This is determined using the "std_mainEl" MU specified in the expandedUrlData.
+     * Returns the "main" element in the specified $CU. This is determined using the "std_mainEl" SU specified in the expandedUrlData.
      * If no std_mainEl is specified, this function simply returns the first focusable element in the $CU
      *
      * @param $CU

@@ -154,7 +154,7 @@ var defaultSettings = {
     },
 
     /*
-    Default values for the description and kbdShortcuts associated with the standard ("std_") MUs and actions
+    Default values for the description and kbdShortcuts associated with the standard ("std_") SUs and actions
     defined in the urlData for a page. In most cases, the urlData will not specify values for these. However, if the
     urlData specifies any of these values for any of the "std_" items, they will be used instead.
     */

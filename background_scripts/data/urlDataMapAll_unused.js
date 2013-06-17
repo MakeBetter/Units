@@ -67,13 +67,13 @@ defaultSettings.urlDataMap = {
                 "overlayPadding": "5px",
                 useInnerElementsToGetOverlaySize: false // defaults to false; true is used in some sites like hacker news and reddit
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 std_mainEl: ".post_title",  // When a CU is selected, this identifies the element inside it that is given the initial focus (apart from allowing a shortcut to be specified to access it when a CU is selected)
-                std_comment: ".comment",   // a "std_" MU can use the "shorthand" notation by directly specifying the selector here
+                std_comment: ".comment",   // a "std_" SU can use the "shorthand" notation by directly specifying the selector here
                 std_upvote: {
                     selector: ".upvote",   // if the "expanded" notation is used, the selector is specified here
 
-                    // This following two keys are optional since this is a "std_" MU, but if one or both are
+                    // This following two keys are optional since this is a "std_" SU, but if one or both are
                     // specified, they will will override the default value
                     kbdShortcuts: ["u", "v"],
                     miniDescr: "customized description.."
@@ -83,7 +83,7 @@ defaultSettings.urlDataMap = {
 //                        kbdShortcuts: ["u", "v"]
                 },
 
-                // the following MU, which is not standard (i.e. "std_" prefixed) requires the "expanded" notation
+                // the following SU, which is not standard (i.e. "std_" prefixed) requires the "expanded" notation
                 markAsRead: {
                     miniDescr: "Mark as read",
                     selector: ".mark-read",
@@ -95,8 +95,8 @@ defaultSettings.urlDataMap = {
             },
 
 
-            // the structure of this item matches that of CUs_MUs
-            page_MUs: {
+            // the structure of this item matches that of CUs_SUs
+            page_SUs: {
                 std_searchField: {
                     selector: "#search"
 //                    kbdShortcuts: ["/"]
@@ -144,13 +144,13 @@ defaultSettings.urlDataMap = {
          the rest -> timeline pages
          */
         CUs_specifier: ".genericStreamStory.uiUnifiedStory, #fbTimelineHeadline .actions, .fbTimelineNavigationPagelet, .vTop, .leftUnits, .rightUnits, .timelineUnitContainer, .timelineReportContainer",
-        CUs_MUs: {
+        CUs_SUs: {
             "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
             "std_comment": ".comment_link",
             "std_share": ".share_action_link",
             "std_viewComments": ".UFIPagerLink"
         },
-        page_MUs: {
+        page_SUs: {
             std_header: "#headNav, .stickyHeaderWrap",
             std_nextOrMore: ".uiMorePagerPrimary"
         }
@@ -170,7 +170,7 @@ defaultSettings.urlDataMap = {
             CUs_style: {
                 "overlayPadding": "5px"
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 std_mainEl: "a.l"
             },
             CUs_actions: {
@@ -200,7 +200,7 @@ defaultSettings.urlDataMap = {
                     }
                 }
             },
-            page_MUs: {
+            page_SUs: {
                 "within-last-year": {
                     kbdShortcuts: ["y"],
                     selector: ".q.qs:contains('Past year')"    // jQuery extensions to CSS selector syntax are supported
@@ -242,7 +242,7 @@ defaultSettings.urlDataMap = {
             CUs_specifier: {
             },
             selector: ".feed_item, .announcement, .pager_next.action_button", //TODO: needs work
-            CUs_MUs: {
+            CUs_SUs: {
                 std_mainEl: " a.question_link"
             }
         },
@@ -254,7 +254,7 @@ defaultSettings.urlDataMap = {
                 first: ".rating_options",
                 last: ".item_action_bar"
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 std_mainEl: ".answer_user>span>a.user",
                 std_header: ".header"
             }
@@ -268,7 +268,7 @@ defaultSettings.urlDataMap = {
                 //                exclude: ".panestack-title, .menuarea"
 
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 //                std_mainEl: ".title",
                 "std_upvote": ".arrow.up, .arrow.upmod",
                 "std_downvote": ".arrow.down, .arrow.downmod",
@@ -288,7 +288,7 @@ defaultSettings.urlDataMap = {
                 useInnerElementsToGetOverlaySize: true,
                 "overlayPadding": "5px 10px 5px 0"
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 std_mainEl: ".title",
                 "std_upvote": ".arrow.up, .arrow.upmod",
                 "std_downvote": ".arrow.down, .arrow.downmod",
@@ -334,7 +334,7 @@ defaultSettings.urlDataMap = {
             CUs_style: {
                 "overlayPadding": "0 5px 0 5px"
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 "std_upvote": ".vote-up-off",
                 "std_downvote": ".vote-down-off",
                 "std_share": ".short-link",
@@ -353,7 +353,7 @@ defaultSettings.urlDataMap = {
             CUs_style: {
                 "overlayPadding": "0 5px 0 5px"
             },
-            CUs_MUs: {
+            CUs_SUs: {
                 //TODO: specify shortcuts for MathOverflow.
 //                   "std_upvote": {keys: ["u"],  selector: ".vote-up-off" },
 //                   "std_downvote": {keys: ["d"],  selector: ".vote-down-off" },
@@ -425,7 +425,7 @@ defaultSettings.urlDataMap = {
         CUs_actions: {
 
         },
-        CUs_MUs: {
+        CUs_SUs: {
             "std_mainEl": "td.title>a",
             "std_viewComments": {
                 kbdShortcuts: ["c", "g c"], // overridden to add additional shortcut

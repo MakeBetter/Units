@@ -212,7 +212,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     }
 
     // Converts any "shorthand" notations within the urlData to their "expanded" forms.
-    // Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by MUs/actions defined in urlData
+    // Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by SUs/actions defined in urlData
     function expandUrlData(urlData) {
 
         // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
@@ -226,36 +226,36 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             }
         };
 
-        // uses defaultSettings.valuesFor_stdUrlDataItems to supplement values in the MU/action (specified using the first two params)
+        // uses defaultSettings.valuesFor_stdUrlDataItems to supplement values in the SU/action (specified using the first two params)
         // 'scope' can be either "page" or "CUs"
-        var supplementWithDefaultValues = function(MUorAction, MUOrAction_Name, scope) {
+        var supplementWithDefaultValues = function(SUorAction, SUorAction_Name, scope) {
 
             var temp;
-            if (!MUorAction.kbdShortcuts && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
-                MUorAction.kbdShortcuts = temp.kbdShortcuts;
+            if (!SUorAction.kbdShortcuts && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][SUorAction_Name])) {
+                SUorAction.kbdShortcuts = temp.kbdShortcuts;
             }
-            if (!MUorAction.miniDescr && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][MUOrAction_Name])) {
-                MUorAction.miniDescr = temp.miniDescr;
+            if (!SUorAction.miniDescr && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][SUorAction_Name])) {
+                SUorAction.miniDescr = temp.miniDescr;
             }
         };
 
         // scope can be either "page" or "CUs"
-        var expandMUsOrActions = function(MUsOrActions, scope) {
-            if (typeof MUsOrActions === "object") {
-                for (var MUOrAction_Name in MUsOrActions) {
-                    expandPropertyToObjIfString(MUsOrActions, MUOrAction_Name);
-                    supplementWithDefaultValues(MUsOrActions[MUOrAction_Name], MUOrAction_Name, scope);
+        var expandSUsOrActions = function(SUsOrActions, scope) {
+            if (typeof SUsOrActions === "object") {
+                for (var SUorAction_Name in SUsOrActions) {
+                    expandPropertyToObjIfString(SUsOrActions, SUorAction_Name);
+                    supplementWithDefaultValues(SUsOrActions[SUorAction_Name], SUorAction_Name, scope);
                 }
             }
         };
 
         expandPropertyToObjIfString(urlData, 'CUs_specifier');
 
-        expandMUsOrActions(urlData.CUs_MUs, "CUs");
-        expandMUsOrActions(urlData.CUs_actions, "CUs");
+        expandSUsOrActions(urlData.CUs_SUs, "CUs");
+        expandSUsOrActions(urlData.CUs_actions, "CUs");
 
-        expandMUsOrActions(urlData.page_MUs, "page");
-        expandMUsOrActions(urlData.page_actions, "page");
+        expandSUsOrActions(urlData.page_SUs, "page");
+        expandSUsOrActions(urlData.page_actions, "page");
 
     }
 

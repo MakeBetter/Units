@@ -71,9 +71,9 @@ function renderGeneralShortcuts(settings) {
         expandedUrlData = settings.expandedUrlData,
         globalShortcuts = settings.globalChromeCommands;
 
-    var page_MUs = expandedUrlData && expandedUrlData.page_MUs,
+    var page_SUs = expandedUrlData && expandedUrlData.page_SUs,
         page_actions = expandedUrlData && expandedUrlData.page_actions,
-        page_allShortcuts = $.extend({}, page_MUs, page_actions);
+        page_allShortcuts = $.extend({}, page_SUs, page_actions);
 
     var $shortcutsTable = $generalShortcutsSection.find("table");
 
@@ -85,9 +85,9 @@ function renderGeneralShortcuts(settings) {
 function renderCUShortcuts(settings) {
     var CUsShortcuts_Default = settings.CUsShortcuts,
         expandedUrlData = settings.expandedUrlData,
-        CUs_MUs = expandedUrlData && expandedUrlData.CUs_MUs,
+        CUs_SUs = expandedUrlData && expandedUrlData.CUs_SUs,
         CUs_actions = expandedUrlData && expandedUrlData.CUs_actions,
-        CUsShortcuts_URLBased = $.extend({}, CUs_MUs, CUs_actions);
+        CUsShortcuts_URLBased = $.extend({}, CUs_SUs, CUs_actions);
 
     // Additional shortcut to be displayed
     CUsShortcuts_Default.selectAnyLink= {
