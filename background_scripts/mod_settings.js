@@ -191,10 +191,11 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             if (Array.isArray(urlData.urlRegexps)) {
                 regexpsToTest = regexpsToTest.concat(urlData.urlRegexps);
             }
-            var regexpsLen =  regexpsToTest.length;
+            var regexpsLen =  regexpsToTest.length,
+                strippedUrlWithoutTrailingSlash;
 
             if (strippedUrl.lastIndexOf("/") === strippedUrl.length - 1) {
-                var strippedUrlWithoutTrailingSlash = strippedUrl.substr(0, strippedUrl.length-1);
+                strippedUrlWithoutTrailingSlash = strippedUrl.substr(0, strippedUrl.length-1);
             }
 
             for (var j = 0, regexp; j < regexpsLen; ++j) {
@@ -319,8 +320,9 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         regexpStr = regexpStr.replace(/\\\*/g, '.*');
 
         // replacing all instances of '@' by the regexp equivalent to match one or more combinations of characters that
-        // are not dots or slashes.
-        regexpStr = regexpStr.replace(/@/g, '[^\.\/]+');
+        // are not dots or slashes (in the replace string below we specify, in order, backslash, dot and forward slash
+        // (after the caret)
+        regexpStr = regexpStr.replace(/@/g, '[^\\.\/]+');
 
         regexpStr = "^" + regexpStr + "$";
 
