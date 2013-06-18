@@ -27,7 +27,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         $document = $(document),
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
         overlap_pgUpPgDn = 100,
-        scrollAnimationDuration = 150; // millisecs
+        scrollAnimationDuration = 150, // millisecs
+        smoothScroll = mod_smoothScroll.smoothScroll;
 
     function reset() {
         removeActiveElementStyle();
@@ -115,26 +116,31 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         var elToScroll = element || getElementToScroll(areScrollingUp);
 
         if (elToScroll) {
+            
+            if (mod_smoothScroll.isInProgress()) {
+                mod_smoothScroll.endAtDestination();
+            }
+            
             switch(scrollType) {
                 case "down":
-                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop + miscSettings.pageScrollDelta, scrollAnimationDuration);
+                    smoothScroll(elToScroll, elToScroll.scrollTop + miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "up":
-                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
+                    smoothScroll(elToScroll, elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "pageDown":
-                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop +
+                    smoothScroll(elToScroll, elToScroll.scrollTop +
                         (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
                     break;
                 case "pageUp":
-                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollTop -
+                    smoothScroll(elToScroll, elToScroll.scrollTop -
                         (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
                     break;
                 case "top":
-                    mod_smoothScroll.smoothScroll(elToScroll, 0, scrollAnimationDuration);
+                    smoothScroll(elToScroll, 0, scrollAnimationDuration);
                     break;
                 case "bottom":
-                    mod_smoothScroll.smoothScroll(elToScroll, elToScroll.scrollHeight, scrollAnimationDuration);
+                    smoothScroll(elToScroll, elToScroll.scrollHeight, scrollAnimationDuration);
                     break;
             }
         }

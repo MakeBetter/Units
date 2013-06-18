@@ -7,7 +7,10 @@ _u.mod_smoothScroll = (function() {
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
-        smoothScroll: smoothScroll
+        smoothScroll: smoothScroll,
+        isInProgress: isInProgress,
+        endAtDestination: endAtDestination
+
     });
 
     // The variables below are related to the currently ongoing scroll animation.
@@ -82,6 +85,10 @@ _u.mod_smoothScroll = (function() {
             element.scrollTop = currentPosition;
             requestAnimationFrame(step);
         }
+    }
+
+    function isInProgress() {
+        return inProgress;
     }
     return thisModule;
 

@@ -132,7 +132,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsShortcuts,
 
         lit_selectCU,    // last invoked time ("lit") for _selectCU()
-        minInterval_selectCU = 70;
+        minInterval_selectCU = 70,
+
+        smoothScroll = mod_smoothScroll.smoothScroll;
 
     function reset() {
         dehoverCU();
@@ -1011,7 +1013,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             var animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
                 Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
 
-            mod_smoothScroll.smoothScroll(body, newWinTop, animationDuration);
+            smoothScroll(body, newWinTop, animationDuration);
         }
         else {
             body.scrollTop = newWinTop;
