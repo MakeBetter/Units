@@ -189,7 +189,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // to update CUs initally, setting up handlers for dom mutations only once dom is ready.
         // selected overlay if we process all those dom changes, which in turn  
         interval_updateCUsTillDomReady = setInterval(updateCUsAndRelatedState, 100);
-        $(onDomReady_bindMutationEvents);
+        $(onDomReady);
     }
 
     function bindMutationEvents() {
@@ -213,9 +213,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     }
 
-    function onDomReady_bindMutationEvents() {
+    function onDomReady() {
         clearInterval(interval_updateCUsTillDomReady);
         bindMutationEvents();
+        mainContainer  = getMainContainer();
     }
 
     function getMainContainer() {
@@ -1032,10 +1033,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
    
     function onUpdatingCUs() {
-
-//        console.time("commonAncestor");
-//        $commonCUsAncestor = $getCommonCUsAncestor(CUs_all);
-//        console.timeEnd("commonAncestor");
 
         if (!document.contains(mainContainer)) {
             mainContainer  = getMainContainer();
