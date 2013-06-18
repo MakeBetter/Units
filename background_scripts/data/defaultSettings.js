@@ -216,6 +216,10 @@ var defaultSettings = {
             std_sharedContent: {
                 miniDescr: "Open the shared content",
                 kbdShortcuts: ["v s"]
+            },
+            std_toggleSelection: {
+                miniDescr: "toggleSelection",
+                kbdShortcuts: ["x"]
             }
         }
     },
