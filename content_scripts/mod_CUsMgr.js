@@ -259,7 +259,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var $CU,
             indexOf$CU; // index in CUs_filtered
 
-        if (typeof CUOrItsIndex === "number" || CUOrItsIndex instanceof Number) {
+        if (typeof CUOrItsIndex === "number") {
             indexOf$CU = CUOrItsIndex;
             $CU = CUs_filtered[indexOf$CU];
         }
@@ -268,7 +268,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf$CU = findCUInArray($CU, CUs_filtered);
         }
 
-        if (!$CU || !$CU.length || indexOf$CU < 0) {
+        if (!$CU) {
             return;
         }
 
@@ -491,7 +491,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var $CU,
             indexOf$CU; // index in CUs_filtered
 
-        if (typeof CUOrItsIndex === "number" || CUOrItsIndex instanceof Number) {
+        if (typeof CUOrItsIndex === "number") {
             indexOf$CU = CUOrItsIndex;
             $CU = CUs_filtered[indexOf$CU];
         }
@@ -500,7 +500,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf$CU = findCUInArray($CU, CUs_filtered);
         }
 
-        if (!$CU || !$CU.length || indexOf$CU < 0) {
+        if (!$CU) {
             return;
         }
 
@@ -725,9 +725,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             else {
                 selectCU(0, setFocus, adjustScrolling);
             }
-
         }
-
     }
 
     /**
@@ -845,7 +843,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             return false;
         }
-
     }
 
 // returns a bounding rectangle for $CU
@@ -1163,20 +1160,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function getValidCUs() {
         var CUsArr = _getAllCUs();
+
         var class_zenModeHidden = CONSTS.class_zenModeHidden,
-            zenModeActive = body.classList.contains(class_zenModeHidden);
-
+            bodyInvisibleDueToZenMode = body.classList.contains(class_zenModeHidden);
         // Zen mode sets visibility: hidden to the body using class_zenModeHidden. This interferes with processing of CUs
-        // correctly. So, we are removing the class before processing CUs and then adding the class back. 
-        if (zenModeActive) {
-            body.classList.remove(class_zenModeHidden);
-        }
-
+        // (since we disregard invisible CUs). So, remove the class before processing CUs and then add it back afterward.
+        bodyInvisibleDueToZenMode && body.classList.remove(class_zenModeHidden);
         processCUs(CUsArr);
+        bodyInvisibleDueToZenMode && body.classList.add(class_zenModeHidden);
 
-        if (zenModeActive) {
-            body.classList.add(class_zenModeHidden);
-        }
         return CUsArr;
     }
 
