@@ -579,21 +579,28 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         disabledByMe && mod_mutationObserver.enable();
     }
     function _selectPrev () {
-        if (CUs_filtered.length < 2) {
+        if (!CUs_filtered.length) {
             mod_basicPageUtils.scroll("up", body);
-            return;
         }
-
-        var $selectedCU = CUs_filtered[selectedCUIndex];
-        
-        // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
-        // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
-            isAnyPartOfCUinViewport($selectedCU))) {
-
-            if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
-                return;
+        else if (CUs_filtered.length === 1) {
+            if (selectedCUIndex === -1) {
+                _selectCU(0, true, true);
             }
+            else {
+                mod_basicPageUtils.scroll("up", body);
+            }
+        }
+        {
+            var $selectedCU = CUs_filtered[selectedCUIndex];
+
+            // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
+            // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
+            if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
+                isAnyPartOfCUinViewport($selectedCU))) {
+
+                if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
+                    return;
+                }
 
 //            for (var i = selectedCUIndex-1; i >= 0; i--) {
 //                if (!isCUInvisible(CUs_filtered[i])) {
@@ -601,16 +608,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //                    return;
 //                }
 //            }
-            var newIndex = selectedCUIndex - 1;
-            if (newIndex >= 0) {
-                selectCU(newIndex, true, true);
+                var newIndex = selectedCUIndex - 1;
+                if (newIndex >= 0) {
+                    selectCU(newIndex, true, true);
+                }
+                else {
+                    mod_basicPageUtils.scroll("up", body);
+                }
             }
             else {
-                mod_basicPageUtils.scroll("up", body);
+                selectMostSensibleCU(true, true);
             }
-        }
-        else {
-            selectMostSensibleCU(true, true);
         }
     }
 
@@ -623,40 +631,47 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         disabledByMe && mod_mutationObserver.enable();
     }
     function _selectNext() {
-
-        if (CUs_filtered.length < 2) {
+        if (!CUs_filtered.length) {
             mod_basicPageUtils.scroll("down", body);
-            return;
         }
-
-        var $selectedCU = CUs_filtered[selectedCUIndex];
-
-        // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
-        // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
-            isAnyPartOfCUinViewport($selectedCU))) {
-
-            if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
-                return;
-            }
-
-//            var len = CUs_filtered.length;
-//            for (var i = selectedCUIndex+1; i < len; i++) {
-//                if (!isCUInvisible(CUs_filtered[i])) {
-//                    selectCU(i, true, true);
-//                    return;
-//                }
-//            }
-            var newIndex = selectedCUIndex + 1;
-            if (newIndex < CUs_filtered.length) {
-                selectCU(newIndex, true, true);
+        else if (CUs_filtered.length === 1) {
+            if (selectedCUIndex === -1) {
+                _selectCU(0, true, true);
             }
             else {
                 mod_basicPageUtils.scroll("down", body);
             }
         }
         else {
-            selectMostSensibleCU(true, true);
+            var $selectedCU = CUs_filtered[selectedCUIndex];
+
+            // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
+            // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
+            if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
+                isAnyPartOfCUinViewport($selectedCU))) {
+
+                if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
+                    return;
+                }
+
+    //            var len = CUs_filtered.length;
+    //            for (var i = selectedCUIndex+1; i < len; i++) {
+    //                if (!isCUInvisible(CUs_filtered[i])) {
+    //                    selectCU(i, true, true);
+    //                    return;
+    //                }
+    //            }
+                var newIndex = selectedCUIndex + 1;
+                if (newIndex < CUs_filtered.length) {
+                    selectCU(newIndex, true, true);
+                }
+                else {
+                    mod_basicPageUtils.scroll("down", body);
+                }
+            }
+            else {
+                selectMostSensibleCU(true, true);
+            }
         }
     }
 
