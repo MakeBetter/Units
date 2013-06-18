@@ -576,8 +576,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (isAnyPartOfCUinViewport($selectedCU) || 
-            Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
+        if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
+            isAnyPartOfCUinViewport($selectedCU))) {
 
             if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
                 return;
@@ -621,8 +621,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
         // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-        if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) ||
-            isAnyPartOfCUinViewport($selectedCU)) {
+        if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
+            isAnyPartOfCUinViewport($selectedCU))) {
 
             if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
                 return;
