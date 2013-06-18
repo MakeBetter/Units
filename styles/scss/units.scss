@@ -27,7 +27,7 @@ defining this because compass transition mixin does not accept the !important pr
 }
 
 .CU-overlay-hovered  {
-  border: 1px solid $cu-hovered;
+  border: 1px solid $cu-hovered-border-color;
 }
 
 /**:focus, a {*/
