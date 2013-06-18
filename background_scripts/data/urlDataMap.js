@@ -259,6 +259,38 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "github.com": [
+        {
+            urlPatterns: ["github.com/*/commits/*"],
+            CUs_specifier: ".js-navigation-item, .pagination>a:last-child"
+        },
+        {
+            urlPatterns: ["github.com/*/issues/*", "github.com/*/issues?*"],
+            CUs_specifier: ".js-navigation-item",
+            CUs_SUs: {
+                std_mainEl: ".js-navigation-open",
+                std_toggleSelection: ".select-toggle-check",
+            }
+        },
+        {
+            urlPatterns: ["github.com/search?*"],
+            CUs_specifier: ".source, .next_page",
+            CUs_SUs: {
+                std_mainEl: "h3 a"
+            },
+            CUs_style: {
+                overlayPadding: "5px"
+            }
+        },
+        {
+            urlPatterns: ["github.com", "github.com/organizations/*"],
+            CUs_specifier: ".alert, .pagination>a",
+            CUs_SUs: {
+                std_mainEl: ".title>a:last-child"
+            }
+        }
+    ],
+
     // the following key is redundant due to specialDomain_masterDomain_map array, but is included currently to serve
     // as an example
     "google.co.in": "google.com", // if the mapped value is a string, it is used as the key mapping to the actual value
