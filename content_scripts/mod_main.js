@@ -215,22 +215,17 @@
     // don't need to remove it when extension is disabled.
     window.addEventListener('message', onWindowMessage, false);
 
-    function onDomReady() {
-        initializeExtension();
-    }
-    $(onDomReady);
-
     // don't need to wait till dom-ready. allows faster starting up of the extension's features
     // (in certain sites at least. e.g. guardian.co.uk)
     // this should not cause any issues since we are handling dom changes anyway.
-//    (function initializeWhenReady (){
-//        if (!document.body) {
-//            setTimeout(initializeWhenReady, 100);
-//            return;
-//        }
-//        $topLevelContainer.appendTo(document.body);
-//        initializeExtension();
-//    })();   // ** Main flow begins here!! **
+    (function initializeWhenReady (){
+        if (!document.body) {
+            setTimeout(initializeWhenReady, 100);
+            return;
+        }
+        $topLevelContainer.appendTo(document.body);
+        initializeExtension();
+    })();   // ** Main flow begins here!! **
 
 
     //return thisModule; // not required for main module

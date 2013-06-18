@@ -180,7 +180,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         setupEvents();
 
-        $(onDomReady);  // find CUs etc once DOM is ready
+        onDomReady();  // find CUs etc once DOM is ready
     }
 
     function onDomReady() {
