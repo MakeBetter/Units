@@ -209,8 +209,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function getMainContainer() {
         var _mainContainer;
-        var $CU = CUs_all[Math.floor(CUs_all.length/2)]; // use the middle CU
-        if ($CU) {
+        if (CUs_all.length) {
+            var $CU = CUs_all[Math.floor(CUs_all.length/2)]; // use the middle CU
             var ancestors = $CU.parents().get(),
                 max = -1,
                 length = ancestors.length;
@@ -223,7 +223,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 }
             }
         }
-
         return _mainContainer || document.body;
     }
 
@@ -686,7 +685,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             selectCU(selectedCUIndex, setFocus, adjustScrolling);
         }
         // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
-        else if( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
+        else if ( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
             (isAnyPartOfCUinViewport($lastSelectedCU) ||
                 Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
 
