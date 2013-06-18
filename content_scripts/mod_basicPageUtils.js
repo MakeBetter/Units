@@ -116,7 +116,9 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         var elToScroll = element || getElementToScroll(areScrollingUp);
 
         if (elToScroll) {
-            
+
+            // call endAtDetination() first, so that the calculations below can be made relative to the
+            // scrollTop position reached *after* any previous scrolling animation is completed
             if (mod_smoothScroll.isInProgress()) {
                 mod_smoothScroll.endAtDestination();
             }
