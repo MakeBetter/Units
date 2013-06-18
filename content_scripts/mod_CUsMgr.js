@@ -22,12 +22,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     /*-- Module implementation --*/
 
-    if (mod_filterCUs) {
-        thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilterTextChange);
-        thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
-        thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
-    }
-
     /* NOTES
      1) Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
      adverts) is composed of a set of repeating units. We call such a unit a Content Unit (CU). E.g. on the Google Search
@@ -102,6 +96,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // selected/last-selected, IF it is not in the viewport
         selectionTimeoutPeriod = 60000,
 
+        interval_updateCUsTillDomReady,
         CUsFoundOnce,
 
 //        $commonCUsAncestor, // closest common ancestor of the CUs
@@ -147,6 +142,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lit_updateCUsEtc = lit_selectCU = lit_CUSelectOrDeselect = 0;
         timeout_updateCUs = false;
         CUsFoundOnce = false;
+        thisModule.stopListening();
     }
 
     function setup(settings) {
@@ -167,6 +163,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         body = document.body;
         $body = $(body);
 
+        mainContainer = document.body;  // assume this to be the body for now
+
         var tmp;
         // assign from `settings` to global variables
         miscSettings = settings.miscSettings;
@@ -179,13 +177,22 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsShortcuts = settings.CUsShortcuts;
 
         setupEvents();
-
-        onDomReady();  // find CUs etc once DOM is ready
+        
+        if (mod_filterCUs) {
+            thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilterTextChange);
+            thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
+            thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
+        }
+        
+        // Before dom-ready there are continuous dom-changes. If we updateCUs in response to each
+        // of them, there is a flickering in the selected overlay. So we use a spaced polling
+        // to update CUs initally, setting up handlers for dom mutations only once dom is ready.
+        // selected overlay if we process all those dom changes, which in turn  
+        interval_updateCUsTillDomReady = setInterval(updateCUsAndRelatedState, 100);
+        $(onDomReady_bindMutationEvents);
     }
 
-    function onDomReady() {
-        // assume these to be body for now
-        mainContainer = document.body;
+    function bindMutationEvents() {
 
         // NOTE: *Important* Keep in mind that the first mutation handler to execute that calls mod_mutationObserver.disable()
         // will prevent any queued mutation observer event in any other mutation observer from triggering.
@@ -204,7 +211,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         thisModule.listenTo(mod_mutationObserver, 'CUsAncestorsMuts', handleBasedOnLastCUPosition);
         thisModule.listenTo(mod_mutationObserver, 'selectedCUDescendantsMuts', updateOverlays_and_delayedUpdateCUs);
 
-        updateCUsAndRelatedState();
+    }
+
+    function onDomReady_bindMutationEvents() {
+        clearInterval(interval_updateCUsTillDomReady);
+        bindMutationEvents();
     }
 
     function getMainContainer() {
