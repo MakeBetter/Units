@@ -10,25 +10,19 @@ _u.mod_smoothScroll = (function() {
         smoothScroll: smoothScroll
     });
 
-    // The variables below are related to the currently ongoing scroll.
-    // Having them as globals (within the module)  allows `invokeIncrementalScroll` to be defined as a global
-    // function rather than an inner function of `smoothScroll` (which aids performance)
-    var element,                // element being scrolled
-        currentPosition,        // current scrollTop position of the element
-        destination,            // destination scrollTop position
-        intervalId,             // interval ID returned by the setInterval call used to run the animation
-        areScrollingDown,       // true - scroll direction is down, false - up
-        speed,                  // speed of the current scroll animation (pixes/millisecs)
-        animationInProgress,    // true if a scroll animation currently ongoing
-        lastInvokedTime,        // last time an incremental scroll movement was made as part of the overall animation
-        startedTime,            // time the current animation was started
-        maxDuration,            // max duration that this animation should end in
-        onAnimationEnd,         // function to be called once the animation is over
-
-        // millisecs - interval between consecutive incremental scroll invocations (actually this is the *minimum*
-        // interval - the actual interval might be higher due to javascript's single threaded nature. We account for
-        // that by calculating the time diff. between invocations. See later.)
-        intervalPeriod = 20;
+    // The variables below are related to the currently ongoing scroll animation.
+    // Having them as globals (within the module)  allows step() to be defined as a global
+    // function rather than an inner function of smoothScroll() (which means the function
+    // object doesn't need to be created each time smoothScroll() is called)
+    var element,            // element being scrolled
+        startPosition,      // scrollTop position of the element at the time of animation beginning
+        destination,        // destination scrollTop position
+        areScrollingDown,   // true - scroll direction is down, false - up
+        speed,              // speed of the current scroll animation (pixes/millisecs)
+        inProgress,         // true if a scroll animation currently ongoing
+        startTime,          // time the current animation was started
+        maxDuration,        // max duration that this animation should end in
+        onAnimationEnd;     // function to be called once the animation is over
 
     /**
      * Smooth scrolls the specified element by setting it's scrollTop to the `scrollTop` value specified
@@ -41,63 +35,53 @@ _u.mod_smoothScroll = (function() {
      * @param {Function} [callback] Optional. Function to be called once the animation is over
      */
     function smoothScroll(elementToScroll, scrollTop, duration, callback) {
-        if (animationInProgress) {
-            endAnimationAtDestination();
+        if (inProgress) {
+            endAtDestination(); // instantly terminate any ongoing animation at final destination before starting a new one
         }
         element = elementToScroll;
         destination = scrollTop;
         onAnimationEnd = callback;
 
-        currentPosition = element.scrollTop;
-//        var areScrollingDown;
+        startPosition = element.scrollTop;
 
-        if (destination > currentPosition) {
+        if (destination > startPosition) {
             areScrollingDown = true;
         }
-        else if (destination < currentPosition) {
+        else if (destination < startPosition) {
             areScrollingDown = false;
         }
         else {
-            return;
+            endAtDestination();
         }
 
-        animationInProgress = true;
-        startedTime = Date.now();
+        inProgress = true;
+        startTime = performance.now();
         maxDuration = duration;
 
-        var totalDisplacement = destination - currentPosition;
+        var totalDisplacement = destination - startPosition;
         speed = totalDisplacement/duration; // pixels per millisec
 
-        // in the following lines, we call  'invokeIncrementalScroll' once, after setting 'lastInvokedTime' to the
-        // current time minus 'intervalPeriod'. This allows the first invocation of the function to take place immediately
-        // rather than at the end of the 'intervalPeriod'.
-        lastInvokedTime = Date.now() - intervalPeriod;
-        invokeIncrementalScroll();      // invoke once immediately, before setting setInterval.
-        clearInterval(intervalId);      // clear any existing interval
-        intervalId = setInterval (invokeIncrementalScroll, intervalPeriod);
+        requestAnimationFrame(step, elementToScroll);
     }
 
-    function endAnimationAtDestination() {
-        clearInterval(intervalId);
+    function endAtDestination() {
         element.scrollTop = destination;
-        animationInProgress = false;
+        inProgress = false;
         onAnimationEnd && onAnimationEnd();
     }
 
-    function invokeIncrementalScroll() {
-
-        var now = Date.now();
-        currentPosition += (now - lastInvokedTime) * speed;
-        lastInvokedTime = now;
+    // a single animation step
+    function step(now) {
+        var currentPosition = startPosition + (now - startTime) * speed;
         if (areScrollingDown? (currentPosition >= destination): (currentPosition <= destination) ||
-            now - startedTime >= maxDuration) {
+            now - startTime >= maxDuration) {
 
-            endAnimationAtDestination();
+            endAtDestination();
         }
         else {
             element.scrollTop = currentPosition;
+            requestAnimationFrame(step);
         }
-
     }
     return thisModule;
 
