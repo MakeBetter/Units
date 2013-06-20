@@ -85,7 +85,7 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     /**
      * disable observing of DOM mutations. Returns 'true' if mod_mutationObserver was disabled due to this call, 'false'
      * if it was already dsiabled.
-     * @param {string} [flag] Optional. If this is true, we don't automatically re-enable after a specified period
+     * @param {boolean} [allowLongDisable] Optional. If this is true, we don't automatically re-enable after a specified period
      */
     function disable(allowLongDisable) {
         if (!isEnabled) {
