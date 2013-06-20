@@ -59,7 +59,7 @@ var defaultSettings = {
         
         toggleExtension: {
             miniDescr: "Disable/enable Units on current page",
-            kbdShortcuts: ['ctrl+`', 'q']
+            kbdShortcuts: [',']
         },
         scrollDown: {
             miniDescr: "Scroll down",
