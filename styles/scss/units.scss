@@ -232,17 +232,24 @@ style more specific by using id's of the elements. Fix for #9.
 /************* Focused element styles *************/
 
 .UnitsProj-focused-element:focus {
-  outline: 2px auto #068065 !important;
+  outline-color: #529582 !important;
+  outline-style: solid !important;
+  outline-width: 1px !important;
+  background-color: #e6fff1 !important;
 }
 
 /* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
 .UnitsProj-focused-image:focus {
-  outline-offset: 2px !important;
-  outline: 4px auto #068065 !important;
+  outline-offset: 3px !important;
+  outline-width: 3px !important;
 }
 
 /* Set background for all a's and buttons */
 .UnitsProj-focused-link-or-button:focus {
-  background-color: #e6fff1 !important;
+  //background-color: #e6fff1 !important;
   color: #333 !important;
+}
+
+.UnitsProj-focused-element-inline-block:focus {
+  display: inline-block !important;
 }
