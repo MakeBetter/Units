@@ -75,6 +75,14 @@
         mod_mutationObserver.disable(true);
 
         $topLevelContainer.empty().remove();
+
+        document.activeElement.blur(); // focus the body.
+         /* NOTE: This is temporary. We are focusing body because of the Github issue where Github's keyboard shortcuts do not
+         work unless the focus is with document.body. This issue is not seen on any other site so far.
+
+         When this issue is fixed on Github, we should remove this statement (because that is the right thing to do!)
+         Until then, to invoke Github's shortcuts, one would need to temporarily disable the extension, invoke shortcuts,
+         and then activate extension again. */
     }
 
     function setExtensionIcon(isEnabled) {
