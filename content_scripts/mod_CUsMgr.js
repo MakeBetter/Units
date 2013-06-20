@@ -1649,18 +1649,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 // handler for whenever an element on the page receives focus
 // (and thereby a handler for focus-change events)
     function onFocus(e) {
-        //console.log('on focus called');
-        var el = e.target;
-//
-//    if ( ($el = $(el)).data('enclosingCUJustSelected') ) {
-//        $el.data('enclosingCUJustSelected', false);
-//    }
-//    else {
-        var enclosingCUIndex = getEnclosingCUIndex(el);
+        var enclosingCUIndex = getEnclosingCUIndex(e.target);
         if (enclosingCUIndex >= 0 && enclosingCUIndex !== selectedCUIndex) {
             selectCU(enclosingCUIndex, false);
         }
-//    }
     }
 
 //    function onMouseWheel (e) {
@@ -1705,32 +1697,38 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // first update the following global variables
 //        ltMouseBtnDown = true;
 
-        var point = {x: e.pageX, y: e.pageY},
-            $selectedCU = CUs_filtered[selectedCUIndex],
-            $overlaySelected = $selectedCU && $selectedCU.data('$overlay'),
-            $hoveredCU = CUs_filtered[hoveredCUIndex],
-            $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
-            indexToSelect;
+        // if clicked element is not part of UnitsProj's UI (i.e. we can assume it is part of the page),
+        // select its enclosing CU (or deselect the selected CU if no enclosing CU is found).
+        // This check is especially required to ensure selected CU does not get deselected when
+        // closing the filtering UI using a mouse click.
+        if (!mod_contentHelper.isUnitsProjNode(e.target)) {
+            var point = {x: e.pageX, y: e.pageY},
+                $selectedCU = CUs_filtered[selectedCUIndex],
+                $overlaySelected = $selectedCU && $selectedCU.data('$overlay'),
+                $hoveredCU = CUs_filtered[hoveredCUIndex],
+                $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
+                indexToSelect;
 
-        if ($overlaySelected && elementContainsPoint($overlaySelected, point)) {
-            return;  // do nothing
-        }
-        else  if ($overlayHovered && elementContainsPoint($overlayHovered, point)) {
-            indexToSelect = hoveredCUIndex;
-        }
-        else {
-            indexToSelect = getEnclosingCUIndex(e.target);
-        }
+            if ($overlaySelected && elementContainsPoint($overlaySelected, point)) {
+                return;  // do nothing
+            }
+            else  if ($overlayHovered && elementContainsPoint($overlayHovered, point)) {
+                indexToSelect = hoveredCUIndex;
+            }
+            else {
+                indexToSelect = getEnclosingCUIndex(e.target);
+            }
 
-        if (indexToSelect >= 0) {
-            selectCU(indexToSelect, false, false);
+            if (indexToSelect >= 0) {
+                selectCU(indexToSelect, false, false);
 
-            // delay = 0 to yield execution, so that this executes after the click event is processed.
-            // We need the clicked-on element to get focus first executing this.
-            setTimeout(focusMainElelementInSelectedCU_ifRequired, 0);
-        }
-        else {
-            deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
+                // delay = 0 to yield execution, so that this executes after the click event is processed.
+                // We need the clicked-on element to get focus first executing this.
+                setTimeout(focusMainElelementInSelectedCU_ifRequired, 0);
+            }
+            else {
+                deselectCU(); // since the user clicked at a point not lying inside any CU, deselect any selected CU
+            }
         }
     }
 
