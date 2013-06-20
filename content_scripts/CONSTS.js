@@ -19,9 +19,9 @@ _u.CONSTS = (function(mod_commonHelper){
         class_zenModeHidden: "UnitsProj-zen-mode-hidden", // class added to all elements made visible in the zen mode
 
         // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
-        // with the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
+        // With the addition that a :visible has been added in each selector, instead of using a .filter(':visible')
         // AND we are filtering out elements with tabindex = -1 since we only require tab-able elements
-        focusablesSelector: 'a[href]:not(*[tabindex=-1]:visible), area[href]:not(*[tabindex=-1]:visible), input:not([disabled]):not(*[tabindex=-1]:visible), select:not([disabled]):not(*[tabindex=-1]:visible), textarea:not([disabled]):not(*[tabindex=-1]:visible), button:not([disabled]):not(*[tabindex=-1]:visible), iframe:not(*[tabindex=-1]:visible), object:not(*[tabindex=-1]:visible), embed:visible, *[tabindex]:not(*[tabindex=-1]:visible), *[contenteditable]'
+        focusablesSelector: 'a[href]:not(*[tabindex=-1]):visible, area[href]:not(*[tabindex=-1]):visible, input:not([disabled]):not(*[tabindex=-1]):visible, select:not([disabled]):not(*[tabindex=-1]):visible, textarea:not([disabled]):not(*[tabindex=-1]):visible, button:not([disabled]):not(*[tabindex=-1]):visible, iframe:not(*[tabindex=-1]):visible, object:not(*[tabindex=-1]):visible, embed:visible, *[tabindex]:not(*[tabindex=-1]):visible, *[contenteditable]'
 
         };
     return mod_commonHelper.makeImmutable(CONSTS);
