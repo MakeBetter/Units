@@ -1796,7 +1796,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //        else {
 //            ltMouseBtnDown = false;
 //        }
-
     }
 
     // function to be called once the user "intends" to hover over an element
@@ -1810,7 +1809,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             (elementContainsPoint($overlayHovered, point))) {
 
             return ; // CU already has hovered overlay; don't need to do anything
-
         }
 
         var CUIndex = getEnclosingCUIndex(e.target);
@@ -1841,17 +1839,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             (!elementContainsPoint($overlayHovered, {x: e.pageX, y: e.pageY}))) {
 
             dehoverCU();
-
         }
     }
 
     function onTransitionEnd (e) {
-
         var $overlay = $(e.target);
-
-//  console.log('overlay transition ended. total overlays = ', $('.' + class_CUOverlay).length);
         tryRecycleOverlay($overlay);
-
     }
 
     /**
@@ -1873,11 +1866,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             else {
                 console.warn("UnitsProj: Unexpected - overlay's associated CU NOT found!");
             }
-
             $overlay.data('$CU', null);
-
             $unusedOverlaysArray.push($overlay);
-
         }
     }
 
