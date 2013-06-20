@@ -24,6 +24,30 @@ defining this because compass transition mixin does not accept the !important pr
 .CU-overlay-selected  {
   @include box-shadow(0px 0px 7px 0px $border-color-grey !important);
   border: none !important;
+
+  &:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    right: 0;
+    border-top: 6px solid #529582;
+    border-left: 6px solid transparent;
+    display: inline-block;
+    opacity: 0.7;
+  }
+  &:after {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-bottom: 6px solid #529582;
+    border-right: 6px solid transparent;
+    display: inline-block;
+    opacity: 0.7;
+  }
 }
 
 .CU-overlay-hovered  {
@@ -231,7 +255,7 @@ style more specific by using id's of the elements. Fix for #9.
 
 /************* Focused element styles *************/
 
-.UnitsProj-focused-element:focus {
+.UnitsProj-focused-element {
   outline-color: #529582 !important;
   outline-style: solid !important;
   outline-width: 1px !important;
@@ -239,17 +263,17 @@ style more specific by using id's of the elements. Fix for #9.
 }
 
 /* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
-.UnitsProj-focused-image:focus {
+.UnitsProj-focused-image {
   outline-offset: 3px !important;
   outline-width: 3px !important;
 }
 
 /* Set background for all a's and buttons */
-.UnitsProj-focused-link-or-button:focus {
+.UnitsProj-focused-link-or-button {
   //background-color: #e6fff1 !important;
   color: #333 !important;
 }
 
-.UnitsProj-focused-element-inline-block:focus {
+.UnitsProj-focused-element-inline-block {
   display: inline-block !important;
 }
