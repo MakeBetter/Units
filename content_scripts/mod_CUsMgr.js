@@ -129,7 +129,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lit_selectCU,    // last invoked time ("lit") for _selectCU()
         minInterval_selectCU = 70,
 
-        smoothScroll = mod_smoothScroll.smoothScroll;
+        smoothScroll = mod_smoothScroll.smoothScroll,
+
+        // these are used to check against inadvertent mouse over events that fire simply due to the page scroll
+        last_mouseScreenX,
+        last_mouseScreenY;
 
     function reset() {
         dehoverCU();
@@ -284,9 +288,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         deselectCU(); // before proceeding, deselect currently selected CU, if any
-
         selectedCUIndex = indexOf$CU;
         var $overlaySelected = showOverlay($CU, 'selected');
+        dehoverCU(); // since the hover overlay is only an aid to select CUs, it can be removed now
 
         if (!$overlaySelected) {
             console.warn('UnitsProj: no $overlay returned by showOverlay');
@@ -1792,9 +1796,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function onMouseOver(e) {
-        var timeout_applyHoveredOverlay = setTimeout(onMouseOverIntent.bind(null, e), 150);
-        $(e.target).data({timeout_applyHoveredOverlay: timeout_applyHoveredOverlay});
+        if (e.screenX !== last_mouseScreenX || e.screenY !== last_mouseScreenY) {
+            last_mouseScreenX = e.screenX;
+            last_mouseScreenY = e.screenY;
+            var timeout_applyHoveredOverlay = setTimeout(onMouseOverIntent.bind(null, e), 150);
+            $(e.target).data({timeout_applyHoveredOverlay: timeout_applyHoveredOverlay});
 //    onMouseOverIntent(e);
+        }
     }
 
     function onMouseOut(e) {
