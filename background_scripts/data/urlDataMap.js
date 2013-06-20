@@ -220,7 +220,9 @@ defaultSettings.urlDataMap = {
 
                 // .highlightSelectorButton is the button on the top right of a post. We don't want it to be selected as
                 // a main element. In some posts (such as the "suggested" posts), it is the "a" first child in the post. Hence, the 'not' selector.
-                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a), .uiStreamSubstory .pronoun-link, .uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a)",
+                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, " +
+                    ".fbQuestionPollForm a, ._4q5), .uiStreamSubstory .pronoun-link, " +
+                    ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5)",
                 // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
                 // meant for the entire page, then they'd be bad!
                 "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
@@ -363,7 +365,11 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["scholar.google.@/*", "scholar.google.co.@/*"],
             CUs_specifier: ".gs_r, #gs_n td:last-child",
             CUs_style:{
+                overlayPadding: "5px 0 5px 5px"
 //                useInnerElementsToGetOverlaySize: true
+            },
+            CUs_SUs: {
+                std_mainEl: ".gs_rt>a"
             }
         },
         {
@@ -416,7 +422,7 @@ defaultSettings.urlDataMap = {
                 overlayPadding: "2px 0 0 0"
             },
             CUs_SUs: {
-                std_mainEl: ".answer_user>span>a.user",
+                std_mainEl: ".answer_user>span>a.user, .topic_name",
                 std_header: ".header",
                 "std_upvote": ".rate_up",
                 "std_viewComments": ".view_comments",
