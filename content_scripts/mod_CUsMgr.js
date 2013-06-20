@@ -472,12 +472,37 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $overlay.css(getBoundingRectangle($CU)).show();
 
         if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
+
+            /*
+             * Steps:
+             * 1. Apply the specified padding to the overlay.
+             * 2. Re-adjust the position (top, left) of the overlay taking into account the set top and left padding.
+             * 3. Get the dimensions of the element including the padding. Lets call these values totalHeight and totalWidth.
+             * 4. Set the padding of the overlay to 0.
+             * 5. Set the height and width of the overlay to totalHeight and totalWidth.
+            */
+
+            /* Reason for this strangeness:
+             * 1. We want to let users specify the overlay padding as is normally done in CSS.
+             * 2. At the same time, we don't want the overlay to * actually * have any padding. For the triangle markers
+             * (that we insert inside the overlay) to stick to the corners of the overlay, it is best if the overlay does
+             * not have any padding.
+             */
+
             $overlay.css("padding", overlayPadding);
+
             $overlay.css("top", parseFloat($overlay.css("top")) -
                 parseFloat($overlay.css("padding-top")));
 
             $overlay.css("left", parseFloat($overlay.css("left")) -
                 parseFloat($overlay.css("padding-left")));
+
+            var overlayFinalHeight = $overlay[0].clientHeight,
+                overlayFinalWidth = $overlay[0].clientWidth;
+
+            $overlay.css("padding", 0);
+            $overlay.height(overlayFinalHeight);
+            $overlay.width(overlayFinalWidth);
         }
 
         if (type === 'selected') {
