@@ -21,32 +21,32 @@ defining this because compass transition mixin does not accept the !important pr
   pointer-events: none; /*NOTE: pointer-events is not a CSS standard yet, but is supported  by webkit browsers and firefox*/
 }
 
+.CU-overlay-selected-marker {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  display: inline-block;
+  opacity: 0.7;
+}
+
 .CU-overlay-selected  {
   @include box-shadow(0px 0px 7px 0px $border-color-grey !important);
   border: none !important;
 
   &:before {
-    content: "";
-    width: 0;
-    height: 0;
-    position: absolute;
+    @extend .CU-overlay-selected-marker;
     right: 0;
-    border-top: 6px solid #529582;
+    border-top: 6px solid $focused-element-or-CU-color;
     border-left: 6px solid transparent;
-    display: inline-block;
-    opacity: 0.7;
+
   }
   &:after {
-    content: "";
-    width: 0;
-    height: 0;
-    position: absolute;
+    @extend .CU-overlay-selected-marker;
     bottom: 0;
     left: 0;
-    border-bottom: 6px solid #529582;
+    border-bottom: 6px solid $focused-element-or-CU-color;
     border-right: 6px solid transparent;
-    display: inline-block;
-    opacity: 0.7;
   }
 }
 
@@ -54,15 +54,31 @@ defining this because compass transition mixin does not accept the !important pr
   border: 1px solid $cu-hovered-border-color;
 }
 
-/**:focus, a {*/
-/*show an outline around the element that is same as chrome's default. this needs to be set as it is turned off on*/
-/*some sites. */
-/*outline: 15px auto -webkit-focus-ring-color !important;*/
-/*outline: thin auto black !important;*/
-/*outline-style:solid !important;*/
-/*outline-width:3px !important;*/
-/*outline-color: -webkit-focus-ring-color !important;*/
-/*}*/
+/************* Focused element styles *************/
+
+.UnitsProj-focused-element {
+  outline-color: $focused-element-or-CU-color !important;
+  outline-style: solid !important;
+  outline-width: 1px !important;
+  background-color: #e6fff1 !important;
+}
+
+/* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
+.UnitsProj-focused-image {
+  outline-offset: 3px !important;
+  outline-width: 3px !important;
+}
+
+/* Set background for all a's and buttons */
+.UnitsProj-focused-link-or-button {
+  //background-color: #e6fff1 !important;
+  color: #333 !important;
+}
+
+.UnitsProj-focused-element-inline-block {
+  display: inline-block !important;
+}
+
 
 
 /* ****** Filter module styles ***** */
@@ -253,27 +269,3 @@ style more specific by using id's of the elements. Fix for #9.
   visibility: visible !important;
 }
 
-/************* Focused element styles *************/
-
-.UnitsProj-focused-element {
-  outline-color: #529582 !important;
-  outline-style: solid !important;
-  outline-width: 1px !important;
-  background-color: #e6fff1 !important;
-}
-
-/* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
-.UnitsProj-focused-image {
-  outline-offset: 3px !important;
-  outline-width: 3px !important;
-}
-
-/* Set background for all a's and buttons */
-.UnitsProj-focused-link-or-button {
-  //background-color: #e6fff1 !important;
-  color: #333 !important;
-}
-
-.UnitsProj-focused-element-inline-block {
-  display: inline-block !important;
-}
