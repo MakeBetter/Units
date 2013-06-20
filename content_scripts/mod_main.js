@@ -20,6 +20,7 @@
         $topLevelContainer = _u.$topLevelContainer,
 
         generalShortcuts,
+        CUsSpecifier,
         isDisabled_fromSettings = true, // assume true (disabled) till background script tells us otherwise
 
         // This should start off being `false` (till the user invokes toggleExtensionTemporarily() for the first time)
@@ -76,6 +77,7 @@
 
         $topLevelContainer.empty().remove();
 
+
         document.activeElement.blur(); // focus the body.
          /* NOTE: This is temporary. We are focusing body because of the Github issue where Github's keyboard shortcuts do not
          work unless the focus is with document.body. This issue is not seen on any other site so far.
@@ -83,6 +85,9 @@
          When this issue is fixed on Github, we should remove this statement (because that is the right thing to do!)
          Until then, to invoke Github's shortcuts, one would need to temporarily disable the extension, invoke shortcuts,
          and then activate extension again. */
+
+        CUsSpecifier = null;
+
     }
 
     function setExtensionIcon(isEnabled) {
@@ -109,6 +114,7 @@
                 // assign references to module level variables
                 generalShortcuts = settings.generalShortcuts;
                 isDisabled_fromSettings = settings.isDisabled;
+                CUsSpecifier = settings.expandedUrlData.CUs_specifier;
 
                 if (isDisabled_fromSettings) {
                     disableExtension();
@@ -159,7 +165,7 @@
             else if (request.message === "tabActivated") {
                 sendResponse(!isDisabled());
                 clearTimeout(timeout_onTabActivation);
-                timeout_onTabActivation = setTimeout(onTabActivation, 800);
+                timeout_onTabActivation = setTimeout(onTabActivation, 400);
             }
             else if (request.message === "tabDeactivated") {
                 clearTimeout(timeout_onTabActivation);
@@ -187,7 +193,7 @@
     // of moving through a bunch of tabs to reach a final one)
     function onTabActivation() {
         mod_mutationObserver.enable();
-        mod_CUsMgr && mod_CUsMgr.updateCUsAndRelatedState();
+        CUsSpecifier && mod_CUsMgr.updateCUsAndRelatedState();
         mod_chromeAltHack && mod_chromeAltHack.removeAnyConflictingAccessKeyAttr(document);
     }
 
