@@ -131,6 +131,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         smoothScroll = mod_smoothScroll.smoothScroll,
 
+        timeout_applyHoveredOverlay,
         // these are used to check against inadvertent mouse over events that fire simply due to the page scroll
         last_mouseScreenX,
         last_mouseScreenY;
@@ -1799,16 +1800,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (e.screenX !== last_mouseScreenX || e.screenY !== last_mouseScreenY) {
             last_mouseScreenX = e.screenX;
             last_mouseScreenY = e.screenY;
-            var timeout_applyHoveredOverlay = setTimeout(onMouseOverIntent.bind(null, e), 150);
-            $(e.target).data({timeout_applyHoveredOverlay: timeout_applyHoveredOverlay});
-//    onMouseOverIntent(e);
+            clearTimeout(timeout_applyHoveredOverlay);
+            timeout_applyHoveredOverlay = setTimeout(onMouseOverIntent.bind(null, e), 100);
         }
     }
 
     function onMouseOut(e) {
-
-        //clear any timeout set in onMouseOver
-        var timeout_applyHoveredOverlay = $(e.target).data('timeout_applyHoveredOverlay');
         clearTimeout(timeout_applyHoveredOverlay);
 
         // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
