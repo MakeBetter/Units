@@ -135,7 +135,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         dehoverCU();
         deselectCU();
         CUs_filtered = CUs_all = [];   // these can point to the same array at this point
-        $lastSelectedCU = null;
         mod_context.setCUSelectedState(false);
         mod_context.setCUsCount(0);
 
@@ -714,10 +713,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // if last selected CU exists AND (is present in the viewport OR was deselected only recently)...
         else if ( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
             (isAnyPartOfCUinViewport($lastSelectedCU) ||
-                Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod)) {
+                Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) ) {
 
             selectCU(lastSelectedCUIndex, setFocus, adjustScrolling);
-
         }
 
         else {
