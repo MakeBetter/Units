@@ -227,6 +227,11 @@ defaultSettings.urlDataMap = {
                 // meant for the entire page, then they'd be bad!
                 "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
             },
+            CUs_style: {
+                // This allows the little UI element on the top right that comes up when
+                // you mouse-over on a CU to lie completely within the overlay
+                overlayPadding: "0 8px 0 0"
+            },
             page_SUs: {
                 std_header: "#headNav",
             },
