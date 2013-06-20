@@ -114,7 +114,7 @@
                 // assign references to module level variables
                 generalShortcuts = settings.generalShortcuts;
                 isDisabled_fromSettings = settings.isDisabled;
-                CUsSpecifier = settings.expandedUrlData.CUs_specifier;
+                CUsSpecifier = settings.expandedUrlData &&  settings.expandedUrlData.CUs_specifier;
 
                 if (isDisabled_fromSettings) {
                     disableExtension();
