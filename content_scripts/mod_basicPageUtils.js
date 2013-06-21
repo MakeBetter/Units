@@ -285,7 +285,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
             var $descendants = $el.find('*');
             for (var i = 0; i < $descendants.length; i++) {
                 var $element = $descendants.eq(i);
-                if ($element.css("display") !== "inline" || $element.is("img")) {
+                if ($element.is(":visible") && ($element.css("display") !== "inline" || $element.is("img"))) {
                     return true;
                 }
             }
