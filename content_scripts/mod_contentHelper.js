@@ -12,6 +12,7 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     /*-- Public interface --*/
     var thisModule = {
+        elementContainsPoint: elementContainsPoint,
         elementAllowsSingleKeyShortcut: elementAllowsSingleKeyShortcut,
         elementAllowsTyping: elementAllowsTyping,
         suppressEvent: suppressEvent,
@@ -24,6 +25,31 @@ _u.mod_contentHelper = (function(CONSTS) {
     };
 
     /*-- Module implementation --*/
+
+    /**
+     *
+     * @param {HtmlElement|jQuery} element
+     * @param {object} point Should have the properties x and y.
+     * @return {Boolean}
+     */
+    function elementContainsPoint(element, point) {
+
+        var $element = $(element);
+        if (!$element || !$element.length) {
+            return false;
+        }
+
+        var x = point.x, y = point.y;
+
+        var offset = $element.offset();
+        var x1 = offset.left,
+            x2 = x1 + $element.width(),
+            y1 = offset.top,
+            y2 = y1 + $element.height();
+
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    }
+
     /**
      * Returns true when single key shortcuts can be invoked when the specified element has focus. Exceptions are
      * elements which allow typing text on them + the <select> element

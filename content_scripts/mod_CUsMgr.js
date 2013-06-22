@@ -1503,30 +1503,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    /**
-     *
-     * @param {HtmlElement|jQuery} element
-     * @param {object} point Should have the properties x and y.
-     * @return {Boolean}
-     */
-    function elementContainsPoint(element, point) {
-
-        var $element = $(element);
-        if (!$element || !$element.length) {
-            return false;
-        }
-
-        var x = point.x, y = point.y;
-
-        var offset = $element.offset();
-        var x1 = offset.left,
-            x2 = x1 + $element.width(),
-            y1 = offset.top,
-            y2 = y1 + $element.height();
-
-        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
-    }
-
 // Based on the header selector provided, this returns the "effective" height of the header (i.e. unusable space) at the
 // top of the current view.
 // Only the part of the header below the view's top is considered, and its size returned. If there is more than one
@@ -1737,10 +1713,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
                 indexToSelect;
 
-            if ($overlaySelected && elementContainsPoint($overlaySelected, point)) {
+            if ($overlaySelected && mod_contentHelper.elementContainsPoint($overlaySelected, point)) {
                 return;  // do nothing
             }
-            else  if ($overlayHovered && elementContainsPoint($overlayHovered, point)) {
+            else  if ($overlayHovered && mod_contentHelper.elementContainsPoint($overlayHovered, point)) {
                 indexToSelect = hoveredCUIndex;
             }
             else {
@@ -1806,7 +1782,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var $overlayHovered;
         if (CUs_filtered[hoveredCUIndex] &&
             ($overlayHovered = CUs_filtered[hoveredCUIndex].data('$overlay')) &&
-            (elementContainsPoint($overlayHovered, point))) {
+            (mod_contentHelper.elementContainsPoint($overlayHovered, point))) {
 
             return ; // CU already has hovered overlay; don't need to do anything
         }
@@ -1836,7 +1812,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var $overlayHovered;
         if (CUs_filtered[hoveredCUIndex] &&
             ($overlayHovered = CUs_filtered[hoveredCUIndex].data('$overlay')) &&
-            (!elementContainsPoint($overlayHovered, {x: e.pageX, y: e.pageY}))) {
+            (!mod_contentHelper.elementContainsPoint($overlayHovered, {x: e.pageX, y: e.pageY}))) {
 
             dehoverCU();
         }
