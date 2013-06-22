@@ -179,6 +179,10 @@ var defaultSettings = {
             std_viewComments: {
                 miniDescr: "View comments",
                 kbdShortcuts: ["g c"]
+            },
+            std_logout: {
+                miniDescr: "Logout",
+                kbdShortcuts: ["q"]
             }
         },
         CUs: {

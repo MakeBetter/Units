@@ -196,6 +196,14 @@ defaultSettings.urlDataMap = {
                     }
                 }
             }
+        },
+        // Data object that will be shared with all URLs under this main domain.
+        // More specifically, the matching URL data will extend the shared data to get the final data for a URL.
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: "#logout"
+            }
         }
     ],
     "backbonejs.org":  {
@@ -254,6 +262,12 @@ defaultSettings.urlDataMap = {
                 std_nextOrMore: "a.uiMorePagerPrimary:contains('Show Older Stories')"
             }
 
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: "#logout_form input[type=submit]"
+            }
         }
     ],
 
@@ -267,6 +281,7 @@ defaultSettings.urlDataMap = {
     },
 
     "github.com": [
+
         {
             urlPatterns: ["github.com/*/commits/*"],
             CUs_specifier: ".js-navigation-item, .pagination>a:last-child"
@@ -295,7 +310,13 @@ defaultSettings.urlDataMap = {
             CUs_SUs: {
                 std_mainEl: ".title>a:last-child"
             }
-        }
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: "#logout"
+            }
+        },
     ],
 
     // the following key is redundant due to specialDomain_masterDomain_map array, but is included currently to serve
@@ -381,6 +402,12 @@ defaultSettings.urlDataMap = {
             // for Gmail
             urlPatterns: ["gmail.com", "gmail.com/*", "mail.google.com", "mail.google.com/*"],
             protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: "#gb_71"
+            }
         }
     ],
 
@@ -492,7 +519,13 @@ defaultSettings.urlDataMap = {
             CUs_style: {
                 overlayPadding: "0 0 0 5px"
             }
-        }
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: ".logout a:contains('Logout')"
+            }
+        },
     ],
 
     // only support on the main page
@@ -537,7 +570,13 @@ defaultSettings.urlDataMap = {
             CUs_actions: {
 
             }
-        }
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: ".logout a:contains('logout')"
+            }
+        },
     ],
 
     "scribd.com": [
@@ -617,6 +656,12 @@ defaultSettings.urlDataMap = {
 
             }
 
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: [".profile-triangle", ".profile-links a:contains('log out')"] // DOES NOT WORK
+            }
         }
     ],
 
@@ -627,42 +672,50 @@ defaultSettings.urlDataMap = {
     "askubuntu.com": "stackexchange.com",
     "mathoverflow.net" : "stackexchange.com",
 
-    "twitter.com": {
-        urlPatterns: ["twitter.com/*"], // works on all pages of twitter. Relevant URLS:  main feed page, user page, tweet page
-//        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
-        CUs_specifier: {
-            selector: ".js-actionable-tweet" // can alternately use #stream-items-id>li if we don't want to select comment
-            // tweets on twitter main page.
-        },
-        CUs_SUs: {
-            std_mainEl: '.js-details',
-            reply: {
-                selector: '.js-action-reply',
-                kbdShortcuts: ["r"],
-                miniDescr: "Reply"
+    "twitter.com": [
+        {
+            urlPatterns: ["twitter.com/*"], // works on all pages of twitter. Relevant URLS:  main feed page, user page, tweet page
+    //        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+            CUs_specifier: {
+                selector: ".js-actionable-tweet" // can alternately use #stream-items-id>li if we don't want to select comment
+                // tweets on twitter main page.
             },
-            retweet: {
-                selector: '.retweet',
-                kbdShortcuts: ["t"],
-                miniDescr: "Retweet"
-            },
-            favorite: {
-                selector: '.favorite, .unfavorite',
-                kbdShortcuts: ["v"],
-                miniDescr: "Favorite/ Un-favorite"
-            },
-            expand: {
-                selector: '.js-details',
-                kbdShortcuts: ["e"],
-                miniDescr: "Expand/ Collapse"
-            },
-            std_profile: '.js-user-profile-link'
+            CUs_SUs: {
+                std_mainEl: '.js-details',
+                reply: {
+                    selector: '.js-action-reply',
+                    kbdShortcuts: ["r"],
+                    miniDescr: "Reply"
+                },
+                retweet: {
+                    selector: '.retweet',
+                    kbdShortcuts: ["t"],
+                    miniDescr: "Retweet"
+                },
+                favorite: {
+                    selector: '.favorite, .unfavorite',
+                    kbdShortcuts: ["v"],
+                    miniDescr: "Favorite/ Un-favorite"
+                },
+                expand: {
+                    selector: '.js-details',
+                    kbdShortcuts: ["e"],
+                    miniDescr: "Expand/ Collapse"
+                },
+                std_profile: '.js-user-profile-link'
 
+            },
+            page_SUs: {
+                std_header: ".global-nav"
+            },
         },
-        page_SUs: {
-            std_header: ".global-nav"
-        },
-    },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: "#signout-button"
+            }
+        }
+    ],
 
     "underscorejs.org": [
         {
@@ -727,7 +780,13 @@ defaultSettings.urlDataMap = {
             CUs_style: {
                 overlayPadding: "" // some negative margin-top would be nice to apply.
             }
-        }
+        },
+        {
+            shared: "true",
+            page_SUs: {
+//                std_logout: "#masthead-expanded-menu-account-container a:contains('Sign out')"
+            }
+        },
     ],
 
     //Data that may need to be removed for friend release. 1) These sites are either not very commonly known. 2) They are
