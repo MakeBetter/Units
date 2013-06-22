@@ -177,6 +177,31 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             urlDataArr = [urlDataArr];
         }
 
+        var matchingUrlData = getMatchingUrlData(url, urlDataArr), // data that matches the current URL
+            sharedUrlData = getSharedUrlData(urlDataArr), // data that is common to any URL in this main domain
+            urlData = $.extend(true, {}, sharedUrlData, matchingUrlData); // merge matchingUrlData and sharedUrlData
+
+        /*
+         NOTE: About using $.extend for merging matchingUrlData and sharedUrlData.
+
+         In the shared data, the URL patterns or regexes is irrelevant because "shared data" by definition applies
+         to all URLs.
+         All settings in UrlData (except for URL patterns and regexes) are Object based settings (and not Array
+         based). Hence, $.extend() works fine, and no special handling is required for extending the shared and matching URL
+         data at the moment. As of 22 June 2013. We will continue to need to revaluate this every time new types settings are
+         added to urlData.
+         */
+
+        return urlData;
+    }
+
+    /***
+     * Get the urlData object that matches for the given URL
+     * @param url URL of the page
+     * @param urlDataArr URL data array specified for main domain
+     * @returns {*} URL data that matches for the given URL or false
+     */
+    function getMatchingUrlData(url, urlDataArr) {
         var urlDataArrLen = urlDataArr.length;
         for (var i = 0; i < urlDataArrLen; ++i) {
 
@@ -204,9 +229,25 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
                 if (regexp.test(strippedUrl) || regexp.test(strippedUrlWithoutTrailingSlash)) {
                     return urlData;
                 }
-
             }
+        }
+        return false;
+    }
 
+    /***
+     * Returns first object in urlDataArr that has property 'shared' = true
+     * Shared data applies to any/ all URL within a main domain
+     * @param urlDataArr  URL data array specified for main domain
+     * @returns {*} first instance of shared data or false
+     */
+    function getSharedUrlData(urlDataArr) {
+        var urlDataArrLen = urlDataArr.length;
+        for (var i = 0; i < urlDataArrLen; ++i) {
+
+            var urlData = urlDataArr[i];
+            if (urlData.shared) {
+                return urlData;
+            }
         }
         return false;
     }
@@ -364,6 +405,10 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         else {
             return false;
         }
+    }
+
+    function extendUrlData() {
+
     }
 
 
