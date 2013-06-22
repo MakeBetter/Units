@@ -196,7 +196,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     }
 
     /***
-     * Get the urlData object that matches for the given URL
+     * Returns the urlData object that matches for the given URL
      * @param url URL of the page
      * @param urlDataArr URL data array specified for main domain
      * @returns {*} URL data that matches for the given URL or false
@@ -406,11 +406,6 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             return false;
         }
     }
-
-    function extendUrlData() {
-
-    }
-
 
     return thisModule;
 
