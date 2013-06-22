@@ -453,7 +453,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // meant to be called only by showOverlay()
     function _showOverlay($CU, type) {
         var $overlay = $CU.data('$overlay');
-
         if (!$overlay || !$overlay.length) {
             if ($unusedOverlaysArray.length) {
                 $overlay = $unusedOverlaysArray.shift();
@@ -464,7 +463,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         var overlayPadding;
-
         $overlay.data('$CU', $CU);
         $CU.data('$overlay', $overlay);
 
@@ -472,7 +470,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $overlay.css(getBoundingRectangle($CU)).show();
 
         if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
-
             /*
              * Steps:
              * 1. Apply the specified padding to the overlay.
@@ -488,7 +485,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
              * (that we insert inside the overlay) to stick to the corners of the overlay, it is best if the overlay does
              * not have any padding.
              */
-
             $overlay.css("padding", overlayPadding);
 
             $overlay.css("top", parseFloat($overlay.css("top")) -
@@ -514,11 +510,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $overlay.addClass(class_CUHoveredOverlay);
 //        $overlay.css('box-shadow', '1px 1px 10px 0px #bbb');
         }
-
         $overlay.appendTo($topLevelContainer);
-
         return $overlay;
-
     }
 
     /**
@@ -528,7 +521,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * (While performance isn't a major concern,) passing the index is preferable if it is already known.
      */
     function hoverCU(CUOrItsIndex) {
-
         var $CU,
             indexOf$CU; // index in CUs_filtered
 
@@ -546,10 +538,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         dehoverCU(); // before proceeding, dehover currently hovered-over CU, if any
-
         hoveredCUIndex = indexOf$CU;
         showOverlay($CU, 'hovered');
-
     }
 
     /**
