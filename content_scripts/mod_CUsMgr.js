@@ -765,13 +765,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 CUsArrLen = CUs_filtered.length;
 
             for (var i = 0; i < CUsArrLen; ++i) {
-                var $CU = CUs_filtered[i];
-                var offset = $CU.offset();
-                if (offset.top > winTop) {
+                if (isAnyPartOfCUinViewport(CUs_filtered[i])) {
                     break;
                 }
             }
-
             if (i < CUsArrLen) {
                 selectCU(i, setFocus, adjustScrolling);
             }
