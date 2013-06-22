@@ -60,7 +60,6 @@ defining this because compass transition mixin does not accept the !important pr
   outline-color: $focused-element-or-CU-color !important;
   outline-style: solid !important;
   outline-width: 1px !important;
-  background-color: #e6fff1 !important;
 }
 
 /* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
@@ -72,6 +71,7 @@ defining this because compass transition mixin does not accept the !important pr
 /* Set background for all a's and buttons */
 .UnitsProj-focused-link-or-button {
   //background-color: #e6fff1 !important;
+  background-color: #e6fff1 !important;
   color: #333 !important;
 }
 
