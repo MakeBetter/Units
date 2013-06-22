@@ -6,6 +6,8 @@
  * The list of search engines and their associated keys is defined at `quickSearchSelectedText_data` (in settings)
  */
 _u.mod_quickSearchSelectedText = (function($, mod_contentHelper, mod_domEvents){
+    "use strict";
+
     var thisModule = {
         setup: setup
     };

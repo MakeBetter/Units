@@ -14,6 +14,7 @@
 
  */
 _u.mod_context = (function(mod_contentHelper){
+    "use strict";
 
     var thisModule = {
         setup: setup,

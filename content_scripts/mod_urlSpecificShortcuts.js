@@ -3,6 +3,8 @@
  * overall page
  */
 _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_commonHelper){
+    "use strict";
+
     var thisModule = {
         setup: setup
     };
