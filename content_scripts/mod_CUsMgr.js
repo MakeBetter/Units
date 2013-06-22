@@ -619,30 +619,34 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 mod_basicPageUtils.scroll("up", body);
             }
         }
-        {
+        else { // >= 2 CUs
             var $selectedCU = CUs_filtered[selectedCUIndex];
-
-            // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
-            // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-            if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
-                isAnyPartOfCUinViewport($selectedCU))) {
-
-                if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
-                    return;
+            if ($selectedCU) {
+                if (isAnyPartOfCUinViewport($selectedCU)) {
+                    if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
+                        return;
+                    }
+                    else {
+//                        for (var i = selectedCUIndex-1; i >= 0; i--) {
+//                            if (!isCUInvisible(CUs_filtered[i])) {
+//                                selectCU(i, true, true);
+//                                return;
+//                            }
+//                        }
+                        var newIndex = selectedCUIndex - 1;
+                        if (newIndex >= 0) {
+                            selectCU(newIndex, true, true);
+                        }
+                        else {
+                            mod_basicPageUtils.scroll("up", body);
+                        }
+                    }
                 }
-
-//            for (var i = selectedCUIndex-1; i >= 0; i--) {
-//                if (!isCUInvisible(CUs_filtered[i])) {
-//                    selectCU(i, true, true);
-//                    return;
-//                }
-//            }
-                var newIndex = selectedCUIndex - 1;
-                if (newIndex >= 0) {
-                    selectCU(newIndex, true, true);
+                else if (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) {
+                    scrollCUIntoView($selectedCU.data('$overlay'));
                 }
                 else {
-                    mod_basicPageUtils.scroll("up", body);
+                    selectFirstCUInViewport(true, true);
                 }
             }
             else {
@@ -671,31 +675,35 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 mod_basicPageUtils.scroll("down", body);
             }
         }
-        else {
+        else { // >= 2 CUs
             var $selectedCU = CUs_filtered[selectedCUIndex];
-
-            // invoke only if some part of the currently selected CU is in viewport or its selection happened recently,
-            // to prevent sudden long jumps in scrolling due to selecting the current CU based on one selected long ago
-            if ($selectedCU && (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod ||
-                isAnyPartOfCUinViewport($selectedCU))) {
-
-                if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
-                    return;
+            if ($selectedCU) {
+                if (isAnyPartOfCUinViewport($selectedCU)) {
+                    if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
+                        return;
+                    }
+                    else {
+//                        var len = CUs_filtered.length;
+//                        for (var i = selectedCUIndex+1; i < len; i++) {
+//                            if (!isCUInvisible(CUs_filtered[i])) {
+//                                selectCU(i, true, true);
+//                                return;
+//                            }
+//                        }
+                        var newIndex = selectedCUIndex + 1;
+                        if (newIndex < CUs_filtered.length) {
+                            selectCU(newIndex, true, true);
+                        }
+                        else {
+                            mod_basicPageUtils.scroll("down", body);
+                        }
+                    }
                 }
-
-    //            var len = CUs_filtered.length;
-    //            for (var i = selectedCUIndex+1; i < len; i++) {
-    //                if (!isCUInvisible(CUs_filtered[i])) {
-    //                    selectCU(i, true, true);
-    //                    return;
-    //                }
-    //            }
-                var newIndex = selectedCUIndex + 1;
-                if (newIndex < CUs_filtered.length) {
-                    selectCU(newIndex, true, true);
+                else if (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) {
+                    scrollCUIntoView($selectedCU.data('$overlay'));
                 }
                 else {
-                    mod_basicPageUtils.scroll("down", body);
+                    selectFirstCUInViewport(true, true);
                 }
             }
             else {
