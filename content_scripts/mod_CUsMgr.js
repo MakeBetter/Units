@@ -1927,7 +1927,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             winTop = body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
-        return ( (CUTop > winTop && CUTop < winBottom) || (CUBottom > winTop && CUBottom < winBottom) );
+        return CUTop < winBottom && CUBottom > winTop;
     }
 
     // returns true if the specified CU is completely in the viewport, false otherwise
