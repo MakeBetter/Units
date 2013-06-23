@@ -39,7 +39,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             .addClass(class_addedByUnitsProj);
 
         var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
-            .attr("id", "UnitsProj-filter-UI-close-icon")
+            .addClass("UnitsProj-close-button")
             .addClass(class_addedByUnitsProj);
 
         var $message = $("<span id=filter-message>Press 'tab' to go to filtered units</span>");

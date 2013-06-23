@@ -137,7 +137,7 @@ input.UnitsProj-reset-text-input:focus {
 }
 
 /* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
-margin of the #UnitsProj-filter-UI-search-box or #UnitsProj-filter-UI-close-icon is changed 2) padding property of this div (since we set its
+margin of the #UnitsProj-filter-UI-search-box or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
 box-sizing to border-box)*/
 
 div#UnitsProj-filter-UI-container {
@@ -173,7 +173,7 @@ input#UnitsProj-filter-UI-search-box {
   height: 20px !important;
 }
 
-span#UnitsProj-filter-UI-close-icon {
+.UnitsProj-close-button {
   position: absolute !important; top: 8px !important; right: 6px !important;
   border: 1px solid transparent !important;
 
@@ -199,7 +199,7 @@ span#UnitsProj-filter-UI-close-icon {
   @include transition-important(all, 0.1s, ease-out, !important);
 }
 
-span#UnitsProj-filter-UI-close-icon:hover {
+.UnitsProj-close-button:hover {
   background-color: #e38e83 !important;
   border: solid 1px #d1847b !important;
   color: #eee !important;
