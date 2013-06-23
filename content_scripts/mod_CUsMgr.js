@@ -290,15 +290,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         deselectCU(); // before proceeding, deselect currently selected CU, if any
         selectedCUIndex = indexOf$CU;
+        mod_context.setCUSelectedState(true);
         var $overlaySelected = showOverlay($CU, 'selected');
         dehoverCU(); // since the hover overlay is only an aid to select CUs, it can be removed now
 
         if (!$overlaySelected) {
             console.warn('UnitsProj: no $overlay returned by showOverlay');
         }
-
-        mod_context.setCUSelectedState(true);
-
 
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 

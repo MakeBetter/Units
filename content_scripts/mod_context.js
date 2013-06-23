@@ -1,8 +1,8 @@
 /*
- This module exists to enable mod_keyboardLib to be aware of context that depends on the state of other modules (e.g.
- whether a CU is selected, whether the filter search has focus, etc). mod_keyboardLib does not directly ask these
- modules for such information to avoid circular dependency (which as an experiment, we are sticking to in this project
- for now, even if it means having to jump around some hoops here and there).
+ This module exists to enable other modules (in particular mod_keyboardLib) to be aware of context that depends on the
+ state of other modules (e.g. whether a CU is selected, whether the filter search has focus, etc). mod_keyboardLib does
+ not directly ask these  modules for such information to avoid circular dependency (which as an experiment, we are
+ sticking to in this project for now, even if it means having to jump around some hoops here and there).
 
  Since the purpose is to avoid circular dependency, this module (on which mod_keyboardLib depends) also cannot
  probe other modules for context-related information itself. Instead, it must be updated by the other modules whenever
