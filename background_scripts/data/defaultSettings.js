@@ -138,8 +138,7 @@ var defaultSettings = {
             miniDescr: "Select previous CU",
             kbdShortcuts: ['k'/*, 'up'*/]
         },
-        // TODO: rename this to filter
-        search: {
+        filterCUs: {
             miniDescr: "Search and filter CUs ",
             kbdShortcuts: ['alt+f']
         },

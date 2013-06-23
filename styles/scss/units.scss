@@ -137,10 +137,10 @@ input.UnitsProj-reset-text-input:focus {
 }
 
 /* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
-margin of the #UnitsProj-search-box or #UnitsProj-search-close-icon is changed 2) padding property of this div (since we set its
+margin of the #UnitsProj-filter-UI-search-box or #UnitsProj-filter-UI-close-icon is changed 2) padding property of this div (since we set its
 box-sizing to border-box)*/
 
-div#UnitsProj-search-container {
+div#UnitsProj-filter-UI-container {
   width: 181px !important; height: 45px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
   box-sizing: border-box !important; /*using border-box to make calculations easier.*/
 
@@ -160,7 +160,7 @@ div#UnitsProj-search-container {
   z-index: $highest-z-index - 1 !important; /* More than the z-index of zen mode backdrop, and less than help backdrop */
 }
 
-input#UnitsProj-search-box {
+input#UnitsProj-filter-UI-search-box {
   position: absolute; top: 6px; left: 6px;
 
   /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
@@ -173,7 +173,7 @@ input#UnitsProj-search-box {
   height: 20px !important;
 }
 
-span#UnitsProj-search-close-icon {
+span#UnitsProj-filter-UI-close-icon {
   position: absolute !important; top: 8px !important; right: 6px !important;
   border: 1px solid transparent !important;
 
@@ -199,7 +199,7 @@ span#UnitsProj-search-close-icon {
   @include transition-important(all, 0.1s, ease-out, !important);
 }
 
-span#UnitsProj-search-close-icon:hover {
+span#UnitsProj-filter-UI-close-icon:hover {
   background-color: #e38e83 !important;
   border: solid 1px #d1847b !important;
   color: #eee !important;

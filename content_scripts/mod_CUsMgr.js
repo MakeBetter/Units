@@ -184,7 +184,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         
         if (mod_filterCUs) {
             thisModule.listenTo(mod_filterCUs, 'filter-text-change', onFilterTextChange);
-            thisModule.listenTo(mod_filterCUs, 'tab-on-filter-search-box', onTabOnFilterSearchBox);
+            thisModule.listenTo(mod_filterCUs, 'tab-on-filter-UI', onTabOnFilterSearchBox);
             thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
         }
         

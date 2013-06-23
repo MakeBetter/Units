@@ -7,13 +7,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         setup: setup,
         isActive: isActive,
         applyFiltering: applyFiltering,
-        showSearchBox: showSearchBox
     });
 
     // *Events Raised*
-    // "filter-text-change", "tab-on-filter-search-box"
+    // "filter-text-change", "tab-on-filter-UI"
 
-    var $filterCUsContainer,
+    var $UIContainer,
         $searchBox,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         timeout_typing,
@@ -24,8 +23,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     // reset state
     function reset() {
         // the following two lines are conditional because otherwise they won't be valid till setup() is called once
-        $searchBox && closeSearchBox(); // to deactivate filtering if it was active
-        $filterCUsContainer && $filterCUsContainer.remove();
+        $searchBox && closeUI(); // to deactivate filtering if it was active
+        $UIContainer && $UIContainer.remove();
         timeout_typing = null;
         lastFilterText_lowerCase = "";
     }
@@ -36,37 +35,37 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         }
         
         reset();
-        $searchBox = $('<input id = "UnitsProj-search-box" class = "UnitsProj-reset-text-input" type = "text">')
+        $searchBox = $('<input id = "UnitsProj-filter-UI-search-box" class = "UnitsProj-reset-text-input" type = "text">')
             .addClass(class_addedByUnitsProj);
 
         var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
-            .attr("id", "UnitsProj-search-close-icon")
+            .attr("id", "UnitsProj-filter-UI-close-icon")
             .addClass(class_addedByUnitsProj);
 
         var $message = $("<span id=filter-message>Press 'tab' to go to filtered units</span>");
 
-        $filterCUsContainer = $('<div id = "UnitsProj-search-container">')
+        $UIContainer = $('<div id = "UnitsProj-filter-UI-container">')
             .addClass(class_addedByUnitsProj)
             .append($searchBox)
             .append($closeButton)
             .append($message)
-            .hide()     // to prevent the search box from appearing when the page loads
+            .hide()     // to prevent the filtering UI from appearing when the page loads
             .appendTo(_u.$topLevelContainer);
 
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $searchBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
-        mod_domEvents.addEventListener(document, 'keydown', onSearchBoxKeydown, true);
+        mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
 
-        $searchBox.on('input', onSearchBoxInput);
+        $searchBox.on('input', onInput);
 
-        $closeButton.on('click', closeSearchBox);
+        $closeButton.on('click', closeUI);
 
-        mod_keyboardLib.bind(settings.CUsShortcuts.search.kbdShortcuts, showSearchBox, {pageHasCUsSpecifier: true});
+        mod_keyboardLib.bind(settings.CUsShortcuts.filterCUs.kbdShortcuts, showUI, {pageHasCUsSpecifier: true});
     }
 
     function isActive() {
-        return $filterCUsContainer.is(':visible') && getSearchBoxText_lowerCase();
+        return $UIContainer.is(':visible') && getFilterText_lowerCase();
     }
 
     /**
@@ -82,7 +81,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
      * no filtering is active it's variables `CUs_main` and `_CUs_all` point to the same array)
      */
     function applyFiltering(CUs_all, userInvoked) {
-        var filterText_lowerCase = getSearchBoxText_lowerCase();
+        var filterText_lowerCase = getFilterText_lowerCase();
 
         // if no filtering required
         if (!CUs_all.length || !filterText_lowerCase) {
@@ -123,7 +122,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         var CUsArrLen = CUs_all.length;
         for (var i = 0; i < CUsArrLen; ++i) {
             var $CU = CUs_all[i];
-            // if ($CU.text().toLowerCase().indexOf(filterText_lowerCase) >= 0) {
             if (reuseLastFiltering && $CU.hasClass('UnitsProj-HiddenByFiltering')) {
                 continue;
             }
@@ -230,14 +228,14 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             }
     }
 
-    function onSearchBoxKeydown(e) {
+    function onKeydown(e) {
         var code = e.which;
         // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
         if (e.target === $searchBox[0] && [17, 18, 91, 93].indexOf(code) == -1) {
 
             if (code === 27) { // Esc
                 suppressEvent(e);
-                closeSearchBox();
+                closeUI();
             }
             else  if (code === 13) { // Enter
                 suppressEvent(e);
@@ -246,12 +244,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             else if (code === 9) { // Tab
                 suppressEvent(e);
                 triggerFilteringIfRequired();
-                thisModule.trigger('tab-on-filter-search-box');
+                thisModule.trigger('tab-on-filter-UI');
             }
         }
     }
 
-    function onSearchBoxInput() {
+    function onInput() {
         // to allow search-as-you-type, while not executing the filtering related code till there is a brief pause in the typing
         clearTimeout(timeout_typing); // clears timeout if it is set
         timeout_typing = setTimeout (triggerFilteringIfRequired, 400);
@@ -259,20 +257,20 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     function triggerFilteringIfRequired() {
         clearTimeout(timeout_typing); // clears timeout if it is set
-        if (lastFilterText_lowerCase !== getSearchBoxText_lowerCase()) {
+        if (lastFilterText_lowerCase !== getFilterText_lowerCase()) {
             thisModule.trigger('filter-text-change');
         }
     }
 
-    function getSearchBoxText_lowerCase() {
+    function getFilterText_lowerCase() {
         return $searchBox.val().toLowerCase();
     }
 
-    function showSearchBox() {
+    function showUI() {
         var disabledByMe = mod_mutationObserver.disable();
-        if(!$filterCUsContainer.is(':visible')) {
+        if(!$UIContainer.is(':visible')) {
             $searchBox.val('');
-            $filterCUsContainer.show();
+            $UIContainer.show();
             $searchBox.focus();
         }
         else {
@@ -281,12 +279,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         disabledByMe && mod_mutationObserver.enable();
     }
 
-    function closeSearchBox() {
+    function closeUI() {
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_typing); // clears timeout if it is set
         $searchBox.val('');
         $searchBox.blur();
-        $filterCUsContainer.hide();
+        $UIContainer.hide();
         undoPrevFiltering();
         lastFilterText_lowerCase = ""; // reset
         thisModule.trigger('filter-UI-close');
