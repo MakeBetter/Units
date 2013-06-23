@@ -1609,37 +1609,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     /**
      * Special handler for the escape key
-     * On pressing ESC:
-     * - When no CU is selected, blur the active element and select the "most sensible" CU
-     * - When a CU is selected
-     *    - if an element which does not allow single key shortcuts is active, blur it
-     *    - else deselect the CU. (meaning that a selected CU will be deselected on at most a second 'Esc', if not
-     *    the first)
+     * On pressing Esc, deselect and dehover (without suppressing the event)
      */
     function onKeydown_Esc(e) {
         var code = e.which || e.keyCode,
             hasModifier = e.altKey || e.ctrlKey|| e.metaKey || e.shiftKey;
 
         if (code === 27 && !hasModifier) { // ESC
-            var $selectedCU = CUs_filtered[selectedCUIndex],
-                activeEl = document.activeElement || document.body;
-            if (!$selectedCU) {
-                activeEl.blur();
-                var index = getEnclosingCUIndex(activeEl);
-                if (index >= 0) {
-                    selectCU(index, true, true);
-                }
-                else {
-                    selectMostSensibleCU(true, true);
-                }
-            }
-            else if (!mod_contentHelper.elementAllowsSingleKeyShortcut(activeEl)) {
-                activeEl.blur();
-            }
-            else {
-                deselectCU();
-                dehoverCU();
-            }
+            deselectCU();
+            dehoverCU();
         }
     }
 
