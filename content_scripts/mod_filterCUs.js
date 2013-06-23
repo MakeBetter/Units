@@ -35,7 +35,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         }
         
         reset();
-        $searchBox = $('<input id = "UnitsProj-filter-UI-search-box" class = "UnitsProj-reset-text-input" type = "text">')
+        $searchBox = $('<input id = "UnitsProj-filterUI-searchBox" type = "text">')
+            .addClass("UnitsProj-reset-text-input")
             .addClass(class_addedByUnitsProj);
 
         var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
@@ -44,7 +45,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         var $message = $("<span id=filter-message>Press 'tab' to go to filtered units</span>");
 
-        $UIContainer = $('<div id = "UnitsProj-filter-UI-container">')
+        $UIContainer = $('<div id = "UnitsProj-filterUI-container">')
             .addClass(class_addedByUnitsProj)
             .append($searchBox)
             .append($closeButton)
@@ -242,7 +243,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             else if (code === 9) { // Tab
                 suppressEvent(e);
                 triggerFilteringIfRequired();
-                thisModule.trigger('tab-on-filter-UI');
+                thisModule.trigger('tab-on-filterUI');
             }
         }
     }
