@@ -281,8 +281,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function closeUI() {
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_typing); // clears timeout if it is set
-        $searchBox.val('');
-        $searchBox.blur();
+        $searchBox.val('').blur();
         $UIContainer.hide();
         undoPrevFiltering();
         lastFilterText_lowerCase = ""; // reset
