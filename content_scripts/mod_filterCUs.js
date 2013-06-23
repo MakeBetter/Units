@@ -58,9 +58,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
 
         $searchBox.on('input', onInput);
-
         $closeButton.on('click', closeUI);
-
         mod_keyboardLib.bind(settings.CUsShortcuts.filterCUs.kbdShortcuts, showUI, {pageHasCUsSpecifier: true});
     }
 
