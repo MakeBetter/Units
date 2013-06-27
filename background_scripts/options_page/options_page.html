@@ -8,7 +8,7 @@
     <div id="settings-header">
         <h2>Units Options</h2>
         <div id="buttons-panel">
-            <button id="save-settings">Save all changes</button>
+            <button id="save-settings">Save changes</button>
             <button id="reset-settings">Reset all options</button>
             <div class="UnitsProj-float-fixer"></div>
         </div>
@@ -26,13 +26,16 @@
             </div>
             <div>
                 <h2 class="subheading">Site specific</h2>
-                <textarea rows="50" id="site-specific-settings">
+                <span class="subheading-message UnitsProj-message">
+                    These options are not editable (for now).
+                </span>
+                <textarea rows="50" id="site-specific-settings" readonly= "readonly">
 
                 </textarea>
             </div>
             <div>
                 <h2 class="subheading">Global (work on all tabs)</h2>
-                <span class="global-settings-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
+                <span class="subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
                     Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
                 </span>
                 <textarea rows="25" cols="100" id="global-settings" readonly= "readonly">
