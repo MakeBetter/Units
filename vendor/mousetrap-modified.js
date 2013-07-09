@@ -864,7 +864,7 @@ work as expected
                     break;
                 }
             }
-            _callbacks[key].splice(i, 0, callbackInfo)
+            _callbacks[key].splice(i, 0, callbackInfo);
         }
         else {
             _callbacks[key].push(callbackInfo);
