@@ -87,15 +87,17 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
             return 0;
         };
 
-        Mousetrap.bind(shortcuts, suppressPropagationIfHandling, 'keypress');
-        Mousetrap.bind(shortcuts, suppressPropagationIfHandling, 'keyup');
-
         Mousetrap.bind(shortcuts, function(e, shortcut) {
             if (suppressPropagationIfHandling(e, shortcut)) {
                 e.__handledByUnitsProj = true;  // is checked within mousetrap-modified.js
                 handler();
             }
         }, 'keydown');
+        Mousetrap.bind(shortcuts, suppressPropagationIfHandling, 'keypress');
+
+        // NOTE: the following line has been commented out because if was preventing sequences
+        // of the same letter (e.g.: 'f f') from functioning properly. (refer: github issue #72)
+        //Mousetrap.bind(shortcuts, suppressPropagationIfHandling, 'keyup');
 
         if (mod_chromeAltHack) {
             mod_chromeAltHack.applyHackForSpecifiedShortcuts(shortcuts);
