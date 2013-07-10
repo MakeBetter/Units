@@ -10,6 +10,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
         reset: reset, // reset the module (and disable it if applicable/required)
         setup: setup,   // (re) initialize the module
         toggle: toggle,
+        start: start
     });
 
     var _isActive = false,
@@ -17,7 +18,8 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
         class_hidden = CONSTS.class_zenModeHidden,
         class_visible = CONSTS.class_zenModeVisible,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
-        expandedUrlData;
+        expandedUrlData,
+        isModuleSetup = false; // true if the module has been set up
 
     /*-- Module implementation --*/
     function reset() {
@@ -40,19 +42,26 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
                 // due to infinite scroll)
             }
         });
+
+        isModuleSetup = true;
     }
 
     // public function
     function toggle() {
         if (_isActive) {
-            stopZenMode();
+            stop();
         }
         else {
-            startZenMode();
+            start();
         }
     }
 
-    function startZenMode() {
+    function start() {
+        // if the module was not set up initially, then do not start/stop the zen mode.
+        if (!isModuleSetup) {
+            return;
+        }
+
         _isActive = true;
 
         $("body").addClass(class_hidden);
@@ -65,7 +74,11 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
 
     }
 
-    function stopZenMode() {
+    function stop() {
+        if (!isModuleSetup) {
+            return;
+        }
+
         _isActive = false;
 
         $("body").removeClass(class_hidden);

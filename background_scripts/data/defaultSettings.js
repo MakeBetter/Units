@@ -45,8 +45,10 @@ var defaultSettings = {
 
         pageScrollDelta: 150, // pixels to scroll on each key press
 
-        enhanceActiveElementVisibility: true // give special highlight to the active element on the page (if set to false,
-        // the browser's default style will be applied. 
+        enhanceActiveElementVisibility: true, // give special highlight to the active element on the page (if set to false,
+        // the browser's default style will be applied.
+
+        zenModeAlwaysActive: true
     },
 
     /*

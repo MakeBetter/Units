@@ -142,6 +142,10 @@
                 }
 
                 mod_mutationObserver.enable();
+
+                if (settings.miscSettings && settings.miscSettings.zenModeAlwaysActive) {
+                    mod_zenMode.start();
+                }
             }
         );
     }
