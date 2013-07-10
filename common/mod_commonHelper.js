@@ -22,8 +22,11 @@ _u.mod_commonHelper = (function() {
         stringifyRegexps_inSettings: stringifyRegexps_inSettings,
         stringifyJSONUnsupportedTypes_inSettings: stringifyJSONUnsupportedTypes_inSettings,
         destringifyJsonUnsupportedTypes_inSettings: destringifyJsonUnsupportedTypes_inSettings,
-        getHostname: getHostname
+        getHostname: getHostname,
+        isObject: isObject
     };
+
+    var regexKeys = ["urlRegexps", "urlRegexps_added", "urlRegexps_removed"];
 
     /**
      * Make the the specified object (deeply) immutable or "read-only", so that none of its properties (or
@@ -141,56 +144,65 @@ _u.mod_commonHelper = (function() {
      * @param settingsObj
      */
     function stringifyRegexps_inSettings(settingsObj) {
-        var stringifyRegexp_inUrlData = function(urlData) {
+        var stringifyRegexp_inUrlRegexpsParentObj = function(urlRegexpsParent) {
             var getStringifiedRegexp = function(regexp) {
                 if (regexp && regexp instanceof RegExp) {
                     return regexp.source;
                 }
             };
 
-            if (!urlData || !urlData.urlRegexps) {
+            if (!urlRegexpsParent) {
                 return;
             }
-            var urlRegexps = urlData.urlRegexps,
-                regexStr;
 
-            if (Array.isArray(urlRegexps)) {
-                for (var index in urlRegexps) {
-                    regexStr = getStringifiedRegexp(urlRegexps[index]);
-                    if (regexStr) {
-                        urlRegexps[index] = regexStr;
+            for (var i = 0, key; key = regexKeys[i]; i++) {
+                if (!urlRegexpsParent[key]) {
+                    continue;
+                }
+                var urlRegexps = urlRegexpsParent[key],
+                    regexStr;
+
+                if (Array.isArray(urlRegexps)) {
+                    for (var index in urlRegexps) {
+                        regexStr = getStringifiedRegexp(urlRegexps[index]);
+                        if (regexStr) {
+                            urlRegexps[index] = regexStr;
+                        }
                     }
                 }
-            }
-            else {
-                regexStr = getStringifiedRegexp(urlRegexps);
-                if (regexStr) {
-                    urlData.urlRegexps = regexStr;
+                else {
+                    regexStr = getStringifiedRegexp(urlRegexps);
+                    if (regexStr) {
+                        urlRegexpsParent[key] = regexStr;
+                    }
                 }
             }
 
         };
 
-        var urlDataMap = settingsObj && settingsObj.urlDataMap;
-
-        if (!urlDataMap) {
+        if (!settingsObj) {
             return;
         }
 
-        var urlData;
+        var urlDataMap = settingsObj.urlDataMap,
+            urlData;
+
         for (var key in urlDataMap) {
             urlData = urlDataMap[key];
 
             if (Array.isArray(urlData)) {
                 for (var index in urlData) {
-                    stringifyRegexp_inUrlData(urlData[index]);
+                    stringifyRegexp_inUrlRegexpsParentObj(urlData[index]);
                 }
 
             }
             else {
-                stringifyRegexp_inUrlData(urlData);
+                stringifyRegexp_inUrlRegexpsParentObj(urlData);
             }
         }
+
+        var disabledSites = settingsObj.disabledSites;
+        stringifyRegexp_inUrlRegexpsParentObj(disabledSites);
     }
 
     /***
@@ -200,56 +212,65 @@ _u.mod_commonHelper = (function() {
      * @param settingsObj
      */
     function destringifyRegexps_inSettings (settingsObj) {
-
-        var destringifyRegexp_inUrlData = function(urlData) {
+        var destringifyRegexp_inUrlRegexpsParentObj = function(urlRegexpsParent) {
             var getDestringifiedRegexp = function(regexpStr) {
                 if (regexpStr && (regexpStr instanceof String || typeof regexpStr === "string")) {
                     return new RegExp(regexpStr);
                 }
             };
 
-            if (!urlData || !urlData.urlRegexps) {
-                return;
+            if (!urlRegexpsParent) {
+                return ;
             }
-            var urlRegexps = urlData.urlRegexps,
-                regexp;
 
-            if (Array.isArray(urlRegexps)) {
-                for (var index in urlRegexps) {
-                    regexp = getDestringifiedRegexp(urlRegexps[index]);
+            for (var i = 0, key; key = regexKeys[i]; i++) {
+                if (!urlRegexpsParent[key]) {
+                    continue;
+                }
+                var urlRegexps = urlRegexpsParent[key],
+                    regexp;
+
+                if (Array.isArray(urlRegexps)) {
+                    for (var index in urlRegexps) {
+                        regexp = getDestringifiedRegexp(urlRegexps[index]);
+                        if (regexp) {
+                            urlRegexps[index] = regexp;
+                        }
+                    }
+                }
+                else {
+                    regexp = getDestringifiedRegexp(urlRegexps);
                     if (regexp) {
-                        urlRegexps[index] = regexp;
+                        urlRegexpsParent[key] = regexp;
                     }
                 }
             }
-            else {
-                regexp = getDestringifiedRegexp(urlRegexps);
-                if (regexp) {
-                    urlData.urlRegexps = regexp;
-                }
-            }
-
         };
-
-        var urlDataMap = settingsObj && settingsObj.urlDataMap;
-
-        if (!urlDataMap) {
+        
+        if (!settingsObj) {
             return;
         }
 
-        var urlData;
-        for (var key in urlDataMap) {
-            urlData = urlDataMap[key];
-            if (Array.isArray(urlData)) {
-                for (var index in urlData) {
-                    destringifyRegexp_inUrlData(urlData[index]);
-                }
+        var urlDataMap = settingsObj.urlDataMap,
+            urlData;
 
-            }
-            else {
-                destringifyRegexp_inUrlData(urlData);
+        if (urlDataMap) {
+            for (var key in urlDataMap) {
+                urlData = urlDataMap[key];
+                if (Array.isArray(urlData)) {
+                    for (var index in urlData) {
+                        destringifyRegexp_inUrlRegexpsParentObj(urlData[index]);
+                    }
+
+                }
+                else {
+                    destringifyRegexp_inUrlRegexpsParentObj(urlData);
+                }
             }
         }
+
+        var disabledSites = settingsObj.disabledSites;
+        destringifyRegexp_inUrlRegexpsParentObj(disabledSites);
     }
 
     /***
@@ -274,6 +295,10 @@ _u.mod_commonHelper = (function() {
         var a = document.createElement('a');
         a.href = url;
         return a.hostname;
+    }
+
+    function isObject(object) {
+        return (Object.prototype.toString.call(object) == "[object Object]");
     }
 
     return thisModule;

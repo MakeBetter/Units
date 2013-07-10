@@ -18,7 +18,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         goToExtensionLink = document.getElementById("go-to-extensions");
 
     var populateUserSettings = function() {
-        mod_settings.getSettings(null, _populateUserSettings);
+        mod_settings.getUserSettings(null, _populateUserSettings);
     };
 
     var _populateUserSettings = function(settings) {

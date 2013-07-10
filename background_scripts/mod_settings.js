@@ -5,34 +5,34 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     /*-- Public interface --*/
     var thisModule ={
-        getSettings: getSettings, // final computed settings i.e. default settings extended by user settings
+        getUserSettings: getUserSettings, // final computed settings i.e. default settings extended by user settings
         setUserSettings: setUserSettings,
         getDefaultSettings: getDefaultSettings,
         addUrlPatternToUserDisabledSites: addUrlPatternToUserDisabledSites
     };
 
+    // Used when calculating and applying "diff" to an array in the settings object
+    var suffix_addedToArray = "_added",
+        suffix_removedFromArray = "_removed";
+
     /***
-     * Get applicable settings (computed by extending default settings by user settings). If url is specified, then
-     * get location specific settings, else get settings for all sites.
+     * Get applicable settings (computed by applying user settings diff to default settings). If url is specified, then
+     * get url specific settings, else get settings for all sites.
      *
      * If url is specified, the settings object is appended with properties expandedUrlData and isDisabled, and
      * the urlDataMap property is removed.
      * @param url,
      * @param callback Callback function returns the settings.
      */
-    function getSettings(url, callback) {
+    function getUserSettings(url, callback) {
 
-        var userSettings = getUserSettings(url),
-            defaultSettings = getDefaultSettings();
-
-        if (url) {
-            defaultSettings.expandedUrlData = getExpandedUrlData(defaultSettings, url);
-            delete defaultSettings.urlDataMap;
-        }
-
-        var settings = $.extend(true, {}, defaultSettings, userSettings);
+        var settings = getUserDiffAppliedSettings();
 
         if (url) {
+
+            settings.expandedUrlData = getExpandedUrlData(settings, url);
+            delete settings.urlDataMap;
+
             settings.isDisabled = getDisabledStatus(url, settings.disabledSites);
         }
 
@@ -52,50 +52,55 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         return $.extend(true, {}, defaultSettings);
     }
 
+
     /***
-     * Get user settings, stored in local storage.
-     * If url is specified, get URL specific data in the expandedUrlData property. Else get data for all URLs in
-     * the existing urlDataMap property
+     * Applies the userSettingsDiff to defaultSettings, and returns the resultant settings.
+     * This is mainly used as an intermediate step for getUserSettings method.
      *
-     * @param [url]
+     * NOTE: We don't apply diff to urlDataMap properties. Those are ignored, for now.
+     * 
      * @returns {*}
      */
-    function getUserSettings(url) {
-        var settingsJSON = localStorage.userSettings,
-            settingsObj = null;
+    function getUserDiffAppliedSettings() {
 
-        if (settingsJSON) {
+        var settingsDiffJSON = localStorage.userSettingsDiff,
+            settingsDiff,
+            finalSettings = getDefaultSettings();
+
+        if (settingsDiffJSON) {
             try{
-                settingsObj = JSON.parse(settingsJSON);
+                settingsDiff = JSON.parse(settingsDiffJSON);
             }
             catch(exception) {
                 console.error(exception);
-                return settingsObj;
             }
 
-            mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
+            mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsDiff);
+            applyUserSettingsDiff(settingsDiff, finalSettings);
 
-            if (url) {
-                settingsObj.expandedUrlData = getExpandedUrlData(settingsObj, url);
-                delete settingsObj.urlDataMap;
-            }
         }
 
-        return settingsObj;
-
+        return finalSettings;
     }
 
-    function setUserSettings(settingsObj) {
+    /**
+     * Calculate the diff of userSettings and defaultSettings. Save the diff as "userSettingsJSON" in localStorage.   
+     * @param userSettings 
+     */
+    function setUserSettings(userSettings) {
 
-        if (settingsObj) {
-            mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settingsObj);
-            var settingsJSON = JSON.stringify(settingsObj);
-            localStorage.userSettings = settingsJSON;
+        if (userSettings) {
 
+            var settingsDiff = getUserSettingsDiff(userSettings);
 
+            mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settingsDiff);
+
+            var settingsDiffJSON = JSON.stringify(settingsDiff);
+
+            localStorage.userSettingsDiff = settingsDiffJSON;
         }
         else {
-            delete localStorage.userSettings;
+            delete localStorage.userSettingsDiff;
         }
 
         // Send event to all tabs, so that settings are updated for the existing tabs as well.
@@ -107,6 +112,283 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     }
 
+
+    // Methods related to getUserDiffAppliedSettings: Apply settings diff
+
+    /***
+     * Applies the given settingsDiff to the given defaultSettings object.
+     * NOTE: The JSON unsupported types are already stringified
+     * @param settingsDiff
+     * @param defaultSettings
+     */
+    function applyUserSettingsDiff(settingsDiff, defaultSettings) {
+
+        var finalSettings = defaultSettings,
+            topLevelProperty_defaultSettings_settingsDiff,
+            topLevelProperty_defaultSettings_finalSettings;
+
+        // stringify settingsDiff and finalSettings. we need when for applying diff.
+        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(finalSettings);
+        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(settingsDiff);
+
+        for (var topLevelKey in settingsDiff) {
+            if (!finalSettings[topLevelKey]) {
+                continue;
+            }
+            topLevelProperty_defaultSettings_settingsDiff = settingsDiff[topLevelKey];
+            topLevelProperty_defaultSettings_finalSettings = finalSettings[topLevelKey];
+
+            if (topLevelKey === "disabledSites"){
+                applyDiffForArrays(topLevelProperty_defaultSettings_settingsDiff, topLevelProperty_defaultSettings_finalSettings);
+            }
+            else if (topLevelKey === "valuesFor_stdUrlDataItems") {
+                for (var secondLevelKey in topLevelProperty_defaultSettings_settingsDiff) {
+                    applyDiffForObjects(topLevelProperty_defaultSettings_settingsDiff[secondLevelKey],
+                        topLevelProperty_defaultSettings_finalSettings[secondLevelKey]);
+                }
+
+            }
+            else {
+                applyDiffForObjects(topLevelProperty_defaultSettings_settingsDiff, topLevelProperty_defaultSettings_finalSettings);
+            }
+        }
+
+        // destringify settingsDiff and finalSettings back to original state.
+        mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(finalSettings);
+        mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsDiff);
+    }
+
+    /**
+     * Elements added and removed from the array with key say "shortcuts" are added to arrays with keynames
+     * "shortcuts_added" and "shortcuts_removed" in the diff object. These are applied back to finalSettings in this
+     * method.
+     * @param diff
+     * @param finalSettings
+     */
+    function applyDiffForArrays(diff, finalSettings) {
+        for (var key in diff) {
+            var keyName;
+            var indexAdded = key.indexOf(suffix_addedToArray);
+            if (indexAdded !== -1) {
+                keyName = key.substring(0, indexAdded);
+                finalSettings[keyName] = finalSettings[keyName].concat(diff[key]);
+            }
+            else {
+                var indexRemoved = key.indexOf(suffix_removedFromArray);
+                if (indexRemoved !== -1) {
+                    keyName = key.substring(0, indexRemoved);
+                    finalSettings[keyName] = finalSettings[keyName].filter(
+                        function(element) {return (diff[key].indexOf(element) === -1);});
+                }
+            }
+        }
+    }
+
+    /***
+     * Apply diff for a UnitProj-settings specific object (not a generic object)
+     * @param diff
+     * @param finalSettings
+     */
+    function applyDiffForObjects(diff, finalSettings) {
+        for (var key in diff) {
+            var value_diff = diff[key],
+                value_finalSettings = finalSettings[key];
+
+            if (typeof value_diff === "string" || typeof value_diff === "number" || typeof value_diff === "boolean") {
+                finalSettings[key] = value_diff;
+            }
+            else if (value_finalSettings.kbdShortcuts) {
+                applyDiffForArrays(value_diff, value_finalSettings);
+            }
+        }
+    }
+
+
+    // Methods related to setUserSettings: Get settings diff
+
+    /**
+     * Get diff of userSettings and defaultSettings.
+     * @param userSettings
+     * @returns {{}}
+     */
+    function getUserSettingsDiff(userSettings) {
+
+        var settingsDiff = {},
+            defaultSettings = getDefaultSettings(); // gets clone of defaultSettings
+
+        if (!userSettings || !defaultSettings) {
+            // something's wrong! no diff for you.
+            return null;
+        }
+
+        delete defaultSettings.urlDataMap; // No diff'ing the urlDataMap for now.
+        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(defaultSettings);
+        mod_commonHelper.stringifyJSONUnsupportedTypes_inSettings(userSettings);
+
+
+        var topLevelProperty_defaultSettings,
+            topLevelProperty_userSettings,
+            settingName,
+            settingValue_defaultSettings,
+            settingValue_userSettings,
+            settingValueDiff;
+
+        for (var topLevelKey in defaultSettings) {
+            topLevelProperty_defaultSettings = defaultSettings[topLevelKey];
+            topLevelProperty_userSettings = userSettings[topLevelKey];
+
+            if (!topLevelProperty_userSettings) {
+                continue;
+            }
+
+            settingsDiff[topLevelKey] =  {};
+
+            // NOTE: all top-level properties of defaultSettings are objects, as of June 27th, 2013.
+            if (mod_commonHelper.isObject(topLevelProperty_defaultSettings)) {
+
+                // "disabledSites" contains the settings "urlPatterns" and "urlRegexps". These need to be handled
+                // differently from other settings since these are arrays (and all others are primitive values/ objects).
+                if (topLevelKey === "disabledSites") {
+
+                    for (settingName in topLevelProperty_defaultSettings) {
+                        settingValue_defaultSettings = topLevelProperty_defaultSettings[settingName];
+                        settingValue_userSettings = topLevelProperty_userSettings[settingName];
+
+                        if (!Array.isArray(settingValue_defaultSettings) || !Array.isArray(settingValue_userSettings)) {
+                            continue;
+                        }
+
+                        settingValueDiff = getArrayDiff(settingValue_defaultSettings, settingValue_userSettings);
+
+                        if (!settingValueDiff) {
+                            continue;
+                        }
+
+                        settingsDiff[topLevelKey][settingName + suffix_addedToArray] = settingValueDiff.added;
+                        settingsDiff[topLevelKey][settingName + suffix_removedFromArray] = settingValueDiff.removed;
+                    }
+                }
+                // Settings for "valuesFor_stdUrlDataItems" have additional grouping. Hence, the extra 'for' loop for
+                // the second level key.
+                else if (topLevelKey === "valuesFor_stdUrlDataItems") {
+                    for (var secondLevelKey in topLevelProperty_defaultSettings) {
+
+                        if (!topLevelProperty_userSettings[secondLevelKey]) {
+                            continue;
+                        }
+
+                        for (settingName in topLevelProperty_defaultSettings[secondLevelKey]) {
+                            settingValue_defaultSettings = topLevelProperty_defaultSettings[secondLevelKey][settingName];
+                            settingValue_userSettings =  topLevelProperty_userSettings[secondLevelKey][settingName];
+
+                            settingValueDiff = getSettingsValueDiff(settingValue_defaultSettings, settingValue_userSettings);
+                            if (settingValueDiff === null) {
+                                continue;
+                            }
+
+                            if (!settingsDiff[topLevelKey][secondLevelKey]) {
+                                settingsDiff[topLevelKey][secondLevelKey] = {};
+                            }
+                            settingsDiff[topLevelKey][secondLevelKey][settingName] = settingValueDiff;
+                        }
+                    }
+                }
+                // All other top-level properties in the settings object have the same format.
+                else {
+                    for (settingName in topLevelProperty_defaultSettings) {
+                        settingValue_defaultSettings = topLevelProperty_defaultSettings[settingName];
+                        settingValue_userSettings = topLevelProperty_userSettings[settingName];
+
+                        settingValueDiff = getSettingsValueDiff(settingValue_defaultSettings, settingValue_userSettings);
+
+                        if (settingValueDiff === null) {
+                            continue;
+                        }
+
+                        settingsDiff[topLevelKey][settingName] = settingValueDiff;
+                    }
+                }
+            }
+
+            // If no settings (keys) added to the topLevelKey, then remove the topLevelKey
+            if (!Object.keys(settingsDiff[topLevelKey]).length) {
+                delete settingsDiff[topLevelKey];
+            }
+        }
+
+        mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(userSettings); // restore the userSettings to original
+        // state.
+
+        mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsDiff); // Return the object in the state
+        // expected by the calling function.
+        // JSON unsupported types are stringified at the beginning of this function only because that makes things
+        // convenient for calculating the diff.
+
+        return settingsDiff;
+    }
+
+    function getSettingsValueDiff(defaultSettingsValue, userSettingsValue) {
+        var getKbdShortcutsArrayDiff = function(defaultSettingsValue, userSettingsValue) {
+            var arrayDiff = getArrayDiff(defaultSettingsValue.kbdShortcuts, userSettingsValue.kbdShortcuts);
+            if (!arrayDiff) {
+                return null;
+            }
+
+            defaultSettingsValue.kbdShortcuts_added = arrayDiff.added;
+            defaultSettingsValue.kbdShortcuts_removed = arrayDiff.removed;
+
+            delete defaultSettingsValue.kbdShortcuts;
+
+            return defaultSettingsValue;
+        };
+
+
+        if (defaultSettingsValue.kbdShortcuts && userSettingsValue.kbdShortcuts) {
+            return getKbdShortcutsArrayDiff(defaultSettingsValue, userSettingsValue);
+        }
+        // Stringify all non-primitive values to check for equality (This does not apply for functions and regexps
+        // because those should have been stringified).
+        else if (typeof defaultSettingsValue === "object" && typeof userSettingsValue === "object") {
+            if (JSON.stringify(userSettingsValue) !== JSON.stringify(defaultSettingsValue)) {
+                return userSettingsValue;
+            }
+        }
+        else if (userSettingsValue !== defaultSettingsValue) {
+            return userSettingsValue;
+        }
+
+        return null;
+    }
+
+    /***
+     * Get the diff of given 2 arrays
+     *
+     * How this works: Added elements (in the latter "userSettingsArray") are added to an array with key "added" and
+     * and removed elements added to array with key "removed".
+     *
+     * @param defaultSettingsArray
+     * @param userSettingsArray
+     * @returns Object of the format {removed: [], added: []}
+     */
+    function getArrayDiff(defaultSettingsArray, userSettingsArray) {
+
+        var diff = {};
+
+        // if you need something more efficient, try something like this:
+        // http://stackoverflow.com/questions/3476672/algorithm-to-get-changes-between-two-arrays
+
+        diff.added = userSettingsArray.filter(function(element) {return (defaultSettingsArray.indexOf(element) === -1);});
+        diff.removed = defaultSettingsArray.filter(function(element) {return (userSettingsArray.indexOf(element) === -1);});
+
+        if (!diff.added.length && !diff.removed.length) {
+            return null;
+        }
+
+        return diff;
+    }
+
+
+
     /**
      * Method to add a URL pattern/ site to be disabled to the user settings. Used from popup.js for disabling site at
      * the currently active tab.
@@ -114,7 +396,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
      * @returns {boolean}
      */
     function addUrlPatternToUserDisabledSites(urlPattern) {
-        var userSettings = getUserSettings();
+        var userSettings = getUserDiffAppliedSettings();
         if (!userSettings) {
             userSettings = $.extend(true, {}, defaultSettings);
         }
@@ -350,7 +632,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
         // get the corresponding "regular expression escaped" string.
         var regexpStr = urlPattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        console.log(regexpStr);
+//        console.log(regexpStr);
 
         // replacing all instances of '\*\*' (to which '**'s would have been converted above) by the regexp equivalent
         // to match any combination of one or more characters of any type
