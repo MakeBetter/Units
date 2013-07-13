@@ -48,7 +48,7 @@ var defaultSettings = {
         enhanceActiveElementVisibility: true, // give special highlight to the active element on the page (if set to false,
         // the browser's default style will be applied.
 
-        zenModeAutoOn: false
+        zenModeAutoOn: false // zen mode will be active on any page when it loads first.  
     },
 
     /*
