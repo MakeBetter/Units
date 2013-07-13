@@ -557,8 +557,8 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             if (!SUorAction.kbdShortcuts && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][SUorAction_Name])) {
                 SUorAction.kbdShortcuts = temp.kbdShortcuts;
             }
-            if (!SUorAction.miniDescr && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][SUorAction_Name])) {
-                SUorAction.miniDescr = temp.miniDescr;
+            if (!SUorAction.descr && (temp = defaultSettings.valuesFor_stdUrlDataItems[scope][SUorAction_Name])) {
+                SUorAction.descr = temp.descr;
             }
         };
 

@@ -76,7 +76,7 @@ defaultSettings.urlDataMap = {
                     // This following two keys are optional since this is a "std_" SU, but if one or both are
                     // specified, they will will override the default value
                     kbdShortcuts: ["u", "v"],
-                    miniDescr: "customized description.."
+                    descr: "customized description.."
                 },
                 std_share: {
                     selector: ".share"
@@ -85,7 +85,7 @@ defaultSettings.urlDataMap = {
 
                 // the following SU, which is not standard (i.e. "std_" prefixed) requires the "expanded" notation
                 markAsRead: {
-                    miniDescr: "Mark as read",
+                    descr: "Mark as read",
                     selector: ".mark-read",
                     kbdShortcuts: ["r"]
                 }

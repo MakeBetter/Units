@@ -63,7 +63,7 @@ ii) it results in better structure/organization compared to having arrays of reg
 
 7) // Guide for standard ("std_") items in urlData:
 This applies to SUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
-These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('miniDescr' property).
+These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('descr' property).
 This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
 to these items. However, if it specifically makes sense in a given case, these values (one or both) should be provided
 and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
@@ -142,7 +142,7 @@ defaultSettings.urlDataMap = {
                     // This following two keys are optional since this is a "std_" SU, but if one or both are
                     // specified, they will will override the default value
                     kbdShortcuts: ["u", "v"],
-                    miniDescr: "customized description.."
+                    descr: "customized description.."
                 },
                 std_share: {
                     selector: ".share"
@@ -151,7 +151,7 @@ defaultSettings.urlDataMap = {
 
                 // the following SU, which is not standard (i.e. "std_" prefixed) requires the "expanded" notation
                 markAsRead: {
-                    miniDescr: "Mark as read",
+                    descr: "Mark as read",
                     selector: ".mark-read",
                     kbdShortcuts: ["r"]
                 }
@@ -233,7 +233,7 @@ defaultSettings.urlDataMap = {
                     ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5)",
                 // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
                 // meant for the entire page, then they'd be bad!
-                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
+                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", descr: "See more"}
             },
             CUs_style: {
                 // This allows the little UI element on the top right that comes up when
@@ -255,7 +255,7 @@ defaultSettings.urlDataMap = {
                 //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
                 "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
                 std_mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a", // for the timeline page
-                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", miniDescr: "See more"}
+                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", descr: "See more"}
             },
             page_SUs: {
                 std_header: "#headNav, .stickyHeaderWrap", // #headNav is the main header, the latter is a dynamic header that sometimes shows up.
@@ -370,7 +370,7 @@ defaultSettings.urlDataMap = {
             },
             page_SUs: {
                 "within-last-year": {
-                    miniDescr: "Show results from last year",
+                    descr: "Show results from last year",
                     kbdShortcuts: ["y"],
                     selector: ".q.qs:contains('Past year')"    // jQuery extensions to CSS selector syntax are supported
                 }
@@ -463,7 +463,7 @@ defaultSettings.urlDataMap = {
                 "follow": {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"],
-                    miniDescr: "Follow"
+                    descr: "Follow"
                 }
             },
             page_SUs: {
@@ -488,7 +488,7 @@ defaultSettings.urlDataMap = {
                 "follow": {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"],
-                    miniDescr: "Follow"
+                    descr: "Follow"
                 }
             },
             page_SUs: {
@@ -513,7 +513,7 @@ defaultSettings.urlDataMap = {
                 "follow": {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"],
-                    miniDescr: "Follow"
+                    descr: "Follow"
                 }
             },
             CUs_style: {
@@ -630,7 +630,7 @@ defaultSettings.urlDataMap = {
                 "std_share": ".short-link",
                 "std_edit": ".suggest-edit-post",
                 "std_comment": ".comments-link",
-                "star": {kbdShortcuts: ["r"],  selector: ".star-off", miniDescr: "Star question"}
+                "star": {kbdShortcuts: ["r"],  selector: ".star-off", descr: "Star question"}
 
             },
             CUs_actions: {
@@ -685,22 +685,22 @@ defaultSettings.urlDataMap = {
                 reply: {
                     selector: '.js-action-reply',
                     kbdShortcuts: ["r"],
-                    miniDescr: "Reply"
+                    descr: "Reply"
                 },
                 retweet: {
                     selector: '.retweet',
                     kbdShortcuts: ["t"],
-                    miniDescr: "Retweet"
+                    descr: "Retweet"
                 },
                 favorite: {
                     selector: '.favorite, .unfavorite',
                     kbdShortcuts: ["v"],
-                    miniDescr: "Favorite/ Un-favorite"
+                    descr: "Favorite/ Un-favorite"
                 },
                 expand: {
                     selector: '.js-details',
                     kbdShortcuts: ["e"],
-                    miniDescr: "Expand/ Collapse"
+                    descr: "Expand/ Collapse"
                 },
                 std_profile: '.js-user-profile-link'
 

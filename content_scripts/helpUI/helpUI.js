@@ -94,7 +94,7 @@
 
         // Additional shortcut to be displayed
         CUsShortcuts_Default.selectAnyLink= {
-            miniDescr: "Select any link",
+            descr: "Select any link",
             kbdShortcuts: ["Space + [letter that link starts with]"]
         };
 
@@ -146,8 +146,8 @@
                     }
                 }
 
-                var shortcutDesc = value.miniDescr || value.description || value.name || key; // properties description and
-                // name used by chrome.commands. miniDescr and key are applicable for all the other settings defined
+                var shortcutDesc = value.descr || value.description || value.name || key; // properties description and
+                // name used by chrome.commands. descr and key are applicable for all the other settings defined
                 // in the project.
 
                 $("<tr></tr>")

@@ -60,68 +60,68 @@ var defaultSettings = {
     generalShortcuts: {
         
         toggleExtension: {
-            miniDescr: "Disable/enable Units on current page",
+            descr: "Disable/enable Units on current page",
             kbdShortcuts: [',']
         },
         scrollDown: {
-            miniDescr: "Scroll down",
+            descr: "Scroll down",
             kbdShortcuts: ['shift+j']
         },
         scrollUp: {
-            miniDescr: "Scroll up",
+            descr: "Scroll up",
             kbdShortcuts: ['shift+k']
         },
         back: {
-            miniDescr: "Go back",
+            descr: "Go back",
             kbdShortcuts: ['alt+h']
         },
         forward: {
-            miniDescr: "Go forward",
+            descr: "Go forward",
             kbdShortcuts: ['alt+l']
         },
 
         showHelp: {
-            miniDescr: "Show the help page",
+            descr: "Show the help page",
             kbdShortcuts: ['alt+/']
         },
         open: { //TODO: should 'enter' be spcified here
-            miniDescr: "Open/invoke focused item",
+            descr: "Open/invoke focused item",
             kbdShortcuts: ['shift+o', 'alt+o']  // alt+o allows invoking only with one hand (at least in windows)
         },
         openInNewTab: {
-            miniDescr: "Open focused item in new tab",
+            descr: "Open focused item in new tab",
             kbdShortcuts: ['o']
         },
         focusFirstTextInput: {
-            miniDescr: "Focus first text input element",
+            descr: "Focus first text input element",
             kbdShortcuts: ['f i', 'alt+i']
         },
         focusNextTextInput: {
-            miniDescr: "Focus next text input element",
+            descr: "Focus next text input element",
             kbdShortcuts: ['alt+o']
         },
         focusPrevTextInput: {
-            miniDescr: "Focus previous text input element",
+            descr: "Focus previous text input element",
             kbdShortcuts: ['alt+shift+o']
         },
         topOfPage: {
-            miniDescr: "Navigate: Top of page",
+            descr: "Navigate: Top of page",
             kbdShortcuts: ['n t']
         },
         bottomOfPage: {
-            miniDescr: "Navigate: Bottom of page",
+            descr: "Navigate: Bottom of page",
             kbdShortcuts: ['n b']
         },
         pageUp: {
-            miniDescr: "Navigate: Up (fast scroll up)",
+            descr: "Navigate: Up (fast scroll up)",
             kbdShortcuts: ['n u']
         },
         pageDown: {
-            miniDescr: "Navigate: Down (fast scroll down)",
+            descr: "Navigate: Down (fast scroll down)",
             kbdShortcuts: ['n d']
         },
         toggleZenMode: {
-            miniDescr: "Toggle zen mode",
+            descr: "Toggle zen mode",
             kbdShortcuts: ['z']
         }
     },
@@ -133,23 +133,23 @@ var defaultSettings = {
         // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
         nextCU: {
-            miniDescr: "Select next CU",
+            descr: "Select next CU",
             kbdShortcuts: ['j'/*, 'down'*/]
         },
         prevCU: {
-            miniDescr: "Select previous CU",
+            descr: "Select previous CU",
             kbdShortcuts: ['k'/*, 'up'*/]
         },
         filterCUs: {
-            miniDescr: "Search and filter CUs ",
+            descr: "Search and filter CUs ",
             kbdShortcuts: ['alt+f']
         },
         firstCU: {
-            miniDescr: "Select first CU",
+            descr: "Select first CU",
             kbdShortcuts: ['^', 'alt+1']
         },
         lastCU: {
-            miniDescr: "Select last CU",
+            descr: "Select last CU",
             kbdShortcuts: ['$', 'alt+9']
         }
     },
@@ -162,68 +162,68 @@ var defaultSettings = {
     valuesFor_stdUrlDataItems: {
         page: {
             std_searchField: {
-                miniDescr: "Focus search box",
+                descr: "Focus search box",
                 kbdShortcuts: ["/"]
             },
             std_header: {
-                miniDescr: "Focus (the first item on the) header",
+                descr: "Focus (the first item on the) header",
                 kbdShortcuts: ["alt+h"]
             },
             std_nextOrMore: {
-                miniDescr: "Show next or more content",
+                descr: "Show next or more content",
                 kbdShortcuts: ["g down"]
             },
             std_comment: {
-                miniDescr: "Add comment",
+                descr: "Add comment",
                 kbdShortcuts: ["c"]
             },
             std_viewComments: {
-                miniDescr: "View comments",
+                descr: "View comments",
                 kbdShortcuts: ["g c"]
             },
             std_logout: {
-                miniDescr: "Logout",
+                descr: "Logout",
                 kbdShortcuts: ["q"]
             }
         },
         CUs: {
             std_main: {
-                miniDescr: ""
+                descr: ""
             },
             std_upvote: {
-                miniDescr: "Upvote (or 'like'/'+1'/etc).",
+                descr: "Upvote (or 'like'/'+1'/etc).",
                 kbdShortcuts: ["u"]
             },
             std_downvote: {
-                miniDescr: "Downvote (or '-1'/etc).",
+                descr: "Downvote (or '-1'/etc).",
                 kbdShortcuts: ["d"]
             },
             std_share: {
-                miniDescr: "Share",
+                descr: "Share",
                 kbdShortcuts: ["s"]
             },
             std_comment: {
-                miniDescr: "Add comment",
+                descr: "Add comment",
                 kbdShortcuts: ["c"]
             },
             std_viewComments: {
-                miniDescr: "View (more) comments",
+                descr: "View (more) comments",
                 kbdShortcuts: ["v c"]
             },
             std_edit: {
-                miniDescr: "Edit",
+                descr: "Edit",
                 kbdShortcuts: ["e"]
             },
             std_profile: {
-                miniDescr: "Go to user profile",
+                descr: "Go to user profile",
                 kbdShortcuts: ["p"]
             },
             std_sharedContent: {
-                miniDescr: "Open the shared content",
+                descr: "Open the shared content",
                 kbdShortcuts: ["v s"]
             },
             std_toggleSelection: {
-                miniDescr: "toggleSelection",
+                descr: "toggleSelection",
                 kbdShortcuts: ["x"]
             }
         }
