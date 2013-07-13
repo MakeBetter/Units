@@ -1574,10 +1574,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     // Calls `updateCUsEtc_onMuts` with a maximum delay of `maxDelay_nonImportantMuts`
     function delayed_updateCUsEtc_onMuts() {
-        if (timeout_updateCUs === false) { // compare explicitly with false, which is how we reset it
-            // if timeout period is 0 or negative, will execute immediately (at the first opportunity)
-            timeout_updateCUs = setTimeout(updateCUsEtc_onMuts, maxDelay_nonImportantMuts -
-                (Date.now() - lit_updateCUsEtc));
+        // compare explicitly with false, which is how we reset it
+        console.log('timeout_updateCUs', timeout_updateCUs);
+        if (timeout_updateCUs === false) {
+            // In the following line, we restrict the minimum value of the timeout delay to
+            // 0. This should not normally be required since negative delay is supposed to
+            // have the same effect as a 0 delay. However, doing this fixes  #76 (Github).
+            // This is mostly likely due to some quirk in Chrome.
+            timeout_updateCUs = setTimeout(updateCUsEtc_onMuts, Math.max(0, maxDelay_nonImportantMuts -
+                (Date.now() - lit_updateCUsEtc)));
         }
     }
 
