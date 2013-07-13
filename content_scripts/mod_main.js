@@ -143,7 +143,7 @@
 
                 mod_mutationObserver.enable();
 
-                if (settings.miscSettings && settings.miscSettings.zenModeAlwaysActive) {
+                if (settings.miscSettings && settings.miscSettings.zenModeAutoOn) {
                     mod_zenMode.start();
                 }
             }
