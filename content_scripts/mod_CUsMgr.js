@@ -1575,7 +1575,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // Calls `updateCUsEtc_onMuts` with a maximum delay of `maxDelay_nonImportantMuts`
     function delayed_updateCUsEtc_onMuts() {
         // compare explicitly with false, which is how we reset it
-        console.log('timeout_updateCUs', timeout_updateCUs);
         if (timeout_updateCUs === false) {
             // In the following line, we restrict the minimum value of the timeout delay to
             // 0. This should not normally be required since negative delay is supposed to
