@@ -218,11 +218,4 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     basicOptionsLink.addEventListener("click", showBasicOptions);
     advancedOptionsLink.addEventListener("click", showAdvancedOptions);
 
-    document.addEventListener("dblclick", function(e) {
-       var selection = window.getSelection();
-       var range = selection.getRangeAt(0);
-       console.log("range", range);
-
-    });
-
 })(_u.mod_commonHelper, _u.mod_settings, mod_UIHelper);
