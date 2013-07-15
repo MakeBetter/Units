@@ -58,7 +58,12 @@ _u.mod_smoothScroll = (function() {
         }
 
         inProgress = true;
-        startTime = performance.now();
+        // TODO: we are using the following instead of the commented out line below
+        // as a temporary fix for issue #77 (GitHub). It may be reverted once Chrome
+        // fixes the underlying issue (Also remove the line `now = Date.now();` in
+        // step() function at that point
+        startTime = Date.now();
+//        startTime = performance.now();
         maxDuration = duration;
 
         var totalDisplacement = destination - startPosition;
@@ -75,7 +80,12 @@ _u.mod_smoothScroll = (function() {
 
     // a single animation step
     function step(now) {
-        var currentPosition = startPosition + (now - startTime) * speed;
+        // TODO: The following line has been added  as a temporary fix for issue
+        // #77 (GitHub). It may be reverted once Chrome fixes the underlying issue
+        // (Also make the related change in assigning `startTime` in the function
+        // smoothScroll() at that point
+        now = Date.now();
+        var currentPosition = Math.round(startPosition + (now - startTime) * speed);
         if (areScrollingDown? (currentPosition >= destination): (currentPosition <= destination) ||
             now - startTime >= maxDuration) {
 
