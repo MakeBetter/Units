@@ -26,7 +26,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     // Advanced Options methods
 
     var populateAdvancedOptions = function() {
-        mod_settings.getUserSettings(null, _populateAdvancedOptions);
+        mod_settings.getUserSettings(_populateAdvancedOptions);
     };
 
     var _populateAdvancedOptions = function(settings) {
@@ -116,7 +116,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     // Basic Options methods
 
     var populateBasicOptions = function() {
-        mod_settings.getUserSettings(null, _populateBasicOptions);
+        mod_settings.getUserSettings(_populateBasicOptions);
     };
 
     var _populateBasicOptions = function(settings) {

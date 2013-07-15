@@ -90,7 +90,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             }
         };
 
-        mod_settings.getUserSettings(activeTabURL, updatePopupUI);
+        mod_settings.getUserSettings(updatePopupUI, {url: activeTabURL});
 
         chrome.tabs.sendMessage(activeTabId, {message: 'isContentScriptTemporarilyDisabled'}, function(response) {
             updateToggleExtensionUI(response);

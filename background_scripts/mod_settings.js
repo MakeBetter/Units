@@ -21,19 +21,32 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
      *
      * If url is specified, the settings object is appended with properties expandedUrlData and isDisabled, and
      * the urlDataMap property is removed.
-     * @param url,
+
      * @param callback Callback function returns the settings.
+     * @param options Can contain properties:
+     * url: If specified, then the URL specific settings are returned. Else, all settings are returned.
+     * getBasic: Set this to true if you need the basic/main settings that are returned synchronously
      */
-    function getUserSettings(url, callback) {
+    function getUserSettings(callback, options) {
 
-        var settings = getUserDiffAppliedSettings();
+        var url = options && options.url,
+            getBasic = options && options.getBasic;
 
+        var settings = _getUserSettings(); // Get user diff applied settings.
+
+        // Append URL specific settings
         if (url) {
-
             settings.expandedUrlData = getExpandedUrlData(settings, url);
             delete settings.urlDataMap;
 
             settings.isDisabled = getDisabledStatus(url, settings.disabledSites);
+        }
+
+        // Return partial settings synchronously if getBasic = true.
+        // For certain scenarios (like when editing settings), we need to get only the basic/main settings and it is
+        // handy to have them synchronously returned.
+        if (getBasic) {
+            return settings;
         }
 
         // Append settings.globalChromeCommands - get the set chrome commands and append them to the settings object
@@ -54,14 +67,14 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
 
     /***
-     * Applies the userSettingsDiff to defaultSettings, and returns the resultant settings.
-     * This is mainly used as an intermediate step for getUserSettings method.
+     * Applies the userSettingsDiff to defaultSettings, and returns the resultant settings. This is intermediate step
+     * for getUserSettings method.
      *
      * NOTE: We don't apply diff to urlDataMap properties. Those are ignored, for now.
      * 
      * @returns {*}
      */
-    function getUserDiffAppliedSettings() {
+    function _getUserSettings() {
 
         var settingsDiffJSON = localStorage.userSettingsDiff,
             settingsDiff,
@@ -113,7 +126,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     }
 
 
-    // Methods related to getUserDiffAppliedSettings: Apply settings diff
+    // Methods related to _getUserSettings: Apply settings diff
 
     /***
      * Applies the given settingsDiff to the given defaultSettings object.
@@ -396,10 +409,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
      * @returns {boolean}
      */
     function addUrlPatternToUserDisabledSites(urlPattern) {
-        var userSettings = getUserDiffAppliedSettings();
-        if (!userSettings) {
-            userSettings = $.extend(true, {}, defaultSettings);
-        }
+        var userSettings = getUserSettings(null, {getBasic: true});
 
         // only allowing adding to URL patterns at the moment.
         if (userSettings.disabledSites && userSettings.disabledSites.urlPatterns) {

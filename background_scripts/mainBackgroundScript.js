@@ -35,7 +35,7 @@
         (function _sendSettingsWhenReady() {
             if (mod_getMainDomain.publicSuffixMap) {
                 var url = sender.tab.url;
-                mod_settings.getUserSettings(url, sendResponse);
+                mod_settings.getUserSettings(sendResponse, {url: url});
             }
             else {
                 setTimeout(_sendSettingsWhenReady, 100);
