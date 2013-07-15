@@ -17,11 +17,19 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         resetSettingsButton = document.getElementById("reset-settings"),
         goToExtensionLink = document.getElementById("go-to-extensions");
 
-    var populateUserSettings = function() {
-        mod_settings.getUserSettings(null, _populateUserSettings);
+    var basicOptionsLink = document.getElementById("basic-options-nav"),
+        advancedOptionsLink = document.getElementById("advanced-options-nav"),
+        basicOptions = document.getElementById("basic-options"),
+        advancedOptions = document.getElementById("advanced-options");
+
+
+    // Advanced Options methods
+
+    var populateAdvancedOptions = function() {
+        mod_settings.getUserSettings(null, _populateAdvancedOptions);
     };
 
-    var _populateUserSettings = function(settings) {
+    var _populateAdvancedOptions = function(settings) {
         // settings are divided into general settings and site-specific settings.
         var generalSettings = settings,
             siteSpecificSettings,
@@ -82,7 +90,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             mod_settings.setUserSettings(settingsObj);
 
             mod_UIHelper.showSuccessMessage("All changes saved");
-            populateUserSettings();
+            populateAdvancedOptions();
         }
     };
 
@@ -94,7 +102,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var resetSettings = function() {
         if (confirm("Sure you want to reset all the options?")) {
             mod_settings.setUserSettings(null);
-            populateUserSettings();
+            populateAdvancedOptions();
 
             mod_UIHelper.showSuccessMessage("Default options are reset");
         }
@@ -104,9 +112,117 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         chrome.tabs.create({url: 'chrome://extensions/'});
     };
 
-    populateUserSettings();
+
+    // Basic Options methods
+
+    var populateBasicOptions = function() {
+        mod_settings.getUserSettings(null, _populateBasicOptions);
+    };
+
+    var _populateBasicOptions = function(settings) {
+
+        // populate miscSettings
+        var miscSettingsContainer = document.getElementById("misc-settings"),
+            tbody, tr, settingValue, innerHtml, key;
+
+        var basicMiscSettings = {
+            selectCUOnLoad: "Select Content Unit on page on load",
+            keepSelectedCUCentered: "Keep selected CU centered on page",
+            enhanceActiveElementVisibility: "Enhance the active element style",
+            pageScrollDelta: "Page scroll delta"
+        };
+
+        tbody = document.createElement("tbody");
+
+        for (key in basicMiscSettings) {
+
+            tr = document.createElement('tr');
+            tr.setAttribute("id", key);
+            innerHtml = '<td>' + basicMiscSettings[key] + '</td>';
+
+            settingValue = settings.miscSettings[key];
+
+            if (typeof settingValue === "boolean") {
+
+                innerHtml += "<td><input type='checkbox'" + (settingValue ? "checked" : "") + "/></td>";
+            }
+            else {
+                innerHtml += "<td><input type='text' value='" + settingValue + "'</td>";
+            }
+
+            tr.innerHTML = innerHtml;
+            tbody.appendChild(tr);
+        }
+
+        miscSettingsContainer.appendChild(tbody);
+
+
+        // populate general keyboard shortcuts
+        var generalShortcuts = settings.generalShortcuts;
+
+        var generalShortcutsContainer = document.getElementById("general-keyboard-shortcuts"),
+            shortcut;
+
+        tbody = document.createElement("tbody");
+
+        for (key in generalShortcuts) {
+            shortcut = generalShortcuts[key];
+            tr = document.createElement('tr');
+            tr.setAttribute("id", key);
+
+            innerHtml = '<td>' + shortcut.descr + '</td>';
+
+            var kbdShortcuts, kbdShortcut, kbdShortcutsHtml = "";
+
+            kbdShortcuts = shortcut.kbdShortcuts;
+            for (var i = 0; i < kbdShortcuts.length; i++) {
+                kbdShortcut = kbdShortcuts[i];
+                kbdShortcutsHtml += "<input type='text' value='" + kbdShortcut + "' />";
+            }
+
+            innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
+
+            tr.innerHTML = innerHtml;
+            tbody.appendChild(tr);
+
+        }
+        generalShortcutsContainer.appendChild(tbody);
+
+    };
+
+    var showAdvancedOptions = function() {
+        basicOptions.style.display = "none";
+        advancedOptions.style.display = "block";
+
+        advancedOptionsLink.classList.add("selected");
+        basicOptionsLink.classList.remove("selected");
+    };
+
+    var showBasicOptions = function() {
+        basicOptions.style.display = "block";
+        advancedOptions.style.display = "none";
+
+        advancedOptionsLink.classList.remove("selected");
+        basicOptionsLink.classList.add("selected");
+    };
+
+
+    populateAdvancedOptions();
+    populateBasicOptions();
+    showBasicOptions();
+
     saveSettingsButton.addEventListener("click", saveSettings);
     resetSettingsButton.addEventListener("click", resetSettings);
     goToExtensionLink.addEventListener("click", goToExtensionsPage);
+
+    basicOptionsLink.addEventListener("click", showBasicOptions);
+    advancedOptionsLink.addEventListener("click", showAdvancedOptions);
+
+    document.addEventListener("dblclick", function(e) {
+       var selection = window.getSelection();
+       var range = selection.getRangeAt(0);
+       console.log("range", range);
+
+    });
 
 })(_u.mod_commonHelper, _u.mod_settings, mod_UIHelper);

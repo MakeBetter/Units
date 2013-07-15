@@ -5,11 +5,6 @@ body {
     margin: 0; padding: 0;
 }
 
-h1 {
-    font-weight: normal;
-    text-align: center;
-}
-
 textarea {
     padding: 0;
     margin-top: 10px;
@@ -44,12 +39,7 @@ button {
   }
 }
 
-#settings-container {
-    margin: 0 auto;
-    position: relative;
-    /*display: table;*/
-    /*margin-top: 20px;*/
-}
+$options-content-width: 750px;
 
 #settings-header {
     margin: 0 auto 20px auto;
@@ -58,37 +48,148 @@ button {
     top: 0;
     height: 40px;
     width: 100%;
-    background-color: /*cadetblue*/ lightslategray;
-    /*margin: 0;*/
+    background: /*cadetblue*/ rgb(255, 237, 237);
+    box-sizing: border-box;
+    border-bottom: 1px solid rgb(255, 107, 109);
     z-index: 2;
-    /*padding: 0 40px;*/
 }
 
-    #settings-header>h2 {
-        width: 750px;
+    #header-content{
+        width: $options-content-width;
         margin: 0 auto;
         padding: 0;
-        color: $text-color-light;
-        /*text-align: right;*/
         font-weight: normal;
         vertical-align: middle;
-        font-size: 20px;
         line-height: 40px;
+        //display: inline-block;
+
+      a {
+        text-decoration: none;
+        padding: 5px;
+      }
     }
 
-    #buttons-panel {
-        max-width: 750px;
-        margin: 10px auto;
-        position: relative;
-        top: -45px;
+    #h1 {
+      font-family: Palatino, Georgia, 'Times New Roman', serif;
+      font-size: 20px;
+      font-weight: normal;
+      color: #666666;
+      font-weight: bold;
     }
 
-#user-settings {
-    top: 60px;
+    #navigation {
+      display: inline-block;
+      float: right;
+      margin: 0;
+      padding: 0;
+    }
+
+    #navigation>li {
+      float: left;
+      margin-right: 10px;
+    }
+
+    #navigation a {
+      color: $text-color;
+    }
+
+    #navigation a.selected {
+      background-color: #333;
+      color: $text-color-light;
+    }
+
+/*
+Success/Error message styles
+*/
+
+#user-message {
+  box-sizing: border-box;
+  width: 400px;
+  position:fixed;
+  line-height: 14px;
+  top:0;
+  left: 50%;
+  margin-left: -200px;
+  z-index: 1501;
+  text-align: center;
+
+  padding: 5px 0;
+
+  color: $text-color-light;
+  opacity: 0.98;
+  font-size: 12px;
+
+  /*corner-bottom*/
+  @include border-radius(0 0 2px 2px);
+}
+
+#user-message>p {
+  padding: 0; margin: 0;
+}
+
+#user-message .json-error-message {
+  font-style: italic;
+}
+
+#user-message.error {
+  background: #e30202;
+  border: 1px solid #e60000;
+}
+
+#user-message.success {
+  background-color: #27805b;
+  border: 1px solid #068065;
+}
+
+.section {
+  padding-bottom: 40px;
+}
+
+#settings-container {
+  margin: 0 auto;
+  position: relative;
+  top: 60px;
+  width: $options-content-width;
+}
+
+/*
+Basic Options styles
+*/
+
+
+#basic-options {
+  tr {
+    height: 20px;
+  }
+  tr:nth-child(2n+1) {
+    background-color: #fafafa;
+  }
+  td {
+    line-height: 20px;
+    color: #333333;
+    padding: 10px;
+  }
+
+  .subheading {
+    margin-bottom: 10px;
+  }
+
+  .section {
+    font-size: 14px;
+  }
+}
+
+
+/*
+Advanced Options styles
+*/
+
+
+#advanced-options {
+
     position: relative;
     margin: 0 auto;
-    width: 750px;
-
+    display: none;
 }
 
     .options-message {
@@ -120,9 +221,8 @@ button {
     display: block;
 }
 
-#user-settings textarea {
+#advanced-options textarea {
     border-color: #efefef;
-    margin-bottom: 40px;
     width: 750px;
     /*resize: none;*/
 }
@@ -144,41 +244,3 @@ textarea[readonly=readonly]:focus {
     float: right;
 }
 
-/* TODO: To be improved. Just something workable for now. */
-#user-message {
-    box-sizing: border-box;
-    width: 400px;
-    position:fixed;
-    top:0;
-    left: 50%;
-    margin-left: -375px;
-    z-index: 1501;
-    text-align: center;
-
-    padding: 5px 0;
-
-    color: $text-color-light;
-    opacity: 0.98;
-    font-size: 12px;
-
-    /*corner-bottom*/
-    @include border-radius(0 0 2px 2px);
-}
-
-#user-message>p {
-    padding: 0; margin: 0;
-}
-
-#user-message .json-error-message {
-    font-style: italic;
-}
-
-#user-message.error {
-    background: #e30202;
-    border: 1px solid #e60000;
-}
-
-#user-message.success {
-    background-color: #27805b;
-    border: 1px solid #068065;
-}
