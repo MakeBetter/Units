@@ -81,6 +81,12 @@ defining this because compass transition mixin does not accept the !important pr
 
 /* ****** 'Select Link' module styles ***** */
 
+.UntisProj-matchingLink {
+  outline: 2px solid #dbcb7a !important;
+  background-color: #ffef84 !important;
+  color: #433210 !important;
+}
+
 /* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
 margin of the #UnitsProj-selectLink-textBox or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
 box-sizing to border-box)*/
