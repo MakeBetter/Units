@@ -93,7 +93,15 @@ _u.mod_smoothScroll = (function() {
         }
         else {
             element.scrollTop = currentPosition;
-            requestAnimationFrame(step);
+
+            // If this is true, it implies that the scrollTop cannot be changed further (in the current direction),
+            // and so we can end the animation
+            if (element.scrollTop !== currentPosition) {
+                endAtDestination();
+            }
+            else {
+                requestAnimationFrame(step);
+            }
         }
     }
 
