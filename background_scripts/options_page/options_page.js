@@ -141,6 +141,9 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         chrome.tabs.create({url: 'chrome://extensions/'});
     };
 
+    var showAdvancedOptionsHelp = function(event) {
+
+    };
 
     // Basic Options methods
 
@@ -248,7 +251,14 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         }
     };
 
-    var saveBasicOptions_generalShortcuts = function() {
+    var saveBasicOptions_generalShortcuts = function(event) {
+        var target = event.target;
+
+        if (target.tagName.toLowerCase() === "textarea") {
+            var selectedText = target.value.substring(target.selectionStart, target.selectionEnd);
+            console.log(selectedText);
+        }
+
 
     };
 
@@ -269,9 +279,11 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     };
 
     var hideEditingHelpMessage = function(event) {
-      var messages = document.querySelectorAll("tr ." + editingHelpMessage_className);
-        for (var i = 0; i < messages.length; i++) {
-            messages[i].remove();
+        var target = event.target,
+            messageElement = target.nextElementSibling;
+
+        if (messageElement.classList.contains(editingHelpMessage_className)) {
+            messageElement.remove();
         }
     };
 
@@ -286,11 +298,13 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     resetSettingsButton.addEventListener("click", resetSettings);
     goToExtensionLink.addEventListener("click", goToAllExtensionsPage);
 
+    advancedOptions.addEventListener("select", showAdvancedOptionsHelp);
+
     // Basic Options handlers
     basicOptions.querySelector("#misc-settings").addEventListener("change", saveBasicOptions_misc);
     basicOptions.querySelector("#misc-settings").addEventListener("input", showEditingHelpMessage);
 
-    document.addEventListener("click", hideEditingHelpMessage);
+    document.addEventListener("focusout", hideEditingHelpMessage);
 
 
 })(_u.mod_commonHelper, _u.mod_settings, mod_UIHelper);
