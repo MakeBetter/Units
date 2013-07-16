@@ -13,7 +13,7 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     var generalSettingsTextArea = document.getElementById("general-settings"),
         siteSettingsTextArea = document.getElementById("site-specific-settings"),
         globalSettingsTextArea = document.getElementById("global-settings"),
-        saveSettingsButton = document.getElementById("save-settings"),
+        saveAdvancedOptionsButton = document.getElementById("save-settings"),
         resetSettingsButton = document.getElementById("reset-settings"),
         goToExtensionLink = document.getElementById("go-to-extensions");
 
@@ -22,12 +22,42 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         basicOptions = document.getElementById("basic-options"),
         advancedOptions = document.getElementById("advanced-options");
 
+    // Common methods
+
+    var saveOptions = function(settings, successMessage) {
+        mod_settings.setUserSettings(settings);
+        populateAdvancedOptions();
+        populateBasicOptions();
+
+        mod_UIHelper.showSuccessMessage(successMessage);
+    };
+
+    var showAdvancedOptions = function() {
+        // Reset/Populate advanced options
+        populateAdvancedOptions();
+
+        basicOptions.style.display = "none";
+        advancedOptions.style.display = "block";
+
+        // Update navigation link
+        advancedOptionsLink.classList.add("selected");
+        basicOptionsLink.classList.remove("selected");
+    };
+
+    var showBasicOptions = function() {
+        // Populate/Reset basic options
+        populateBasicOptions();
+
+        basicOptions.style.display = "block";
+        advancedOptions.style.display = "none";
+
+        // Update navigation link
+        advancedOptionsLink.classList.remove("selected");
+        basicOptionsLink.classList.add("selected");
+    };
+
 
     // Advanced Options methods
-
-    var populateAdvancedOptions = function() {
-        mod_settings.getUserSettings(_populateAdvancedOptions);
-    };
 
     var _populateAdvancedOptions = function(settings) {
         // settings are divided into general settings and site-specific settings.
@@ -63,7 +93,11 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         globalSettingsTextArea.value = globalSettings;
     };
 
-    var _saveSettings = function(generalSettingsJSON, siteSpecificSettingsJSON) {
+    var populateAdvancedOptions = function() {
+        mod_settings.getUserSettings(_populateAdvancedOptions);
+    };
+
+    var _saveAdvancedOptions = function(generalSettingsJSON, siteSpecificSettingsJSON) {
         var generalSettingsObj = null,
             siteSpecificSettingsObj = null;
 
@@ -87,44 +121,41 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
             settingsObj.urlDataMap = siteSpecificSettingsObj;
 
             mod_commonHelper.destringifyJsonUnsupportedTypes_inSettings(settingsObj);
-            mod_settings.setUserSettings(settingsObj);
+            saveOptions(settingsObj, "Changes to advanced options saved")
 
-            mod_UIHelper.showSuccessMessage("All changes saved");
             populateAdvancedOptions();
         }
     };
 
-
-    var saveSettings = function() {
-        _saveSettings(generalSettingsTextArea.value, siteSettingsTextArea.value);
+    var saveAdvancedOptions = function() {
+        _saveAdvancedOptions(generalSettingsTextArea.value, siteSettingsTextArea.value);
     };
 
     var resetSettings = function() {
         if (confirm("Sure you want to reset all the options?")) {
-            mod_settings.setUserSettings(null);
-            populateAdvancedOptions();
-
-            mod_UIHelper.showSuccessMessage("Default options are reset");
+            saveOptions(null, "Options reset to default");
         }
     };
 
-    var goToExtensionsPage = function() {
+    var goToAllExtensionsPage = function() {
         chrome.tabs.create({url: 'chrome://extensions/'});
     };
 
 
     // Basic Options methods
 
-    var populateBasicOptions = function() {
-        mod_settings.getUserSettings(_populateBasicOptions);
-    };
-
     var _populateBasicOptions = function(settings) {
 
-        // populate miscSettings
-        var miscSettingsContainer = document.getElementById("misc-settings"),
-            tbody, tr, settingValue, innerHtml, key;
+        var miscSettingsContainer = document.querySelector("#misc-settings>table"),
+            generalShortcutsContainer = document.querySelector("#general-keyboard-shortcuts>table");
 
+        // Reset contents
+        miscSettingsContainer.innerHTML = '';
+        generalShortcutsContainer.innerHTML = '';
+
+        var tbody, tr, settingValue, innerHtml, key;
+
+        // Populate miscSettings
         var basicMiscSettings = {
             selectCUOnLoad: "Select Content Unit on page on load",
             keepSelectedCUCentered: "Keep selected CU centered on page",
@@ -157,10 +188,8 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
         miscSettingsContainer.appendChild(tbody);
 
 
-        // populate general keyboard shortcuts
-        var generalShortcuts = settings.generalShortcuts;
-
-        var generalShortcutsContainer = document.getElementById("general-keyboard-shortcuts"),
+        // Populate general keyboard shortcuts
+        var generalShortcuts = settings.generalShortcuts,
             shortcut;
 
         tbody = document.createElement("tbody");
@@ -190,32 +219,78 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
     };
 
-    var showAdvancedOptions = function() {
-        basicOptions.style.display = "none";
-        advancedOptions.style.display = "block";
-
-        advancedOptionsLink.classList.add("selected");
-        basicOptionsLink.classList.remove("selected");
+    var populateBasicOptions = function() {
+        mod_settings.getUserSettings(_populateBasicOptions);
     };
 
-    var showBasicOptions = function() {
-        basicOptions.style.display = "block";
-        advancedOptions.style.display = "none";
+    var saveBasicOptions_misc = function(event) {
+        var target = event.target,
+            tagName = target.tagName.toLowerCase(),
+            type = target.type && target.type.toLowerCase(),
+            parentRow = target.parentElement && target.parentElement.parentElement,
+            settings = mod_settings.getUserSettings(null, {getBasic: true}),
+            miscSettings = settings.miscSettings,
+            settingKey;
 
-        advancedOptionsLink.classList.remove("selected");
-        basicOptionsLink.classList.add("selected");
+        if (parentRow.tagName.toLowerCase() === "tr") {
+            settingKey = parentRow.id;
+        }
+
+        if (tagName === "input") {
+            if (type == "checkbox") {
+                miscSettings[settingKey] = target.checked;
+            }
+            else {
+                miscSettings[settingKey] = target.value;
+            }
+
+            saveOptions(settings, "Option saved");
+        }
     };
 
+    var saveBasicOptions_generalShortcuts = function() {
 
-    populateAdvancedOptions();
-    populateBasicOptions();
+    };
+
+    var editingHelpMessage_className = "input-help-message";
+
+    var showEditingHelpMessage = function(event) {
+        var target = event.target,
+            messageElement = document.createElement("span");
+
+        messageElement.classList.add(editingHelpMessage_className);
+        messageElement.textContent = "Press enter or click outside the textbox to save.";
+
+        var parent = target.parentElement;
+
+        if (!parent.querySelectorAll("." + editingHelpMessage_className).length) {
+            parent.appendChild(messageElement);
+        }
+    };
+
+    var hideEditingHelpMessage = function(event) {
+      var messages = document.querySelectorAll("tr ." + editingHelpMessage_className);
+        for (var i = 0; i < messages.length; i++) {
+            messages[i].remove();
+        }
+    };
+
     showBasicOptions();
 
-    saveSettingsButton.addEventListener("click", saveSettings);
-    resetSettingsButton.addEventListener("click", resetSettings);
-    goToExtensionLink.addEventListener("click", goToExtensionsPage);
-
+    // Header navigation
     basicOptionsLink.addEventListener("click", showBasicOptions);
     advancedOptionsLink.addEventListener("click", showAdvancedOptions);
+
+    // Advanced Options handlers
+    saveAdvancedOptionsButton.addEventListener("click", saveAdvancedOptions);
+    resetSettingsButton.addEventListener("click", resetSettings);
+    goToExtensionLink.addEventListener("click", goToAllExtensionsPage);
+
+    // Basic Options handlers
+    basicOptions.querySelector("#misc-settings").addEventListener("change", saveBasicOptions_misc);
+    basicOptions.querySelector("#misc-settings").addEventListener("input", showEditingHelpMessage);
+
+    document.addEventListener("click", hideEditingHelpMessage);
+
 
 })(_u.mod_commonHelper, _u.mod_settings, mod_UIHelper);
