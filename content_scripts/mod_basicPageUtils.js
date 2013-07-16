@@ -18,7 +18,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         focusNextTextInput: focusNextTextInput,
         focusPrevTextInput: focusPrevTextInput,
 
-        openActiveElement: openActiveElement
+        openActiveElement: openActiveElement,
+        styleActiveElement: styleActiveElement
     });
 
     /*-- Module implementation --*/
@@ -53,7 +54,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         if (miscSettings.enhanceActiveElementVisibility) {
             mod_domEvents.addEventListener(document, 'focus', function() {
                 setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
-                // applied its own focus
+                // applied its default style for the focused element
             }, true);
             mod_domEvents.addEventListener(document, 'blur', removeActiveElementStyle, true);
         }
@@ -274,13 +275,15 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
     }
 
-    /***
-     * This method executes on document.focus after a timeout. The browser would have applied its default browser focus
-     * style when this executes.
+    /**
+     This function is used apply our custom "active element" style of an element. If it is being used to style
+     * the active, no argument needs to be passed. But in other cases (like when called from the mod_selectLink.js),
+     * specify the element you want to apply the styling to.
+     * @param [el]
      */
-    function styleActiveElement() {
-        var el = document.activeElement,
-            $el = $(el);
+    function styleActiveElement(el) {
+        el = el || document.activeElement;
+        var $el = $(el);
 
         var hasAnyBlockDescendant = function($el) {
             var $descendants = $el.find('*');
@@ -290,10 +293,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
                     return true;
                 }
             }
-
             return false;
         };
-
 
         // Don't apply any Units-specific styles to element with tabindex = -1 and if outline is set to 0 explicitly by the
         // website.

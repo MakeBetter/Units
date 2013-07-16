@@ -1,4 +1,4 @@
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardLib, mod_mutationObserver, CONSTS) {
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPageUtils, mod_keyboardLib, mod_mutationObserver, CONSTS) {
 
     "use strict";
 
@@ -13,7 +13,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         suppressEvent = mod_contentHelper.suppressEvent,
         lastSearchText_lowerCase,
-        matchingLink_class = 'UntisProj-matchingLink';
+        matchingLink_class = 'UnitsProj-matchingLink',
+        elementStyledAsActive;
 
     var $textBox =  $('<input id = "UnitsProj-selectLink-textBox" type = "text">')
         .addClass("UnitsProj-reset-text-input")
@@ -59,9 +60,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
 //
 //        }
 
+        var searchText_lowerCase = getSearchText_lowerCase();
+        if (!searchText_lowerCase) {
+            endMatching();
+            return;
+        }
+
         var $all = $document.find('a');
         $all.removeClass(matchingLink_class);
-        var searchText_lowerCase = getSearchText_lowerCase();
         var $matching = $all.filter(function doesLinkMatch() {
             // `this` points to the dom element
             var text_lowerCase = this.innerText.toLowerCase();
@@ -69,7 +75,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
                 return true;
             }
         });
-        $matching.addClass(matchingLink_class);
+
+        if ($matching.length) {
+            $matching.addClass(matchingLink_class);
+            elementStyledAsActive = $matching[0];
+            mod_basicPageUtils.styleActiveElement(elementStyledAsActive);
+        }
 
     }
 
@@ -78,12 +89,19 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         clearTimeout(timeout_typing); // clears timeout if it is set
         $textBox.val('').blur();
         $UIContainer.hide();
+        endMatching();
         disabledByMe && mod_mutationObserver.enable();
     }
 
     function showUI() {
         $UIContainer.show();
         $textBox.focus();
+    }
+
+    function endMatching() {
+        $('.' + matchingLink_class).removeClass(matchingLink_class);
+        elementStyledAsActive && elementStyledAsActive.focus();
+        elementStyledAsActive = null;
     }
 
     function onKeydown(e) {
@@ -113,5 +131,5 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
 
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.CONSTS);
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_basicPageUtils, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.CONSTS);
 

@@ -54,36 +54,11 @@ defining this because compass transition mixin does not accept the !important pr
   border: 1px solid $cu-hovered-border-color;
 }
 
-/************* Focused element styles *************/
-
-.UnitsProj-focused-element {
-  outline-color: $focused-element-or-CU-color !important;
-  outline-style: solid !important;
-  outline-width: 1px !important;
-}
-
-/* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
-.UnitsProj-focused-image {
-  outline-offset: 3px !important;
-  outline-width: 3px !important;
-}
-
-/* Set background for all a's and buttons */
-.UnitsProj-focused-link-or-button {
-  //background-color: #e6fff1 !important;
-  background-color: #e6fff1 !important;
-  color: #333 !important;
-}
-
-.UnitsProj-focused-element-inline-block {
-  display: inline-block !important;
-}
-
 /* ****** 'Select Link' module styles ***** */
 
-.UntisProj-matchingLink {
-  outline: 2px solid #dbcb7a !important;
-  background-color: #ffef84 !important;
+.UnitsProj-matchingLink {
+  outline: 1px solid #dbcb7a !important;
+  background-color: #fff89f !important;
   color: #433210 !important;
 }
 
@@ -117,6 +92,31 @@ input#UnitsProj-selectLink-textBox {
   padding: 2px !important;
   width: 150px !important;
   height: 20px !important;
+}
+
+/************* Focused element styles *************/
+
+.UnitsProj-focused-element {
+  outline-color: $focused-element-or-CU-color !important;
+  outline-style: solid !important;
+  outline-width: 1px !important;
+}
+
+/* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
+.UnitsProj-focused-image {
+  outline-offset: 3px !important;
+  outline-width: 3px !important;
+}
+
+/* Set background for all a's and buttons */
+.UnitsProj-focused-link-or-button {
+  //background-color: #e6fff1 !important;
+  background-color: #e6fff1 !important;
+  color: #333 !important;
+}
+
+.UnitsProj-focused-element-inline-block {
+  display: inline-block !important;
 }
 
 /* ****** Filter module styles ***** */
