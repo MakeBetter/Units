@@ -167,7 +167,7 @@
             else if (request.message === "tabActivated") {
                 sendResponse(!isDisabled());
                 clearTimeout(timeout_onTabActivation);
-                timeout_onTabActivation = setTimeout(onTabActivation, 400);
+                timeout_onTabActivation = setTimeout(onTabActivation, 200);
             }
             else if (request.message === "tabDeactivated") {
                 clearTimeout(timeout_onTabActivation);
