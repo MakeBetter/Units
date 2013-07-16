@@ -19,7 +19,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         focusPrevTextInput: focusPrevTextInput,
 
         openActiveElement: openActiveElement,
-        styleActiveElement: styleActiveElement
+        styleActiveElement: styleActiveElement,
+        removeActiveElementStyle: removeActiveElementStyle
     });
 
     /*-- Module implementation --*/
@@ -334,8 +335,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         return;
     }
 
-    function removeActiveElementStyle(event) {
-        var element = (event && event.target) || document.activeElement;
+    function removeActiveElementStyle(eventOrElement) {
+        var element = (eventOrElement && eventOrElement.target) || eventOrElement || document.activeElement;
         $(element)
             .removeClass(class_focusedElement)
             .removeClass(class_focusedImage)

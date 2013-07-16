@@ -41,6 +41,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
         $textBox.on('input', onInput);
         $closeButton.on('click', closeUI);
+        $textBox.on('blur', closeUI);
 
         mod_keyboardLib.bind(['f f', 'f l'], showUI);
     }
@@ -62,16 +63,22 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         var searchText_lowerCase = getSearchText_lowerCase();
         if (!searchText_lowerCase) {
-            endMatching();
+            $('.' + matchingLink_class).removeClass(matchingLink_class);
+            removeActiveElementStyling();
             return;
         }
 
+       removeActiveElementStyling();
+
         var $all = $document.find('a');
         $all.removeClass(matchingLink_class);
+
         var $matching = $all.filter(function doesLinkMatch() {
             // `this` points to the dom element
+            console.log(this);
             var text_lowerCase = this.innerText.toLowerCase();
-            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
+//            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
+            if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
                 return true;
             }
         });
@@ -87,7 +94,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     function closeUI() {
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_typing); // clears timeout if it is set
-        $textBox.val('').blur();
+
+        // blur, if not already blurred (the check exists to prevent infinite recursion)
+        if (document.activeElement === $textBox[0])
+            $textBox.blur();
+
+        $textBox.val('');
+
         $UIContainer.hide();
         endMatching();
         disabledByMe && mod_mutationObserver.enable();
@@ -98,10 +111,18 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         $textBox.focus();
     }
 
+    function removeActiveElementStyling() {
+        if (elementStyledAsActive) {
+            mod_basicPageUtils.removeActiveElementStyle(elementStyledAsActive);
+            elementStyledAsActive = null;
+        }
+    }
+
     function endMatching() {
         $('.' + matchingLink_class).removeClass(matchingLink_class);
-        elementStyledAsActive && elementStyledAsActive.focus();
-        elementStyledAsActive = null;
+        var temp = elementStyledAsActive; // save before making the function call below
+        removeActiveElementStyling();
+        temp && temp.focus();
     }
 
     function onKeydown(e) {
@@ -127,6 +148,62 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     function getSearchText_lowerCase() {
         return $textBox.val().toLowerCase();
+    }
+
+    function fuzzyMatch(text, pattern) {
+        // splits around non-word characters + underscore (which is considered a word character)
+        var tokens = text.split(/[\W_]+/);
+        // remove the same set from the pattern as well (for now)
+        pattern.replace(/[\W_]/g, '');
+        return fuzzyMatchInTokens(tokens, pattern);
+    }
+
+    function fuzzyMatchInTokens(tokens, pattern, recursive) {
+        console.log("--- pattern: **", pattern, "** tokens: ", tokens);
+        if (recursive) {
+            console.log('recursive call');
+        }
+        if (!pattern) {
+            console.log('returnging true');
+            return true;
+        }
+        else if (!tokens.length) {
+            console.log('returnging false');
+            return false;
+        }
+
+        var len = tokens.length,
+            commonLen;
+
+        for (var i = 0; i < len; i++) {
+            var token = tokens[i];
+            console.log('current token: ', token);
+            commonLen = getLongestCommonPrefixLength (token, pattern);
+            if (commonLen) {
+                if (fuzzyMatchInTokens(tokens.slice(i+1), pattern.substring(commonLen), true)) {
+                    console.log('returnging true');
+
+                    return true;
+                }
+            }
+        }
+        console.log('returnging false');
+        return false;
+    }
+
+    // get the length of the longest substring that occurs at the beginning of both the strings
+    // e.g: for "foo" and "foobar" it returns 3, for "foo" and "bar" it returns 0
+    function getLongestCommonPrefixLength(str1, str2) {
+        var smallerLen = str1.length;
+        if (str2.length < smallerLen) {
+            smallerLen = str2.length;
+        }
+        for (var i = 0; i < smallerLen; i++) {
+            if (str1[i] !== str2[i]) {
+                return i;
+            }
+        }
+        return smallerLen;
     }
 
     return thisModule;
