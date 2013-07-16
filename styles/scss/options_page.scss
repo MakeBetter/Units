@@ -1,15 +1,10 @@
 @import "base";
 
+
 body {
     font-family: $sans-serif-font-family;
     margin: 0; padding: 0;
 }
-
-textarea {
-    padding: 0;
-    margin-top: 10px;
-}
-
 
 /* Adapted from twitter bootstrap button style */
 button {
@@ -40,6 +35,13 @@ button {
 }
 
 $options-content-width: 750px;
+
+@mixin highlighted-message {
+  color: #666;
+  background-color: lightgoldenrodyellow;
+  border: 1px solid #faf992;
+  padding: 3px;
+}
 
 #settings-header {
     margin: 0 auto 20px auto;
@@ -220,26 +222,29 @@ Advanced Options styles
 }
 
 .subheading-message {
-    font-size: 12px;
-    color: #666;
-    background-color: lightgoldenrodyellow;
-    border: 1px solid #faf992;
-    padding: 3px;
-    display: block;
+  @include highlighted-message;
+  font-size: 12px;
+  display: block;
 }
 
-#advanced-options textarea {
-    border-color: #efefef;
-    width: 750px;
-    /*resize: none;*/
+
+.editable-container {
+  border: 1px solid #efefef;
+  width: 750px;
+  padding: 0;
+  margin-top: 10px;
+  max-height: 600px;
+  overflow: scroll;
+  position: relative;
+
 }
 
-textarea[readonly=readonly] {
+.editable-container.readonly {
   background-color: #fafafa;
   color: #666666;
 }
 
-textarea[readonly=readonly]:focus {
+.editable-container.readonly:focus {
   outline: 1px solid #bbb;
 }
 
@@ -251,3 +256,18 @@ textarea[readonly=readonly]:focus {
     float: right;
 }
 
+#advanced-options-help {
+  @include highlighted-message;
+  display: inline-block;
+  max-width: 200px;
+  position: absolute;
+  top: 0; right: 0;
+  font-size: 13px;
+  padding: 5px;
+  border: 1px solid orange;
+}
+
+
+.key {
+  font-weight: bold;
+}

@@ -20,6 +20,7 @@
 
             "background_scripts/data/defaultSettings.js",
             "background_scripts/data/urlDataMap.js",
+            "background_scripts/data/defaultSettingsHelp.js",
 
             "background_scripts/mod_getMainDomain.js",
             "background_scripts/mod_settings.js",

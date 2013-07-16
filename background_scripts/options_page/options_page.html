@@ -5,7 +5,7 @@
     <script type="text/javascript" src= ""></script>
 </head>
 <body>
-    <div id="settings-header">
+    <header id="settings-header">
         <div id="header-content">
             <a id="h1">Units Options</a>
 
@@ -16,7 +16,7 @@
             <div id="user-message" class="ui-corner-bottom" style="display:none;"></div>
 
         </div>
-    </div>
+    </header>
     <div id="settings-container">
 
         <div id="basic-options">
@@ -33,6 +33,7 @@
                 </table>
             </div>
         </div>
+
         <div id="advanced-options">
             <div id="buttons-panel">
                 <button id="save-settings">Save changes</button>
@@ -44,28 +45,30 @@
             </div>
             <div class="section">
                 <h2 class="subheading">General</h2>
-                <textarea rows="50" id="general-settings">
+                <div contenteditable="true" id="general-settings" class = "editable-container">
 
-                </textarea>
+                </div>
             </div>
             <div class="section">
                 <h2 class="subheading">Site specific</h2>
                 <span class="subheading-message UnitsProj-message">
                     These options are not editable (for now).
                 </span>
-                <textarea rows="50" id="site-specific-settings" readonly= "readonly">
+                <div id="site-specific-settings" class = "editable-container readonly">
 
-                </textarea>
+                </div>
             </div>
             <div class="section">
                 <h2 class="subheading">Global (work on all tabs)</h2>
                 <span class="subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
                     Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
                 </span>
-                <textarea rows="25" cols="100" id="global-settings" readonly= "readonly">
+                <div id="global-settings" class = "editable-container readonly">
 
-                </textarea>
+                </div>
             </div>
+
+            <div id = advanced-options-help style="display: none"></div>
         </div>
     </div>
     <script src="mod_UIHelper.js"></script>
