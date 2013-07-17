@@ -1,14 +1,18 @@
 // JSHint config
-/* exported mod_UIHelper */
+/* exported mod_optionsHelper */
 
-var mod_UIHelper = (function() {
+var backgroundPageWindow = chrome.extension.getBackgroundPage(),
+    _u = backgroundPageWindow._u;
+
+var mod_optionsHelper = (function(mod_settings) {
     "use strict";
 
     /*-- Public interface --*/
     var thisModule = {
         showMessage: showMessage,
         showErrorMessage: showErrorMessage,
-        showSuccessMessage: showSuccessMessage
+        showSuccessMessage: showSuccessMessage,
+        saveOptions: saveOptions
     };
 
     var messageDiv = document.getElementById("user-message"),
@@ -53,6 +57,14 @@ var mod_UIHelper = (function() {
         showMessage(message, "success");
     }
 
+    function saveOptions(settings, successMessage, onSave) {
+        mod_settings.setUserSettings(settings);
+
+        mod_optionsHelper.showSuccessMessage(successMessage);
+
+        onSave && onSave(settings);
+    }
+
     return thisModule;
 
-})();
+})(_u.mod_settings);
