@@ -165,7 +165,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         else if (!tokens.length) {
             return false;
         }
-
         var len = tokens.length,
             commonLen;
         for (var i = 0; i < len; i++) {
@@ -173,7 +172,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             commonLen = getLongestCommonPrefixLength (token, pattern);
             if (commonLen) {
                 if (fuzzyMatchInTokens(tokens.slice(i+1), pattern.substring(commonLen))) {
-
                     return true;
                 }
             }
@@ -184,10 +182,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     // get the length of the longest substring that occurs at the beginning of both the strings
     // e.g: for "foo" and "foobar" it returns 3, for "foo" and "bar" it returns 0
     function getLongestCommonPrefixLength(str1, str2) {
-        var smallerLen = str1.length;
-        if (str2.length < smallerLen) {
-            smallerLen = str2.length;
-        }
+        var smallerLen = Math.min(str1.length, str2.length);
         for (var i = 0; i < smallerLen; i++) {
             if (str1[i] !== str2[i]) {
                 return i;
