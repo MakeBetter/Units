@@ -158,36 +158,26 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         return fuzzyMatchInTokens(tokens, pattern);
     }
 
-    function fuzzyMatchInTokens(tokens, pattern, recursive) {
-        console.log("--- pattern: **", pattern, "** tokens: ", tokens);
-        if (recursive) {
-            console.log('recursive call');
-        }
+    function fuzzyMatchInTokens(tokens, pattern) {
         if (!pattern) {
-            console.log('returnging true');
             return true;
         }
         else if (!tokens.length) {
-            console.log('returnging false');
             return false;
         }
 
         var len = tokens.length,
             commonLen;
-
         for (var i = 0; i < len; i++) {
             var token = tokens[i];
-            console.log('current token: ', token);
             commonLen = getLongestCommonPrefixLength (token, pattern);
             if (commonLen) {
-                if (fuzzyMatchInTokens(tokens.slice(i+1), pattern.substring(commonLen), true)) {
-                    console.log('returnging true');
+                if (fuzzyMatchInTokens(tokens.slice(i+1), pattern.substring(commonLen))) {
 
                     return true;
                 }
             }
         }
-        console.log('returnging false');
         return false;
     }
 
