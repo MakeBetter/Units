@@ -1,4 +1,5 @@
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPageUtils, mod_keyboardLib, mod_mutationObserver, CONSTS) {
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPageUtils, mod_keyboardLib, mod_context,
+                              mod_mutationObserver, CONSTS) {
 
     "use strict";
 
@@ -12,9 +13,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         timeout_typing,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         suppressEvent = mod_contentHelper.suppressEvent,
-        lastSearchText_lowerCase,
         matchingLink_class = 'UnitsProj-matchingLink',
-        elementStyledAsActive;
+        elementStyledAsActive,
+        $empty = $(),   // saved reference
+        $matching = $empty;
 
     var $textBox =  $('<input id = "UnitsProj-selectLink-textBox" type = "text">')
         .addClass("UnitsProj-reset-text-input")
@@ -38,21 +40,70 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
-        mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
+        mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
         $textBox.on('input', onInput);
         $closeButton.on('click', closeUI);
         $textBox.on('blur', closeUI);
 
-        mod_keyboardLib.bind(['f f', 'f l'], showUI);
+        var generalShortcuts = settings.generalShortcuts;
+        mod_keyboardLib.bind(generalShortcuts.showSelectLinkUI.kbdShortcuts, showUI);
+        mod_keyboardLib.bind(generalShortcuts.selectNextMatchedLink.kbdShortcuts, selectNext, {selectLinkUIActive: true}, true);
+        mod_keyboardLib.bind(generalShortcuts.selectPrevMatchedLink.kbdShortcuts, selectPrev, {selectLinkUIActive: true}, true);
+
+        mod_keyboardLib.bind(generalShortcuts.openSelectedLink.kbdShortcuts, openSelectedLink, {selectLinkUIActive: true}, true);
+        mod_keyboardLib.bind(generalShortcuts.openSelectedLinkInNewTab.kbdShortcuts, openSelectedLink_newTab, {selectLinkUIActive: true}, true);
     }
 
     function onInput() {
         // to allow search-as-you-type, while not executing the filtering related code till there is a brief pause in the typing
         clearTimeout(timeout_typing); // clears timeout if it is set
-        timeout_typing = setTimeout (findMatchingLinks_ifRequired, 400);
+        timeout_typing = setTimeout (findMatchingLinks, 300);
     }
 
-    function findMatchingLinks_ifRequired() {
+    function selectNext() {
+        select('n');
+    }
+
+    function selectPrev() {
+        select('p');
+    }
+
+    function openSelectedLink() {
+        mod_basicPageUtils.openLink(elementStyledAsActive);
+    }
+    function openSelectedLink_newTab() {
+        mod_basicPageUtils.openLink(elementStyledAsActive, true);
+    }
+
+    /**
+     *
+     * @param direction 'n' for next; 'p' for previous
+     */
+    function select(direction) {
+        if ($matching.length) {
+            var index = $matching.index(elementStyledAsActive);
+            if (!elementStyledAsActive || index === -1) {
+                console.warn('selectLink: $matching has elements, but elementStyledAsActive not present in it');
+                return;
+            }
+
+            if (direction === 'n') {
+                ++index;
+                if (index >= $matching.length) {
+                    index = 0;
+                }
+            }
+            else if (direction === 'p') {
+                --index;
+                if (index < 0) {
+                    index = $matching.length - 1;
+                }
+            }
+            styleElementAsActive($matching[index]);
+        }
+    }
+
+    function findMatchingLinks() {
 //        clearTimeout(timeout_typing); // clears timeout if it is set
 //        var searchText_lowerCase = getSearchText_lowerCase();
 //        if (lastSearchText_lowerCase !== searchText_lowerCase) {
@@ -61,21 +112,17 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 //
 //        }
 
+        $matching.removeClass(matchingLink_class);
+        removeActiveElementStyling();
+
         var searchText_lowerCase = getSearchText_lowerCase();
         if (!searchText_lowerCase) {
-            $('.' + matchingLink_class).removeClass(matchingLink_class);
-            removeActiveElementStyling();
             return;
         }
 
-       removeActiveElementStyling();
-
         var $all = $document.find('a');
-        $all.removeClass(matchingLink_class);
-
-        var $matching = $all.filter(function doesLinkMatch() {
+        $matching = $all.filter(function doesLinkMatch() {
             // `this` points to the dom element
-            console.log(this);
             var text_lowerCase = this.innerText.toLowerCase();
 //            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
             if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
@@ -85,10 +132,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         if ($matching.length) {
             $matching.addClass(matchingLink_class);
-            elementStyledAsActive = $matching[0];
-            mod_basicPageUtils.styleActiveElement(elementStyledAsActive);
+            styleElementAsActive($matching[0]);
         }
 
+    }
+
+    function styleElementAsActive(el) {
+        removeActiveElementStyling();
+        elementStyledAsActive = el;
+        mod_basicPageUtils.styleActiveElement(el);
     }
 
     function closeUI() {
@@ -103,12 +155,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         $UIContainer.hide();
         endMatching();
+        mod_context.set_selectLinkUI_state(false);
         disabledByMe && mod_mutationObserver.enable();
     }
 
     function showUI() {
         $UIContainer.show();
         $textBox.focus();
+        mod_context.set_selectLinkUI_state(true);
     }
 
     function removeActiveElementStyling() {
@@ -119,13 +173,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     function endMatching() {
-        $('.' + matchingLink_class).removeClass(matchingLink_class);
+        $matching.removeClass(matchingLink_class);
+        $matching = $empty;
         var temp = elementStyledAsActive; // save before making the function call below
         removeActiveElementStyling();
         temp && temp.focus();
     }
 
-    function onKeydown(e) {
+    function onKeydown_handleEsc(e) {
         var code = e.which;
         // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
         if (e.target === $textBox[0] && [17, 18, 91, 93].indexOf(code) == -1) {
@@ -133,15 +188,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             if (code === 27) { // Esc
                 suppressEvent(e);
                 closeUI();
-            }
-            else  if (code === 13) { // Enter
-                suppressEvent(e);
-                findMatchingLinks_ifRequired();
-            }
-            else if (code === 9) { // Tab
-//                suppressEvent(e);
-//                triggerFilteringIfRequired();
-//                thisModule.trigger('tab-on-filterUI');
             }
         }
     }
@@ -155,10 +201,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         var tokens = text.split(/[\W_]+/);
         // remove the same set from the pattern as well (for now)
         pattern.replace(/[\W_]/g, '');
-        return fuzzyMatchInTokens(tokens, pattern);
+        return doesPatternMatchTokens(pattern, tokens);
     }
 
-    function fuzzyMatchInTokens(tokens, pattern) {
+    function doesPatternMatchTokens(pattern, tokens) {
         if (!pattern) {
             return true;
         }
@@ -171,7 +217,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             var token = tokens[i];
             commonLen = getLongestCommonPrefixLength (token, pattern);
             if (commonLen) {
-                if (fuzzyMatchInTokens(tokens.slice(i+1), pattern.substring(commonLen))) {
+                if (doesPatternMatchTokens(pattern.substring(commonLen), tokens.slice(i+1))) {
                     return true;
                 }
             }
@@ -193,5 +239,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_basicPageUtils, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.CONSTS);
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_basicPageUtils, _u.mod_keyboardLib, _u.mod_context,
+        _u.mod_mutationObserver, _u.CONSTS);
 

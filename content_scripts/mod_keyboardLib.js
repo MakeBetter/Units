@@ -60,6 +60,8 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
      * mod_context.isContextValid()). A function can also be specified -- the shortcut will be handled if the function
      * evaluates to true when the shortcut is invoked. If no `context` is specified, the shortcut is deemed valid in
      * any context.
+     * @param {boolean} [dependsOnlyOnContext] If this is true, the function `canTreatAsShortcut` is not used to
+     * determine whether or the shortcut should be invoked; only the supplied `context` is used to determine that.
 
      Further Notes:
      1) When handling a shortcut, we suppress further propagation of the event. This seems reasonable since if a
@@ -74,13 +76,13 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
      4) Owing to point 1), modules which have conflicting shortcuts should have their shortcuts bound in order of
      priority. TODO: give an example of this 
      */
-    function bind(shortcuts, handler, context) {
+    function bind(shortcuts, handler, context, dependsOnlyOnContext) {
 
         // If the shortcut is to be handled, suppresses event from propagation and returns 1. Else returns 0.
         // [returns 1/0 instead of true/false since returning `false` causes Mousetrap to suppress the event, which
         // causes problems with the 'keypress' and 'keydown' bindings (where this function is itself the callback)]
         var suppressPropagationIfHandling = function (e, shortcut) {
-            if (shouldHandleShortcut(shortcut, e.target, context)) {
+            if (shouldHandleShortcut(shortcut, e.target, context, dependsOnlyOnContext)) {
                 mod_contentHelper.suppressEvent(e);
                 return 1;
             }
@@ -88,7 +90,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         };
 
         Mousetrap.bind(shortcuts, function(e, shortcut) {
-            if (suppressPropagationIfHandling(e, shortcut)) {
+            if (suppressPropagationIfHandling(e, shortcut, dependsOnlyOnContext)) {
                 e.__handledByUnitsProj = true;  // is checked within mousetrap-modified.js
                 handler();
             }
@@ -184,9 +186,12 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
      * mod_context.isContextValid()). A function can also be specified -- the shortcut will be handled if the function
      * evaluates to true when the shortcut is invoked. If no `context` is specified, the shortcut is deemed valid in
      * any context.
+     * @param {boolean} [dependsOnlyOnContext] If this is true, the function `canTreatAsShortcut` is not used to
+     * determine whether or the shortcut should be invoked; only the supplied `context` is used to determine that.
+
      */
-    function shouldHandleShortcut(shortcut, targetElement, context) {
-        if (!canTreatAsShortcut(shortcut, targetElement)) {
+    function shouldHandleShortcut(shortcut, targetElement, context, dependsOnlyOnContext) {
+        if (!dependsOnlyOnContext && !canTreatAsShortcut(shortcut, targetElement)) {
             return false;
         }
         if (protectedWebpageShortcuts && protectedWebpageShortcuts.length &&

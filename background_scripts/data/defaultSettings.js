@@ -123,6 +123,28 @@ var defaultSettings = {
         toggleZenMode: {
             descr: "Toggle zen mode",
             kbdShortcuts: ['z']
+        },
+
+        /*-----------Shortcuts related to 'Select link' Feature----------*/
+        showSelectLinkUI: {
+            descr: "Show Select Link UI",
+            kbdShortcuts: ['f l', 'f f', 'f x']
+        },
+        selectNextMatchedLink: {
+            descr: "Selects the Next matched link",
+            kbdShortcuts: ['tab']
+        },
+        selectPrevMatchedLink: {
+            descr: "Selects the Previous matched link",
+            kbdShortcuts: ['shift+tab']
+        },
+        openSelectedLink: {
+            descr: "Opens the Selected link",
+            kbdShortcuts: ['enter']
+        },
+        openSelectedLinkInNewTab: {
+            descr: "Opens the Selected link in a New Tab",
+            kbdShortcuts: ['command+enter', 'alt+enter', 'shift+enter']
         }
     },
 

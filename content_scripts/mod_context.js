@@ -20,13 +20,15 @@ _u.mod_context = (function(mod_contentHelper){
         setup: setup,
         isContextValid: isContextValid,
         setCUSelectedState: setCUSelectedState,
-        setCUsCount: setCUsCount
+        setCUsCount: setCUsCount,
+        set_selectLinkUI_state: set_selectLinkUI_state
     };
 
     var pageHasUrlData,
         pageHasCUsSpecifier,
         isCUSelected,
-        numCUs; // number of CUs currently on the page
+        numCUs, // number of CUs currently on the page
+        is_selectLinkUI_active;
 
     // Method inside `supportedContexts` have names corresponding to supported context properties (see isContextValid(),
     // which calls the the corresponding method in `supportedContexts` when evaluating a specific property's status)
@@ -48,6 +50,9 @@ _u.mod_context = (function(mod_contentHelper){
         },
         pageHasCUs: function() {
             return (numCUs > 0);
+        },
+        selectLinkUIActive: function() {
+          return is_selectLinkUI_active;
         }
     };
 
@@ -92,6 +97,10 @@ _u.mod_context = (function(mod_contentHelper){
 
     function setCUsCount(n) {
         numCUs = n;
+    }
+
+    function set_selectLinkUI_state(state) {
+        is_selectLinkUI_active = state;
     }
 
     return thisModule;

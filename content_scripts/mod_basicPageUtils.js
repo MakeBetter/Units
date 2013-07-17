@@ -18,7 +18,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         focusNextTextInput: focusNextTextInput,
         focusPrevTextInput: focusPrevTextInput,
 
-        openActiveElement: openActiveElement,
+        openLink: openLink,
         styleActiveElement: styleActiveElement,
         removeActiveElementStyle: removeActiveElementStyle
     });
@@ -79,9 +79,11 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         });
         mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
         mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
-        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, openActiveElement);
+        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, function() {
+            openLink(document.activeElement);
+        });
         mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
-            openActiveElement(true); // open in new tab
+            openLink(document.activeElement, true); // open in new tab
         });
         mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
         mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
@@ -248,12 +250,13 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
 
     /**
-     * Invokes a click on the active element. Passing true for 'newTab' invokes "ctrl+click" ("cmd+click" on Mac),
-     * which has the effect of opening it in a new tab (if the active element is a link)
-     * @param {boolean} newTab {Determines whether to invoke ctrl+click (or cmd+click on Mac) or simply a click
+     * Invokes a click (or ctrl/cmd+click) on the specified element.
+     * @param {HtmlElement} element The DOM element on which a click (or ctrl/cmd+click) will be invoked. This is
+     * generally a link, but can be any element, like a button etc
+     * @param {boolean} newTab Specifying this as true invokes "ctrl+click" ("cmd+click" on Mac),
+     * which has the effect of opening the link in a new tab (if the active element is a link)
  */
-    function openActiveElement(newTab) {
-
+    function openLink(element, newTab) {
         if (newTab) {
             var ctrlClickEvent = document.createEvent("MouseEvents");
 
@@ -268,12 +271,11 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
                     0, 0, 0, 0, 0, true, false, false, false, 0, null); // ctrl key set to true for non-macs
             }
 
-            document.activeElement.dispatchEvent(ctrlClickEvent);
+            element.dispatchEvent(ctrlClickEvent);
         }
         else {
-            document.activeElement.click();
+            element.click();
         }
-
     }
 
     /**
