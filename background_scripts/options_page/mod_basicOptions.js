@@ -1,8 +1,7 @@
 // JSHint Config
-/* global mod_optionsHelper, _u */
+/* global mod_optionsHelper, _u, Mousetrap*/
 /* exported mod_basicOptions */
 
-// A template for modules in this project
 var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelper) {
     "use strict";
 
@@ -12,16 +11,24 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         setup: setup
     };
 
-    var basicOptions = document.getElementById("basic-options"),
-        editingHelpMessage_className = "input-help-message";
+    var class_editingHelpMessage = "input-help-message",
+        class_kbdShortcut = "kbdshortcut",
+
+        settingType_miscSettings = "misc-settings",
+        settingType_generalShortcuts = "general-shortcuts";
 
 
     function setup() {
-        // Basic Options handlers
-        basicOptions.querySelector("#misc-settings").addEventListener("change", saveOptions_misc);
-        basicOptions.querySelector("#misc-settings").addEventListener("input", showMessage_editingHelp);
+        // Event handlers
+        document.getElementById("misc-settings").addEventListener("change", saveOptions_miscSettings);
+        document.getElementById("general-keyboard-shortcuts").addEventListener("focusout", saveOptions_generalShortcuts);
 
-        document.addEventListener("focusout", hideMessage_editingHelp);
+//        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
+//        document.addEventListener("focusout", hideMessage_editingHelp);
+
+        document.getElementById("general-keyboard-shortcuts").addEventListener("focusin", showMessage_startKbdShortcutInput);
+        document.getElementById("general-keyboard-shortcuts").addEventListener("keydown", captureKeyboardShortcut);
+
     }
 
     function _render(settings) {
@@ -35,13 +42,12 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         var tbody, tr, settingValue, innerHtml, key;
 
-        // Populate miscSettings
         var basicMiscSettings = {
             selectCUOnLoad: "Select Content Unit on page on load",
             keepSelectedCUCentered: "Keep selected CU centered on page",
             enhanceActiveElementVisibility: "Enhance the active element style",
             pageScrollDelta: "Page scroll delta"
-        }
+        };
 
         tbody = document.createElement("tbody");
 
@@ -76,6 +82,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         for (key in generalShortcuts) {
             shortcut = generalShortcuts[key];
+
             tr = document.createElement('tr');
             tr.setAttribute("id", key);
 
@@ -86,15 +93,15 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             kbdShortcuts = shortcut.kbdShortcuts;
             for (var i = 0; i < kbdShortcuts.length; i++) {
                 kbdShortcut = kbdShortcuts[i];
-                kbdShortcutsHtml += "<input type='text' value='" + kbdShortcut + "' />";
+                kbdShortcutsHtml += "<input type='text' class= '"+ class_kbdShortcut + "' value='" + kbdShortcut + "' />";
             }
 
             innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
 
             tr.innerHTML = innerHtml;
             tbody.appendChild(tr);
-
         }
+
         generalShortcutsContainer.appendChild(tbody);
 
     }
@@ -103,45 +110,83 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         mod_settings.getUserSettings(_render);
     }
 
-    function saveOptions_misc(event) {
+    function saveOptions(event, settingType) {
+
+        if (!settingType) {
+            return;
+        }
+
         var target = event.target,
-            tagName = target.tagName.toLowerCase(),
-            type = target.type && target.type.toLowerCase(),
-            parentRow = target.parentElement && target.parentElement.parentElement,
+            targetTagName = target.tagName.toLowerCase(),
+            parentRow = target.parentElement && target.parentElement.parentElement;
+
+        if (targetTagName !== "input" || !parentRow || parentRow.tagName.toLowerCase() !== "tr") {
+            return;
+        }
+
+        var targetInputType = target.type && target.type.toLowerCase(),
             settings = mod_settings.getUserSettings(null, {getBasic: true}),
-            miscSettings = settings.miscSettings,
-            settingKey;
+            settingKey, settingValue;
 
-        if (parentRow.tagName.toLowerCase() === "tr") {
-            settingKey = parentRow.id;
+        if (targetInputType == "checkbox") {
+            settingValue = target.checked;
+        }
+        else {
+            settingValue = target.value;
         }
 
-        if (tagName === "input") {
-            if (type == "checkbox") {
-                miscSettings[settingKey] = target.checked;
-            }
-            else {
-                miscSettings[settingKey] = target.value;
+        settingKey = parentRow.id;
+
+        if (settingType === settingType_miscSettings) {
+            var miscSettings = settings.miscSettings;
+            miscSettings[settingKey] = settingValue;
+        }
+        else if (settingType === settingType_generalShortcuts) {
+            if (!settingValue) {
+                render(); // so that the textbox value is reset
+                return;
             }
 
-            saveOptions(settings, "Option saved");
+            var generalShortcuts = settings.generalShortcuts;
+            if (generalShortcuts[settingKey]) {
+                generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow); 
+            }
         }
+
+        mod_optionsHelper.saveOptions(settings, "Option saved", render);
+    }
+
+    function getKeyboardShortcutsForRow(row) {
+        var shortcutInputs = row.querySelectorAll("." + class_kbdShortcut),
+            shortcuts = [];
+
+        for (var i = 0; i < shortcutInputs.length; i++) {
+            var shortcut = shortcutInputs[i];
+            shortcuts.push(shortcut.value);
+        }
+
+        return shortcuts;
+    }
+
+    function saveOptions_miscSettings(event) {
+        saveOptions(event, settingType_miscSettings);
     }
 
     function saveOptions_generalShortcuts(event) {
-        var target = event.target;
+        saveOptions(event, settingType_generalShortcuts);
     }
+
 
     function showMessage_editingHelp(event) {
         var target = event.target,
             messageElement = document.createElement("span");
 
-        messageElement.classList.add(editingHelpMessage_className);
+        messageElement.classList.add(class_editingHelpMessage);
         messageElement.textContent = "Press enter or click outside the textbox to save.";
 
         var parent = target.parentElement;
 
-        if (!parent.querySelectorAll("." + editingHelpMessage_className).length) {
+        if (!parent.querySelectorAll("." + class_editingHelpMessage).length) {
             parent.appendChild(messageElement);
         }
     }
@@ -150,13 +195,45 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         var target = event.target,
             messageElement = target.nextElementSibling;
 
-        if (messageElement.classList.contains(editingHelpMessage_className)) {
+        if (messageElement && messageElement.classList.contains(class_editingHelpMessage)) {
             messageElement.remove();
         }
     }
 
-    function saveOptions(settings, successMessage) {
-        mod_optionsHelper.saveOptions(settings, successMessage, render);
+    function showMessage_startKbdShortcutInput(event) {
+        var target = event.target;
+        target.value = "";
+        target.setAttribute("placeholder", "Type a shortcut");
+    }
+
+    function captureKeyboardShortcut(event) {
+        var target = event.target,
+            targetValue = target.value,
+            modifiers = Mousetrap.eventModifiers(event),
+            characterTyped = Mousetrap.characterFromEvent(event);
+
+        // If the character typed is one of the modifiers, then disregard the input
+        if (modifiers.indexOf(characterTyped) > 0 || !characterTyped) {
+            return;
+        }
+
+        // For sequence shortcuts. Append the current typed shortcut to existing value
+        if (targetValue) {
+            targetValue += " ";
+        }
+
+
+        for (var i = 0; i < modifiers.length; i++) {
+            var modifier = modifiers[i];
+            targetValue += modifier + "+";
+        }
+
+        targetValue += characterTyped;
+
+        target.value = targetValue;
+
+        event.preventDefault();
+
     }
 
     return thisModule;

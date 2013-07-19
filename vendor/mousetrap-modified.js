@@ -24,9 +24,11 @@
 to the same keyboard shortcut execute in the order in which they were bound (This required specific
 changes for "sequence" type shortcuts)
 
-5) Removed all instances of `_directMap`, `unbind`, `trigger` which are not needed and will no longer
+5. Removed all instances of `_directMap`, `unbind`, `trigger` which are not needed and will no longer
 work as expected
 
+6. Added methods _characterFromEvent and _eventModifiers to the public interface of the module. These are being used by
+mod_basicOptions.
  ----------------------------------------------------------------------------------
  */
 
@@ -995,7 +997,11 @@ work as expected
         /**
          * exposes _handleKey publicly so it can be overwritten by extensions
          */
-        handleKey: _handleKey
+        handleKey: _handleKey,
+
+        characterFromEvent: _characterFromEvent, // [Modification for UnitsProj] Required by mod_basicOptions
+        eventModifiers: _eventModifiers // [Modification for UnitsProj] Required by mod_basicOptions
+
     };
 
     // expose mousetrap to the global object
