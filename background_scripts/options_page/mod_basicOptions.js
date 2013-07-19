@@ -213,7 +213,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             characterTyped = Mousetrap.characterFromEvent(event);
 
         // If the character typed is one of the modifiers, then disregard the input
-        if (modifiers.indexOf(characterTyped) > 0 || !characterTyped) {
+        if (!characterTyped || modifiers.indexOf(characterTyped) > -1) {
             return;
         }
 
