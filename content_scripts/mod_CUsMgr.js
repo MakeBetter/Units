@@ -1901,7 +1901,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUBottom = CUTop + boundingRect.height;
 
         var // for the window:
-            winTop = body.scrollTop,
+            winTop = window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
         return CUTop < winBottom && CUBottom > winTop;
@@ -1916,10 +1916,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUBottom = CUTop + boundingRect.height;
 
         var // for the window:
-            winTop = body.scrollTop,
+            winTop = window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
-        return (CUTop > winTop && CUBottom < winBottom);
+        return CUTop > winTop && CUBottom < winBottom;
     }
 
     function checkOverlayCssHasTransition() {
