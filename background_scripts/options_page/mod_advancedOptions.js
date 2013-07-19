@@ -3,7 +3,6 @@
 /* exported mod_advancedOptions */
 
 
-// A template for modules in this project
 var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelper) {
     "use strict";
 
@@ -26,7 +25,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     function setup() {
         advancedOptions_helpContainer = document.getElementById("advanced-options-help");
 
-        // Advanced Options handlers
+        // Event handlers
         saveChangesButton.addEventListener("click", saveChanges);
         resetOptionsButton.addEventListener("click", resetOptions);
         goToExtensionLink.addEventListener("click", goToAllExtensionsPage);
