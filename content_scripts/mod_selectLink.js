@@ -123,6 +123,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         var $all = $document.find('a');
         $matching = $all.filter(function doesLinkMatch() {
             // `this` points to the dom element
+            if (!isAnyPartOfElementInViewport(this)) {
+                return false;
+            }
             var text_lowerCase = this.innerText.toLowerCase();
 //            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
             if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
@@ -235,6 +238,25 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             }
         }
         return smallerLen;
+    }
+
+    function isAnyPartOfElementInViewport(el) {
+        var top = el.offsetTop;
+        var left = el.offsetLeft;
+        var width = el.offsetWidth;
+        var height = el.offsetHeight;
+
+        // get top and left values relative to the document by traversing up the offsetParent chain
+        while(el.offsetParent) {
+            el = el.offsetParent;
+            top += el.offsetTop;
+            left += el.offsetLeft;
+        }
+
+        return  top < (window.scrollY + window.innerHeight) &&  // elTop < winBottom
+            (top + height) > window.scrollY &&                  // elBottom > winTop
+            left < (window.scrollX + window.innerWidth) &&      // elLeft < winRight
+            (left + width) > window.scrollX;                    // elRight > winLeft
     }
 
     return thisModule;
