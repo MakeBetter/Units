@@ -57,10 +57,14 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
                 setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
                 // applied its default style for the focused element
             }, true);
-            mod_domEvents.addEventListener(document, 'blur', removeActiveElementStyle, true);
+            mod_domEvents.addEventListener(document, 'blur', onBlur, true);
         }
 
         setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
+    }
+
+    function onBlur(e) {
+        removeActiveElementStyle(e.target);
     }
     
     function setupShortcuts(generalShortcuts, CUsShortcuts) {
@@ -337,9 +341,9 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         return;
     }
 
-    function removeActiveElementStyle(eventOrElement) {
-        var element = (eventOrElement && eventOrElement.target) || eventOrElement || document.activeElement;
-        $(element)
+    function removeActiveElementStyle(element) {
+        var el = element || document.activeElement;
+        $(el)
             .removeClass(class_focusedElement)
             .removeClass(class_focusedImage)
             .removeClass(class_focusedLinkOrButton)
