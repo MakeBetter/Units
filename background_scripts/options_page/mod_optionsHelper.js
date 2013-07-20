@@ -12,7 +12,8 @@ var mod_optionsHelper = (function(mod_settings) {
         showMessage: showMessage,
         showErrorMessage: showErrorMessage,
         showSuccessMessage: showSuccessMessage,
-        saveOptions: saveOptions
+        saveOptions: saveOptions,
+        getClosestAncestorOfTagType: getClosestAncestorOfTagType
     };
 
     var messageDiv = document.getElementById("user-message"),
@@ -63,6 +64,13 @@ var mod_optionsHelper = (function(mod_settings) {
         mod_optionsHelper.showSuccessMessage(successMessage);
 
         onSave && onSave(settings);
+    }
+
+    function getClosestAncestorOfTagType(el, tagName) {
+        while (el && el.tagName.toLowerCase() !== tagName) {
+            el = el.parentElement;
+        }
+        return el;
     }
 
     return thisModule;

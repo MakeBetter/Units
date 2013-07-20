@@ -11,24 +11,50 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         setup: setup
     };
 
-    var class_editingHelpMessage = "input-help-message",
+    // Misc Settings to be displayed in the basic settings UI
+    var basicMiscSettings = {
+        selectCUOnLoad: "Select Content Unit on page on load",
+        keepSelectedCUCentered: "Keep selected CU centered on page",
+        enhanceActiveElementVisibility: "Enhance the active element style",
+        pageScrollDelta: "Page scroll delta"
+    };
+
+    var element_miscSettings = document.getElementById("misc-settings"),
+        element_generalShortcuts = document.getElementById("general-keyboard-shortcuts"),
+
+
+        class_editingHelpMessage = "input-help-message",
         class_kbdShortcut = "kbdshortcut",
-
-        settingType_miscSettings = "misc-settings",
-        settingType_generalShortcuts = "general-shortcuts";
-
+        class_addShortcut = "add-shortcut",
+        class_deleteShortcut = "delete-shortcut";
 
     function setup() {
         // Event handlers
-        document.getElementById("misc-settings").addEventListener("change", saveOptions_miscSettings);
-        document.getElementById("general-keyboard-shortcuts").addEventListener("focusout", saveOptions_generalShortcuts);
+        element_miscSettings.addEventListener("change", saveOptions_miscSettings);
+        element_generalShortcuts.addEventListener("focusout", saveOptions_generalShortcuts);
+
+        element_generalShortcuts.querySelector("table").addEventListener("click", onShortcutsTableClick);
+
+//        document.getElementById("general-keyboard-shortcuts").addEventListener("mouseover", showContextualButtons);
+//        document.getElementById("general-keyboard-shortcuts").addEventListener("mouseleave", hideContextualButtons);
 
 //        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
 //        document.addEventListener("focusout", hideMessage_editingHelp);
 
-        document.getElementById("general-keyboard-shortcuts").addEventListener("focusin", showMessage_startKbdShortcutInput);
-        document.getElementById("general-keyboard-shortcuts").addEventListener("keydown", captureKeyboardShortcut);
+        element_generalShortcuts.addEventListener("focusin", showMessage_startKbdShortcutInput);
+        element_generalShortcuts.addEventListener("keydown", captureKeyboardShortcut);
 
+    }
+
+    function getShortcutInputUI(kbdShortcut) {
+        var kbdShortcutsHtml = "";
+        kbdShortcutsHtml+= "<div class= '"+ class_kbdShortcut + "'>";
+        kbdShortcutsHtml += "<input type='text' value='" + kbdShortcut + "'/>";
+        kbdShortcutsHtml += "<span class='delete-button hidden " + class_deleteShortcut + "'>&times;</span></div>";
+
+        var dummyElement = document.createElement("div");
+        dummyElement.innerHTML = kbdShortcutsHtml;
+        return dummyElement.firstElementChild;
     }
 
     function _render(settings) {
@@ -41,13 +67,6 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         generalShortcutsContainer.innerHTML = '';
 
         var tbody, tr, settingValue, innerHtml, key;
-
-        var basicMiscSettings = {
-            selectCUOnLoad: "Select Content Unit on page on load",
-            keepSelectedCUCentered: "Keep selected CU centered on page",
-            enhanceActiveElementVisibility: "Enhance the active element style",
-            pageScrollDelta: "Page scroll delta"
-        };
 
         tbody = document.createElement("tbody");
 
@@ -93,8 +112,9 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             kbdShortcuts = shortcut.kbdShortcuts;
             for (var i = 0; i < kbdShortcuts.length; i++) {
                 kbdShortcut = kbdShortcuts[i];
-                kbdShortcutsHtml += "<input type='text' class= '"+ class_kbdShortcut + "' value='" + kbdShortcut + "' />";
+                kbdShortcutsHtml += getShortcutInputUI(kbdShortcut).outerHTML;
             }
+            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> + </button>";
 
             innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
 
@@ -110,54 +130,8 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         mod_settings.getUserSettings(_render);
     }
 
-    function saveOptions(event, settingType) {
-
-        if (!settingType) {
-            return;
-        }
-
-        var target = event.target,
-            targetTagName = target.tagName.toLowerCase(),
-            parentRow = target.parentElement && target.parentElement.parentElement;
-
-        if (targetTagName !== "input" || !parentRow || parentRow.tagName.toLowerCase() !== "tr") {
-            return;
-        }
-
-        var targetInputType = target.type && target.type.toLowerCase(),
-            settings = mod_settings.getUserSettings(null, {getBasic: true}),
-            settingKey, settingValue;
-
-        if (targetInputType == "checkbox") {
-            settingValue = target.checked;
-        }
-        else {
-            settingValue = target.value;
-        }
-
-        settingKey = parentRow.id;
-
-        if (settingType === settingType_miscSettings) {
-            var miscSettings = settings.miscSettings;
-            miscSettings[settingKey] = settingValue;
-        }
-        else if (settingType === settingType_generalShortcuts) {
-            if (!settingValue) {
-                render(); // so that the textbox value is reset
-                return;
-            }
-
-            var generalShortcuts = settings.generalShortcuts;
-            if (generalShortcuts[settingKey]) {
-                generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow); 
-            }
-        }
-
-        mod_optionsHelper.saveOptions(settings, "Option saved", render);
-    }
-
     function getKeyboardShortcutsForRow(row) {
-        var shortcutInputs = row.querySelectorAll("." + class_kbdShortcut),
+        var shortcutInputs = row.querySelectorAll("." + class_kbdShortcut + ">input"),
             shortcuts = [];
 
         for (var i = 0; i < shortcutInputs.length; i++) {
@@ -169,11 +143,69 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
     }
 
     function saveOptions_miscSettings(event) {
-        saveOptions(event, settingType_miscSettings);
+        var target = event.target;
+        if (target.tagName.toLowerCase() !== "input") {
+            return;
+        }
+
+        var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
+
+        if (!parentRow) {
+            return;
+        }
+
+        var settingKey = parentRow.id,
+            settingValue;
+
+        if (target.type.toLowerCase() == "checkbox") {
+            settingValue = target.checked;
+        }
+        else {
+            settingValue = target.value;
+        }
+
+        // Save settings
+        var settings = mod_settings.getUserSettings(null, {getBasic: true});
+        settings.miscSettings[settingKey] = settingValue;
+        mod_optionsHelper.saveOptions(settings, "Option saved", _render);
+
     }
 
     function saveOptions_generalShortcuts(event) {
-        saveOptions(event, settingType_generalShortcuts);
+        var target = event.target;
+
+        if (target.tagName.toLowerCase() !== "input") {
+            return;
+        }
+
+        var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
+
+        if (!parentRow) {
+            return;
+        }
+
+        var value = target.value,
+            targetOriginalValue = target.dataset.originalValue;
+
+        // If no value is entered, then reset the UI. 
+        if (!value) {
+            
+            // If the textbox has no previous associated shortcut, then remove this textbox from the UI.
+            if (!targetOriginalValue) {
+                removeContainingShortcutUI(target);
+            }
+
+            // Else, reset the value of the textbox with its original value
+            target.value = targetOriginalValue;
+            return;
+        }
+
+        var settingKey = parentRow.id;
+
+        // Save settings
+        var settings = mod_settings.getUserSettings(null, {getBasic: true});
+        settings.generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
+        mod_optionsHelper.saveOptions(settings, "Option saved");
     }
 
 
@@ -202,6 +234,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
     function showMessage_startKbdShortcutInput(event) {
         var target = event.target;
+        target.setAttribute("data-original-value", target.value);
         target.value = "";
         target.setAttribute("placeholder", "Type a shortcut");
     }
@@ -231,9 +264,84 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         targetValue += characterTyped;
 
         target.value = targetValue;
+        target.style.width = Math.max((target.value.length + 1) * 7, target.offsetWidth) + "px"; // Increase width of the
+        // textbox if input very large.
 
         event.preventDefault();
 
+    }
+
+    function showContextualButtons(event) {
+        console.log(event.target);
+        var buttons, shortcutRow,
+            query = "." + class_addShortcut + ", ." + class_deleteShortcut;
+        if (event.target.tagName.toLowerCase() === "td") {
+            shortcutRow = event.target.parentElement;
+            buttons = shortcutRow.querySelectorAll(query);
+
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                button.classList.remove("hidden");
+            }
+        }
+    }
+
+    function hideContextualButtons(event) {
+        var buttons, shortcutRow,
+            query = "." + class_addShortcut + ", ." + class_deleteShortcut;
+        if (event.target.tagName.toLowerCase() === "td") {
+            shortcutRow = event.target.parentElement;
+            buttons = shortcutRow.querySelectorAll(query);
+
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                button.classList.add("hidden");
+            }
+        }
+    }
+
+    function onShortcutsTableClick(event) {
+        var target = event.target,
+            parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
+            settingKey = parentRow && parentRow.id,
+            shortcutValue;
+
+
+        if (target.classList.contains(class_addShortcut)) {
+            showTextboxForAddingShortcut(parentRow);
+            event.preventDefault();
+        }
+        else if (target.classList.contains(class_deleteShortcut)){
+            deleteShortcut(target);
+        }
+    }
+
+    function showTextboxForAddingShortcut(row) {
+        var clone = getShortcutInputUI(""),
+            input = clone.querySelector("input[type=text]"),
+            addButton = row.querySelector("." + class_addShortcut);
+
+        row.lastElementChild.insertBefore(clone, addButton);
+        input.focus();
+
+        return false;
+    }
+
+    function removeContainingShortcutUI(element) {
+        var shortcutContainer = mod_optionsHelper.getClosestAncestorOfTagType(element, "div");
+
+        shortcutContainer.remove();
+    }
+
+    function deleteShortcut(target) {
+        var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
+            settingKey = parentRow.id,
+            settings = mod_settings.getUserSettings(null, {getBasic: true});
+
+        removeContainingShortcutUI(target);
+        settings.generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
+
+        mod_optionsHelper.saveOptions(settings, "Shortcut deleted", _render);
     }
 
     return thisModule;

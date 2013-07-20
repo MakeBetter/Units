@@ -42,5 +42,53 @@ Miscellaneous
   clear: both !important;
 }
 
-$highest-z-index: 2147483647 /*highest z-index for a 32-bit int value*/
+$highest-z-index: 2147483647; /*highest z-index for a 32-bit int value*/
 
+.hidden {
+//display: none;
+}
+
+/*
+Defining this because compass transition mixin does not accept the !important property.
+To be used only by content script CSS (i.e. units.scss), but declared in _base.css because the mixin close-button requires it.
+*/
+@mixin transition-important($transition-property, $transition-time, $method, $important) {
+  -webkit-transition: $transition-property $transition-time $method $important;
+  -moz-transition: $transition-property $transition-time $method $important;
+  -ms-transition: $transition-property $transition-time $method $important;
+  -o-transition: $transition-property $transition-time $method $important;
+  transition: $transition-property $transition-time $method $important;
+}
+
+@mixin close-button {
+  position: absolute !important; top: -6px; right: -6px;
+  border: 1px solid transparent !important;
+
+  height: 13px !important; line-height: 13px !important; /*IMPORTANT: that line-height and height have the same value
+    to vertically center the text in the span. */
+  width: 13px !important;
+
+  box-sizing: content-box !important; /* works better, because then we don't need to calculate the content height
+    separately. the value of line-height needs to be the same as the content height.*/
+
+  text-align: center !important;
+  font-size: 15px !important;
+  font-family: arial, sans-serif !important; /*the arial font seems to be work well for the multiplication symbol.
+    change it if you find a better one.*/
+  color: #666 !important;
+
+  background-color:/* inherit*/ #bbb !important;
+
+/*border-radius 50% to make it a circle*/
+  @include border-radius(50% !important);
+
+  cursor: default !important; /* To not show the text selection icon */
+  @include transition-important(all, 0.1s, ease-out, !important);
+
+  &:hover {
+    background-color: #e38e83 !important;
+    border: solid 1px #d1847b !important;
+    color: #eee !important;
+  }
+
+}

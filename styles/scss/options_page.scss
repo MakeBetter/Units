@@ -6,34 +6,6 @@ body {
     margin: 0; padding: 0;
 }
 
-/* Adapted from twitter bootstrap button style */
-button {
-  display: inline-block;
-  padding: 4px 12px;
-  margin-bottom: 0;
-  font-size: 13px;
-  line-height: 17px;
-  color: #333333 /*#eee*/;
-  text-align: center;
-  /*text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);*/
-  vertical-align: middle;
-  cursor: pointer;
-  font-family: $sans-serif-font-family;
-  /*box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.0470588) 0px 1px 2px 0px;*/
-  background-color: /*#666*/ #e6e6e6;
-  background-image: linear-gradient(rgb(255, 255, 255), rgb(230, 230, 230));
-  /*background-position: 0px -15px;*/
-  background-repeat: repeat-x;    border: 1px solid #cccccc;
-  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  /*border-bottom-color: #b3b3b3;*/
-  @include border-radius(4px);
-
-  &:hover {
-    background-color: #bbb;
-  }
-}
-
 $options-content-width: 750px;
 
 @mixin highlighted-message {
@@ -180,15 +152,27 @@ Basic Options styles
   table {
     font-size: 14px;
   }
-
-  .input-help-message {
-    margin-left: 5px;
-  }
 }
 
 .input-help-message {
   color: $message-color-grey;
   font-size: 12px;
+  margin-left: 5px;
+}
+
+.kbdshortcut {
+  display: inline-block;
+  position: relative;
+  margin-right: 10px;
+
+  input {
+    max-width: 400px;
+    width: 100%;
+  }
+}
+
+.delete-button {
+  @include close-button;
 }
 
 /*
