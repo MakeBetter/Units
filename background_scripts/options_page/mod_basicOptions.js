@@ -115,7 +115,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
                 kbdShortcut = kbdShortcuts[i];
                 kbdShortcutsHtml += getShortcutInputUI(kbdShortcut).outerHTML;
             }
-            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> Add Shortcut</button>";
+            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> + </button>";
             kbdShortcutsHtml += "<button class='hidden " + class_reset+ "'> Reset</button>";
 
             innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
@@ -180,11 +180,17 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             return;
         }
 
+        if (event.relatedTarget && event.relatedTarget.tagName.toLowerCase() === "button") {
+            return;
+        }
+
         var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
 
         if (!parentRow) {
             return;
         }
+
+        parentRow.querySelector("." + class_addShortcut).disabled = false; // enable the add shortcut button again
 
         var value = target.value,
             targetOriginalValue = target.dataset.originalValue;
@@ -279,7 +285,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         if (target.classList.contains(class_addShortcut)) {
             showTextboxForAddingShortcut(parentRow);
-            event.preventDefault();
+            target.disabled = true; // disable the add shortcut button, till the adding of this shortcut is complete
         }
         else if (target.classList.contains(class_deleteShortcut)){
             deleteShortcut(target);
