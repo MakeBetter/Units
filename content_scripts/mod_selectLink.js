@@ -76,7 +76,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     /**
-     *
+     * Selects the next/previous matching link
      * @param direction 'n' for next; 'p' for previous
      */
     function select(direction) {
@@ -99,19 +99,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
                     index = $matching.length - 1;
                 }
             }
-            styleElementAsActive($matching[index]);
+            setFakeFocus($matching[index]);
         }
     }
 
     function findMatchingLinks() {
-//        clearTimeout(timeout_typing); // clears timeout if it is set
-//        var searchText_lowerCase = getSearchText_lowerCase();
-//        if (lastSearchText_lowerCase !== searchText_lowerCase) {
-//            lastSearchText_lowerCase = searchText_lowerCase;
-//
-//
-//        }
-
         $matching.removeClass(matchingLink_class);
         removeActiveElementStyling();
 
@@ -122,10 +114,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         var $all = $document.find('a');
         $matching = $all.filter(function doesLinkMatch() {
-            // `this` points to the dom element
-            if (!isAnyPartOfElementInViewport(this)) {
-                return false;
-            }
             var text_lowerCase = this.innerText.toLowerCase();
 //            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
             if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
@@ -135,14 +123,35 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         if ($matching.length) {
             $matching.addClass(matchingLink_class);
-            styleElementAsActive($matching[0]);
+            setFakeFocus(getElementToFocus($matching));
         }
-
     }
 
-    function styleElementAsActive(el) {
+    // From among the set of elements specified ($set), this returns the first element
+    // in the viewport. If none is found to be in the viewport, returns the first e element
+    function getElementToFocus($set) {
+        var len = $set.length;
+        for (var i = 0; i < len; i++) {
+            var elem = $set[i];
+            if (isAnyPartOfElementInViewport(elem)) {
+                return elem;
+            }
+        }
+        return $set[0];
+    }
+
+    // 1) Styles the specified element as active (while the actual focus continues to
+    // remain on the select-link-textbox).
+    // 2) Briefly sets actual focus to the specified element, before reverting it, in
+    // order to get the element in the viewport if it isn't already
+    function setFakeFocus(el) {
         removeActiveElementStyling();
         elementStyledAsActive = el;
+        var saved = document.activeElement;
+        $textBox.off('blur', closeUI);      // remove event handler
+        el.focus();
+        saved.focus();
+        $textBox.on('blur', closeUI);       // restore event handler
         mod_basicPageUtils.styleActiveElement(el);
     }
 
@@ -253,10 +262,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             left += el.offsetLeft;
         }
 
-        return  top < (window.scrollY + window.innerHeight) &&  // elTop < winBottom
-            (top + height) > window.scrollY &&                  // elBottom > winTop
-            left < (window.scrollX + window.innerWidth) &&      // elLeft < winRight
-            (left + width) > window.scrollX;                    // elRight > winLeft
+        return (top < (window.scrollY + window.innerHeight)) &&     // elTop < winBottom
+            ((top + height) > window.scrollY) &&                    // elBottom > winTop
+            (left < (window.scrollX + window.innerWidth)) &&        // elLeft < winRight
+            ((left + width) > window.scrollX);                      // elRight > winLeft
     }
 
     return thisModule;
