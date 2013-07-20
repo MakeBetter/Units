@@ -36,7 +36,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         .appendTo(_u.$topLevelContainer);
 
     function setup(settings) {
-
+        reset();
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
