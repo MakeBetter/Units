@@ -168,10 +168,13 @@ Basic Options styles
   margin-left: 5px;
 }
 
+.kbdshortcut, #misc-settings input {
+  margin-right: 10px;
+}
+
 .kbdshortcut {
   display: inline-block;
   position: relative;
-  margin-right: 10px;
 
   input {
     max-width: 400px;

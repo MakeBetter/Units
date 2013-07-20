@@ -26,7 +26,8 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         class_editingHelpMessage = "input-help-message",
         class_kbdShortcut = "kbdshortcut",
         class_addShortcut = "add-shortcut",
-        class_deleteShortcut = "delete-shortcut";
+        class_deleteShortcut = "delete-shortcut",
+        class_reset = "reset-value";
 
     function setup() {
         // Event handlers
@@ -34,6 +35,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         element_generalShortcuts.addEventListener("focusout", saveOptions_generalShortcuts);
 
         element_generalShortcuts.querySelector("table").addEventListener("click", onShortcutsTableClick);
+        element_miscSettings.querySelector("table").addEventListener("click", onMiscSettingsTableClick);
 
 //        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
 //        document.addEventListener("focusout", hideMessage_editingHelp);
@@ -77,11 +79,13 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
             if (typeof settingValue === "boolean") {
 
-                innerHtml += "<td><input type='checkbox'" + (settingValue ? "checked" : "") + "/></td>";
+                innerHtml += "<td><input type='checkbox'" + (settingValue ? "checked" : "") + "/>";
             }
             else {
-                innerHtml += "<td><input type='text' value='" + settingValue + "'</td>";
+                innerHtml += "<td><input type='text' value='" + settingValue + "'/>";
             }
+            innerHtml += "<button class='hidden " + class_reset+ "'> Reset</button> </td>";
+
 
             tr.innerHTML = innerHtml;
             tbody.appendChild(tr);
@@ -112,6 +116,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
                 kbdShortcutsHtml += getShortcutInputUI(kbdShortcut).outerHTML;
             }
             kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> Add Shortcut</button>";
+            kbdShortcutsHtml += "<button class='hidden " + class_reset+ "'> Reset</button>";
 
             innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
 
@@ -202,7 +207,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         // Save settings
         var settings = mod_settings.getUserSettings(null, {getBasic: true});
         settings.generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
-        mod_optionsHelper.saveOptions(settings, "Option saved");
+        mod_optionsHelper.saveOptions(settings, "Shortcut saved");
     }
 
 
@@ -270,10 +275,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
     function onShortcutsTableClick(event) {
         var target = event.target,
-            parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
-            settingKey = parentRow && parentRow.id,
-            shortcutValue;
-
+            parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
 
         if (target.classList.contains(class_addShortcut)) {
             showTextboxForAddingShortcut(parentRow);
@@ -281,6 +283,18 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         }
         else if (target.classList.contains(class_deleteShortcut)){
             deleteShortcut(target);
+        }
+        else if (target.classList.contains(class_reset)) {
+            resetShortcut(parentRow);
+        }
+    }
+
+    function onMiscSettingsTableClick(event) {
+        var target = event.target,
+            parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
+
+        if (target.classList.contains(class_reset)) {
+            resetMiscSetting(parentRow);
         }
     }
 
@@ -310,6 +324,26 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         settings.generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
 
         mod_optionsHelper.saveOptions(settings, "Shortcut deleted", _render);
+    }
+
+    function resetShortcut(parentRow) {
+        var settingKey = parentRow.id,
+            settings = mod_settings.getUserSettings(null, {getBasic: true}),
+            defaultSettings = mod_settings.getDefaultSettings();
+
+        settings.generalShortcuts[settingKey].kbdShortcuts = defaultSettings.generalShortcuts[settingKey].kbdShortcuts;
+
+        mod_optionsHelper.saveOptions(settings, "Shortcut reset.", _render);
+    }
+
+    function resetMiscSetting(parentRow) {
+        var settingKey = parentRow.id,
+            settings = mod_settings.getUserSettings(null, {getBasic: true}),
+            defaultSettings = mod_settings.getDefaultSettings();
+
+        settings.miscSettings[settingKey] = defaultSettings.miscSettings[settingKey];
+
+        mod_optionsHelper.saveOptions(settings, "Option reset.", _render);
     }
 
     return thisModule;
