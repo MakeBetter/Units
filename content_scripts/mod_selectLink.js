@@ -35,8 +35,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     function setup(settings) {
 
-//        $document.on('mouseover', 'a', function() {console.log(this.innerText);});
-
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
@@ -209,10 +207,19 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     function fuzzyMatch(text, pattern) {
-        // splits around non-word characters + underscore (which is considered a word character)
-        var tokens = text.split(/[\W_]+/);
-        // remove the same set from the pattern as well (for now)
-        pattern.replace(/[\W_]/g, '');
+        // split around capital letters (useful for camel-case words, abbreviations etc)
+        // and words separated by underscore
+        // ('_'' considered a "word character")
+        text = text.replace(/([A-Z]_)/g, ' $1');
+
+        // splits the string on whitespace + each special character is included separately
+        // e.g: "foo ba_r, foobar (bar)" => ["foo", "ba", "_", r", ",", "foobar", "(", "bar", ")"]
+        // Instead of the regex /\w+|[^\w\s]/, we use the following one because we want
+        // to also split the "_" character separately
+        var tokens = text.match(/[^_\W]+|[^a-zA-Z0-9\s]/g) || [];
+
+        // remove any whitespace from the input pattern (for now)
+        pattern = pattern.replace(/[\s+]/g, '');
         return doesPatternMatchTokens(pattern, tokens);
     }
 
