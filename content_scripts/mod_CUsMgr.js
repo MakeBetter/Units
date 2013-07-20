@@ -923,14 +923,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function isElementVisible(el) {
-
 //        var $el = $(el);
 //        return $el.is(':visible') && $el.css('visibility') !== "hidden";
-
-        //NOTE: ussing the jquery eqivalent especially .is(':visible') was found to be comparatively slower
+        // NOTE: using the jquery equivalent especially .is(':visible') was found to be much slower,
         return el.offsetHeight && el.offsetWidth &&
             document.defaultView.getComputedStyle(el).getPropertyValue("visibility") !== "hidden";
-
     }
 
 // returns a bounding rectangle for the set (array) of DOM elements specified
