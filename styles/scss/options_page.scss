@@ -6,7 +6,7 @@ body {
     margin: 0; padding: 0;
 }
 
-$options-content-width: 750px;
+$options-content-width: 960px;
 
 @mixin highlighted-message {
   color: #666;
@@ -139,6 +139,14 @@ Basic Options styles
   tr:nth-child(2n+1) {
     background-color: #fafafa;
   }
+
+  tr:hover {
+    //Show the descendant hidden buttons when row is hovered over
+    .hidden {
+      display: inline-block;
+    }
+  }
+
   td {
     line-height: 20px;
     color: #333333;

@@ -35,9 +35,6 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         element_generalShortcuts.querySelector("table").addEventListener("click", onShortcutsTableClick);
 
-//        document.getElementById("general-keyboard-shortcuts").addEventListener("mouseover", showContextualButtons);
-//        document.getElementById("general-keyboard-shortcuts").addEventListener("mouseleave", hideContextualButtons);
-
 //        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
 //        document.addEventListener("focusout", hideMessage_editingHelp);
 
@@ -114,7 +111,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
                 kbdShortcut = kbdShortcuts[i];
                 kbdShortcutsHtml += getShortcutInputUI(kbdShortcut).outerHTML;
             }
-            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> + </button>";
+            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> Add Shortcut</button>";
 
             innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
 
@@ -269,35 +266,6 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         event.preventDefault();
 
-    }
-
-    function showContextualButtons(event) {
-        console.log(event.target);
-        var buttons, shortcutRow,
-            query = "." + class_addShortcut + ", ." + class_deleteShortcut;
-        if (event.target.tagName.toLowerCase() === "td") {
-            shortcutRow = event.target.parentElement;
-            buttons = shortcutRow.querySelectorAll(query);
-
-            for (var i = 0; i < buttons.length; i++) {
-                var button = buttons[i];
-                button.classList.remove("hidden");
-            }
-        }
-    }
-
-    function hideContextualButtons(event) {
-        var buttons, shortcutRow,
-            query = "." + class_addShortcut + ", ." + class_deleteShortcut;
-        if (event.target.tagName.toLowerCase() === "td") {
-            shortcutRow = event.target.parentElement;
-            buttons = shortcutRow.querySelectorAll(query);
-
-            for (var i = 0; i < buttons.length; i++) {
-                var button = buttons[i];
-                button.classList.add("hidden");
-            }
-        }
     }
 
     function onShortcutsTableClick(event) {
