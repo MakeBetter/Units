@@ -232,7 +232,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         var tokens = text.match(/[A-Za-z0-9]+|[^A-Za-z0-9\s]/g) || [];
 
         // remove any whitespace from the input pattern (for now)
-        pattern = pattern.replace(/[\s+]/g, '');
+        pattern = pattern.replace(/\s+/g, '');
         return doesPatternMatchTokens(pattern, tokens);
     }
 
