@@ -229,7 +229,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         // e.g: "foo ba_r, foobar (bar)" => ["foo", "ba", "_", r", ",", "foobar", "(", "bar", ")"]
         // Instead of the regex /\w+|[^\w\s]/, we use the following one because we want
         // to also split the "_" character separately
-        var tokens = text.match(/[^_\W]+|[^a-zA-Z0-9\s]/g) || [];
+        var tokens = text.match(/[A-Za-z0-9]+|[^A-Za-z0-9\s]/g) || [];
 
         // remove any whitespace from the input pattern (for now)
         pattern = pattern.replace(/[\s+]/g, '');
