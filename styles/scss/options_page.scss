@@ -184,6 +184,16 @@ Basic Options styles
 
 .delete-button {
   @include close-button;
+  /* Styles overriding the close-button mixin need to be marked as !important. Close-button mixin being used in the
+  content script, has all styles set as !important. */
+  background-color: #e38e83 !important;
+  border: solid 1px #d1847b !important;
+  color: #eee !important;
+
+  &:hover {
+    color: #fff !important;
+    background-color: #e36467 !important;
+  }
 }
 
 /*
