@@ -247,6 +247,10 @@ var defaultSettings = {
             std_toggleSelection: {
                 descr: "toggleSelection",
                 kbdShortcuts: ["x"]
+            },
+            std_seeMore: {
+                descr: "See More",
+                kbdShortcuts: ["m"]
             }
         }
     },

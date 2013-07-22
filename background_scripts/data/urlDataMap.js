@@ -233,7 +233,7 @@ defaultSettings.urlDataMap = {
                     ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5)",
                 // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
                 // meant for the entire page, then they'd be bad!
-                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", descr: "See more"}
+                std_seeMore: ".text_exposed_link>a"
             },
             CUs_style: {
                 // This allows the little UI element on the top right that comes up when
@@ -524,7 +524,12 @@ defaultSettings.urlDataMap = {
             shared: "true",
             page_SUs: {
                 std_logout: ".logout a:contains('Logout')"
+            },
+            CUs_SUs: {
+//                std_seeMore: ".more_link" TODO: Look into this. This shortcut does not work. Github #25.
             }
+
+
         },
     ],
 
