@@ -44,10 +44,6 @@ Miscellaneous
 
 $highest-z-index: 2147483647; /*highest z-index for a 32-bit int value*/
 
-.hidden {
-display: none;
-}
-
 /*
 Defining this because compass transition mixin does not accept the !important property.
 To be used only by content script CSS (i.e. units.scss), but declared in _base.css because the mixin close-button requires it.

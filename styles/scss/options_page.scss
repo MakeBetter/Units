@@ -141,9 +141,10 @@ Basic Options styles
   }
 
   tr:hover {
-    //Show the descendant hidden buttons when row is hovered over
+/*    Show the descendant hidden buttons when row is hovered over*/
     .hidden {
-      display: inline-block;
+    /* Needs to be marked as important, because properties in .delete-button and .hidden are marked as important. */
+      display: inline-block !important;
     }
   }
 
@@ -197,6 +198,7 @@ Basic Options styles
   @include close-button;
   /* Styles overriding the close-button mixin need to be marked as !important. Close-button mixin being used in the
   content script, has all styles set as !important. */
+  position: absolute; top:0; right: 0;
   background-color: #e38e83 !important;
   border: solid 1px #d1847b !important;
   color: #eee !important;
@@ -286,4 +288,12 @@ Advanced Options styles
 
 .key {
   font-weight: bold;
+}
+
+/*
+This style should be defined after the .delete-button style, so that this overrides when needed.
+Also, CSS needs to be marked as !important because properties of .delete-button are marked as important.
+*/
+.hidden {
+  display: none !important;
 }
