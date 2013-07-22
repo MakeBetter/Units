@@ -193,7 +193,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         parentRow.querySelector("." + class_addShortcut).disabled = false; // enable the add shortcut button again
 
         var value = target.value,
-            targetOriginalValue = target.dataset.originalvalue; // NOTE: dataset works only in IE10+ 
+            targetOriginalValue = target.dataset.originalvalue; // NOTE: dataset works only in IE10+
 
         // If no value is entered, then reset the UI. 
         if (!value) {

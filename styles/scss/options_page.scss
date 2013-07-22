@@ -219,7 +219,7 @@ Advanced Options styles
 .subheading-message {
   @include highlighted-message;
   font-size: 12px;
-  display: block;
+  display: inline-block;
 }
 
 
