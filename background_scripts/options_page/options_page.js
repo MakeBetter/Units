@@ -15,19 +15,14 @@
     // Common methods
 
     var setup = function() {
-        navigateToBasicOptions();
+        mod_basicOptions.setup();
+        mod_advancedOptions.setup();
 
-        // Setup Event handlers
+        navigateToBasicOptions();
 
         // Header navigation
         basicOptionsLink.addEventListener("click", navigateToBasicOptions);
         advancedOptionsLink.addEventListener("click", navigateToAdvancedOptions);
-
-        mod_basicOptions.setup();
-
-        // Advanced Options
-        mod_advancedOptions.setup();
-
     };
 
 
