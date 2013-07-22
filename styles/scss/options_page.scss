@@ -198,7 +198,7 @@ Basic Options styles
   @include close-button;
   /* Styles overriding the close-button mixin need to be marked as !important. Close-button mixin being used in the
   content script, has all styles set as !important. */
-  position: absolute; top:0; right: 0;
+  position: absolute; top: -$close-button-height/2; right: -$close-button-height/2;
   background-color: #e38e83 !important;
   border: solid 1px #d1847b !important;
   color: #eee !important;

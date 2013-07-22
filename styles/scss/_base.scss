@@ -56,12 +56,14 @@ To be used only by content script CSS (i.e. units.scss), but declared in _base.c
   transition: $transition-property $transition-time $method $important;
 }
 
+$close-button-height: 13px;
+
 @mixin close-button {
   border: 1px solid transparent !important;
   display: inline-block !important;
-  height: 13px !important; line-height: 13px !important; /*IMPORTANT: that line-height and height have the same value
+  height: $close-button-height !important; line-height: $close-button-height !important; /*IMPORTANT: that line-height and height have the same value
     to vertically center the text in the span. */
-  width: 13px !important;
+  width: $close-button-height !important;
 
   box-sizing: content-box !important; /* works better, because then we don't need to calculate the content height
     separately. the value of line-height needs to be the same as the content height.*/
