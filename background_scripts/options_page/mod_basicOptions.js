@@ -253,14 +253,29 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             modifiers = Mousetrap.eventModifiers(event),
             characterTyped = Mousetrap.characterFromEvent(event);
 
+        var sequenceKeysSeparator = " ";
+
         // If the character typed is one of the modifiers, then disregard the input
         if (!characterTyped || modifiers.indexOf(characterTyped) > -1) {
             return;
         }
 
+        // If backspace is typed, then delete the last typed key combination. This is to help facilitate editing of
+        // the shortcut field.
+        // NOTE: If the backspace is typed with a modifier, we accept it as a shortcut.
+        if (characterTyped === "backspace" && !modifiers.length) {
+            var indexOfLastKeyCombination = targetValue.lastIndexOf(sequenceKeysSeparator);
+
+            targetValue = targetValue.substr(0, indexOfLastKeyCombination);
+            target.value = targetValue;
+
+            event.preventDefault();
+            return;
+        }
+
         // For sequence shortcuts. Append the current typed shortcut to existing value
         if (targetValue) {
-            targetValue += " ";
+            targetValue += sequenceKeysSeparator;
         }
 
 
