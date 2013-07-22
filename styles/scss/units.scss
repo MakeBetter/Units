@@ -56,8 +56,8 @@ margin of the #UnitsProj-selectLink-textBox or .UnitsProj-close-button is change
 box-sizing to border-box)*/
 
 div#UnitsProj-selectLink-container {
-  width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
-  box-sizing: border-box !important; /*using border-box to make calculations easier.*/
+  //width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
+  //box-sizing: border-box !important; /*using border-box to make calculations easier.*/
 
   text-align: left !important; /*this is important to be set to ensure that the input box and span align as required.*/
 
@@ -68,20 +68,26 @@ div#UnitsProj-selectLink-container {
   z-index: 100000 !important;
   background-color: #d8d8d8 !important;
   @include border-radius(6px 6px 0 0 !important);
+  padding: 3px !important;
+
+  .UnitsProj-close-button {
+    @include close-button;
+  }
 }
 
 input#UnitsProj-selectLink-textBox {
-  position: absolute; top: 6px; left: 6px;
+  //position: absolute; top: 6px; left: 6px;
 
   /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
 
   box-sizing: border-box !important; /*using box-sizing for easier calculations. make sure to specify this because
     it varies across sites, and changes the effective dimensions of the textbox*/
-  margin: 0 !important;
+  margin: 2px !important;
   padding: 2px !important;
   width: 150px !important;
   height: 20px !important;
 }
+
 
 /************* Focused element styles *************/
 
@@ -185,6 +191,12 @@ div#UnitsProj-filterUI-container {
   /*for the sliding effect*/
   @include transition-important(top, 0.1s, ease-out, !important);
   z-index: $highest-z-index - 1 !important; /* More than the z-index of zen mode backdrop, and less than help backdrop */
+
+  .UnitsProj-close-button {
+    @include close-button;
+    position: absolute !important;
+    top: 8px !important; right: 6px !important;
+  }
 }
 
 input#UnitsProj-filterUI-searchBox {
@@ -198,11 +210,6 @@ input#UnitsProj-filterUI-searchBox {
   padding: 2px !important;
   width: 150px !important;
   height: 20px !important;
-}
-
-.UnitsProj-close-button {
-  @include close-button;
-  top: 8px !important; right: 6px !important;
 }
 
 span#filter-message {
