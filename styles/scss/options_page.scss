@@ -160,6 +160,10 @@ Basic Options styles
   table {
     font-size: 14px;
   }
+
+  button {
+    float: right;
+  }
 }
 
 .input-help-message {
@@ -170,6 +174,13 @@ Basic Options styles
 
 .kbdshortcut, #misc-settings input {
   margin-right: 10px;
+}
+
+.input-help-message {
+  margin-left: -5px; // -5px to compensate for the margin-right 10px of the adjacent input. (See the style just before
+  //this one: .kbdshortcut, #misc-settings input)
+  margin-right: 5px;
+  padding: 0;
 }
 
 .kbdshortcut {

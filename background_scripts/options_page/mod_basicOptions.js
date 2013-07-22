@@ -19,29 +19,31 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         pageScrollDelta: "Page scroll delta"
     };
 
-    var element_miscSettings = document.getElementById("misc-settings"),
-        element_generalShortcuts = document.getElementById("general-keyboard-shortcuts"),
-
-
-        class_editingHelpMessage = "input-help-message",
+    var class_editingHelpMessage = "input-help-message",
         class_kbdShortcut = "kbdshortcut",
         class_addShortcut = "add-shortcut",
         class_deleteShortcut = "delete-shortcut",
         class_reset = "reset-value";
 
     function setup() {
+        // Lowest common parent (of the event targets) that is present in the DOM at the time of setup. The target
+        // themselves are added dynamically.
+
+        var element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table"),
+            element_generalShortcutsTable = document.getElementById("general-keyboard-shortcuts").querySelector("table");
+
         // Event handlers
-        element_miscSettings.addEventListener("change", saveOptions_miscSettings);
-        element_generalShortcuts.addEventListener("focusout", saveOptions_generalShortcuts);
+        element_miscSettingsTable.addEventListener("change", saveOptions_miscSettings);
+        element_generalShortcutsTable.addEventListener("focusout", saveOptions_generalShortcuts);
 
-        element_generalShortcuts.querySelector("table").addEventListener("click", onShortcutsTableClick);
-        element_miscSettings.querySelector("table").addEventListener("click", onMiscSettingsTableClick);
+        element_generalShortcutsTable.addEventListener("click", onShortcutsTableClick);
+        element_miscSettingsTable.addEventListener("click", onMiscSettingsTableClick);
 
-//        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
-//        document.addEventListener("focusout", hideMessage_editingHelp);
+        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
+        document.addEventListener("focusout", hideMessage_editingHelp);
 
-        element_generalShortcuts.addEventListener("focusin", showMessage_startKbdShortcutInput);
-        element_generalShortcuts.addEventListener("keydown", captureKeyboardShortcut);
+        element_generalShortcutsTable.addEventListener("focusin", showMessage_startKbdShortcutInput);
+        element_generalShortcutsTable.addEventListener("keydown", captureKeyboardShortcut);
 
     }
 
@@ -115,8 +117,8 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
                 kbdShortcut = kbdShortcuts[i];
                 kbdShortcutsHtml += getShortcutInputUI(kbdShortcut).outerHTML;
             }
-            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> + </button>";
             kbdShortcutsHtml += "<button class='hidden " + class_reset+ "'> Reset</button>";
+            kbdShortcutsHtml += "<button class='hidden " + class_addShortcut+ "'> + </button>";
 
             innerHtml += "<td>" + kbdShortcutsHtml + "</td>";
 
@@ -216,15 +218,14 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         mod_optionsHelper.saveOptions(settings, "Shortcut saved");
     }
 
-
     function showMessage_editingHelp(event) {
         var target = event.target,
             messageElement = document.createElement("span");
 
         messageElement.classList.add(class_editingHelpMessage);
-        messageElement.textContent = "Press enter or click outside the textbox to save.";
+        messageElement.textContent = "Click anywhere outside to save";
 
-        var parent = target.parentElement;
+        var parent = mod_optionsHelper.getClosestAncestorOfTagType(target, "td");
 
         if (!parent.querySelectorAll("." + class_editingHelpMessage).length) {
             parent.appendChild(messageElement);
@@ -233,7 +234,8 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
     function hideMessage_editingHelp(event) {
         var target = event.target,
-            messageElement = target.nextElementSibling;
+            parent = mod_optionsHelper.getClosestAncestorOfTagType(target, "td"),
+        messageElement = parent.querySelector("." + class_editingHelpMessage);
 
         if (messageElement && messageElement.classList.contains(class_editingHelpMessage)) {
             messageElement.remove();
@@ -250,6 +252,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
     function captureKeyboardShortcut(event) {
         var target = event.target,
             targetValue = target.value,
+            targetOriginalValue = targetValue,
             modifiers = Mousetrap.eventModifiers(event),
             characterTyped = Mousetrap.characterFromEvent(event);
 
@@ -300,6 +303,10 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         target.value = targetValue;
         target.style.width = Math.max((target.value.length + 1) * 7, target.offsetWidth) + "px"; // Increase width of the
         // textbox if input very large.
+
+        if (targetValue && targetOriginalValue!== targetValue) {
+            showMessage_editingHelp(event);
+        }
 
         event.preventDefault();
 
