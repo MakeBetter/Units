@@ -128,7 +128,7 @@ var defaultSettings = {
         /*-----------Shortcuts related to 'Select link' Feature----------*/
         showSelectLinkUI: {
             descr: "Show Select Link UI",
-            kbdShortcuts: ['f l', 'f f', 'f x']
+            kbdShortcuts: ['f l', 'f f']
         },
         selectNextMatchedLink: {
             descr: "Selects the Next matched link",

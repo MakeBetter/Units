@@ -10,13 +10,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
 
     var $document = $(document),
-        timeout_typing,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         suppressEvent = mod_contentHelper.suppressEvent,
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
         $empty = $(),   // saved reference
-        $matching = $empty;
+        $matching = $empty,
+
+        timeout_findMatchingLinks,
+        maxDelay_findMatchingLinks = 333;
 
     var $textBox =  $('<input id = "UnitsProj-selectLink-textBox" type = "text">')
         .addClass("UnitsProj-reset-text-input")
@@ -34,7 +36,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         .appendTo(_u.$topLevelContainer);
 
     function setup(settings) {
-
+        reset();
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
@@ -52,11 +54,18 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         mod_keyboardLib.bind(generalShortcuts.openSelectedLinkInNewTab.kbdShortcuts, openSelectedLink_newTab, {selectLinkUIActive: true}, true);
     }
 
-    function onInput() {
-        // to allow search-as-you-type, while not executing the filtering related code till there is a brief pause in the typing
-        clearTimeout(timeout_typing); // clears timeout if it is set
-        timeout_typing = setTimeout (findMatchingLinks, 300);
+    function reset() {
+        timeout_findMatchingLinks = false;
     }
+
+    // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
+    // keeps typing continuously 
+    function onInput() {
+        // compare explicitly with false, which is how we reset it
+        if (timeout_findMatchingLinks === false) {
+            timeout_findMatchingLinks = setTimeout(findMatchingLinks, maxDelay_findMatchingLinks);
+        }
+    } 
 
     function selectNext() {
         select('n');
@@ -102,6 +111,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     function findMatchingLinks() {
+        clearTimeout(timeout_findMatchingLinks);
+        timeout_findMatchingLinks = false;    // reset
+       
         $matching.removeClass(matchingLink_class);
         removeActiveElementStyling();
 
@@ -155,7 +167,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     function closeUI() {
         var disabledByMe = mod_mutationObserver.disable();
-        clearTimeout(timeout_typing); // clears timeout if it is set
+        clearTimeout(timeout_findMatchingLinks);
+        timeout_findMatchingLinks = false;    // reset
 
         // blur, if not already blurred (the check exists to prevent infinite recursion)
         if (document.activeElement === $textBox[0])
@@ -216,10 +229,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         // e.g: "foo ba_r, foobar (bar)" => ["foo", "ba", "_", r", ",", "foobar", "(", "bar", ")"]
         // Instead of the regex /\w+|[^\w\s]/, we use the following one because we want
         // to also split the "_" character separately
-        var tokens = text.match(/[^_\W]+|[^a-zA-Z0-9\s]/g) || [];
+        var tokens = text.match(/[A-Za-z0-9]+|[^A-Za-z0-9\s]/g) || [];
 
         // remove any whitespace from the input pattern (for now)
-        pattern = pattern.replace(/[\s+]/g, '');
+        pattern = pattern.replace(/\s+/g, '');
         return doesPatternMatchTokens(pattern, tokens);
     }
 
