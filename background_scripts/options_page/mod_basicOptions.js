@@ -279,9 +279,20 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         }
 
 
+        // For combination shortcuts, prepend all the modifiers first.
         for (var i = 0; i < modifiers.length; i++) {
-            var modifier = modifiers[i];
-            targetValue += modifier + "+";
+
+            // Save modifier "meta" as "command" on Mac. Ignore it on other platforms.
+            if (modifiers[i] === "meta") {
+               if (navigator.appVersion.indexOf("Mac")!=-1) {
+                   modifiers[i] = "command";
+               }
+               else {
+                   continue;
+               }
+            }
+
+            targetValue += modifiers[i] + "+";
         }
 
         targetValue += characterTyped;
