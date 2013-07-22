@@ -24,12 +24,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         .addClass("UnitsProj-reset-text-input")
         .addClass(class_addedByUnitsProj);
 
+    var $countLabel = $('<span></span>'); // this will contain a label like "4 of 20"
+
     var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
         .addClass("UnitsProj-close-button")
         .addClass(class_addedByUnitsProj);
 
     var $UIContainer = $('<div id = "UnitsProj-selectLink-container">')
         .addClass(class_addedByUnitsProj)
+        .append($countLabel)
         .append($textBox)
         .append($closeButton)
         .hide()     // to prevent from appearing when the page loads
@@ -133,21 +136,32 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         if ($matching.length) {
             $matching.addClass(matchingLink_class);
-            setFakeFocus(getElementToFocus($matching));
+            var elementToFocus_info = getElementToFocuInfo($matching);
+            setFakeFocus(elementToFocus_info.element);
+            $countLabel[0].innerText = (elementToFocus_info.index + 1) + " of " + $matching.length;
+        }
+        else {
+            $countLabel[0].innerText = "0 of 0";
+            $textBox.css('background-color', 'red');
         }
     }
 
     // From among the set of elements specified ($set), this returns the first element
-    // in the viewport. If none is found to be in the viewport, returns the first e element
-    function getElementToFocus($set) {
+    // in the viewport. If none is found to be in the viewport, returns the first element.
+    // The return value is an object of the format: 
+    // {
+    //      element: <element>,         // DOM element   
+    //      index: <indexInArray>,      // 0 based index in $set
+    // }
+    function getElementToFocuInfo($set) {
         var len = $set.length;
         for (var i = 0; i < len; i++) {
             var elem = $set[i];
             if (isAnyPartOfElementInViewport(elem)) {
-                return elem;
+                return {element: elem, index: i};
             }
         }
-        return $set[0];
+        return {element: $set[0], index: 0};
     }
 
     // 1) Styles the specified element as active (while the actual focus continues to
@@ -166,6 +180,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     function closeUI() {
+        ///////////////
+
+        return;
+        /////////////////////
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_findMatchingLinks);
         timeout_findMatchingLinks = false;    // reset
