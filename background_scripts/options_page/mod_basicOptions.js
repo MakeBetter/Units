@@ -30,7 +30,8 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         // themselves are added dynamically.
 
         var element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table"),
-            element_generalShortcutsTable = document.getElementById("general-keyboard-shortcuts").querySelector("table");
+            element_generalShortcutsTable = document.getElementById("general-keyboard-shortcuts").querySelector("table"),
+            element_resetButton = document.getElementById("basic-options").querySelector(".reset-settings");
 
         // Event handlers
         element_miscSettingsTable.addEventListener("change", saveOptions_miscSettings);
@@ -39,11 +40,13 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         element_generalShortcutsTable.addEventListener("click", onShortcutsTableClick);
         element_miscSettingsTable.addEventListener("click", onMiscSettingsTableClick);
 
-        document.getElementById("basic-options").addEventListener("input", showMessage_editingHelp);
+        element_miscSettingsTable.addEventListener("input", showMessage_editingHelp);
         document.addEventListener("focusout", hideMessage_editingHelp);
 
         element_generalShortcutsTable.addEventListener("focusin", showMessage_startKbdShortcutInput);
         element_generalShortcutsTable.addEventListener("keydown", captureKeyboardShortcut);
+
+        element_resetButton.addEventListener("click", resetAllOptions);
 
     }
 
@@ -383,6 +386,12 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         settings.miscSettings[settingKey] = defaultSettings.miscSettings[settingKey];
 
         mod_optionsHelper.saveOptions(settings, "Option reset.", _render);
+    }
+
+    function resetAllOptions() {
+        if (confirm("Sure you want to reset all the options?")) {
+            mod_optionsHelper.saveOptions(null, "All options are reset", _render);
+        }
     }
 
     return thisModule;

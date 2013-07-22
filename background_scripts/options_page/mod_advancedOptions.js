@@ -3,6 +3,7 @@
 /* exported mod_advancedOptions */
 
 
+// A template for modules in this project
 var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelper) {
     "use strict";
 
@@ -16,7 +17,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         siteSettingsContainer = document.getElementById("site-specific-settings"),
         globalSettingsTextContainer = document.getElementById("global-settings"),
         saveChangesButton = document.getElementById("save-settings"),
-        resetOptionsButton = document.getElementById("reset-settings"),
+        resetOptionsButton = document.getElementById("advanced-options").querySelector(".reset-settings"),
         goToExtensionLink = document.getElementById("go-to-extensions");
 
     var defaultSettingsHelp = backgroundPageWindow.defaultSettingsHelp,
@@ -114,7 +115,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
     function resetOptions() {
         if (confirm("Sure you want to reset all the options?")) {
-            saveOptions(null, "Options reset to default");
+            saveOptions(null, "All options are reset");
         }
     }
 

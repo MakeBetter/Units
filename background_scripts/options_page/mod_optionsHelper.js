@@ -63,7 +63,7 @@ var mod_optionsHelper = (function(mod_settings) {
 
         mod_optionsHelper.showSuccessMessage(successMessage);
 
-        onSave && onSave(settings);
+        mod_settings.getUserSettings(onSave);
     }
 
     function getClosestAncestorOfTagType(el, tagName) {
