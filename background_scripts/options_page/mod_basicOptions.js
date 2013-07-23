@@ -171,7 +171,15 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             settingValue = target.checked;
         }
         else {
-            settingValue = target.value;
+
+            // If the value can be parsed into a number, then save it as a number. Else, normally as a string.
+            // NOTE: We can afford to do this because it is unlikely that we will have a setting value that can be parsed
+            // to a number AND needs to be saved as a string.
+
+            settingValue = parseInt(target.value, 10);
+            if (!settingValue) {
+                settingValue = target.value;
+            }
         }
 
         // Save settings
