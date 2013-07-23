@@ -11,13 +11,16 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         setup: setup
     };
 
-    // Misc Settings to be displayed in the basic settings UI
-    var basicMiscSettings = {
-        selectCUOnLoad: "Select Content Unit on page on load",
-        keepSelectedCUCentered: "Keep selected CU centered on page",
-        enhanceActiveElementVisibility: "Enhance the active element style",
-        pageScrollDelta: "Page scroll delta"
+    // Map of miscSettings keys and their friendly descriptions, to be used in the Basic Options UI
+    var miscSettingsDescriptions = {
+        selectCUOnLoad: "Select first Content Unit (CU) on page load?",
+        keepSelectedCUCentered: "Keep selected CU always centered on page",
+        enhanceActiveElementVisibility: "Give special highlight to the currently focused link",
+        pageScrollDelta: "Pixels to scroll on each key press",
+        animatedCUScroll: "Animated scroll?",
+
     };
+
 
     var class_editingHelpMessage = "input-help-message",
         class_kbdShortcut = "kbdshortcut",
@@ -74,11 +77,11 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         tbody = document.createElement("tbody");
 
-        for (key in basicMiscSettings) {
+        for (key in miscSettingsDescriptions) {
 
             tr = document.createElement('tr');
             tr.setAttribute("id", key);
-            innerHtml = '<td>' + basicMiscSettings[key] + '</td>';
+            innerHtml = '<td>' + miscSettingsDescriptions[key] + '</td>';
 
             settingValue = settings.miscSettings[key];
 
