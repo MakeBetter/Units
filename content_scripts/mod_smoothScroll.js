@@ -85,18 +85,19 @@ _u.mod_smoothScroll = (function() {
         // (Also make the related change in assigning `startTime` in the function
         // smoothScroll() at that point
         now = Date.now();
-        var currentPosition = Math.round(startPosition + (now - startTime) * speed);
-        if (areScrollingDown? (currentPosition >= destination): (currentPosition <= destination) ||
+        var nextPosition = Math.round(startPosition + (now - startTime) * speed);
+        if (areScrollingDown? (nextPosition >= destination): (nextPosition <= destination) ||
             now - startTime >= maxDuration) {
 
             endAtDestination();
         }
         else {
-            element.scrollTop = currentPosition;
-
+            var savedPosition = element.scrollTop;
+            element.scrollTop = nextPosition;
+            
             // If this is true, it implies that the scrollTop cannot be changed further (in the current direction),
             // and so we can end the animation
-            if (element.scrollTop !== currentPosition) {
+            if (element.scrollTop === savedPosition) {
                 endAtDestination();
             }
             else {
