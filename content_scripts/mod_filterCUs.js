@@ -243,7 +243,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
             else if (code === 9) { // Tab
                 suppressEvent(e);
                 triggerFilteringIfRequired();
-                thisModule.trigger('tab-on-filterUI');
+                thisModule.trigger('tab-on-filter-UI');
             }
         }
     }
