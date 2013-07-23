@@ -39,18 +39,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
         document.addEventListener("mouseup", showMessage_JSONKeyHelp);
 
-        var modifier;
-        if (navigator.appVersion.indexOf("Mac")!=-1) {
-            modifier = "command";
-        }
-        else {
-            modifier = "ctrl";
-        }
-
-        saveShortcutHelpSpan.textContent = modifier + "+s to save changes";
-
-        generalSettingsContainer.addEventListener("focus", showMessage_saveShortcut);
-        generalSettingsContainer.addEventListener("blur", hideMessage_saveShortcut);
+        setupUI_saveShortcutMessage();
     }
 
     function _render(settings) {
@@ -187,15 +176,30 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         }
     }
 
-    function showMessage_saveShortcut(event) {
-        saveShortcutHelpSpan.style.display = "inline";
+    /***
+     * Setup text and events related to the message UI "Cmd+s to save"
+     */
+    function setupUI_saveShortcutMessage() {
+        var modifier;
+        if (navigator.appVersion.indexOf("Mac")!=-1) {
+            modifier = "command";
+        }
+        else {
+            modifier = "ctrl";
+        }
+
+        saveShortcutHelpSpan.textContent = modifier + "+s to save changes";
+
+        //show message when editable container focused.
+        generalSettingsContainer.addEventListener("focus", function() {
+            saveShortcutHelpSpan.style.display = "inline";
+        });
+
+        // hide message on focus out
+        generalSettingsContainer.addEventListener("blur", function() {
+            saveShortcutHelpSpan.style.display = "none";
+        });
     }
-
-    function hideMessage_saveShortcut(event) {
-        saveShortcutHelpSpan.style.display = "none";
-    }
-
-
 
     return thisModule;
 
