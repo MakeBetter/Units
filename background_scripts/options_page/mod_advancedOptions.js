@@ -18,10 +18,13 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         globalSettingsTextContainer = document.getElementById("global-settings"),
         saveChangesButton = document.getElementById("save-settings"),
         resetOptionsButton = document.getElementById("advanced-options").querySelector(".reset-settings"),
-        goToExtensionLink = document.getElementById("go-to-extensions");
+        goToExtensionLink = document.getElementById("go-to-extensions"),
+        saveShortcutHelpSpan = document.querySelector("#general-settings-section .context-message");
 
     var defaultSettingsHelp = backgroundPageWindow.defaultSettingsHelp,
         advancedOptions_helpContainer;
+
+    var element_advancedOptionsContainer = document.getElementById("advanced-options");
 
     function setup() {
         advancedOptions_helpContainer = document.getElementById("advanced-options-help");
@@ -31,7 +34,23 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         resetOptionsButton.addEventListener("click", resetOptions);
         goToExtensionLink.addEventListener("click", goToAllExtensionsPage);
 
+        document.body.addEventListener("keydown", saveChanges_onKeyDown, true); //Bind to "body" because we want to be
+        // able to save changes by pressing ctrl+s anywhere on the page.
+
         document.addEventListener("mouseup", showMessage_JSONKeyHelp);
+
+        var modifier;
+        if (navigator.appVersion.indexOf("Mac")!=-1) {
+            modifier = "command";
+        }
+        else {
+            modifier = "ctrl";
+        }
+
+        saveShortcutHelpSpan.textContent = modifier + "+s to save changes";
+
+        generalSettingsContainer.addEventListener("focus", showMessage_saveShortcut);
+        generalSettingsContainer.addEventListener("blur", hideMessage_saveShortcut);
     }
 
     function _render(settings) {
@@ -124,6 +143,11 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     }
 
     function showMessage_JSONKeyHelp(event) {
+        // If the basic options tab is open (and advanced options is hidden), then do nothing and return.
+        if (!element_advancedOptionsContainer.offsetHeight) {
+            return;
+        }
+
         var target = event.target,
             selectedHtml,
             containingDiv = target.parentElement;
@@ -144,6 +168,34 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
             advancedOptions_helpContainer.style.display = "none";
         }
     }
+
+    function saveChanges_onKeyDown(event) {
+
+        // If the basic options tab is open (and advanced options is hidden), then do nothing and return.
+        if (!element_advancedOptionsContainer.offsetHeight) {
+            return;
+        }
+
+        // If ctrl/ cmd + s is pressed, then save the advanced settings.
+        var keyPressed = String.fromCharCode(event.which),
+            isCtrlOrCmdKeyPressed = event.ctrlKey || event.metaKey;
+
+        if ((keyPressed === "S" || keyPressed === "s") && isCtrlOrCmdKeyPressed) {
+            saveChanges();
+
+            event.preventDefault(); // prevent browser's default action of saving page as a file.
+        }
+    }
+
+    function showMessage_saveShortcut(event) {
+        saveShortcutHelpSpan.style.display = "inline";
+    }
+
+    function hideMessage_saveShortcut(event) {
+        saveShortcutHelpSpan.style.display = "none";
+    }
+
+
 
     return thisModule;
 

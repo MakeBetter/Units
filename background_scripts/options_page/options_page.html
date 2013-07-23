@@ -4,7 +4,7 @@
     <script src= "../../vendor/jquery-2.0.0.min.js"></script>
     <script type="text/javascript" src= ""></script>
 </head>
-<body>
+<body tabindex="0">
     <header id="settings-header">
         <div id="header-content">
             <a id="h1">Units Options</a>
@@ -42,16 +42,16 @@
 
         <div id="advanced-options">
             <div id="buttons-panel">
-                <button id="save-settings">Save changes</button>
                 <button class="reset-settings">Reset all options</button>
+                <button id="save-settings">Save changes</button>
             </div>
             <div class="UnitsProj-message" id="options-main-message">
                 <span> Edit values to override default options </span>
             </div>
-            <div class="section">
+            <div class="section" id = "general-settings-section">
                 <h2 class="subheading">General</h2>
+                <span class="context-message"></span>
                 <div contenteditable="true" id="general-settings" class = "editable-container">
-
                 </div>
             </div>
             <div class="section">

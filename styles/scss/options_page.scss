@@ -217,6 +217,10 @@ Advanced Options styles
 #advanced-options {
     position: relative;
     margin: 0 auto;
+
+    &:focus {
+      outline: none;
+    }
 }
 
     .options-message {
@@ -229,32 +233,48 @@ Advanced Options styles
         text-align: middle;
     }
 
+#general-settings-section {
+/*  so this acts as the offset parent*/
+  position: relative;
+
+  .context-message {
+    @include highlighted-message;
+    font-size: 12px;
+    position: absolute;
+    right: 0;
+/*    *sheepish* randomly decided value so that the span sits just inside the textarea, from the top. */
+    top: 30px;
+    display: none;
+  }
+}
+
+
 .subheading {
-    /*margin-bottom: 5px;*/
-    /*font-style: italic;*/
-    font-family: $serif-font-family;
-    font-weight: bold;
-    font-size: 14px;
-    margin: 0;
-    color: $subheading-color;
+  /*margin-bottom: 5px;*/
+  /*font-style: italic;*/
+  font-family: $serif-font-family;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  color: $subheading-color;
+  display: inline-block;
+  margin: 5px 0;
 }
 
 .subheading-message {
   @include highlighted-message;
   font-size: 12px;
-  display: inline-block;
+  display: block;
 }
-
 
 .editable-container {
   border: 1px solid #efefef;
-  width: 750px;
+  //width: 750px;
   padding: 0;
-  margin-top: 10px;
+  //margin-top: 5px;
   max-height: 600px;
   overflow: auto;
   position: relative;
-
 }
 
 .editable-container.readonly {
