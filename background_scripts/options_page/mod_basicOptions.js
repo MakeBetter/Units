@@ -32,9 +32,10 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         // Lowest common parent (of the event targets) that is present in the DOM at the time of setup. The target
         // themselves are added dynamically.
 
-        var element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table"),
+        var element_basicOptionsContainer = document.getElementById("basic-options"),
+            element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table"),
             element_generalShortcutsTable = document.getElementById("general-keyboard-shortcuts").querySelector("table"),
-            element_resetButton = document.getElementById("basic-options").querySelector(".reset-settings");
+            element_resetButton = element_basicOptionsContainer.querySelector(".reset-settings");
 
         // Event handlers
         element_miscSettingsTable.addEventListener("change", saveOptions_miscSettings);
@@ -44,7 +45,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         element_miscSettingsTable.addEventListener("click", onMiscSettingsTableClick);
 
         element_miscSettingsTable.addEventListener("input", showMessage_editingHelp);
-        document.addEventListener("focusout", hideMessage_editingHelp);
+        element_basicOptionsContainer.addEventListener("focusout", hideMessage_editingHelp);
 
         element_generalShortcutsTable.addEventListener("focusin", showMessage_startKbdShortcutInput);
         element_generalShortcutsTable.addEventListener("keydown", captureKeyboardShortcut);
