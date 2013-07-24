@@ -218,7 +218,7 @@ defaultSettings.urlDataMap = {
     "facebook.com": [
         {
             // Facebook main feed page
-            urlPatterns: ["www.facebook.com", "www.facebook.com/groups/*"],
+            urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*"],
             CUs_specifier: ".genericStreamStory.uiUnifiedStory",
             CUs_SUs: {
                 "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
