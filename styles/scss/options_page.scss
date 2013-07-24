@@ -252,16 +252,20 @@ Advanced Options styles
 }
 
 
-.subheading {
-  /*margin-bottom: 5px;*/
-  /*font-style: italic;*/
+h2 {
   font-family: $serif-font-family;
   font-weight: bold;
   font-size: 14px;
-  margin: 0;
   color: $subheading-color;
   display: inline-block;
   margin: 5px 0;
+}
+
+h3 {
+  font-family: $sans-serif-font-family;
+  font-size: 13px;
+  margin: 10px 0 0 0;
+  color: lighten($subheading-color, 15);
 }
 
 .subheading-message {
