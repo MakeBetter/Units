@@ -569,9 +569,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUTop = boundingRect.top,
             CUBottom;
 
+        var margin = 50;
+
         if (direction === 'up') {
             pageHeaderHeight = getEffectiveHeaderHeight();
-            if (CUTop < winTop + pageHeaderHeight) {
+            if (CUTop <= winTop + pageHeaderHeight) {
                 mod_basicPageUtils.scroll('up', body);
                 return true;
             }
@@ -579,9 +581,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else { // direction === 'down'
             winBottom = winTop + window.innerHeight;
             CUBottom = CUTop + boundingRect.height;
-            if (CUBottom > winBottom) {
-                mod_basicPageUtils.scroll('down', body);
-                return true;
+            if (CUBottom >= winBottom - margin) {
+                var $nextCU = CUs_filtered[selectedCUIndex + 1];
+                if ($nextCU && isCUFullyInViewport($nextCU)) {
+                    return false;
+                }
+                else {
+                    mod_basicPageUtils.scroll('down', body);
+                    return true;
+                }
             }
         }
         return false;
