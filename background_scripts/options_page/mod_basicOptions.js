@@ -28,28 +28,36 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         class_deleteShortcut = "delete-shortcut",
         class_reset = "reset-value";
 
+    var shortcutType_page = "page",
+        shortcutType_CU = "CU";
+
+    var element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table");
+
     function setup() {
         // Lowest common parent (of the event targets) that is present in the DOM at the time of setup. The target
         // themselves are added dynamically.
 
         var element_basicOptionsContainer = document.getElementById("basic-options"),
-            element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table"),
-            element_generalShortcutsTable = document.getElementById("general-keyboard-shortcuts").querySelector("table"),
-            element_resetButton = element_basicOptionsContainer.querySelector(".reset-settings");
+            element_resetButton = element_basicOptionsContainer.querySelector(".reset-settings"),
+            element_shortcutsContainer = document.getElementById("general-keyboard-shortcuts");
 
-        // Event handlers
+        // Save setting on input change or focusout
         element_miscSettingsTable.addEventListener("change", saveOptions_miscSettings);
-        element_generalShortcutsTable.addEventListener("focusout", saveOptions_generalShortcuts);
+        element_shortcutsContainer.addEventListener("focusout", saveOptions_shortcuts);
 
-        element_generalShortcutsTable.addEventListener("click", onShortcutsTableClick);
+        // Reset/ Add/ Delete setting
+        element_shortcutsContainer.addEventListener("click", onShortcutsTableClick);
         element_miscSettingsTable.addEventListener("click", onMiscSettingsTableClick);
 
+        // Show/hide editing help message
         element_miscSettingsTable.addEventListener("input", showMessage_editingHelp);
         element_basicOptionsContainer.addEventListener("focusout", hideMessage_editingHelp);
 
-        element_generalShortcutsTable.addEventListener("focusin", showMessage_startKbdShortcutInput);
-        element_generalShortcutsTable.addEventListener("keydown", captureKeyboardShortcut);
+        // Capture keyboard shortcuts
+        element_shortcutsContainer.addEventListener("focusin", showMessage_startKbdShortcutInput);
+        element_shortcutsContainer.addEventListener("keydown", captureKeyboardShortcut);
 
+        // Reset all settings
         element_resetButton.addEventListener("click", resetAllOptions);
 
     }
@@ -68,11 +76,13 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
     function _render(settings) {
 
         var miscSettingsContainer = document.querySelector("#misc-settings>table"),
-            generalShortcutsContainer = document.querySelector("#general-keyboard-shortcuts>table");
+            element_pageShortcutsTable = document.getElementById(shortcutType_page),
+            element_CUShortcutsTable = document.getElementById(shortcutType_CU);
 
         // Reset contents
         miscSettingsContainer.innerHTML = '';
-        generalShortcutsContainer.innerHTML = '';
+        element_pageShortcutsTable.innerHTML = '';
+        element_CUShortcutsTable.innerHTML = '';
 
         var tbody, tr, settingValue, innerHtml, key;
 
@@ -102,15 +112,18 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
         miscSettingsContainer.appendChild(tbody);
 
+        populateShortcutsTable(settings.generalShortcuts, element_pageShortcutsTable);
+        populateShortcutsTable(settings.CUsShortcuts, element_CUShortcutsTable);
+    }
 
+    function populateShortcutsTable(shortcuts, table) {
         // Populate general keyboard shortcuts
-        var generalShortcuts = settings.generalShortcuts,
-            shortcut;
+        var shortcut, tbody, key, tr, innerHtml;
 
         tbody = document.createElement("tbody");
 
-        for (key in generalShortcuts) {
-            shortcut = generalShortcuts[key];
+        for (key in shortcuts) {
+            shortcut = shortcuts[key];
 
             tr = document.createElement('tr');
             tr.setAttribute("id", key);
@@ -133,8 +146,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             tbody.appendChild(tr);
         }
 
-        generalShortcutsContainer.appendChild(tbody);
-
+        table.appendChild(tbody);
     }
 
     function render() {
@@ -190,7 +202,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
     }
 
-    function saveOptions_generalShortcuts(event) {
+    function saveOptions_shortcuts(event) {
         var target = event.target;
 
         if (target.tagName.toLowerCase() !== "input") {
@@ -225,11 +237,14 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             return;
         }
 
-        var settingKey = parentRow.id;
+        var settingKey = parentRow.id,
+            parentTable = mod_optionsHelper.getClosestAncestorOfTagType(target, "table"),
+            settingParentKey = parentTable.id === shortcutType_page ? "generalShortcuts" : "CUsShortcuts";
+
 
         // Save settings
         var settings = mod_settings.getUserSettings(null, {getBasic: true});
-        settings.generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
+        settings[settingParentKey][settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
         mod_optionsHelper.saveOptions(settings, "Shortcut saved");
     }
 
@@ -329,6 +344,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
     function onShortcutsTableClick(event) {
         var target = event.target,
+            parentTable = mod_optionsHelper.getClosestAncestorOfTagType(target, "table"),
             parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
 
         if (target.classList.contains(class_addShortcut)) {
@@ -336,10 +352,10 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             target.disabled = true; // disable the add shortcut button, till the adding of this shortcut is complete
         }
         else if (target.classList.contains(class_deleteShortcut)){
-            deleteShortcut(target);
+            deleteShortcut(parentTable.id, target);
         }
         else if (target.classList.contains(class_reset)) {
-            resetShortcut(parentRow);
+            resetShortcut(parentTable.id, parentRow);
         }
     }
 
@@ -369,23 +385,25 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         shortcutContainer.remove();
     }
 
-    function deleteShortcut(target) {
+    function deleteShortcut(shortcutType, target) {
         var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
             settingKey = parentRow.id,
-            settings = mod_settings.getUserSettings(null, {getBasic: true});
+            settings = mod_settings.getUserSettings(null, {getBasic: true}),
+            setting = (shortcutType === shortcutType_page) ? settings.generalShortcuts : settings.CUsShortcuts;
 
         removeContainingShortcutUI(target);
-        settings.generalShortcuts[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
+        setting[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
 
         mod_optionsHelper.saveOptions(settings, "Shortcut deleted", _render);
     }
 
-    function resetShortcut(parentRow) {
+    function resetShortcut(shortcutType, parentRow) {
         var settingKey = parentRow.id,
             settings = mod_settings.getUserSettings(null, {getBasic: true}),
+            settingParentKey = (shortcutType === shortcutType_page) ? "generalShortcuts" : "CUsShortcuts",
             defaultSettings = mod_settings.getDefaultSettings();
 
-        settings.generalShortcuts[settingKey].kbdShortcuts = defaultSettings.generalShortcuts[settingKey].kbdShortcuts;
+        settings[settingParentKey][settingKey].kbdShortcuts = defaultSettings[settingParentKey][settingKey].kbdShortcuts;
 
         mod_optionsHelper.saveOptions(settings, "Shortcut reset.", _render);
     }

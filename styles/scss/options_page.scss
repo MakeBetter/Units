@@ -1,9 +1,12 @@
 @import "base";
 
-
 body {
     font-family: $sans-serif-font-family;
     margin: 0; padding: 0;
+}
+
+h3 {
+  font-size: 13px;
 }
 
 $options-content-width: 960px;
