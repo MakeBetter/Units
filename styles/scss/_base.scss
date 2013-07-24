@@ -11,6 +11,7 @@ $text-color-light: white;
 $container-color: #d8d8d8;
 $subheading-color: #333;
 $border-color-grey: #999;
+$background-color-gray: #d8d8d8;
 
 //CUs
 $scrolling-marker-color:  #ff902b;
@@ -74,11 +75,10 @@ $close-button-height: 13px;
     change it if you find a better one.*/
   color: #666 !important;
 
-  background-color:/* inherit*/ #bbb !important;
+  //background-color:/* inherit*/ #bbb !important;
 
-/*border-radius 50% to make it a circle*/
+  /*border-radius 50% to make it a circle*/
   @include border-radius(50% !important);
-
   cursor: default !important; /* To not show the text selection icon */
   @include transition-important(all, 0.1s, ease-out, !important);
 

@@ -8,7 +8,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         setup: setup
     });
 
-
     var $document = $(document),
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         suppressEvent = mod_contentHelper.suppressEvent,
@@ -18,22 +17,34 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         $matching = $empty,
 
         timeout_findMatchingLinks,
-        maxDelay_findMatchingLinks = 333;
+        maxDelay_findMatchingLinks = 333,
+        class_noMatch = 'no-match';
 
-    var $textBox =  $('<input id = "UnitsProj-selectLink-textBox" type = "text">')
+    var $textBox =  $('<input type = "text">')
+        .attr("id", "UnitsProj-selectLink-textBox")
         .addClass("UnitsProj-reset-text-input")
-        .addClass(class_addedByUnitsProj);
+        .addClass(class_addedByUnitsProj)
+        .attr('placeholder', "Click '?' to see usage...");
 
-    var $countLabel = $('<span></span>'); // this will contain a label like "4 of 20"
+    var $countLabel = $('<span></span>').addClass('countLabel');    // this will contain a label like "4 of 20"
+
+    var $textBoxContainer = $('<div></div>')
+        .attr("id", "UnitsProj-selectLink-textBoxContainer")
+        .append($textBox)
+        .append($countLabel);
+
+    var $helpBtn = $('<span>?</span>')
+        .attr('id', 'UnitsProj-selectLink-helpButton');
 
     var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
         .addClass("UnitsProj-close-button")
         .addClass(class_addedByUnitsProj);
 
-    var $UIContainer = $('<div id = "UnitsProj-selectLink-container">')
+    var $UIContainer = $('<div></div>')
+        .attr("id", "UnitsProj-selectLink-UIContainer")
         .addClass(class_addedByUnitsProj)
-        .append($countLabel)
-        .append($textBox)
+        .append($textBoxContainer)
+        .append($helpBtn)
         .append($closeButton)
         .hide()     // to prevent from appearing when the page loads
         .appendTo(_u.$topLevelContainer);
@@ -81,6 +92,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     function openSelectedLink() {
         mod_basicPageUtils.openLink(elementStyledAsActive);
     }
+
     function openSelectedLink_newTab() {
         mod_basicPageUtils.openLink(elementStyledAsActive, true);
     }
@@ -110,6 +122,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
                 }
             }
             setFakeFocus($matching[index]);
+            $countLabel[0].innerText = (index + 1) + " of " + $matching.length;
         }
     }
 
@@ -122,6 +135,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         var searchText_lowerCase = getSearchText_lowerCase();
         if (!searchText_lowerCase) {
+            $countLabel[0].innerText = "";
+            $textBox.removeClass(class_noMatch);
             return;
         }
 
@@ -139,10 +154,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             var elementToFocus_info = getElementToFocuInfo($matching);
             setFakeFocus(elementToFocus_info.element);
             $countLabel[0].innerText = (elementToFocus_info.index + 1) + " of " + $matching.length;
+            $textBox.removeClass(class_noMatch);
         }
         else {
             $countLabel[0].innerText = "0 of 0";
-            $textBox.css('background-color', 'red');
+            $textBox.addClass(class_noMatch);
         }
     }
 
@@ -180,10 +196,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     function closeUI() {
-        ///////////////
-
-        return;
-        /////////////////////
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_findMatchingLinks);
         timeout_findMatchingLinks = false;    // reset
@@ -193,6 +205,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             $textBox.blur();
 
         $textBox.val('');
+        $countLabel[0].innerText = "";
+        $textBox.removeClass(class_noMatch);
 
         $UIContainer.hide();
         endMatching();

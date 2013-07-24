@@ -55,39 +55,99 @@ Also, hence the generous use of !important property here.
 margin of the #UnitsProj-selectLink-textBox or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
 box-sizing to border-box)*/
 
-div#UnitsProj-selectLink-container {
+$selectLink-base-gray: #eee;
+$selectLinkTextBox_height: 20px;
+
+div#UnitsProj-selectLink-UIContainer {
   //width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
   //box-sizing: border-box !important; /*using border-box to make calculations easier.*/
 
-  text-align: left !important; /*this is important to be set to ensure that the input box and span align as required.*/
+  //text-align: left !important; /*this is important to be set to ensure that the input box and span align as required.*/
 
   position: fixed !important;
   bottom: 0px;
   right: 200px !important;
   margin: 0px !important;
-  z-index: 100000 !important;
+  z-index: $highest-z-index !important;
   background-color: #d8d8d8 !important;
   @include border-radius(6px 6px 0 0 !important);
-  padding: 3px !important;
+  padding: 3px 5px !important;
+
+  #UnitsProj-selectLink-textBoxContainer {
+    display: inline-block;
+    position: relative; /*to make it a positioned element*/
+  }
+
+  input#UnitsProj-selectLink-textBox {
+    /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
+    //margin: 2px !important;
+    //margin-right: 0px !important;
+    //padding: 2px !important;
+    padding-right: 35px !important; /* to prevent typing on top of the count label text */
+
+    position: relative !important;
+    border: 1px solid darken($selectLink-base-gray, 20) !important;
+    width: 180px !important;
+    height: $selectLinkTextBox_height !important;
+    box-sizing: border-box !important;
+    @include border-radius(3px 0 0 3px !important);
+
+    &.no-match {
+      background-color: pink !important;
+    }
+
+    &:focus {
+      border: 1px solid $focused-element-or-CU-color !important;
+      outline: none !important;
+    }
+
+    &::-webkit-input-placeholder {
+      font: normal normal normal 11px/14px $sans-serif-font-family !important;
+    }
+  }
+
+  span.countLabel {
+    position: absolute !important;
+    top: 4px !important;
+    right: 3px !important;
+    font: normal normal normal 11px/14px $sans-serif-font-family !important;
+    color: gray !important;
+  }
+
+  #UnitsProj-selectLink-helpButton {
+    font: normal normal normal 11px/14px $sans-serif-font-family !important;
+    color: #666 !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+    border: 1px solid darken($selectLink-base-gray, 20) !important;
+    height: $selectLinkTextBox_height !important;
+    background-color: $selectLink-base-gray !important;
+    padding: 0px 8px !important;
+    padding-top: 2px !important;
+    vertical-align: top !important;
+    @include border-radius(0 3px 3px 0 !important);
+    cursor: default !important;
+    margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox */
+    z-index: $highest-z-index - 1 !important;
+
+    &:hover {
+      font-weight: bold !important;
+      position: relative !important; /* to apply z-index */
+      border: 1px solid darken($selectLink-base-gray, 40) !important;
+      z-index: $highest-z-index !important;
+    }
+
+    &:active {
+      background-color: darken($selectLink-base-gray, 10) !important;
+    }
+  }
 
   .UnitsProj-close-button {
     @include close-button;
+    margin-left: 4px !important;
   }
+
 }
-
-input#UnitsProj-selectLink-textBox {
-  //position: absolute; top: 6px; left: 6px;
-
-  /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
-
-  box-sizing: border-box !important; /*using box-sizing for easier calculations. make sure to specify this because
-    it varies across sites, and changes the effective dimensions of the textbox*/
-  margin: 2px !important;
-  padding: 2px !important;
-  width: 150px !important;
-  height: 20px !important;
-}
-
 
 /************* Focused element styles *************/
 
