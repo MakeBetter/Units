@@ -220,8 +220,7 @@ input.UnitsProj-reset-text-input {
   /**********
   text properties
   ***********/
-  font-family: $sans-serif-font-family !important;
-  font-size: 13px !important;
+  font: normal normal normal 13px/15px $sans-serif-font-family !important;
   color: $text-color !important;
   vertical-align: baseline !important;
   word-spacing: 0px !important;
