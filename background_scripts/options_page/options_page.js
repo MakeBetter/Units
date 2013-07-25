@@ -27,15 +27,16 @@
 
 
     var navigateToAdvancedOptions = function() {
-        // Reset/Populate advanced options
-        mod_advancedOptions.render(function() {
-            basicOptions.style.display = "none";
-            advancedOptions.style.display = "block";
 
-            // Update navigation link
-            advancedOptionsLink.classList.add("selected");
-            basicOptionsLink.classList.remove("selected");
-        });
+        basicOptions.style.display = "none";
+        advancedOptions.style.display = "block";
+
+        // Update navigation link
+        advancedOptionsLink.classList.add("selected");
+        basicOptionsLink.classList.remove("selected");
+
+        // Reset/Populate advanced options
+        mod_advancedOptions.render();
     };
 
     var navigateToBasicOptions = function() {

@@ -45,7 +45,6 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         document.addEventListener("mouseup", showMessage_JSONKeyHelp);
 
         setupUI_saveShortcutMessage();
-        positionNavMenu();
     }
 
     function _render(settings) {
@@ -80,6 +79,8 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         generalSettingsContainer.innerHTML = "<pre>"+ generalSettings + "</pre>";
         siteSettingsContainer.innerHTML = "<pre>" + siteSpecificSettings + "</pre>";
         globalSettingsTextContainer.innerHTML = "<pre>" + globalSettings + "</pre>";
+
+        positionNavMenu();
 
         navigateToSection(navigationMenu.querySelector("li:first-child"));
     }
