@@ -199,11 +199,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     function setFakeFocus(el) {
         removeActiveElementStyling();
         elementStyledAsActive = el;
-        var saved = document.activeElement;
-        $textBox.off('focusout', onTextBoxFocusOut);      // remove event handler
-        el.focus();
-        saved.focus();
-        $textBox.on('focusout', onTextBoxFocusOut); // restore event handler ('focusout' is used since it supports e.relatedTarget)
+        // This following lines were required to ensure that the
+        // element being given focus got moved into the  viewport.
+        // They have been removed since we are currently only
+        // considering elements within the viewport.
+//        var saved = document.activeElement;
+//        $textBox.off('focusout', onTextBoxFocusOut);      // remove event handler
+//        el.focus();
+//        saved.focus();
+//        $textBox.on('focusout', onTextBoxFocusOut); // restore event handler ('focusout' is used since it supports e.relatedTarget)
         mod_basicPageUtils.styleActiveElement(el);
     }
 
