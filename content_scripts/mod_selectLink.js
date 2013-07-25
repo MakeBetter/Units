@@ -229,6 +229,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         $UIContainer.hide();
         endMatching();
         mod_context.set_selectLinkUI_state(false);
+        removeEvent_onViewportChange();
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -236,6 +237,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         $UIContainer.show();
         $textBox.focus();
         mod_context.set_selectLinkUI_state(true);
+        setupEvent_onViewportChange();
     }
 
     function removeActiveElementStyling() {
@@ -336,6 +338,18 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             ((top + height) > window.scrollY) &&                    // elBottom > winTop
             (left < (window.scrollX + window.innerWidth)) &&        // elLeft < winRight
             ((left + width) > window.scrollX);                      // elRight > winLeft
+    }
+
+    function setupEvent_onViewportChange() {
+        $(window).on('resize scroll', onViewportChange);
+    }
+
+    function removeEvent_onViewportChange() {
+        $(window).off('resize scroll', onViewportChange);
+    }
+
+    function onViewportChange() {
+        onInput();  // to re-execute code for matching links (with a brief delay)
     }
 
     function toggleHelpUI() {
