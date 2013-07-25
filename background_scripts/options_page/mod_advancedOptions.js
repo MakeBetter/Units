@@ -19,7 +19,8 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         saveChangesButton = document.getElementById("save-settings"),
         resetOptionsButton = document.getElementById("advanced-options").querySelector(".reset-settings"),
         goToExtensionLink = document.getElementById("go-to-extensions"),
-        saveShortcutHelpSpan = document.querySelector("#general-settings-section .context-message");
+        saveShortcutHelpSpan = document.querySelector("#general-settings-section .context-message"),
+        navigationMenu = document.getElementById("advanced-options-sections-navigation");
 
     var defaultSettingsHelp = backgroundPageWindow.defaultSettingsHelp,
         advancedOptions_helpContainer;
@@ -34,12 +35,17 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         resetOptionsButton.addEventListener("click", resetOptions);
         goToExtensionLink.addEventListener("click", goToAllExtensionsPage);
 
+        navigationMenu.addEventListener("click", function(event) {
+            navigateToSection(event.target);
+        });
+
         document.body.addEventListener("keydown", saveChanges_onKeyDown, true); //Bind to "body" because we want to be
         // able to save changes by pressing ctrl+s anywhere on the page.
 
         document.addEventListener("mouseup", showMessage_JSONKeyHelp);
 
         setupUI_saveShortcutMessage();
+        positionNavMenu();
     }
 
     function _render(settings) {
@@ -74,6 +80,8 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         generalSettingsContainer.innerHTML = "<pre>"+ generalSettings + "</pre>";
         siteSettingsContainer.innerHTML = "<pre>" + siteSpecificSettings + "</pre>";
         globalSettingsTextContainer.innerHTML = "<pre>" + globalSettings + "</pre>";
+
+        navigateToSection(navigationMenu.querySelector("li:first-child"));
     }
 
     function render(onComplete) {
@@ -199,6 +207,42 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         generalSettingsContainer.addEventListener("blur", function() {
             saveShortcutHelpSpan.style.display = "none";
         });
+    }
+
+    function positionNavMenu() {
+        var mainContainer = document.getElementById("advanced-options-main-container"),
+            navElement = document.getElementById("advanced-options-sections-navigation"),
+            mainContentLeftPos = mod_optionsHelper.getPosition(mainContainer)[0],
+            posLeft = mainContentLeftPos - 130;
+
+        navElement.style.left = posLeft;
+    }
+
+    function navigateToSection(menuItem) {
+        var sectionId = menuItem.dataset.target,
+            section = document.getElementById(sectionId),
+            pos = section && mod_optionsHelper.getPosition(section),
+            headerHeight = document.getElementById("settings-header").offsetHeight + document.querySelector(".sub-header").offsetHeight;
+
+        if (pos) {
+            // Scroll to section
+            window.scroll(pos[0], pos[1] - headerHeight);
+
+            // Highlight menu item
+            highlightMenuItem(menuItem);
+        }
+    }
+
+    function highlightMenuItem(item) {
+        if (!item) {
+            return;
+        }
+
+        var class_menuSelected = "menu-selected",
+            selectedMenu = navigationMenu.querySelector("." + class_menuSelected);
+        selectedMenu && selectedMenu.classList.remove(class_menuSelected);
+
+        item.classList.add(class_menuSelected);
     }
 
     return thisModule;

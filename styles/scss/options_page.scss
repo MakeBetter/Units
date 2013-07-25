@@ -5,11 +5,27 @@ body {
     margin: 0; padding: 0;
 }
 
-h3 {
-  font-size: 13px;
+
+h2 {
+  font-family: $serif-font-family;
+  font-weight: bold;
+  font-size: 14px;
+  color: $subheading-color;
+  display: inline-block;
+  margin: 0; margin-bottom: 5px;
 }
 
-$options-content-width: 960px;
+h3 {
+  font-family: $sans-serif-font-family;
+  font-size: 13px;
+  margin: 10px 0 0 0;
+  color: lighten($subheading-color, 15);
+}
+
+$options-content-width: 900px;
+$options-header-height: 40px;
+$options-subheader-height: 50px;
+$options-mainContent-posTop: $options-header-height + $options-subheader-height; // header height + buttons panel (in advanced options) + margin
 
 @mixin highlighted-message {
   color: #666;
@@ -23,7 +39,7 @@ $options-content-width: 960px;
     padding: 0;
     position: fixed;
     top: 0;
-    height: 40px;
+    height: $options-header-height;
     width: 100%;
     background: /*cadetblue*/ #EDF4FA;
     box-sizing: border-box;
@@ -31,49 +47,55 @@ $options-content-width: 960px;
     z-index: 2;
 }
 
-    #header-content{
-        width: $options-content-width;
-        margin: 0 auto;
-        padding: 0;
-        font-weight: normal;
-        vertical-align: middle;
-        line-height: 40px;
-        //display: inline-block;
+#header-content {
+  width: $options-content-width;
+  font-weight: normal;
+  vertical-align: middle;
+  line-height: $options-header-height;
+  margin: 0 auto;
+  padding: 0;
 
-      a {
-        text-decoration: none;
-        padding: 5px;
-      }
-    }
+  a {
+    text-decoration: none;
+    padding: 5px;
+  }
 
-    #h1 {
-      font-family: Palatino, Georgia, 'Times New Roman', serif;
-      font-size: 20px;
-      font-weight: normal;
-      color: #666666;
-      font-weight: bold;
-    }
+  #h1 {
+    padding-left: 0;
+  }
+}
 
-    #navigation {
-      display: inline-block;
-      float: right;
-      margin: 0;
-      padding: 0;
-    }
+#h1 {
+  font-family: Palatino, Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: normal;
+  color: #666666;
+  font-weight: bold;
+}
 
-    #navigation>li {
-      float: left;
-      margin-right: 10px;
-    }
+#navigation {
+  display: inline-block;
+  float: right;
+  margin: 0;
+  padding: 0;
+}
 
-    #navigation a {
-      color: $text-color;
-    }
+#navigation>li {
+  float: left;
+  margin-right: 10px;
+}
 
-    #navigation a.selected {
-      background-color: #333;
-      color: $text-color-light;
-    }
+#navigation a {
+  color: #888;
+}
+
+#navigation a.selected {
+  border-bottom: solid 1px #999;
+  color: #333;
+  //background-color: #444;
+  //color: $text-color-light;
+  //@include border-radius(2px);
+}
 
 /*
 Success/Error message styles
@@ -125,7 +147,7 @@ section{
 #settings-container {
   margin: 0 auto;
   position: relative;
-  top: 60px;
+  top: $options-mainContent-posTop;
   width: $options-content-width;
 }
 
@@ -136,6 +158,10 @@ Basic Options styles
 
 #basic-options {
   display: none;
+
+  /* Adjust for the subheader in the advanced options page. */
+  margin-top : -($options-subheader-height - 20);
+
   tr {
     height: 20px;
   }
@@ -155,17 +181,17 @@ Basic Options styles
     line-height: 20px;
     color: #333333;
     padding: 10px;
-  }
 
-  .subheading {
-    margin-bottom: 10px;
+    button {
+      float: right;
+    }
   }
 
   table {
     font-size: 14px;
   }
 
-  button {
+  .reset-settings {
     float: right;
   }
 }
@@ -213,6 +239,15 @@ Basic Options styles
 }
 
 /*
+This style should be defined after the .delete-button style, so that this overrides when needed.
+Also, CSS needs to be marked as !important because properties of .delete-button are marked as important.
+*/
+.hidden {
+  display: none !important;
+}
+
+
+/*
 Advanced Options styles
 */
 
@@ -224,17 +259,70 @@ Advanced Options styles
     &:focus {
       outline: none;
     }
+
+    /* Fixed header, that contains the reset/save buttons and main message */
+    .sub-header {
+      position: fixed;
+      top: $options-header-height;
+      z-index: 2;
+      vertical-align: middle;
+      background: white;
+      box-sizing: border-box;
+      height: $options-subheader-height;
+      line-height: $options-subheader-height; /* vertically align its contents. */
+      width: $options-content-width;
+    }
 }
 
-    .options-message {
-        color: $message-color-grey;
-        font-size: 15px;
-    }
 
-    #options-main-message {
-        margin-bottom: 10px;
-        text-align: middle;
-    }
+/* Advanced Options sub-header elements */
+#options-main-message {
+    text-align: middle;
+    font-size: 13px;
+    display: inline-block;
+}
+
+#buttons-panel {
+  display: inline-block;
+  position: absolute;
+  right:0;
+}
+
+/* Navigation Menu (to navigate between the sections on the Advanced Options page) */
+
+#advanced-options-sections-navigation {
+  position: fixed;
+  top:$options-mainContent-posTop;
+
+  &>ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    //float: left;
+    margin-right: 10px;
+    color: #999999;
+    font-size: 13px;
+    font-family: Helvetica;
+    margin-bottom: 2px;
+    padding: 5px 35px 5px 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #bbb;
+
+
+  }
+
+  .menu-selected {
+    //background-color: lightslategrey;
+    color: #333333;
+    border-bottom: 1px solid #999;
+  }
+}
+
+
+/* Sections (Advanced Options main content) */
 
 #general-settings-section {
 /*  so this acts as the offset parent*/
@@ -246,29 +334,12 @@ Advanced Options styles
     position: absolute;
     right: 0;
 /*    *sheepish* randomly decided value so that the span sits just inside the textarea, from the top. */
-    top: 30px;
+    top: 22px;
     display: none;
   }
 }
 
-
-h2 {
-  font-family: $serif-font-family;
-  font-weight: bold;
-  font-size: 14px;
-  color: $subheading-color;
-  display: inline-block;
-  margin: 5px 0;
-}
-
-h3 {
-  font-family: $sans-serif-font-family;
-  font-size: 13px;
-  margin: 10px 0 0 0;
-  color: lighten($subheading-color, 15);
-}
-
-.subheading-message {
+.section-subheading-message {
   @include highlighted-message;
   font-size: 12px;
   display: block;
@@ -276,9 +347,7 @@ h3 {
 
 .editable-container {
   border: 1px solid #efefef;
-  //width: 750px;
   padding: 0;
-  //margin-top: 5px;
   max-height: 600px;
   overflow: auto;
   position: relative;
@@ -293,14 +362,7 @@ h3 {
   outline: 1px solid #bbb;
 }
 
-#save-settings{
-    float: right;
-}
-
-.reset-settings {
-    float: right;
-}
-
+// JSON setting key help
 #advanced-options-help {
   @include highlighted-message;
   display: inline-block;
@@ -310,17 +372,9 @@ h3 {
   font-size: 13px;
   padding: 5px;
   border: 1px solid orange;
+
+  .key {
+    font-weight: bold;
+  }
 }
 
-
-.key {
-  font-weight: bold;
-}
-
-/*
-This style should be defined after the .delete-button style, so that this overrides when needed.
-Also, CSS needs to be marked as !important because properties of .delete-button are marked as important.
-*/
-.hidden {
-  display: none !important;
-}

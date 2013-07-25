@@ -14,7 +14,6 @@
                 <li><a href="#" id="advanced-options-nav">Advanced </a></li>
             </ul>
             <div id="user-message" class="ui-corner-bottom" style="display:none;"></div>
-
         </div>
     </header>
     <div id="settings-container">
@@ -31,7 +30,7 @@
             </section>
             <section id ="general-keyboard-shortcuts">
                 <h2>Keyboard shortcuts </h2>
-                <span class = 'subheading-message'> To edit a shortcut, type it out exactly how you would use it. (Sequence
+                <span class = 'section-subheading-message'> To edit a shortcut, type it out exactly how you would use it. (Sequence
                 shortcuts are also supported. For e.g: "g" followed by "i".) </span>
 
                 <h3>Content Unit (CU) based:</h3>
@@ -48,39 +47,53 @@
         </div>
 
         <div id="advanced-options">
-            <div id="buttons-panel">
-                <button class="reset-settings">Reset all options</button>
-                <button id="save-settings">Save changes</button>
-            </div>
-            <div class="UnitsProj-message" id="options-main-message">
-                <span> Edit values to override default options </span>
-            </div>
-            <section id = "general-settings-section">
-                <h2>General</h2>
-                <span class="context-message"></span>
-                <div contenteditable="true" id="general-settings" class = "editable-container">
+            <div class="sub-header">
+                <div class="UnitsProj-message" id="options-main-message">
+                    <span> Edit values to override default options </span>
                 </div>
-            </section>
-            <section class="section">
-                <h2>Site specific</h2>
-                <span class="subheading-message UnitsProj-message">
+                <div id="buttons-panel">
+                    <button class="reset-settings">Reset all options</button>
+                    <button id="save-settings">Save changes</button>
+                </div>
+
+
+            </div>
+
+            <nav id="advanced-options-sections-navigation">
+                <ul>
+                    <li data-target="general-settings-section"> General </li>
+                    <li data-target="site-specific-settings-section"> Site Specific </li>
+                    <li data-target="global-settings-section"> Global</li>
+                </ul>
+            </nav>
+            <div id="advanced-options-main-container">
+                <section id="general-settings-section">
+                    <h2>General</h2>
+                    <span class="context-message"></span>
+                    <div contenteditable="true" id="general-settings" class = "editable-container">
+                    </div>
+                </section>
+                <section id="site-specific-settings-section">
+                    <h2>Site specific</h2>
+                <span class="section-subheading-message UnitsProj-message">
                     These options are not editable (for now).
                 </span>
-                <div id="site-specific-settings" class = "editable-container readonly">
+                    <div id="site-specific-settings" class = "editable-container readonly">
 
-                </div>
-            </section>
-            <section class="section">
-                <h2>Global (work on all tabs)</h2>
-                <span class="subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
+                    </div>
+                </section>
+                <section id="global-settings-section">
+                    <h2>Global (work on all tabs)</h2>
+                <span class="section-subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
                     Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
                 </span>
-                <div id="global-settings" class = "editable-container readonly">
+                    <div id="global-settings" class = "editable-container readonly">
 
-                </div>
-            </section>
+                    </div>
+                </section>
 
-            <div id = advanced-options-help style="display: none"></div>
+                <div id = advanced-options-help style="display: none"></div>
+            </div>
         </div>
     </div>
     <script src="../../vendor/mousetrap-modified.js"></script>
