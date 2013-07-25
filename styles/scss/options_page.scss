@@ -87,14 +87,15 @@ $options-mainContent-posTop: $options-header-height + $options-subheader-height;
 
 #navigation a {
   color: #888;
-}
 
-#navigation a.selected {
-  border-bottom: solid 1px #999;
-  color: #333;
-  //background-color: #444;
-  //color: $text-color-light;
-  //@include border-radius(2px);
+  &:hover, &.selected {
+    color: #333;
+    transition: all 1s ease-out;
+    border-bottom: solid 1px #999;
+
+  }
+  &.selected {
+  }
 }
 
 /*
@@ -298,6 +299,7 @@ Advanced Options styles
     list-style: none;
     padding: 0;
     margin: 0;
+    width: 130px;
   }
 
   li {
@@ -310,14 +312,18 @@ Advanced Options styles
     padding: 5px 35px 5px 8px;
     cursor: pointer;
     border-bottom: 1px solid #bbb;
+    //text-align: left;
 
+    &.menu-selected {
+      //background-color: lightslategrey;
+      color: #333333;
+      border-bottom: 1px solid #999;
+      transition: all 0.5s ease-out;
+      //border-left: 20px solid transparent;
+      padding-right: 10px;
+      //text-align: right;
+    }
 
-  }
-
-  .menu-selected {
-    //background-color: lightslategrey;
-    color: #333333;
-    border-bottom: 1px solid #999;
   }
 }
 
