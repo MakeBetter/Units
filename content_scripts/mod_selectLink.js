@@ -153,18 +153,19 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         var $all = $document.find('a, input, button');
         $matching = $all.filter(function doesLinkMatch() {
-            var text_lowerCase = (this.innerText + " " + this.value + " " + this.placeholder).toLowerCase();
+            if (isAnyPartOfElementInViewport(this)) {
+                var text_lowerCase = (this.innerText + " " + this.value + " " + this.placeholder).toLowerCase();
 //            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
-            if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
-                return true;
+                if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
+                    return true;
+                }
             }
         });
 
         if ($matching.length) {
             $matching.addClass(matchingLink_class);
-            var elementToFocus_info = getElementToFocuInfo($matching);
-            setFakeFocus(elementToFocus_info.element);
-            $countLabel[0].innerText = (elementToFocus_info.index + 1) + " of " + $matching.length;
+            setFakeFocus($matching[0]);
+            $countLabel[0].innerText = "1 of " + $matching.length;
             $textBox.removeClass(class_noMatch);
         }
         else {
@@ -175,21 +176,21 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     // From among the set of elements specified ($set), this returns the first element
     // in the viewport. If none is found to be in the viewport, returns the first element.
-    // The return value is an object of the format: 
+    // The return value is an object of the format:
     // {
-    //      element: <element>,         // DOM element   
+    //      element: <element>,         // DOM element
     //      index: <indexInArray>,      // 0 based index in $set
     // }
-    function getElementToFocuInfo($set) {
-        var len = $set.length;
-        for (var i = 0; i < len; i++) {
-            var elem = $set[i];
-            if (isAnyPartOfElementInViewport(elem)) {
-                return {element: elem, index: i};
-            }
-        }
-        return {element: $set[0], index: 0};
-    }
+//    function getElementToFocuInfo($set) {
+//        var len = $set.length;
+//        for (var i = 0; i < len; i++) {
+//            var elem = $set[i];
+//            if (isAnyPartOfElementInViewport(elem)) {
+//                return {element: elem, index: i};
+//            }
+//        }
+//        return {element: $set[0], index: 0};
+//    }
 
     // 1) Styles the specified element as active (while the actual focus continues to
     // remain on the select-link-textbox).
