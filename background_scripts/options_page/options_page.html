@@ -61,19 +61,19 @@
 
             <nav id="advanced-options-sections-navigation">
                 <ul>
-                    <li data-target="general-settings-section"> General </li>
-                    <li data-target="site-specific-settings-section"> Site Specific </li>
-                    <li data-target="global-settings-section"> Global</li>
+                    <li data-target="general-settings-section" id="general-settings-menu"> General </li>
+                    <li data-target="site-specific-settings-section" id="site-specific-menu"> Site Specific </li>
+                    <li data-target="global-settings-section" id="global-settings-menu"> Global</li>
                 </ul>
             </nav>
             <div id="advanced-options-main-container">
-                <section id="general-settings-section">
+                <section id="general-settings-section" data-menuid="general-settings-menu">
                     <h2>General</h2>
                     <span class="context-message"></span>
                     <div contenteditable="true" id="general-settings" class = "editable-container">
                     </div>
                 </section>
-                <section id="site-specific-settings-section">
+                <section id="site-specific-settings-section" data-menuid="site-specific-menu">
                     <h2>Site specific</h2>
                 <span class="section-subheading-message UnitsProj-message">
                     These options are not editable (for now).
@@ -82,7 +82,7 @@
 
                     </div>
                 </section>
-                <section id="global-settings-section">
+                <section id="global-settings-section" data-menuid="global-settings-menu">
                     <h2>Global (work on all tabs)</h2>
                 <span class="section-subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
                     Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.

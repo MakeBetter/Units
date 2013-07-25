@@ -27,6 +27,10 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
     var element_advancedOptionsContainer = document.getElementById("advanced-options");
 
+    var class_menuSelected = "menu-selected",
+        headerHeight;
+
+
     function setup() {
         advancedOptions_helpContainer = document.getElementById("advanced-options-help");
 
@@ -39,12 +43,16 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
             navigateToSection(event.target);
         });
 
-        document.body.addEventListener("keydown", saveChanges_onKeyDown, true); //Bind to "body" because we want to be
+        document.addEventListener("keydown", saveChanges_onKeyDown, true); //Bind to "document" because we want to be
         // able to save changes by pressing ctrl+s anywhere on the page.
 
         document.addEventListener("mouseup", showMessage_JSONKeyHelp);
 
+        document.addEventListener("scroll", onDocumentScroll_highlightMenu);
+
         setupUI_saveShortcutMessage();
+
+        headerHeight = document.getElementById("settings-header").offsetHeight + document.querySelector(".sub-header").offsetHeight;
     }
 
     function _render(settings) {
@@ -222,8 +230,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     function navigateToSection(menuItem) {
         var sectionId = menuItem.dataset.target,
             section = document.getElementById(sectionId),
-            pos = section && mod_optionsHelper.getPosition(section),
-            headerHeight = document.getElementById("settings-header").offsetHeight + document.querySelector(".sub-header").offsetHeight;
+            pos = section && mod_optionsHelper.getPosition(section);
 
         if (pos) {
             // Scroll to section
@@ -239,11 +246,46 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
             return;
         }
 
-        var class_menuSelected = "menu-selected",
-            selectedMenu = navigationMenu.querySelector("." + class_menuSelected);
+        var selectedMenu = navigationMenu.querySelector("." + class_menuSelected);
         selectedMenu && selectedMenu.classList.remove(class_menuSelected);
 
         item.classList.add(class_menuSelected);
+    }
+
+    /**
+     * On document scroll, check and highlight the menu option that matches the section in view.
+     * @param event
+     */
+    function onDocumentScroll_highlightMenu(event) {
+        var sections = element_advancedOptionsContainer.querySelectorAll("section"),
+            body = document.body,
+            currentlySelectedMenuOption = navigationMenu.querySelector("." + class_menuSelected),
+            correspondingMenuOption;
+
+            for (var i = 0; i < sections.length; i++) {
+            var section = sections[i],
+                sectionPositionTop = mod_optionsHelper.getPosition(section)[1] - body.scrollTop; // get position
+            // relative to the viewport
+
+            if (sectionPositionTop > headerHeight && sectionPositionTop < 300) {
+                correspondingMenuOption = document.getElementById(section.dataset.menuid); // Every section has its
+                // corresponding menu option's id in its data
+
+                if (correspondingMenuOption !== currentlySelectedMenuOption) {
+                    highlightMenuItem(correspondingMenuOption);
+                }
+            }
+        }
+
+        // Special case for the last section.
+        // If the scrollbar is close to the bottom of the page, and the last section's menu option is not highlighted
+        // yet, then do that.
+        if (body.scrollHeight - 300 <= body.clientHeight + body.scrollTop) {
+            correspondingMenuOption = navigationMenu.querySelector("li:last-child");
+            if (correspondingMenuOption !== currentlySelectedMenuOption) {
+                highlightMenuItem(correspondingMenuOption);
+            }
+        }
     }
 
     return thisModule;
