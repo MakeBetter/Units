@@ -18,8 +18,9 @@ h2 {
 h3 {
   font-family: $sans-serif-font-family;
   font-size: 13px;
-  margin: 10px 0 0 0;
+  margin: 10px 0;
   color: lighten($subheading-color, 15);
+  font-weight: 500;
 }
 
 $options-content-width: 900px;
@@ -308,7 +309,7 @@ Advanced Options styles
     color: #999999;
     font-size: 13px;
     font-family: Helvetica;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
     padding: 5px 35px 5px 8px;
     cursor: pointer;
     border-bottom: 1px solid #bbb;
