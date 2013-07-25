@@ -904,6 +904,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 // returns a bounding rectangle for $CU
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
+// NOTE: the values for top and left are relative to the document
     function getBoundingRectangle($CU) {
 
         var elements = [];
