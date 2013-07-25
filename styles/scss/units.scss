@@ -92,7 +92,7 @@ div#UnitsProj-selectLink-UIContainer {
     box-sizing: border-box !important;
     @include border-radius(3px 0 0 3px !important);
 
-    &.no-match {
+    &.UnitsProj-selectLink-noMatch {
       background-color: pink !important;
     }
 
@@ -129,6 +129,7 @@ div#UnitsProj-selectLink-UIContainer {
     cursor: default !important;
     margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox */
     z-index: $highest-z-index - 1 !important;
+    outline: none !important;
 
     &:hover {
       font-weight: bold !important;
@@ -147,6 +148,13 @@ div#UnitsProj-selectLink-UIContainer {
     margin-left: 4px !important;
   }
 
+  .UnitsProj-selectLink-helpUI {
+    //position: fixed !important;
+    //bottom: 25px !important;
+    width: 215px !important;
+    background-color: $background-color-gray !important;
+    padding: 4px 2px 6px 4px !important;
+  }
 }
 
 /************* Focused element styles *************/
@@ -186,7 +194,7 @@ the text input element that might be specified by the webpage */
 
 input.UnitsProj-reset-text-input {
 
-  /********
+  /*********
   dimensions and float property of the input element
   *********/
 

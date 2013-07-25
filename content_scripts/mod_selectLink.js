@@ -18,7 +18,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         timeout_findMatchingLinks,
         maxDelay_findMatchingLinks = 333,
-        class_noMatch = 'no-match';
+        class_noMatch = 'UnitsProj-selectLink-noMatch',
+        isHelpVisible = false;
 
     var $textBox =  $('<input type = "text">')
         .attr("id", "UnitsProj-selectLink-textBox")
@@ -34,21 +35,32 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         .append($countLabel);
 
     var $helpBtn = $('<span>?</span>')
-        .attr('id', 'UnitsProj-selectLink-helpButton');
+        .attr('id', 'UnitsProj-selectLink-helpButton')
+        .attr('tabindex', 0);   // so that it can receive focus on click (see onTextBoxFocusOut())
 
     var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
         .addClass("UnitsProj-close-button")
         .addClass(class_addedByUnitsProj);
 
+    var $helpUI = $('<div></div>')
+        .addClass('UnitsProj-selectLink-helpUI')
+        .hide();
+
     var $UIContainer = $('<div></div>')
         .attr("id", "UnitsProj-selectLink-UIContainer")
         .addClass(class_addedByUnitsProj)
+        .append($helpUI)
         .append($textBoxContainer)
         .append($helpBtn)
         .append($closeButton)
         .hide()     // to prevent from appearing when the page loads
         .appendTo(_u.$topLevelContainer);
 
+    function reset() {
+        timeout_findMatchingLinks = false;
+        closeUI();
+    }
+    
     function setup(settings) {
         reset();
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
@@ -57,7 +69,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
         $textBox.on('input', onInput);
         $closeButton.on('click', closeUI);
-        $textBox.on('blur', closeUI);
+        $textBox.on('focusout', onTextBoxFocusOut); // we use focusout instead of blur since it supports e.relatedTarget
 
         var generalShortcuts = settings.generalShortcuts;
         mod_keyboardLib.bind(generalShortcuts.showSelectLinkUI.kbdShortcuts, showUI);
@@ -66,10 +78,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         mod_keyboardLib.bind(generalShortcuts.openSelectedLink.kbdShortcuts, openSelectedLink, {selectLinkUIActive: true}, true);
         mod_keyboardLib.bind(generalShortcuts.openSelectedLinkInNewTab.kbdShortcuts, openSelectedLink_newTab, {selectLinkUIActive: true}, true);
-    }
 
-    function reset() {
-        timeout_findMatchingLinks = false;
+        $helpBtn.click(toggleHelpUI);
+        $helpUI.text("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (end)");
     }
 
     // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
@@ -188,11 +199,17 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         removeActiveElementStyling();
         elementStyledAsActive = el;
         var saved = document.activeElement;
-        $textBox.off('blur', closeUI);      // remove event handler
+        $textBox.off('focusout', onTextBoxFocusOut);      // remove event handler
         el.focus();
         saved.focus();
-        $textBox.on('blur', closeUI);       // restore event handler
+        $textBox.on('focusout', onTextBoxFocusOut); // restore event handler ('focusout' is used since it supports e.relatedTarget)
         mod_basicPageUtils.styleActiveElement(el);
+    }
+
+    function onTextBoxFocusOut(e) {
+        if ($UIContainer.find(e.relatedTarget).length === 0) {
+            closeUI();
+        }
     }
 
     function closeUI() {
@@ -200,14 +217,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         clearTimeout(timeout_findMatchingLinks);
         timeout_findMatchingLinks = false;    // reset
 
-        // blur, if not already blurred (the check exists to prevent infinite recursion)
+        // blur (if not already blurred - to prevent infinite recursion)
         if (document.activeElement === $textBox[0])
             $textBox.blur();
 
         $textBox.val('');
         $countLabel[0].innerText = "";
         $textBox.removeClass(class_noMatch);
-
+        hideHelpUI();
         $UIContainer.hide();
         endMatching();
         mod_context.set_selectLinkUI_state(false);
@@ -318,6 +335,27 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             ((top + height) > window.scrollY) &&                    // elBottom > winTop
             (left < (window.scrollX + window.innerWidth)) &&        // elLeft < winRight
             ((left + width) > window.scrollX);                      // elRight > winLeft
+    }
+
+    function toggleHelpUI() {
+        if (isHelpVisible) {
+            hideHelpUI();
+        }
+        else {
+            showHelpUI();
+        }
+    }
+
+    function hideHelpUI() {
+        isHelpVisible = false;
+        $helpUI.hide();
+        $textBox.focus();
+    }
+
+    function showHelpUI() {
+        isHelpVisible = true;
+        $helpUI.show();
+        $textBox.focus();
     }
 
     return thisModule;
