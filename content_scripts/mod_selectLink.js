@@ -153,7 +153,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
         var $all = $document.find('a, input, button');
         $matching = $all.filter(function doesLinkMatch() {
-            if (isAnyPartOfElementInViewport(this)) {
+            if (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this)) {
                 var text_lowerCase = (this.innerText + " " + this.value + " " + this.placeholder).toLowerCase();
 //            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
                 if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
