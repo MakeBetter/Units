@@ -23,7 +23,8 @@ _u.mod_commonHelper = (function() {
         stringifyJSONUnsupportedTypes_inSettings: stringifyJSONUnsupportedTypes_inSettings,
         destringifyJsonUnsupportedTypes_inSettings: destringifyJsonUnsupportedTypes_inSettings,
         getHostname: getHostname,
-        isObject: isObject
+        isObject: isObject,
+        getOffsetPosition: getOffsetPosition
     };
 
     var regexKeys = ["urlRegexps", "urlRegexps_added", "urlRegexps_removed"];
@@ -299,6 +300,26 @@ _u.mod_commonHelper = (function() {
 
     function isObject(object) {
         return (Object.prototype.toString.call(object) == "[object Object]");
+    }
+
+
+    /***
+     * Returns an object with the keys 'top' and 'left' denoting the offset of the specified
+     * element relative to the document.
+     * @param el
+     */
+    function getOffsetPosition(el){
+        var x=0;
+        var y=0;
+        while(true){
+            x += el.offsetLeft;
+            y += el.offsetTop;
+            if(el.offsetParent === null){
+                break;
+            }
+            el = el.offsetParent;
+        }
+        return {top: y, left: x};
     }
 
     return thisModule;

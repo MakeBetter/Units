@@ -221,7 +221,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     function positionNavMenu() {
         var mainContainer = document.getElementById("advanced-options-main-container"),
             navElement = document.getElementById("advanced-options-sections-navigation"),
-            mainContentLeftPos = mod_optionsHelper.getPosition(mainContainer)[0],
+            mainContentLeftPos = mod_commonHelper.getOffsetPosition(mainContainer).left,
             posLeft = mainContentLeftPos - 130;
 
         navElement.style.left = posLeft;
@@ -230,15 +230,13 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     function navigateToSection(menuItem) {
         var sectionId = menuItem.dataset.target,
             section = document.getElementById(sectionId),
-            pos = section && mod_optionsHelper.getPosition(section);
+            pos = section && mod_commonHelper.getOffsetPosition(section);
 
-        if (pos) {
-            // Scroll to section
-            window.scroll(pos[0], pos[1] - headerHeight);
+        // Scroll to section
+        window.scroll(pos.left, pos.top - headerHeight);
 
-            // Highlight menu item
-            highlightMenuItem(menuItem);
-        }
+        // Highlight menu item
+        highlightMenuItem(menuItem);
     }
 
     function highlightMenuItem(item) {
@@ -264,7 +262,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
             for (var i = 0; i < sections.length; i++) {
             var section = sections[i],
-                sectionPositionTop = mod_optionsHelper.getPosition(section)[1] - body.scrollTop; // get position
+                sectionPositionTop = mod_commonHelper.getOffsetPosition(section).top - body.scrollTop; // get position
             // relative to the viewport
 
             if (sectionPositionTop > headerHeight && sectionPositionTop < 300) {

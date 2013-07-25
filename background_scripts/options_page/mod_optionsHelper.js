@@ -74,25 +74,6 @@ var mod_optionsHelper = (function(mod_settings) {
         return el;
     }
 
-    /***
-     * Get x,y position of element relative to document.
-     * @param el
-     * @returns {Array}
-     */
-    function getPosition(el){
-        var x=0;
-        var y=0;
-        while(true){
-            x += el.offsetLeft;
-            y += el.offsetTop;
-            if(el.offsetParent === null){
-                break;
-            }
-            el = el.offsetParent;
-        }
-        return [x, y];
-    }
-
     return thisModule;
 
 })(_u.mod_settings);
