@@ -20,7 +20,8 @@ h3 {
   font-size: 13px;
   margin: 10px 0;
   color: lighten($subheading-color, 15);
-  font-weight: 500;
+  font-weight: normal;
+  font-style: italic;
 }
 
 $options-content-width: 900px;
