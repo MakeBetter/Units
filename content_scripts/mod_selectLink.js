@@ -84,6 +84,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     // can be positioned relative to the document, using "absolute" positioning
     var $hintsContainer = $("<div></div>")
         .addClass('UnitsProj-hintsContainer')
+        .hide()
         .appendTo(_u.$topLevelContainer);
 
     var hintElements = [];  // array of hint spans (dom elements)
@@ -305,6 +306,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         endMatching();
         mod_context.set_selectLinkUI_state(false);
         removeEvent_onViewportChange();
+        $hintsContainer.remove();
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -312,6 +314,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $UIContainer.show();
         $textBox_main.focus();
         mod_context.set_selectLinkUI_state(true);
+        $hintsContainer.show();
         setupEvent_onViewportChange();
         if (usageMode === 2) { // hint mode
             assignHintLabels();
