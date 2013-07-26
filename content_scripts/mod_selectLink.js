@@ -1,4 +1,5 @@
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPageUtils, mod_keyboardLib, mod_context,
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper,
+                              mod_basicPageUtils, mod_keyboardLib, mod_context,
                               mod_mutationObserver, CONSTS) {
 
     "use strict";
@@ -10,6 +11,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     var $document = $(document),
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_hint = 'UnitsProj-hintLabel',
+        class_hintVisible = 'UnitsProj-hintLabel-visible',
+        class_elementWithHint = 'UnitsProj-elementWithHint',
         suppressEvent = mod_contentHelper.suppressEvent,
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
@@ -17,9 +21,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         $matching = $empty,
 
         timeout_findMatchingLinks,
-        maxDelay_findMatchingLinks = 333,
+        maxDelay_findMatchingLinks,
         class_noMatch = 'UnitsProj-selectLink-noMatch',
-        isHelpVisible = false;
+        isHelpVisible = false,
+        timeout_viewportChange = false;
+
+    // hint chars: set of letters used for hints. easiest to reach letters should come first
+    var hintCharsStr = "jfkdhglsurieytnvmbcaxzwoqp".toUpperCase(); // "jfkdhglsurieytnvmbc".toUpperCase();   // letters used to create hints
+    var usageMode = 2; // 1 - "find by typing chars", 2 - "show hints", 3 - "mixed"
+    var hintsArr = [];
 
     var $textBox =  $('<input type = "text">')
         .attr("id", "UnitsProj-selectLink-textBox")
@@ -56,13 +66,36 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         .hide()     // to prevent from appearing when the page loads
         .appendTo(_u.$topLevelContainer);
 
+    // The hints container element is used to group the all the hint label spans
+    // under a common element. It (a non-positioned element) is appended directly
+    // to the $topLevelContainer (also a non-positioned element) so that its contents
+    // can be positioned relative to the document, using "absolute" positioning
+    var $hintsContainer = $("<div></div>")
+        .addClass('UnitsProj-hintsContainer')
+        .appendTo(_u.$topLevelContainer);
+
+    var hintElements = [];  // array of hint spans (dom elements)
+
     function reset() {
         timeout_findMatchingLinks = false;
+        timeout_viewportChange = false;
         closeUI();
     }
-    
+
     function setup(settings) {
         reset();
+
+        if (usageMode === 2) {
+            maxDelay_findMatchingLinks = 50;
+        }
+        else {
+            maxDelay_findMatchingLinks = 333;
+        }
+        if (usageMode === 2 || usageMode === 3) {
+            hintsArr = generateHints(1000, hintCharsStr);
+            generateHintLabels();
+        }
+
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
@@ -137,6 +170,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         }
     }
 
+    // returns all link elements + other input-type elements
+    function $getAllLinkLikeElems() {
+        return $document.find('a, input, button, select');
+    }
+
     function findMatchingLinks() {
         clearTimeout(timeout_findMatchingLinks);
         timeout_findMatchingLinks = false;    // reset
@@ -151,21 +189,40 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
             return;
         }
 
-        var $all = $document.find('a, input, button');
-        $matching = $all.filter(function doesLinkMatch() {
-            if (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this)) {
-                var text_lowerCase = (this.innerText + " " + this.value + " " + this.placeholder).toLowerCase();
-//            if (text_lowerCase.indexOf(searchText_lowerCase) >= 0) {
-                if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
+        var $elems, matchedIndex = -1;
+
+        if (usageMode === 1) {
+            $elems = $getAllLinkLikeElems();
+            $matching = $elems.filter(function doesLinkMatch() {
+                if (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this)) {
+                    var text_lowerCase = (this.innerText + " " + this.value + " " + this.placeholder).toLowerCase();
+                    if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
+                        return true;
+                    }
+                }
+            });
+        }
+        else if (usageMode === 2) {
+            $elems = $('.' + class_elementWithHint);
+            $matching = $elems.filter(function doesLinkMatch(index) {
+                var hint_lowerCase = (this.dataset.unitsHintLabel).toLowerCase();
+                if (hint_lowerCase.substring(0, searchText_lowerCase.length) === searchText_lowerCase) {
+                    if (matchedIndex === -1 && hint_lowerCase === searchText_lowerCase) {
+                        matchedIndex = index;
+                    }
                     return true;
                 }
-            }
-        });
+            });
+        }
 
+        // this is done to make the same code work for cases: usageMode === 1 and usageMode === 2
+        if (matchedIndex === -1) {
+            matchedIndex = 0;
+        }
         if ($matching.length) {
             $matching.addClass(matchingLink_class);
             setFakeFocus($matching[0]);
-            $countLabel[0].innerText = "1 of " + $matching.length;
+            $countLabel[0].innerText = (matchedIndex + 1) + " of " + $matching.length;
             $textBox.removeClass(class_noMatch);
         }
         else {
@@ -181,7 +238,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     //      element: <element>,         // DOM element
     //      index: <indexInArray>,      // 0 based index in $set
     // }
-//    function getElementToFocuInfo($set) {
+//    function getElementToFocusInfo($set) {
 //        var len = $set.length;
 //        for (var i = 0; i < len; i++) {
 //            var elem = $set[i];
@@ -238,8 +295,71 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
         $textBox.focus();
         mod_context.set_selectLinkUI_state(true);
         setupEvent_onViewportChange();
+        if (usageMode === 2) { // hint mode
+            assignHintLabels();
+        }
     }
 
+    function assignHintLabels() {
+        $hintsContainer.find('.' + class_hintVisible).removeClass(class_hintVisible);
+        var $all = $getAllLinkLikeElems();
+        $all.removeClass(class_elementWithHint);
+        var $elemsToConsider = $all.filter(function doesLinkMatch() {
+            if (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this)) {
+                return true;
+            }
+        });
+        var len = $elemsToConsider.length;
+        for (var i = 0; i < len; i++) {
+            var el = $elemsToConsider[i];
+            var hintLabel = hintElements[i];
+            hintLabel.classList.add(class_hintVisible);
+            el.setAttribute('data-units-hint-label', hintLabel.innerText);
+            el.classList.add(class_elementWithHint);
+            var offset = mod_commonHelper.getOffsetPosition(el);
+            hintLabel.style.top = offset.top + "px";
+            hintLabel.style.left = offset.left + "px";
+        }
+    }
+
+    // returns (at least) 'n'  unique hints based on 'hintCharsStr'
+    function generateHints(n, hintCharsStr) {
+        var hintCharsArr = hintCharsStr.split(''),
+            len_hintChars = hintCharsArr.length,
+            hintsArray = [],
+            lastSet = [''],
+            currentSet,
+            count = -1;
+
+        while(true) {
+            currentSet = [];
+            var innerCount = -1;
+            for (var i = 0; i < len_hintChars; i++) {
+                var len_lastSet = lastSet.length;
+                for (var j = 0; j < len_lastSet; j++) {
+                    currentSet[++innerCount] = hintsArray[++count] = hintCharsArr[i] + lastSet[j];
+                }
+                if(count >= n) {
+                    return hintsArray;
+                }
+            }
+            lastSet = currentSet;
+        }
+    }
+
+    function generateHintLabels() {
+        $hintsContainer.empty();
+        hintElements = [];
+        var len = hintsArr.length;
+        for (var i = 0; i < len; i++) {
+            var hintElement = document.createElement('span');
+            hintElement.innerText = hintsArr[i];
+            hintElement.classList.add(class_hint);
+            hintElements[i] = (hintElement);
+        }
+        $hintsContainer.append(hintElements);
+    }
+    
     function removeActiveElementStyling() {
         if (elementStyledAsActive) {
             mod_basicPageUtils.removeActiveElementStyle(elementStyledAsActive);
@@ -349,7 +469,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
     }
 
     function onViewportChange() {
-        onInput();  // to re-execute code for matching links (with a brief delay)
+        if (timeout_viewportChange === false) {
+            timeout_viewportChange = setTimeout(function() {
+                clearTimeout(timeout_viewportChange);
+                timeout_viewportChange = false;
+                showUI();   // to update the UI
+                onInput();  // to re-execute code for matching links (with a brief delay)
+            }, 250);
+        }
     }
 
     function toggleHelpUI() {
@@ -375,6 +502,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_basicPage
 
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_basicPageUtils, _u.mod_keyboardLib, _u.mod_context,
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_commonHelper,
+        _u.mod_basicPageUtils, _u.mod_keyboardLib, _u.mod_context,
         _u.mod_mutationObserver, _u.CONSTS);
 

@@ -157,6 +157,21 @@ div#UnitsProj-selectLink-UIContainer {
   }
 }
 
+.UnitsProj-hintLabel {
+  opacity: 0.7 !important;
+  display: none !important;
+  position: absolute !important;
+  font: normal normal normal 9px/9px $sans-serif-font-family !important;
+  color: #d7f0d7 !important;
+  background-color: #052805 !important;
+  padding: 1px 2px !important;
+  letter-spacing: 1px !important;
+
+  &.UnitsProj-hintLabel-visible {
+    display: inline !important;
+  }
+}
+
 /************* Focused element styles *************/
 
 .UnitsProj-focused-element {
