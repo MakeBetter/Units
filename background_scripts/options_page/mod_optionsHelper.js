@@ -14,7 +14,6 @@ var mod_optionsHelper = (function(mod_settings) {
         showSuccessMessage: showSuccessMessage,
         saveOptions: saveOptions,
         getClosestAncestorOfTagType: getClosestAncestorOfTagType,
-        getPosition: getPosition
     };
 
     var messageDiv = document.getElementById("user-message"),
