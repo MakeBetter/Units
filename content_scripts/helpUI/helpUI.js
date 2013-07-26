@@ -189,7 +189,7 @@
 
         additionalShortcuts = "";
         for (i = 0; i < nextCUShortcuts.length; i++) {
-            additionalShortcuts += "<span class=key>"+ nextCUShortcuts[i] + "</span>" + "*" ;
+            additionalShortcuts += "<span class=key-text>"+ nextCUShortcuts[i] + "</span>" + "*" ;
             if (i !== nextCUShortcuts.length - 1) {
                 additionalShortcuts+= keysSeparatorHtml;
             }
@@ -204,7 +204,7 @@
 
         additionalShortcuts = "";
         for (i = 0; i < prevCUShortcuts.length; i++) {
-            additionalShortcuts += "<span class=key>"+ prevCUShortcuts[i] + "</span>" + "*";
+            additionalShortcuts += "<span class=key-text>"+ prevCUShortcuts[i] + "</span>" + "*";
             if (i !== prevCUShortcuts.length - 1) {
                 additionalShortcuts+= keysSeparatorHtml;
             }
