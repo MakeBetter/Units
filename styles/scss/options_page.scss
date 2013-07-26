@@ -196,6 +196,12 @@ Basic Options styles
   .reset-settings {
     float: right;
   }
+
+  .section-description {
+    margin: 0; margin-top: 5px;
+    font-size: 11px;
+    color: $message-color-grey;
+  }
 }
 
 .input-help-message {
@@ -274,6 +280,12 @@ Advanced Options styles
       line-height: $options-subheader-height; /* vertically align its contents. */
       width: $options-content-width;
     }
+
+  .section-description {
+    margin: 0; margin-bottom: 5px;
+    font-size: 13px;
+    color: $message-color-grey;
+  }
 }
 
 
@@ -321,6 +333,7 @@ Advanced Options styles
     }
 
   }
+
 }
 
 
@@ -345,11 +358,6 @@ Advanced Options styles
   @include highlighted-message;
   font-size: 12px;
   display: block;
-}
-
-.section-description {
-  margin: 0; margin-bottom: 5px;
-  font-size: 13px;
 }
 
 .editable-container {
