@@ -222,7 +222,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         var mainContainer = document.getElementById("advanced-options-main-container"),
             navElement = document.getElementById("advanced-options-sections-navigation"),
             mainContentLeftPos = mod_commonHelper.getOffsetPosition(mainContainer).left,
-            posLeft = mainContentLeftPos - 130;
+            posLeft = mainContentLeftPos - (navElement.offsetWidth + 10);
 
         navElement.style.left = posLeft;
     }

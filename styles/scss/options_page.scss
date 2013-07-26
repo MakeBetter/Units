@@ -153,6 +153,11 @@ section{
   width: $options-content-width;
 }
 
+.section-description {
+  color: $message-color-grey;
+  font-family: Helvetica;
+}
+
 /*
 Basic Options styles
 */
@@ -283,7 +288,7 @@ Advanced Options styles
 
   .section-description {
     margin: 0; margin-bottom: 5px;
-    font-size: 13px;
+    font-size: 12px;
     color: $message-color-grey;
   }
 }
@@ -322,7 +327,7 @@ Advanced Options styles
     font-size: 13px;
     font-family: Helvetica;
     margin-bottom: 5px;
-    padding: 5px 15px 5px 8px;
+    padding: 5px 5px 5px 5px;
     cursor: pointer;
     border-bottom: 1px solid #bbb;
 
@@ -349,7 +354,7 @@ Advanced Options styles
     position: absolute;
     right: 0;
 /*    *sheepish* randomly decided value so that the span sits just inside the textarea, from the top. */
-    top: 22px;
+    top: 45px;
     display: none;
   }
 }
@@ -374,7 +379,7 @@ Advanced Options styles
 }
 
 .editable-container.readonly:focus {
-  //outline: 1px solid #bbb;
+  outline: 1px solid #bbb;
 }
 
 // JSON setting key help
