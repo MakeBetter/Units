@@ -26,22 +26,34 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         isHelpVisible = false,
         timeout_viewportChange = false;
 
-    // hint chars: set of letters used for hints. easiest to reach letters should come first
-    var hintCharsStr = "jfkdhglsurieytnvmbcaxzwoqp".toUpperCase(); // "jfkdhglsurieytnvmbc".toUpperCase();   // letters used to create hints
+    var reducedSet = "jfkdhglsurieytnvmbc",
+        remainingSet = "axzwoqp",
+        // hint chars: set of letters used for hints. easiest to reach letters should come first
+        hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
+    
     var usageMode = 2; // 1 - "find by typing chars", 2 - "show hints", 3 - "mixed"
     var hintsArr = [];
 
-    var $textBox =  $('<input type = "text">')
-        .attr("id", "UnitsProj-selectLink-textBox")
+    var $textBox_main =  $('<input type = "text">')
+        .attr('id', 'UnitsProj-selectLink-textBox_main')
+        .addClass("UnitsProj-selectLink-textBox")
         .addClass("UnitsProj-reset-text-input")
         .addClass(class_addedByUnitsProj)
-        .attr('placeholder', "Click '?' to see usage...");
+        .attr('placeholder', "Enter some of link/button's text");
+
+    var $textBox_hint =  $('<input type = "text">')
+        .attr('id', 'UnitsProj-selectLink-textBox_hint')
+        .addClass("UnitsProj-selectLink-textBox")
+        .addClass("UnitsProj-reset-text-input")
+        .addClass(class_addedByUnitsProj)
+        .attr('placeholder', "Hint text");
 
     var $countLabel = $('<span></span>').addClass('countLabel');    // this will contain a label like "4 of 20"
 
     var $textBoxContainer = $('<div></div>')
         .attr("id", "UnitsProj-selectLink-textBoxContainer")
-        .append($textBox)
+        .append($textBox_main)
+        .append($textBox_hint)
         .append($countLabel);
 
     var $helpBtn = $('<span>?</span>')
@@ -97,12 +109,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
 
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
-        // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox[0]) for
+        // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox_main[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
-        $textBox.on('input', onInput);
+        $textBox_main.on('input', onInput);
         $closeButton.on('click', closeUI);
-        $textBox.on('focusout', onTextBoxFocusOut); // we use focusout instead of blur since it supports e.relatedTarget
+        $textBox_main.on('focusout', onTextBoxFocusOut); // we use focusout instead of blur since it supports e.relatedTarget
 
         var selectLinkShortcuts = settings.selectLinkShortcuts;
         mod_keyboardLib.bind(selectLinkShortcuts.showSelectLinkUI.kbdShortcuts, showUI);
@@ -185,7 +197,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         var searchText_lowerCase = getSearchText_lowerCase();
         if (!searchText_lowerCase) {
             $countLabel[0].innerText = "";
-            $textBox.removeClass(class_noMatch);
+            $textBox_main.removeClass(class_noMatch);
             return;
         }
 
@@ -223,11 +235,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             $matching.addClass(matchingLink_class);
             setFakeFocus($matching[0]);
             $countLabel[0].innerText = (matchedIndex + 1) + " of " + $matching.length;
-            $textBox.removeClass(class_noMatch);
+            $textBox_main.removeClass(class_noMatch);
         }
         else {
             $countLabel[0].innerText = "0 of 0";
-            $textBox.addClass(class_noMatch);
+            $textBox_main.addClass(class_noMatch);
         }
     }
 
@@ -257,10 +269,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         removeActiveElementStyling();
         elementStyledAsActive = el;
         var saved = document.activeElement;
-        $textBox.off('focusout', onTextBoxFocusOut);      // remove event handler
+        $textBox_main.off('focusout', onTextBoxFocusOut);      // remove event handler
         el.focus();
         saved.focus();
-        $textBox.on('focusout', onTextBoxFocusOut); // restore event handler ('focusout' is used since it supports e.relatedTarget)
+        $textBox_main.on('focusout', onTextBoxFocusOut); // restore event handler ('focusout' is used since it supports e.relatedTarget)
         mod_basicPageUtils.styleActiveElement(el);
     }
 
@@ -271,17 +283,23 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function closeUI() {
+
+        /////////
+        console.warn('remove this line');
+        return;
+        ////////
+
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_findMatchingLinks);
         timeout_findMatchingLinks = false;    // reset
 
         // blur (if not already blurred - to prevent infinite recursion)
-        if (document.activeElement === $textBox[0])
-            $textBox.blur();
+        if (document.activeElement === $textBox_main[0])
+            $textBox_main.blur();
 
-        $textBox.val('');
+        $textBox_main.val('');
         $countLabel[0].innerText = "";
-        $textBox.removeClass(class_noMatch);
+        $textBox_main.removeClass(class_noMatch);
         hideHelpUI();
         $UIContainer.hide();
         endMatching();
@@ -292,7 +310,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     function showUI() {
         $UIContainer.show();
-        $textBox.focus();
+        $textBox_main.focus();
         mod_context.set_selectLinkUI_state(true);
         setupEvent_onViewportChange();
         if (usageMode === 2) { // hint mode
@@ -378,7 +396,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function onKeydown_handleEsc(e) {
         var code = e.which;
         // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
-        if (e.target === $textBox[0] && [17, 18, 91, 93].indexOf(code) == -1) {
+        if (e.target === $textBox_main[0] && [17, 18, 91, 93].indexOf(code) == -1) {
 
             if (code === 27) { // Esc
                 suppressEvent(e);
@@ -388,7 +406,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function getSearchText_lowerCase() {
-        return $textBox.val().toLowerCase();
+        return $textBox_main.val().toLowerCase();
     }
 
     function fuzzyMatch(text, pattern) {
@@ -491,13 +509,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function hideHelpUI() {
         isHelpVisible = false;
         $helpUI.hide();
-        $textBox.focus();
+        $textBox_main.focus();
     }
 
     function showHelpUI() {
         isHelpVisible = true;
         $helpUI.show();
-        $textBox.focus();
+        $textBox_main.focus();
     }
 
     return thisModule;

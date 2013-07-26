@@ -57,6 +57,7 @@ box-sizing to border-box)*/
 
 $selectLink-base-gray: #eee;
 $selectLinkTextBox_height: 20px;
+$selectLink-mainTextBox_width: 180px;
 
 div#UnitsProj-selectLink-UIContainer {
   //width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
@@ -71,26 +72,42 @@ div#UnitsProj-selectLink-UIContainer {
   z-index: $highest-z-index !important;
   background-color: #d8d8d8 !important;
   @include border-radius(6px 6px 0 0 !important);
-  padding: 3px 5px !important;
+  padding: 5px !important;
 
   #UnitsProj-selectLink-textBoxContainer {
     display: inline-block;
     position: relative; /*to make it a positioned element*/
   }
 
-  input#UnitsProj-selectLink-textBox {
+  input#UnitsProj-selectLink-textBox_main {
+    width: $selectLink-mainTextBox_width !important;
+    @include border-radius(4px 0 0 4px !important);
+
+    &:hover, &:focus {
+      z-index: $highest-z-index !important;
+    }
+  }
+
+  input#UnitsProj-selectLink-textBox_hint {
+    width: $selectLink-mainTextBox_width/3 !important;
+    margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
+
+    &:hover, &:focus {
+      z-index: $highest-z-index !important;
+    }
+  }
+  input.UnitsProj-selectLink-textBox {
     /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
     //margin: 2px !important;
     //margin-right: 0px !important;
     //padding: 2px !important;
-    padding-right: 35px !important; /* to prevent typing on top of the count label text */
+    //padding-right: 35px !important; /* to prevent typing on top of the count label text */
 
     position: relative !important;
     border: 1px solid darken($selectLink-base-gray, 20) !important;
-    width: 180px !important;
     height: $selectLinkTextBox_height !important;
     box-sizing: border-box !important;
-    @include border-radius(3px 0 0 3px !important);
+    z-index: $highest-z-index - 1 !important;
 
     &.UnitsProj-selectLink-noMatch {
       background-color: pink !important;
@@ -125,9 +142,9 @@ div#UnitsProj-selectLink-UIContainer {
     padding: 0px 8px !important;
     padding-top: 2px !important;
     vertical-align: top !important;
-    @include border-radius(0 3px 3px 0 !important);
+    @include border-radius(0 4px 4px 0 !important);
     cursor: default !important;
-    margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox */
+    margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
     z-index: $highest-z-index - 1 !important;
     outline: none !important;
 
@@ -153,7 +170,7 @@ div#UnitsProj-selectLink-UIContainer {
     //bottom: 25px !important;
     width: 215px !important;
     background-color: $background-color-gray !important;
-    padding: 4px 2px 6px 4px !important;
+    padding: 4px !important;
   }
 }
 
@@ -218,7 +235,7 @@ input.UnitsProj-reset-text-input {
   margin: 0 !important;
   padding: 2px !important;
   width: 150px !important;
-  min-width: 150px !important;
+  min-width: 0px !important;
   height: 20px !important;
   min-height: 20px !important;
   float: none !important;
