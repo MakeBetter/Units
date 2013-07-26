@@ -9,40 +9,41 @@ var defaultSettingsHelp = {
 
     miscSettings: "These are some general miscellaneous settings. Click on the setting name to get its description.",
 
-    selectCUOnLoad: "Select first CU (if CU's present) when a page loads", // whether the first CU should be selected when the page loads
-    animatedCUScroll: "Activate animation on CU scrolling",
-    animatedCUScroll_Speed: "Animated CU scoll speed. In pixels per millisecond, can be decimal.", // pixels per millisecond, can be a decimal
-    animatedCUScroll_MaxDuration: "In milliseconds", // milliseconds
+    selectCUOnLoad: "When a webpage loads, select the first CU by default. This, of course, applies only if CUs are specified for that page.", // whether the first CU should be selected when the page loads
+    animatedCUScroll: "Activate smooth scrolling",
+    animatedCUScroll_Speed: "Speed for smooth scrolling of CUs. In pixels per millisecond, can be decimal.", // pixels per millisecond, can be a decimal
+    animatedCUScroll_MaxDuration: "Specify upper limit for the time it can take to (smooth) scroll between CUs. In milliseconds", // milliseconds
 
-    increaseFontInSelectedCU: "Increase font size in selected CU. Default is false.",
+    increaseFontInSelectedCU: "Increase font size of text in the selected CU. Default is false. This is an experimental feature.",
 
     // determines if while scrolling a CU should always be centered (whenever possible) or only if it lies
     // outside the view port
-    keepSelectedCUCentered: "While scrolling, keep CU always centered (when possible). If set to false, center CU only" +
+    keepSelectedCUCentered: "Keep selected CU always centered (when possible) while scrolling. If set to false, center CU only" +
         "if it lies outside the viewport.",
 
     // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
-    sameCUScroll: "",
+    sameCUScroll: "Applicable for long CUs that extend beyond the viewport. Enable scrolling within long CUs. More specifically, pressing " +
+        "shortcut for 'next CU' first scrolls within this long CU till its end, and then selects the next CU.",
 
-    pageScrollDelta: "pixels to scroll on each key press", // pixels to scroll on each key press
+    pageScrollDelta: "Page scroll speed (pixels to scroll on each key press).", // pixels to scroll on each key press
 
-    enhanceActiveElementVisibility: "give special highlight to the active element on the page (if set to false, the " +
-        "browser's default style will be applied.", // give special highlight to the active element on the page (if set to false,
+    enhanceActiveElementVisibility: "Give special highlight to the focused link/button on the page (if set to false, the " +
+        "browser's default style will be applied. We recommend it to be set to true.", // give special highlight to the active element on the page (if set to false,
     // the browser's default style will be applied.
 
-    zenModeAutoOn: "Zen mode is on by default on page load. Default is false",
+    zenModeAutoOn: "Set to true to have zen mode activated on any page by default. Caution: this is an experimental feature.",
     /*
      Note for specifying keyboard shortcuts (Applies to the following three objects, as well as other shortcuts
      specified in the urlData for a webpage):
      In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key.
      i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
      */
-    generalShortcuts: "Page-level shortcuts. These work on all sites, unless specifically excluded.",
+    generalShortcuts: "Page-level shortcuts. These work on all sites, not just CU based sites.",
 
     /*
      Default shortcuts that need CUs to be defined on a page.
      * */
-    CUsShortcuts: "CU related shortcuts. Work when CU's are present on a page.",
+    CUsShortcuts: "Content Unit (CU) related shortcuts. Work when CUs are present on a page.",
 
     /*
      Default values for the description and kbdShortcuts associated with the standard ("std_") SUs and actions

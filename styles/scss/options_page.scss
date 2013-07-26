@@ -28,6 +28,8 @@ $options-content-width: 900px;
 $options-header-height: 40px;
 $options-subheader-height: 50px;
 $options-mainContent-posTop: $options-header-height + $options-subheader-height; // header height + buttons panel (in advanced options) + margin
+$options-header-bg-color: #EDF4FA;
+$options-header-border-color: #ddd;
 
 @mixin highlighted-message {
   color: #666;
@@ -43,9 +45,9 @@ $options-mainContent-posTop: $options-header-height + $options-subheader-height;
     top: 0;
     height: $options-header-height;
     width: 100%;
-    background: /*cadetblue*/ #EDF4FA;
+    background: $options-header-bg-color;
     box-sizing: border-box;
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid $options-header-border-color;
     z-index: 2;
 }
 
@@ -386,13 +388,14 @@ Advanced Options styles
 // JSON setting key help
 #advanced-options-help {
   @include highlighted-message;
+  //background-color: $options-header-bg-color;
   display: inline-block;
   max-width: 200px;
   position: absolute;
   top: 0; right: 0;
   font-size: 13px;
   padding: 5px;
-  border: 1px solid orange;
+  border: 1px solid $options-header-border-color;
 
   .key {
     font-weight: bold;

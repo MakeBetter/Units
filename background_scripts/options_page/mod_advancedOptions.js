@@ -32,7 +32,10 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
 
     function setup() {
+        // Setup global variables
+        headerHeight = document.getElementById("settings-header").offsetHeight + document.querySelector(".sub-header").offsetHeight;
         advancedOptions_helpContainer = document.getElementById("advanced-options-help");
+
 
         // Event handlers
         saveChangesButton.addEventListener("click", saveChanges);
@@ -46,13 +49,13 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
         document.addEventListener("keydown", saveChanges_onKeyDown, true); //Bind to "document" because we want to be
         // able to save changes by pressing ctrl+s anywhere on the page.
 
-        document.addEventListener("mouseup", showMessage_JSONKeyHelp);
-
         document.addEventListener("scroll", onDocumentScroll_highlightMenu);
 
-        setupUI_saveShortcutMessage();
+        document.addEventListener("mouseup", showMessage_JSONKeyHelp); // Secret feature. Selecting a key in the JSON
+        // show corresponding help text if available. Hide the text if event.target not relevant.
 
-        headerHeight = document.getElementById("settings-header").offsetHeight + document.querySelector(".sub-header").offsetHeight;
+        // Setup UI and events for a feature
+        setupUI_saveShortcutMessage();
     }
 
     function _render(settings) {
@@ -146,33 +149,6 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
     function goToAllExtensionsPage() {
         chrome.tabs.create({url: 'chrome://extensions/'});
-    }
-
-    function showMessage_JSONKeyHelp(event) {
-        // If the basic options tab is open (and advanced options is hidden), then do nothing and return.
-        if (!element_advancedOptionsContainer.offsetHeight) {
-            return;
-        }
-
-        var target = event.target,
-            selectedHtml,
-            containingDiv = target.parentElement;
-
-        selectedHtml = window.getSelection().toString(); // get the text selected by user
-
-        var helpText = defaultSettingsHelp[selectedHtml];
-        if (helpText) {
-            advancedOptions_helpContainer.style.display = "block";
-
-            advancedOptions_helpContainer.innerHTML = "<span class='key'>"+ selectedHtml +"</span>" + ": " + helpText;
-            containingDiv.appendChild(advancedOptions_helpContainer);
-            advancedOptions_helpContainer.style.top = (event.offsetY ) + "px";
-            advancedOptions_helpContainer.style.left = (event.offsetX + 100) + "px";
-        }
-        else {
-            advancedOptions_helpContainer.innerHTML = "";
-            advancedOptions_helpContainer.style.display = "none";
-        }
     }
 
     function saveChanges_onKeyDown(event) {
@@ -285,6 +261,45 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
             }
         }
     }
+
+    /**
+     * On selecting a key in the general settings JSON, show corresponding help text if available. This is sort-of a
+     * secret feature for now, because
+     * @param event
+     */
+    function showMessage_JSONKeyHelp(event) {
+
+        var hideUI = function() {
+            advancedOptions_helpContainer.innerHTML = "";
+            advancedOptions_helpContainer.style.display = "none";
+        };
+
+        // If we clicked anywhere outside the settings container, then hide help UI and return.
+        if (event.target !== generalSettingsContainer.querySelector("pre")) {
+            hideUI();
+            return;
+        }
+
+        var target = event.target,
+            selectedHtml,
+            containingDiv = target.parentElement;
+
+        selectedHtml = window.getSelection().toString(); // get the text selected by user
+
+        var helpText = defaultSettingsHelp[selectedHtml];
+        if (helpText) {
+            advancedOptions_helpContainer.style.display = "block";
+
+            advancedOptions_helpContainer.innerHTML = "<span class='key'>"+ selectedHtml +"</span>" + ": " + helpText;
+            containingDiv.appendChild(advancedOptions_helpContainer);
+            advancedOptions_helpContainer.style.top = (event.offsetY ) + "px";
+            advancedOptions_helpContainer.style.left = (event.offsetX + 100) + "px";
+        }
+        else {
+            hideUI();
+        }
+    }
+
 
     return thisModule;
 
