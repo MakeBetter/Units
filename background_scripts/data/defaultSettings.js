@@ -123,9 +123,11 @@ var defaultSettings = {
         toggleZenMode: {
             descr: "Toggle zen mode",
             kbdShortcuts: ['z']
-        },
+        }
+    },
 
-        /*-----------Shortcuts related to 'Select link' Feature----------*/
+    /*-----------Shortcuts related to 'Select link' Feature----------*/
+    selectLinkShortcuts: {
         showSelectLinkUI: {
             descr: "Show Select Link UI",
             kbdShortcuts: ['f l', 'f f']
