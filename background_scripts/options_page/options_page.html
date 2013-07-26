@@ -63,7 +63,7 @@
                 <ul>
                     <li data-target="general-settings-section" id="general-settings-menu"> General </li>
                     <li data-target="site-specific-settings-section" id="site-specific-menu"> Site Specific </li>
-                    <li data-target="global-settings-section" id="global-settings-menu"> Global</li>
+                    <li data-target="global-settings-section" id="global-settings-menu"> Global Shortcuts</li>
                 </ul>
             </nav>
             <div id="advanced-options-main-container">
@@ -75,21 +75,27 @@
                 </section>
                 <section id="site-specific-settings-section" data-menuid="site-specific-menu">
                     <h2>Site specific</h2>
-                <span class="section-subheading-message UnitsProj-message">
-                    These options are not editable (for now).
-                </span>
+                    <p class="UnitsProj-message section-description"> Website or URL specific data.</p>
+                    <span class="section-subheading-message UnitsProj-message">
+                        These options are not editable (for now).
+                    </span>
                     <div id="site-specific-settings" class = "editable-container readonly">
 
                     </div>
                 </section>
                 <section id="global-settings-section" data-menuid="global-settings-menu">
-                    <h2>Global (work on all tabs)</h2>
-                <span class="section-subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
-                    Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
-                </span>
+                    <h2>Global Shortcuts (work on all tabs)</h2>
+
+                    <p class="UnitsProj-message section-description"> These are a special category of Chrome extension
+                        shortcuts. They are different in that they also work on tabs that do not have any web content loaded,
+                        for example: a new tab. Additionally, because we feel that it's important to have these shortcuts
+                        be available globally, these will also work on tabs that have Units disabled. </p>
+                    <span class="section-subheading-message UnitsProj-message">To change these, go to the <a href="chrome://extensions/" id="go-to-extensions">
+                        Chrome extensions page </a>. Scroll to the bottom, and click on "Keyboard Shortcuts" for editing options.
+                    </span>
                     <div id="global-settings" class = "editable-container readonly">
 
-                    </div>
+                     </div>
                 </section>
 
                 <div id = advanced-options-help style="display: none"></div>

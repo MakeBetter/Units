@@ -310,19 +310,14 @@ Advanced Options styles
     font-size: 13px;
     font-family: Helvetica;
     margin-bottom: 5px;
-    padding: 5px 35px 5px 8px;
+    padding: 5px 15px 5px 8px;
     cursor: pointer;
     border-bottom: 1px solid #bbb;
-    //text-align: left;
 
     &.menu-selected {
-      //background-color: lightslategrey;
       color: #333333;
       border-bottom: 1px solid #999;
       transition: all 0.5s ease-out;
-      //border-left: 20px solid transparent;
-      padding-right: 10px;
-      //text-align: right;
     }
 
   }
@@ -352,6 +347,11 @@ Advanced Options styles
   display: block;
 }
 
+.section-description {
+  margin: 0; margin-bottom: 5px;
+  font-size: 13px;
+}
+
 .editable-container {
   border: 1px solid #efefef;
   padding: 0;
@@ -366,7 +366,7 @@ Advanced Options styles
 }
 
 .editable-container.readonly:focus {
-  outline: 1px solid #bbb;
+  //outline: 1px solid #bbb;
 }
 
 // JSON setting key help
