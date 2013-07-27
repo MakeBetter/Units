@@ -339,6 +339,7 @@ span#filter-message {
 }
 
 #UnitsProj-iframe-help {
+  box-sizing: content-box !important;
   width: 1100px !important;
   position: fixed !important;
   left: 50%; margin-left: -550px; /*center the div horizontally*/
