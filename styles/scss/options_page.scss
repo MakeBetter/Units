@@ -198,7 +198,7 @@ Basic Options styles
   }
 
   table {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .reset-settings {
@@ -334,7 +334,7 @@ Advanced Options styles
     cursor: pointer;
     border-bottom: 1px solid #bbb;
 
-    &.menu-selected {
+    &.menu-selected, &:hover {
       color: #333333;
       border-bottom: 1px solid #999;
       transition: all 0.5s ease-out;

@@ -19,7 +19,7 @@
     var
         $topLevelContainer = _u.$topLevelContainer,
 
-        generalShortcuts,
+        miscShortcuts,
         CUsSpecifier,
         isDisabled_fromSettings = true, // assume true (disabled) till background script tells us otherwise
 
@@ -78,8 +78,8 @@
         }
 
         // do the following once mod_keyboardLib.reset() has been called (from the loop above)
-        if (!isDisabled_fromSettings  && generalShortcuts) {
-            mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
+        if (!isDisabled_fromSettings  && miscShortcuts) {
+            mod_keyboardLib.bind(miscShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
         }
 
         mod_mutationObserver.disable(true);
@@ -112,7 +112,7 @@
             function(settings) {
 
                 // assign references to module level variables
-                generalShortcuts = settings.generalShortcuts;
+                miscShortcuts = settings.miscShortcuts;
                 isDisabled_fromSettings = settings.isDisabled;
                 CUsSpecifier = settings.expandedUrlData &&  settings.expandedUrlData.CUs_specifier;
 
@@ -134,7 +134,7 @@
                 $topLevelContainer.appendTo(document.body);
 
                 // do this before setting up other modules, so that it gets priority over shortcuts setup in them
-                mod_keyboardLib.bind(generalShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
+                mod_keyboardLib.bind(miscShortcuts.toggleExtension.kbdShortcuts, toggleExtensionTemporarily);
 
                 for (var i = 0; i < modulesToSetup.length; i++) {
                     var module = modulesToSetup[i];

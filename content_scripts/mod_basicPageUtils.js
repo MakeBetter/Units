@@ -60,38 +60,38 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
             mod_domEvents.addEventListener(document, 'blur', onBlur, true);
         }
 
-        setupShortcuts(settings.generalShortcuts, settings.CUsShortcuts);
+        setupShortcuts(settings.pageNavigationShortcuts, settings.elementNavigationShortcuts, settings.CUsShortcuts);
     }
 
     function onBlur(e) {
         removeActiveElementStyle(e.target);
     }
     
-    function setupShortcuts(generalShortcuts, CUsShortcuts) {
+    function setupShortcuts(pageNavigationShortcuts, elementNavigationShortcuts, CUsShortcuts) {
 
-        mod_keyboardLib.bind(generalShortcuts.topOfPage.kbdShortcuts,  function() {
+        mod_keyboardLib.bind(pageNavigationShortcuts.topOfPage.kbdShortcuts,  function() {
             scroll("top");
         });
-        mod_keyboardLib.bind(generalShortcuts.bottomOfPage.kbdShortcuts,  function() {
+        mod_keyboardLib.bind(pageNavigationShortcuts.bottomOfPage.kbdShortcuts,  function() {
             scroll("bottom");
         });
-        mod_keyboardLib.bind(generalShortcuts.pageUp.kbdShortcuts,  function() {
+        mod_keyboardLib.bind(pageNavigationShortcuts.pageUp.kbdShortcuts,  function() {
             scroll("pageUp");
         });
-        mod_keyboardLib.bind(generalShortcuts.pageDown.kbdShortcuts,  function() {
+        mod_keyboardLib.bind(pageNavigationShortcuts.pageDown.kbdShortcuts,  function() {
             scroll("pageDown");
         });
-        mod_keyboardLib.bind(generalShortcuts.back.kbdShortcuts, back);
-        mod_keyboardLib.bind(generalShortcuts.forward.kbdShortcuts, forward);
-        mod_keyboardLib.bind(generalShortcuts.open.kbdShortcuts, function() {
+        mod_keyboardLib.bind(pageNavigationShortcuts.back.kbdShortcuts, back);
+        mod_keyboardLib.bind(pageNavigationShortcuts.forward.kbdShortcuts, forward);
+        mod_keyboardLib.bind(elementNavigationShortcuts.open.kbdShortcuts, function() {
             openLink(document.activeElement);
         });
-        mod_keyboardLib.bind(generalShortcuts.openInNewTab.kbdShortcuts, function() {
+        mod_keyboardLib.bind(elementNavigationShortcuts.openInNewTab.kbdShortcuts, function() {
             openLink(document.activeElement, true); // open in new tab
         });
-        mod_keyboardLib.bind(generalShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
-        mod_keyboardLib.bind(generalShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
-        mod_keyboardLib.bind(generalShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
+        mod_keyboardLib.bind(elementNavigationShortcuts.focusFirstTextInput.kbdShortcuts, focusFirstTextInput);
+        mod_keyboardLib.bind(elementNavigationShortcuts.focusNextTextInput.kbdShortcuts, focusNextTextInput);
+        mod_keyboardLib.bind(elementNavigationShortcuts.focusPrevTextInput.kbdShortcuts, focusPrevTextInput);
 
         var scrollDown = function() {
             scroll("down");
@@ -99,8 +99,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         var scrollUp = function() {
             scroll("up");
         };
-        mod_keyboardLib.bind(generalShortcuts.scrollDown.kbdShortcuts, scrollDown);
-        mod_keyboardLib.bind(generalShortcuts.scrollUp.kbdShortcuts, scrollUp);
+        mod_keyboardLib.bind(pageNavigationShortcuts.scrollDown.kbdShortcuts, scrollDown);
+        mod_keyboardLib.bind(pageNavigationShortcuts.scrollUp.kbdShortcuts, scrollUp);
         // special shortcuts, these will get invoked only when the page has no CUs
         mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, scrollDown, {pageHasCUs: false});
         mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, scrollUp, {pageHasCUs: false});

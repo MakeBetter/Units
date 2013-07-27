@@ -32,13 +32,10 @@ var defaultSettingsHelp = {
     // the browser's default style will be applied.
 
     zenModeAutoOn: "Set to true to have zen mode activated on any page by default. Caution: this is an experimental feature.",
-    /*
-     Note for specifying keyboard shortcuts (Applies to the following three objects, as well as other shortcuts
-     specified in the urlData for a webpage):
-     In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key.
-     i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-     */
-    generalShortcuts: "Page-level shortcuts. These work on all sites, not just CU based sites.",
+
+    pageNavigationShortcuts: "Shortcuts related to navigating within a webpage.",
+    elementNavigationShortcuts: "Shortcuts related to selecting or invoking elements in a page",
+    miscShortcuts: "All other general page-level shortcuts that don't fall under pageNavigationShortcuts or elementNavigationShortcuts",
 
     /*
      Default shortcuts that need CUs to be defined on a page.

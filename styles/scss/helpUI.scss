@@ -13,12 +13,27 @@ body {
     background-color: white;
 }
 
+// These calculations can be automated using js. We are manually setting the modalbody-content-width and sidebar width here.
+$modalbody-content-width: 1060px;
+$sidebar: 130px;
+$maincontent-width: $modalbody-content-width - $sidebar; // equals 930px;
 
-#help .section {
-    width: 50%;
-    float: left;
+.sidebar {
+  float: left;
+  width: 130px;
 }
 
+.main-content {
+  float: left;
+  width: $maincontent-width;
+}
+
+$section-margin: 5px;
+#help .section {
+    width: ($maincontent-width - ($section-margin * 6))/3;
+    float: left;
+    margin: 0 $section-margin;
+}
 
 table {
     text-align: left;
@@ -37,6 +52,9 @@ td, th {
     border: none;
     background-color: inherit;
     background: inherit;
+    padding: 4px;
+    border-bottom: 1px solid #ededed;
+
 }
 
 .key {
@@ -46,17 +64,20 @@ td, th {
 }
 
 .action {
-    vertical-align: top;
-    padding: 3px 5px 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
+    vertical-align: middle;
+    color: #444;
+    //padding: 3px 5px 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
 }
 
 .key>.key-text {
-    background-color: #efefef;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    padding: 3px; /* Note: If you change this, then change td.action padding as well. They should be consistent. */
-    margin: 0 2px;
-    font-family:$serif-font-family;
+  //background-color: #5b6c8d;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 4px; /* Note: If you change this, then change td or td.action padding as well. They should be consistent. */
+  margin: 0 2px;
+  color: #444;
+  background-color: #fafafa;
+  font-size: 12px;
 }
 
 td.key>span.separator, tr.subsection-title>td {
@@ -81,9 +102,10 @@ td.key>span.separator {
 
 tr.subsection-end>td{
     padding-bottom: 20px;
+    border-bottom: 0;
 }
 
-th.section-title {
+.subsection-title>td{
     font-size: 12px;
     color: $subheading-color;
     font-weight: bold;
@@ -96,4 +118,38 @@ th.section-title {
   td, th {
     color: $message-disabled-color !important;
   }
+}
+
+#filter-by {
+  //position: fixed;
+  //top:$options-mainContent-posTop;
+  //float:left;
+
+  &>ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 130px;
+  }
+
+  li {
+    //float: left;
+    margin-right: 10px;
+    color: #999999;
+    font-size: 13px;
+    font-family: Helvetica;
+    margin-bottom: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+    border-bottom: 1px solid #bbb;
+
+    &.menu-selected {
+      color: #ffffea;
+      border-bottom: 1px solid #999;
+      transition: all 0.5s ease-out;
+      background-color: coral;
+    }
+
+  }
+
 }

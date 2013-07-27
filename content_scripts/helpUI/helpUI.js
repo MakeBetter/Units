@@ -14,8 +14,11 @@
 
     var keysSeparatorHtml = "<span class='separator UnitsProj-message'> or </span>",
         $help = $("#help"),
-        $generalShortcutsSection = $("#general-shortcuts"),
+        
         $CUShortcutsSection = $("#CUs-shortcuts"),
+        $generalShortcutsSection = $("#general-shortcuts"),// second column. contains misc, global, and URL-specific page shortcuts
+        $navigatePageSection = $("#navigate-page-shortcuts"),
+        
         $closeButton = $(".close");
 
     $closeButton.click(function() {
@@ -55,7 +58,8 @@
     function renderHelpUI(settings) {
         renderCUShortcuts(settings);
         renderGeneralShortcuts(settings);
-        appendSpecialCases(settings, $generalShortcutsSection);
+        renderNavigatePageShortcuts(settings);
+        appendSpecialCases(settings, $navigatePageSection);
 
 
         // send message to content script once the UI is rendered (and we have the final height of the contents)
@@ -70,7 +74,7 @@
     }
 
     function renderGeneralShortcuts(settings) {
-        var generalShortcuts = settings.generalShortcuts,
+        var miscShortcuts = settings.miscShortcuts,
             expandedUrlData = settings.expandedUrlData,
             globalShortcuts = settings.globalChromeCommands;
 
@@ -80,9 +84,9 @@
 
         var $shortcutsTable = $generalShortcutsSection.find("table");
 
-        renderShortcutsInSectionTable(generalShortcuts, $shortcutsTable);
-        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Applicable for this page/ website", "page-specific");
-        renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Global shortcuts (applicable on any tab)");
+        renderShortcutsInSectionTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
+        renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Tab operations");
+        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", "page-specific");
     }
 
     function renderCUShortcuts(settings) {
@@ -100,8 +104,15 @@
 
         var $shortcutsTable = $CUShortcutsSection.find("table");
 
-        renderShortcutsInSectionTable(CUsShortcuts_Default, $shortcutsTable);
-        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "Applicable for this page/ website", "page-specific");
+        renderShortcutsInSectionTable(CUsShortcuts_Default, $shortcutsTable, "Content Unit (CU) based");
+        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site", "page-specific");
+    }
+
+    function renderNavigatePageShortcuts(settings) {
+        var $shortcutsTable =  $navigatePageSection.find("table");
+
+        renderShortcutsInSectionTable(settings.pageNavigationShortcuts, $shortcutsTable, "Navigate Page");
+        renderShortcutsInSectionTable(settings.elementNavigationShortcuts, $shortcutsTable, "Navigate Page Elements");
     }
 
     /***
@@ -124,7 +135,7 @@
             $subSectionTitle = $("<tr><td colspan='2'></td></tr>");
             $subSectionTitle
                 .addClass('subsection-title')
-                .find("td").text(subSectionTitle).addClass('UnitsProj-message');
+                .find("td").text(subSectionTitle)/*.addClass('UnitsProj-message')*/;
             $shortcutsTable.append($subSectionTitle);
         }
 
@@ -140,7 +151,7 @@
 
                 // Create spans for each keyboard shortcut. And spans with the text "or" to connect them.
                 for (var i = 0; i < kbdShortcuts.length; i++) {
-                    kbdShortcutsHtml += "<span class=key-text>"+ kbdShortcuts[i] + "</span>";
+                    kbdShortcutsHtml += "<span class=key-text>"+ kbdShortcuts[i].toLowerCase() + "</span>";
                     if (i !== kbdShortcuts.length -1) {
                         kbdShortcutsHtml+= keysSeparatorHtml;
                     }
@@ -170,12 +181,12 @@
     }
 
     function appendSpecialCases(settings, $generalShortcutsSection) {
-        var generalShortcuts = settings.generalShortcuts,
+        var pageNavigationShortcuts = settings.pageNavigationShortcuts,
             CUsShortcuts_Default = settings.CUsShortcuts,
             nextCUShortcuts = CUsShortcuts_Default.nextCU.kbdShortcuts,
             prevCUShortcuts = CUsShortcuts_Default.prevCU.kbdShortcuts,
-            scrollDownShortcuts = generalShortcuts.scrollDown.kbdShortcuts,
-            scrollUpShortcuts = generalShortcuts.scrollUp.kbdShortcuts,
+            scrollDownShortcuts = pageNavigationShortcuts.scrollDown.kbdShortcuts,
+            scrollUpShortcuts = pageNavigationShortcuts.scrollUp.kbdShortcuts,
             $scrollDownShortcuts = $generalShortcutsSection.find("#scrollDown td.key"),
             $scrollUpShortcuts =  $generalShortcutsSection.find("#scrollUp td.key");
 

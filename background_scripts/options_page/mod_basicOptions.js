@@ -29,14 +29,15 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         class_deleteShortcut = "delete-shortcut",
         class_reset = "reset-value";
 
-    var shortcutType_page = "page",
-        shortcutType_CU = "CU";
-
-    var element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table");
+    var element_miscSettingsTable = document.getElementById("misc-settings").querySelector("table"),
+        element_miscShortcutsTable = document.getElementById("misc"),
+        element_CUShortcutsTable = document.getElementById("CU"),
+        element_pageNavigationShortcutsTable = document.getElementById("navigate-page"),
+        element_elementNavigationShortcutsTable = document.getElementById("navigate-elements");
 
     function setup() {
-        // Lowest common parent (of the event targets) that is present in the DOM at the time of setup. The target
-        // themselves are added dynamically.
+        // Attach events to the lowest common parent (of the event targets) that is present in the DOM at the time of
+        // setup. The actual targets are added to the DOM dynamically.
 
         var element_basicOptionsContainer = document.getElementById("basic-options"),
             element_resetButton = element_basicOptionsContainer.querySelector(".reset-settings"),
@@ -76,14 +77,12 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
 
     function _render(settings) {
 
-        var miscSettingsContainer = document.querySelector("#misc-settings>table"),
-            element_pageShortcutsTable = document.getElementById(shortcutType_page),
-            element_CUShortcutsTable = document.getElementById(shortcutType_CU);
-
         // Reset contents
-        miscSettingsContainer.innerHTML = '';
-        element_pageShortcutsTable.innerHTML = '';
+        element_miscSettingsTable.innerHTML = '';
+        element_miscShortcutsTable.innerHTML = '';
         element_CUShortcutsTable.innerHTML = '';
+        element_pageNavigationShortcutsTable.innerHTML = '';
+        element_elementNavigationShortcutsTable.innerHTML = '';
 
         var tbody, tr, settingValue, innerHtml, key;
 
@@ -111,10 +110,16 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
             tbody.appendChild(tr);
         }
 
-        miscSettingsContainer.appendChild(tbody);
+        element_miscSettingsTable.appendChild(tbody);
 
-        populateShortcutsTable(settings.generalShortcuts, element_pageShortcutsTable);
         populateShortcutsTable(settings.CUsShortcuts, element_CUShortcutsTable);
+        populateShortcutsTable(settings.miscShortcuts, element_miscShortcutsTable);
+        populateShortcutsTable(settings.pageNavigationShortcuts, element_pageNavigationShortcutsTable);
+        populateShortcutsTable(settings.elementNavigationShortcuts, element_elementNavigationShortcutsTable);
+    }
+
+    function resetUI() {
+
     }
 
     function populateShortcutsTable(shortcuts, table) {
@@ -239,9 +244,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         }
 
         var settingKey = parentRow.id,
-            parentTable = mod_optionsHelper.getClosestAncestorOfTagType(target, "table"),
-            settingParentKey = parentTable.id === shortcutType_page ? "generalShortcuts" : "CUsShortcuts";
-
+            settingParentKey = getSettingTopLevelKey_forTarget(target);
 
         // Save settings
         var settings = mod_settings.getUserSettings(null, {getBasic: true});
@@ -344,19 +347,17 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
     }
 
     function onShortcutsTableClick(event) {
-        var target = event.target,
-            parentTable = mod_optionsHelper.getClosestAncestorOfTagType(target, "table"),
-            parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr");
+        var target = event.target;
 
         if (target.classList.contains(class_addShortcut)) {
-            showTextboxForAddingShortcut(parentRow);
+            showTextboxForAddingShortcut(target);
             target.disabled = true; // disable the add shortcut button, till the adding of this shortcut is complete
         }
         else if (target.classList.contains(class_deleteShortcut)){
-            deleteShortcut(parentTable.id, target);
+            deleteShortcut(target);
         }
         else if (target.classList.contains(class_reset)) {
-            resetShortcut(parentTable.id, parentRow);
+            resetShortcut(target);
         }
     }
 
@@ -369,8 +370,9 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         }
     }
 
-    function showTextboxForAddingShortcut(row) {
-        var clone = getShortcutInputUI(""),
+    function showTextboxForAddingShortcut(target) {
+        var row = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
+            clone = getShortcutInputUI(""),
             input = clone.querySelector("input[type=text]"),
             addButton = row.querySelector("." + class_addShortcut);
 
@@ -386,11 +388,12 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         shortcutContainer.remove();
     }
 
-    function deleteShortcut(shortcutType, target) {
+    function deleteShortcut(target) {
         var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
             settingKey = parentRow.id,
             settings = mod_settings.getUserSettings(null, {getBasic: true}),
-            setting = (shortcutType === shortcutType_page) ? settings.generalShortcuts : settings.CUsShortcuts;
+            settingTopLevelKey = getSettingTopLevelKey_forTarget(target),
+            setting = settings[settingTopLevelKey];
 
         removeContainingShortcutUI(target);
         setting[settingKey].kbdShortcuts = getKeyboardShortcutsForRow(parentRow);
@@ -398,13 +401,14 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         mod_optionsHelper.saveOptions(settings, "Shortcut deleted", _render);
     }
 
-    function resetShortcut(shortcutType, parentRow) {
-        var settingKey = parentRow.id,
+    function resetShortcut(target) {
+        var parentRow = mod_optionsHelper.getClosestAncestorOfTagType(target, "tr"),
+            settingKey = parentRow.id,
             settings = mod_settings.getUserSettings(null, {getBasic: true}),
-            settingParentKey = (shortcutType === shortcutType_page) ? "generalShortcuts" : "CUsShortcuts",
-            defaultSettings = mod_settings.getDefaultSettings();
+            defaultSettings = mod_settings.getDefaultSettings(),
+            settingTopLevelKey = getSettingTopLevelKey_forTarget(target);
 
-        settings[settingParentKey][settingKey].kbdShortcuts = defaultSettings[settingParentKey][settingKey].kbdShortcuts;
+        settings[settingTopLevelKey][settingKey].kbdShortcuts = defaultSettings[settingTopLevelKey][settingKey].kbdShortcuts;
 
         mod_optionsHelper.saveOptions(settings, "Shortcut reset.", _render);
     }
@@ -423,6 +427,13 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         if (confirm("Sure you want to reset all the options?")) {
             mod_optionsHelper.saveOptions(null, "All options are reset", _render);
         }
+    }
+
+    function getSettingTopLevelKey_forTarget(target) {
+        var parentTable = mod_optionsHelper.getClosestAncestorOfTagType(target, "table"),
+            settingTopLevelKey = parentTable.dataset.key;
+
+        return settingTopLevelKey;
     }
 
     return thisModule;

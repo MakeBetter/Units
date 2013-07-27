@@ -57,12 +57,11 @@ var defaultSettings = {
     In addition to the usual modifier keys, 'space' can be used as (and will only work as) a modifier key.
     i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
     */
-    generalShortcuts: {
-        
-        toggleExtension: {
-            descr: "Disable/enable Units on current page",
-            kbdShortcuts: [',']
-        },
+
+    /*
+    Shortcuts related to navigating within a webpage
+    */
+    pageNavigationShortcuts: {
         scrollDown: {
             descr: "Scroll down",
             kbdShortcuts: ['shift+j']
@@ -80,10 +79,28 @@ var defaultSettings = {
             kbdShortcuts: ['alt+l']
         },
 
-        showHelp: {
-            descr: "Show the help page",
-            kbdShortcuts: ['alt+/']
+        topOfPage: {
+            descr: "Navigate: Top of page",
+            kbdShortcuts: ['n t']
         },
+        bottomOfPage: {
+            descr: "Navigate: Bottom of page",
+            kbdShortcuts: ['n b']
+        },
+        pageUp: {
+            descr: "Navigate: Up (fast scroll up)",
+            kbdShortcuts: ['n u']
+        },
+        pageDown: {
+            descr: "Navigate: Down (fast scroll down)",
+            kbdShortcuts: ['n d']
+        },
+    },
+
+    /*
+    Shortcuts related to selecting or invoking elements in a page
+    */
+    elementNavigationShortcuts: {
         open: { //TODO: should 'enter' be spcified here
             descr: "Open/invoke focused item",
             kbdShortcuts: ['shift+o', 'alt+o']  // alt+o allows invoking only with one hand (at least in windows)
@@ -104,34 +121,36 @@ var defaultSettings = {
             descr: "Focus previous text input element",
             kbdShortcuts: ['alt+shift+o']
         },
-        topOfPage: {
-            descr: "Navigate: Top of page",
-            kbdShortcuts: ['n t']
-        },
-        bottomOfPage: {
-            descr: "Navigate: Bottom of page",
-            kbdShortcuts: ['n b']
-        },
-        pageUp: {
-            descr: "Navigate: Up (fast scroll up)",
-            kbdShortcuts: ['n u']
-        },
-        pageDown: {
-            descr: "Navigate: Down (fast scroll down)",
-            kbdShortcuts: ['n d']
+    },
+
+    /*
+    All other general page-level shortcuts that don't fall under pageNavigationShortcuts or elementNavigationShortcuts
+     */
+    miscShortcuts: {
+        showSelectLinkUI: {
+            descr: "Select any link",
+            kbdShortcuts: ['f l', 'f f']
         },
         toggleZenMode: {
             descr: "Toggle zen mode",
             kbdShortcuts: ['z']
+        },
+        toggleExtension: {
+            descr: "Disable/enable Units on current page",
+            kbdShortcuts: [',']
+        },
+        showHelp: {
+            descr: "Show the help page",
+            kbdShortcuts: ['alt+/']
         }
     },
 
-    /*-----------Shortcuts related to 'Select link' Feature----------*/
+    /*
+    Shortcuts related to Select Link module.
+    NOTE: The shortcut to invoke the select link UI is included in miscShortcuts.
+     */
+
     selectLinkShortcuts: {
-        showSelectLinkUI: {
-            descr: "Show Select Link UI",
-            kbdShortcuts: ['f l', 'f f']
-        },
         selectNextMatchedLink: {
             descr: "Selects the Next matched link",
             kbdShortcuts: ['tab']
@@ -267,4 +286,3 @@ var defaultSettings = {
     }
 
 };
-

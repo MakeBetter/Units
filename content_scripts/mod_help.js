@@ -32,7 +32,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
         reset();
         setupHelpUI(settings);
 
-        mod_keyboardLib.bind(settings.generalShortcuts.showHelp.kbdShortcuts, toggleHelp);
+        mod_keyboardLib.bind(settings.miscShortcuts.showHelp.kbdShortcuts, toggleHelp);
         mod_keyboardLib.bind('esc', hideHelp, function() {
             if ($helpContainer.is(":visible")) {
                 return true;

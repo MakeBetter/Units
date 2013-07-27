@@ -330,9 +330,9 @@ span#filter-message {
 }
 
 #UnitsProj-iframe-help {
-  width: 800px !important;
+  width: 1100px !important;
   position: fixed !important;
-  left: 50%; margin-left: -400px; /*center the div horizontally*/
+  left: 50%; margin-left: -550px; /*center the div horizontally*/
   z-index: $highest-z-index !important; /*highest z-index for a 32-bit int value*/
   border: 2px solid #999;
   border-radius: 4px !important;

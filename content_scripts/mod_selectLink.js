@@ -117,8 +117,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $closeButton.on('click', closeUI);
         $textBox_main.on('focusout', onTextBoxFocusOut); // we use focusout instead of blur since it supports e.relatedTarget
 
-        var selectLinkShortcuts = settings.selectLinkShortcuts;
-        mod_keyboardLib.bind(selectLinkShortcuts.showSelectLinkUI.kbdShortcuts, showUI);
+        var selectLinkShortcuts = settings.selectLinkShortcuts,
+            miscShortcuts = settings.miscShortcuts;
+        mod_keyboardLib.bind(miscShortcuts.showSelectLinkUI.kbdShortcuts, showUI);
         mod_keyboardLib.bind(selectLinkShortcuts.selectNextMatchedLink.kbdShortcuts, selectNext, {selectLinkUIActive: true}, true);
         mod_keyboardLib.bind(selectLinkShortcuts.selectPrevMatchedLink.kbdShortcuts, selectPrev, {selectLinkUIActive: true}, true);
 
