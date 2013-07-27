@@ -18,6 +18,7 @@ body {
 $modalbody-content-width: 1060px;
 $sidebar: 130px;
 $maincontent-width: $modalbody-content-width - $sidebar; // equals 930px;
+$row-height: 34px;
 
 .sidebar {
   float: left;
@@ -42,10 +43,11 @@ table {
 }
 
 table tr {
-    height: 25px;
+    height: $row-height;
 }
 
-
+$td-padding: 4px;
+$row-border-bottom-color: #ebebeb;
 td, th {
     font-family: $sans-serif-font-family;
     font-size: 13px;
@@ -53,8 +55,8 @@ td, th {
     border: none;
     background-color: inherit;
     background: inherit;
-    padding: 4px;
-    border-bottom: 1px solid #ededed;
+    padding: $td-padding;
+    border-bottom: 1px dashed $row-border-bottom-color;
 
 }
 
@@ -74,7 +76,7 @@ td, th {
   //background-color: #5b6c8d;
   border: 1px solid #ddd;
   border-radius: 3px;
-  padding: 4px; /* Note: If you change this, then change td or td.action padding as well. They should be consistent. */
+  padding: $td-padding; /* Note: If you change this, then change td or td.action padding as well. They should be consistent. */
   margin: 0 2px;
   color: #444;
   background-color: #fafafa;
@@ -119,41 +121,35 @@ tr.subsection-end>td{
   padding-top: 20px;
 }
 
-.disabled {
+.disabled .section-message{
   color: $message-disabled-color;
-  td, th {
-    color: $message-disabled-color !important;
-  }
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: $td-padding;
 }
 
+$menu-option-margin-top: 8px;
 #filter-by {
-  //position: fixed;
-  //top:$options-mainContent-posTop;
-  //float:left;
+
+  @include simple-vertical-menu;
 
   &>ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 130px;
+    width: $sidebar;
+
   }
 
   li {
-    //float: left;
-    margin-right: 10px;
-    color: #999999;
-    font-size: 13px;
-    font-family: Helvetica;
-    margin-bottom: 5px;
-    padding: 5px 5px 5px 5px;
-    cursor: pointer;
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid $row-border-bottom-color;
+    margin-top: $menu-option-margin-top;
+    height: $row-height - $menu-option-margin-top;
+    box-sizing: border-box;
 
     &.menu-selected, &:hover {
       color: #ffffea;
-      border-bottom: 1px solid #999;
-      transition: all 0.5s ease-out;
+      border-bottom: 1px solid $row-border-bottom-color;
       background-color: coral;
+      transition: none;
     }
 
   }
