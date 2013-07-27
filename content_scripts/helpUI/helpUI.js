@@ -138,7 +138,6 @@
      * @param [rowClass]
      */
     function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSectionTitle, rowClass) {
-        console.log(shortcutsObj);
         if (!shortcutsObj || !$shortcutsTable) {
             return;
         }
@@ -255,13 +254,13 @@
 
     function showOrHideCUShortcuts_onSetup(data) {
         var sectionDisabledClass = "disabled",
-            $noCUsMessage = $("<span class='disabled'> No content units setup for this page</span>"),
+            $noCUsMessage = $("<span class='section-message'> No content units setup for this page</span>"),
             $CUsShortcuts = $CUShortcutsSection.find("tbody");
 
         areCUsSpecifiedForPage = data.value;
         // If the page does not have CUs specified, then hide the shortcuts and show a message.
         if (!areCUsSpecifiedForPage) {
-            // show the CU shortcuts as disabled
+
             $CUShortcutsSection.addClass(sectionDisabledClass);
             $CUShortcutsSection.append($noCUsMessage);
             $CUsShortcuts.hide();
