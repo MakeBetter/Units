@@ -15,7 +15,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
     var miscSettingsDescriptions = {
         selectCUOnLoad: "Select first Content Unit (CU) when page loads",
         keepSelectedCUCentered: "Keep selected CU always centered on page",
-        enhanceActiveElementVisibility: "Give special highlight to the currently focused link <sup>*</sup>",
+        enhanceActiveElementVisibility: "Give special highlight to the currently selected link", /*enhanceActiveElementVisibility: "Give special highlight to the currently focused link <sup>*</sup>",*/
         pageScrollDelta: "Scrolling speed (pixels per key press)",
         animatedCUScroll: "Animate scrolling",
         sameCUScroll: "Enable scrolling within a large CU (when required)"
