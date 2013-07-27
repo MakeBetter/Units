@@ -18,8 +18,26 @@
         $CUShortcutsSection = $("#CUs-shortcuts"),
         $miscShortcutsSection = $("#misc-shortcuts"),// second column. contains misc, global, and URL-specific page shortcuts
         $navigatePageSection = $("#navigate-page-shortcuts"),
-        
-        $closeButton = $(".close");
+
+        $closeButton = $(".close"),
+
+        $filterMenu = $("#filter-by"),
+
+        $footerMessage = $("#footer-message");
+
+    var areCUsSpecifiedForPage,
+        menuHandlers = {
+            "all" : showAllShortcuts,
+            "most-important": showMostImportantShortcuts,
+            "cu-based": showCUBasedShortcuts,
+            "specific-to-page": showPageSpecificShortcuts,
+        },
+
+        class_pageSpecificShortcuts = "page-specific",
+        class_importanceHigh = "importance-high",
+        class_subsectionTitle = "subsection-title",
+        class_subsectionEnd = "subsection-end",
+        property_importanceHigh = "importanceHigh";
 
     // Setup event handlers
     function setup() {
@@ -31,18 +49,19 @@
             var data = event.data;
 
             if (data.message === 'pageHasCUsSpecifier') {
-                showOrHideCUShortcuts(data);
+                showOrHideCUShortcuts_onSetup(data);
             }
 
             return false;
 
         }, false);
+
+        $filterMenu.click(onMenuClick);
+
     }
 
     function renderHelpUI(settings) {
-        renderCUShortcuts(settings);
-        renderMiscShortcuts(settings);
-        renderPageNavigationShortcuts(settings);
+        _renderHelpUI(settings);
 
         // send message to content script once the UI is rendered (and we have the final height of the contents)
         parent.postMessage({
@@ -55,6 +74,12 @@
         }, "*");
     }
 
+    function _renderHelpUI(settings) {
+        renderCUShortcuts(settings);
+        renderMiscShortcuts(settings);
+        renderPageNavigationShortcuts(settings);
+    }
+
     function renderCUShortcuts(settings) {
         var CUsShortcuts_Default = settings.CUsShortcuts,
             expandedUrlData = settings.expandedUrlData,
@@ -64,14 +89,15 @@
 
         // Additional shortcut to be displayed
         CUsShortcuts_Default.selectAnyLink= {
-            descr: "Select any link",
-            kbdShortcuts: ["Space + [letter that link starts with]"]
+            descr: "Select that link",
+            kbdShortcuts: ["Space + [letter link starts with]"],
         };
+        CUsShortcuts_Default.selectAnyLink[property_importanceHigh] = true;
 
         var $shortcutsTable = $CUShortcutsSection.find("table");
 
         renderShortcutsInSectionTable(CUsShortcuts_Default, $shortcutsTable, "Content Unit (CU) based");
-        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site", "page-specific");
+        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site",class_pageSpecificShortcuts);
     }
 
     function renderMiscShortcuts(settings) {
@@ -85,9 +111,13 @@
 
         var $shortcutsTable = $miscShortcutsSection.find("table");
 
+        $.each(globalShortcuts, function(key, shortcut) {
+            shortcut[property_importanceHigh] = true;
+        });
+
         renderShortcutsInSectionTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
         renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Tab operations");
-        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", "page-specific");
+        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", class_pageSpecificShortcuts);
     }
 
     function renderPageNavigationShortcuts(settings) {
@@ -108,19 +138,26 @@
      * @param [rowClass]
      */
     function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSectionTitle, rowClass) {
+        console.log(shortcutsObj);
         if (!shortcutsObj || !$shortcutsTable) {
             return;
         }
 
         var hasAtLeastOneShortcut = false,
+            hasAtleastOneImportantShortcut = false,
             $subSectionTitle;
 
         if (subSectionTitle) {
             $subSectionTitle = $("<tr><td colspan='2'></td></tr>");
             $subSectionTitle
-                .addClass('subsection-title')
-                .find("td").text(subSectionTitle)/*.addClass('UnitsProj-message')*/;
+                .addClass(class_subsectionTitle)
+                .addClass(rowClass)
+                .find("td").text(subSectionTitle);
             $shortcutsTable.append($subSectionTitle);
+        }
+
+        if ($shortcutsTable.find("tr").length !== 1) {
+            $subSectionTitle.addClass("padding-top");
         }
 
         $.each(shortcutsObj, function(key, value) {
@@ -145,19 +182,28 @@
                 // name used by chrome.commands. descr and key are applicable for all the other settings defined
                 // in the project.
 
-                $("<tr></tr>")
-                    .appendTo($shortcutsTable)
-                    .attr("id", key)
-                    .addClass(rowClass)
-                    .append($("<td class= key></td>").html(kbdShortcutsHtml))
-                    .append($("<td class = action></td>").text(shortcutDesc));
+                var row = $("<tr></tr>")
+                            .appendTo($shortcutsTable)
+                            .attr("id", key)
+                            .addClass(rowClass)
+                            .append($("<td class= key></td>").html(kbdShortcutsHtml))
+                            .append($("<td class = action></td>").text(shortcutDesc));
+
+                if (value.importanceHigh) {
+                    row.addClass(class_importanceHigh);
+                    hasAtleastOneImportantShortcut = true;
+                }
 
                 hasAtLeastOneShortcut = true;
             }
         });
 
         if (hasAtLeastOneShortcut) {
-            $shortcutsTable.find("tr:last-child").addClass("subsection-end");
+            $shortcutsTable.find("tr:last-child").addClass(class_subsectionEnd);
+
+            if (hasAtleastOneImportantShortcut) {
+                $subSectionTitle.addClass(class_importanceHigh);
+            }
         }
         else {
             $subSectionTitle && $subSectionTitle.remove();
@@ -207,13 +253,14 @@
         additionalShortcuts && $scrollUpShortcuts.append(additionalShortcuts);
     }
 
-    function showOrHideCUShortcuts(data) {
+    function showOrHideCUShortcuts_onSetup(data) {
         var sectionDisabledClass = "disabled",
             $noCUsMessage = $("<span class='disabled'> No content units setup for this page</span>"),
             $CUsShortcuts = $CUShortcutsSection.find("tbody");
 
+        areCUsSpecifiedForPage = data.value;
         // If the page does not have CUs specified, then hide the shortcuts and show a message.
-        if (!data.value) {
+        if (!areCUsSpecifiedForPage) {
             // show the CU shortcuts as disabled
             $CUShortcutsSection.addClass(sectionDisabledClass);
             $CUShortcutsSection.append($noCUsMessage);
@@ -228,6 +275,48 @@
         }
 
         $CUsShortcuts.show();
+    }
+
+    function onMenuClick(event) {
+        var optionId = event.target.id;
+
+        $filterMenu.find("li").removeClass("menu-selected");
+        $("#" + optionId).addClass("menu-selected");
+
+        menuHandlers[optionId] && menuHandlers[optionId]();
+    }
+
+    function showAllShortcuts() {
+        $CUShortcutsSection.show();
+        $miscShortcutsSection.show();
+        $navigatePageSection.show();
+        $footerMessage.show();
+
+        $("tr").show();
+    }
+
+    function showMostImportantShortcuts() {
+        showAllShortcuts();
+        $("tr:not(.importance-high)").hide();
+
+        $footerMessage.show();
+
+    }
+
+    function showCUBasedShortcuts() {
+        showAllShortcuts();
+
+        $miscShortcutsSection.hide();
+        $navigatePageSection.hide();
+
+        $CUShortcutsSection.show();
+        $footerMessage.hide();
+    }
+
+    function showPageSpecificShortcuts() {
+        showAllShortcuts();
+        $("tr:not(.page-specific)").hide();
+        $footerMessage.hide();
     }
 
     setup();

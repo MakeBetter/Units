@@ -2,15 +2,16 @@
 @import "modal";
 
 body {
-    height: 100%; width: 100%;
-    margin: 0; padding: 0;
-    font-size: 13px;
+  height: 100%; width: 100%;
+  margin: 0; padding: 0;
+  font-size: 13px;
+  background-color: white;
+
 }
 
 #help {
-    font-family: $sans-serif-font-family;
-    color: $text-color;
-    background-color: white;
+  font-family: $sans-serif-font-family;
+  color: $text-color;
 }
 
 // These calculations can be automated using js. We are manually setting the modalbody-content-width and sidebar width here.
@@ -88,7 +89,8 @@ td.key>span.separator {
     font-size: 11px;
 }
 
-.page-specific {
+/* Add background to the shortcut rows only, not the title*/
+:not(.subsection-title).page-specific {
     background-color: #FFFFEA;
 }
 
@@ -97,11 +99,11 @@ td.key>span.separator {
     background-color: inherit;
     border: none;
     font-size: 12px;
-    margin: 0;
+    padding-top: 5px;
 }
 
 tr.subsection-end>td{
-    padding-bottom: 20px;
+    //padding-bottom: 20px;
     border-bottom: 0;
 }
 
@@ -111,6 +113,10 @@ tr.subsection-end>td{
     font-weight: bold;
     text-align: center;
     font-family: $serif-font-family;
+}
+
+.subsection-title.padding-top>td {
+  padding-top: 20px;
 }
 
 .disabled {
@@ -143,7 +149,7 @@ tr.subsection-end>td{
     cursor: pointer;
     border-bottom: 1px solid #bbb;
 
-    &.menu-selected {
+    &.menu-selected, &:hover {
       color: #ffffea;
       border-bottom: 1px solid #999;
       transition: all 0.5s ease-out;

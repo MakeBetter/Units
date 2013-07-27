@@ -64,11 +64,13 @@ var defaultSettings = {
     pageNavigationShortcuts: {
         scrollDown: {
             descr: "Scroll down",
-            kbdShortcuts: ['shift+j']
+            kbdShortcuts: ['shift+j'],
+            importanceHigh: true /* We use this flag in the Help UI to highlight 'important' labels */
         },
         scrollUp: {
             descr: "Scroll up",
-            kbdShortcuts: ['shift+k']
+            kbdShortcuts: ['shift+k'],
+            importanceHigh: true
         },
         back: {
             descr: "Go back",
@@ -81,7 +83,8 @@ var defaultSettings = {
 
         topOfPage: {
             descr: "Navigate: Top of page",
-            kbdShortcuts: ['n t']
+            kbdShortcuts: ['n t'],
+            importanceHigh: true
         },
         bottomOfPage: {
             descr: "Navigate: Bottom of page",
@@ -106,19 +109,21 @@ var defaultSettings = {
             kbdShortcuts: ['shift+o', 'alt+o']  // alt+o allows invoking only with one hand (at least in windows)
         },
         openInNewTab: {
-            descr: "Open focused item in new tab",
-            kbdShortcuts: ['o']
+            descr: "Open selected link in new tab",
+            kbdShortcuts: ['o'],
+            importanceHigh: true
         },
         focusFirstTextInput: {
-            descr: "Focus first text input element",
-            kbdShortcuts: ['f i', 'alt+i']
+            descr: "Focus first text box",
+            kbdShortcuts: ['f i', 'alt+i'],
+            importanceHigh: true
         },
         focusNextTextInput: {
-            descr: "Focus next text input element",
+            descr: "Focus next text box",
             kbdShortcuts: ['alt+o']
         },
         focusPrevTextInput: {
-            descr: "Focus previous text input element",
+            descr: "Focus previous text box",
             kbdShortcuts: ['alt+shift+o']
         },
     },
@@ -129,19 +134,21 @@ var defaultSettings = {
     miscShortcuts: {
         showSelectLinkUI: {
             descr: "Select any link",
-            kbdShortcuts: ['f l', 'f f']
+            kbdShortcuts: ['f l', 'f f'],
+            importanceHigh: true
         },
         toggleZenMode: {
             descr: "Toggle zen mode",
-            kbdShortcuts: ['z']
+            kbdShortcuts: ['z'],
         },
         toggleExtension: {
             descr: "Disable/enable Units on current page",
-            kbdShortcuts: [',']
+            kbdShortcuts: [','],
+            importanceHigh: true
         },
         showHelp: {
             descr: "Show the help page",
-            kbdShortcuts: ['alt+/']
+            kbdShortcuts: ['alt+/'],
         }
     },
 
@@ -177,15 +184,17 @@ var defaultSettings = {
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
         nextCU: {
             descr: "Select next CU",
-            kbdShortcuts: ['j'/*, 'down'*/]
+            kbdShortcuts: ['j'/*, 'down'*/],
+            importanceHigh: true
         },
         prevCU: {
             descr: "Select previous CU",
-            kbdShortcuts: ['k'/*, 'up'*/]
+            kbdShortcuts: ['k'/*, 'up'*/],
+            importanceHigh: true
         },
         filterCUs: {
             descr: "Search and filter CUs ",
-            kbdShortcuts: ['alt+f']
+            kbdShortcuts: ['alt+f'],
         },
         firstCU: {
             descr: "Select first CU",
