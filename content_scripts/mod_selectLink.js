@@ -204,7 +204,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         return (el.innerText? el.innerText: "")  + " " + (el.value? el.value: "") + " " + (el.placeholder? el.placeholder: "");
     }
 
-    function findMatches_mainInput() {
+    /**
+     *
+     * @param [matchAllForEmptyInput] Optional. Should be passed as true if empty input should match all links
+     * in the viewport. Currently, this is passed as true only when called from assignHints_to_currentMatches()
+     */
+    function findMatches_mainInput(matchAllForEmptyInput) {
         clearTimeout(timeout_findMatches_mainInput);
         timeout_findMatches_mainInput = false;    // reset
 
@@ -215,17 +220,22 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         var mainInput_lowerCase = getMainInput_lowerCase();
 
-        if (!mainInput_lowerCase) {
+        if (!mainInput_lowerCase && !matchAllForEmptyInput) {
             $currentMatches = $(); // TODO: handle this differently as a special case for when typing on hint input
             return;
         }
 
-        $currentMatches = $elemsInViewport.filter(function() {
-            var text_lowerCase = getElementText_all(this).toLowerCase();
-            if (fuzzyMatch(text_lowerCase, mainInput_lowerCase)) {
-                return true;
-            }
-        });
+        if (!mainInput_lowerCase && matchAllForEmptyInput) {
+            $currentMatches = $elemsInViewport;
+        }
+        else {
+            $currentMatches = $elemsInViewport.filter(function() {
+                var text_lowerCase = getElementText_all(this).toLowerCase();
+                if (fuzzyMatch(text_lowerCase, mainInput_lowerCase)) {
+                    return true;
+                }
+            });
+        }
 
         if ($currentMatches.length) {
             $currentMatches.addClass(matchingLink_class);
@@ -390,7 +400,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $hintsContainer.hide();
         removeAssignedHints();
 
-        findMatches_mainInput(); // first call this (in case it is pending based on a timeout etc)
+        findMatches_mainInput(true); // first call this (in case it is pending due to a timeout etc)
 
         var hintSpansToUse;
         if ($currentMatches.length <= hintSpans_singleDigit.length) {
