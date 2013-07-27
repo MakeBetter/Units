@@ -12,6 +12,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     var $document = $(document),
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
+        class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible
         suppressEvent = mod_contentHelper.suppressEvent,
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
@@ -22,22 +23,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         class_noMatch = 'UnitsProj-selectLink-noMatch',
         isHelpVisible = false,
         timeout_viewportChange = false,
-        $elemsInViewport,   // elements currently in the viewport (excluding elements that are belong to this extension)
+        $elemsInViewport;   // elements currently in the viewport (excluding elements that are belong to this extension)
 
-        // This number only needs to be a sufficiently high enough to accommodate all the  links in the *viewport*
-        // In case a webpage's has more links than this in the current viewport, links beyond this number should simply
-        // be unreachable using hints, but the code should not break.
-        // (Note: as a rule of thumb, a good webpage shouldn't have more than have more than 100 odd links. This does
-        // not include infinitely scrollable feeds etc, but we can ignore those since we are only interested in the
-        // maximum number of links that could be present in a given *viewport*.
-        num_hintsToGenerate = 500;
-
+    // vars related to hint chars (TODO: decide which set to use based on user settings)
     var reducedSet = "jfkdhglsurieytnvmbc",
         remainingSet = "axzwoqp",
         // hint chars: set of letters used for hints. easiest to reach letters should come first
         hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
-    
-    var hintsArr = [];
 
     var $textBox_main = $('<input type = "text">')
         .attr('id', 'UnitsProj-selectLink-textBox_main')
@@ -92,8 +84,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         .hide()
         .appendTo(_u.$topLevelContainer);
 
-    var hintElements = [];  // array of hint spans (dom elements)
-
+    // arrays of spans showing hints (dom elements)
+    var hintSpans_singleDigit = [],  
+        hintSpans_doubleDigit = [];
+    
     function reset() {
         closeUI();
     }
@@ -101,8 +95,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function setup(settings) {
         reset();
 
-        hintsArr = generateHints(num_hintsToGenerate, hintCharsStr);
-        generateHintLabels();
+        generateHintSpansInDom();
 
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox_main[0]) for
@@ -388,7 +381,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function removeAssignedHints() {
-        $assignedHints.hide();
+        $assignedHints.removeClass(class_hintVisible);
         $assignedHints = $();
     }
 
@@ -399,64 +392,72 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         findMatches_mainInput(); // first call this (in case it is pending based on a timeout etc)
 
+        var hintSpansToUse;
+        if ($currentMatches.length <= hintSpans_singleDigit.length) {
+            hintSpansToUse = hintSpans_singleDigit;
+        }
+        else {
+            hintSpansToUse = hintSpans_doubleDigit;
+        }
+
         $assignedHints = $();
-        // If the current viewport has more (matching) links than `num_hintsToGenerate` (or technically
-        // `hintElements.length` which can be a bit larger), we will ignore links beyond that count (for now).
-        var len = Math.min($currentMatches.length, hintElements.length);
+
+        // Note: If the extremely unlikely scenario that the current *viewport* has more (matching) links than
+        // `hintSpans_doubleDigit.length`, we will ignore links beyond that count (for now) -- the code won't
+        // break, but these links will simply have no hint assigned.
+        var len = Math.min($currentMatches.length, hintSpansToUse.length);
         for (var i = 0; i < len; i++) {
             var el = $currentMatches[i];
-            var hintLabel = hintElements[i];
-            $assignedHints.add(hintLabel);
+            var hintSpan = hintSpansToUse[i];
+            $assignedHints = $assignedHints.add(hintSpan);
 
-            el.setAttribute('data-units-hint-label', hintLabel.innerText);
+            el.setAttribute('data-units-hint-label', hintSpan.innerText);
             var offset = mod_commonHelper.getOffsetPosition(el);
-            hintLabel.style.top = offset.top + "px";
-            hintLabel.style.left = offset.left + "px";
+            hintSpan.style.top = offset.top + "px";
+            hintSpan.style.left = offset.left + "px";
         }
-        $assignedHints.show();
+        $assignedHints.addClass(class_hintVisible);
         $hintsContainer.show();
     }
 
-    // returns (at least) 'n'  unique hints based on 'hintCharsStr'
-    function generateHints(n, hintCharsStr) {
-        var hintCharsArr = hintCharsStr.split(''),
-            len_hintChars = hintCharsArr.length,
-            hintsArray = [],
-            lastSet = [''],
-            currentSet,
+    // gets hints based on hintCharsStr
+    function getHints(hintCharsStr) {
+        var hintsArr = hintCharsStr.split(''),
+            doubleDigit_hintsArr = [],
+            len = hintsArr.length,
             count = -1;
 
-        while(true) {
-            currentSet = [];
-            var innerCount = -1;
-            for (var i = 0; i < len_hintChars; i++) {
-                var len_lastSet = lastSet.length;
-                for (var j = 0; j < len_lastSet; j++) {
-                    currentSet[++innerCount] = hintsArray[++count] = hintCharsArr[i] + lastSet[j];
-                }
-                // this check is made outside the inner loop to avoid unnecessary checks at each
-                // inner iteration, since some extra hints getting generated won't hurt anyway.
-                if(count >= n) {
-                    return hintsArray;
-                }
+        for (var i = 0; i < len; ++i) {
+            for (var j = 0; j < len; ++j) {
+                doubleDigit_hintsArr[++count] = hintsArr[i] + hintsArr[j];
             }
-            lastSet = currentSet;
         }
+        return {singleDigit: hintsArr, doubleDigit: doubleDigit_hintsArr};
     }
 
-    function generateHintLabels() {
+    function generateHintSpansInDom() {
+        var hints = getHints(hintCharsStr);
+
+        hintSpans_singleDigit = getHintSpans(hints.singleDigit);
+        hintSpans_doubleDigit = getHintSpans(hints.doubleDigit);
+
         $hintsContainer.empty();
-        hintElements = [];
+        $hintsContainer.append(hintSpans_singleDigit);
+        $hintsContainer.append(hintSpans_doubleDigit);
+    }
+
+    function getHintSpans(hintsArr) {
+        var hintSpans = [];
         var len = hintsArr.length;
         for (var i = 0; i < len; i++) {
-            var hintElement = document.createElement('span');
-            hintElement.innerText = hintsArr[i];
-            hintElement.classList.add(class_hint);
-            hintElements[i] = (hintElement);
+            var hintSpan = document.createElement('span');
+            hintSpan.innerText = hintsArr[i];
+            hintSpan.classList.add(class_hint);
+            hintSpans[i] = hintSpan;
         }
-        $hintsContainer.append(hintElements);
+        return hintSpans;
     }
-    
+
     function removeActiveElementStyling() {
         if (elementStyledAsActive) {
             mod_basicPageUtils.removeActiveElementStyle(elementStyledAsActive);

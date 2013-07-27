@@ -186,6 +186,10 @@ div#UnitsProj-selectLink-UIContainer {
   padding: 1px 2px !important;
   letter-spacing: 1px !important;
 
+  &.UnitsProj-hintLabel-visible {
+    display: inline !important;
+  }
+
   //
   ///* class for all assigned hints. The class is used via JS, and (currently) has no specific styling rules. */
   //&.UnitsProj-hintLabel-assigned {
