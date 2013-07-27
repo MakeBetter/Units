@@ -28,8 +28,8 @@ Also, hence the generous use of !important property here.
     right: 0;
     border-top: 6px solid $border-color-grey;
     border-left: 6px solid transparent;
-
   }
+
   &:after {
     @extend .CU-overlay-selected-marker;
     bottom: 0;
@@ -174,9 +174,11 @@ div#UnitsProj-selectLink-UIContainer {
   }
 }
 
+/* class for all hint labels */
 .UnitsProj-hintLabel {
+  display: none;
+  z-index: $highest-z-index - 1 !important;
   opacity: 0.7 !important;
-  display: none !important;
   position: absolute !important;
   font: normal normal normal 9px/9px $sans-serif-font-family !important;
   color: #d7f0d7 !important;
@@ -184,9 +186,16 @@ div#UnitsProj-selectLink-UIContainer {
   padding: 1px 2px !important;
   letter-spacing: 1px !important;
 
-  &.UnitsProj-hintLabel-visible {
-    display: inline !important;
-  }
+  //
+  ///* class for all assigned hints. The class is used via JS, and (currently) has no specific styling rules. */
+  //&.UnitsProj-hintLabel-assigned {
+  //  display: inline !important;
+  //}
+  //
+  ///* class for hints that are invisible (while being assigned) */
+  //&.UnitsProj-hintLabel-invisible {
+  //  visibility: hidden !important;
+  //}
 }
 
 /************* Focused element styles *************/

@@ -11,37 +11,42 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     var $document = $(document),
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
-        class_hint = 'UnitsProj-hintLabel',
-        class_hintVisible = 'UnitsProj-hintLabel-visible',
-        class_elementWithHint = 'UnitsProj-elementWithHint',
+        class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         suppressEvent = mod_contentHelper.suppressEvent,
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
-        $empty = $(),   // saved reference
-        $matching = $empty,
-
-        timeout_findMatchingLinks,
-        maxDelay_findMatchingLinks,
+        $currentMatches = $(),   // the set of elements in the viewport that match the main textbox input
+        $assignedHints = $(),
+        timeout_findMatches_mainInput,
+        maxDelay_mainInputMatching = 200,
         class_noMatch = 'UnitsProj-selectLink-noMatch',
         isHelpVisible = false,
-        timeout_viewportChange = false;
+        timeout_viewportChange = false,
+        $elemsInViewport,   // elements currently in the viewport (excluding elements that are belong to this extension)
+
+        // This number only needs to be a sufficiently high enough to accommodate all the  links in the *viewport*
+        // In case a webpage's has more links than this in the current viewport, links beyond this number should simply
+        // be unreachable using hints, but the code should not break.
+        // (Note: as a rule of thumb, a good webpage shouldn't have more than have more than 100 odd links. This does
+        // not include infinitely scrollable feeds etc, but we can ignore those since we are only interested in the
+        // maximum number of links that could be present in a given *viewport*.
+        num_hintsToGenerate = 500;
 
     var reducedSet = "jfkdhglsurieytnvmbc",
         remainingSet = "axzwoqp",
         // hint chars: set of letters used for hints. easiest to reach letters should come first
         hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
     
-    var usageMode = 2; // 1 - "find by typing chars", 2 - "show hints", 3 - "mixed"
     var hintsArr = [];
 
-    var $textBox_main =  $('<input type = "text">')
+    var $textBox_main = $('<input type = "text">')
         .attr('id', 'UnitsProj-selectLink-textBox_main')
         .addClass("UnitsProj-selectLink-textBox")
         .addClass("UnitsProj-reset-text-input")
         .addClass(class_addedByUnitsProj)
         .attr('placeholder', "Enter some of link/button's text");
 
-    var $textBox_hint =  $('<input type = "text">')
+    var $textBox_hint = $('<input type = "text">')
         .attr('id', 'UnitsProj-selectLink-textBox_hint')
         .addClass("UnitsProj-selectLink-textBox")
         .addClass("UnitsProj-reset-text-input")
@@ -90,32 +95,23 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     var hintElements = [];  // array of hint spans (dom elements)
 
     function reset() {
-        timeout_findMatchingLinks = false;
-        timeout_viewportChange = false;
         closeUI();
     }
 
     function setup(settings) {
         reset();
 
-        if (usageMode === 2) {
-            maxDelay_findMatchingLinks = 50;
-        }
-        else {
-            maxDelay_findMatchingLinks = 333;
-        }
-        if (usageMode === 2 || usageMode === 3) {
-            hintsArr = generateHints(1000, hintCharsStr);
-            generateHintLabels();
-        }
+        hintsArr = generateHints(num_hintsToGenerate, hintCharsStr);
+        generateHintLabels();
 
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
         // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox_main[0]) for
         // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
-        $textBox_main.on('input', onInput);
+        $textBox_main.on('input', onMainInput);
+        $textBox_hint.on('input', onHintInput);
         $closeButton.on('click', closeUI);
-        $textBox_main.on('focusout', onTextBoxFocusOut); // we use focusout instead of blur since it supports e.relatedTarget
+        setup_focusRelatedEvents();
 
         var selectLinkShortcuts = settings.selectLinkShortcuts,
             miscShortcuts = settings.miscShortcuts;
@@ -130,14 +126,37 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $helpUI.text("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (end)");
     }
 
-    // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
-    // keeps typing continuously 
-    function onInput() {
-        // compare explicitly with false, which is how we reset it
-        if (timeout_findMatchingLinks === false) {
-            timeout_findMatchingLinks = setTimeout(findMatchingLinks, maxDelay_findMatchingLinks);
-        }
-    } 
+    
+    function onFocus_hintTextBox() {
+        resetHintTextBox();
+        assignHints_to_currentMatches();
+    }
+
+    function onBlur_hintTextBox() {
+        resetHintTextBox();
+        removeAssignedHints();
+    }
+    
+    function resetHintTextBox() {
+        $hintsContainer.val('');
+        $textBox_hint.removeClass(class_noMatch);
+    }
+
+    function setup_focusRelatedEvents() {
+        $textBox_main.on('focusout', onFocusOut_textboxes); // we use focusout instead of blur since it supports e.relatedTarget
+        $textBox_hint.on('focusout', onFocusOut_textboxes);
+
+        $textBox_hint.on('focus', onFocus_hintTextBox);
+        $textBox_hint.on('blur', onBlur_hintTextBox);
+    }
+
+    function remove_focusRelatedEvents() {
+        $textBox_main.off('focusout', onFocusOut_textboxes);
+        $textBox_hint.off('focusout', onFocusOut_textboxes);
+
+        $textBox_hint.off('focus', onFocus_hintTextBox);
+        $textBox_hint.off('blur', onBlur_hintTextBox);
+    }
 
     function selectNext() {
         select('n');
@@ -160,27 +179,26 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
      * @param direction 'n' for next; 'p' for previous
      */
     function select(direction) {
-        if ($matching.length) {
-            var index = $matching.index(elementStyledAsActive);
+        if ($currentMatches.length) {
+            var index = $currentMatches.index(elementStyledAsActive);
             if (!elementStyledAsActive || index === -1) {
-                console.warn('selectLink: $matching has elements, but elementStyledAsActive not present in it');
+                index = 0;
                 return;
             }
 
             if (direction === 'n') {
                 ++index;
-                if (index >= $matching.length) {
+                if (index >= $currentMatches.length) {
                     index = 0;
                 }
             }
             else if (direction === 'p') {
                 --index;
                 if (index < 0) {
-                    index = $matching.length - 1;
+                    index = $currentMatches.length - 1;
                 }
             }
-            setFakeFocus($matching[index]);
-            $countLabel[0].innerText = (index + 1) + " of " + $matching.length;
+            styleAsActive($currentMatches[index], index);
         }
     }
 
@@ -189,59 +207,84 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         return $document.find('a, input, button, select');
     }
 
-    function findMatchingLinks() {
-        clearTimeout(timeout_findMatchingLinks);
-        timeout_findMatchingLinks = false;    // reset
-       
-        $matching.removeClass(matchingLink_class);
-        removeActiveElementStyling();
+    function getElementText_all(el) {
+        return (el.innerText? el.innerText: "")  + " " + (el.value? el.value: "") + " " + (el.placeholder? el.placeholder: "");
+    }
 
-        var searchText_lowerCase = getSearchText_lowerCase();
-        if (!searchText_lowerCase) {
-            $countLabel[0].innerText = "";
-            $textBox_main.removeClass(class_noMatch);
+    function findMatches_mainInput() {
+        clearTimeout(timeout_findMatches_mainInput);
+        timeout_findMatches_mainInput = false;    // reset
+
+        $currentMatches.removeClass(matchingLink_class);
+        removeActiveElementStyling();
+        $textBox_main.removeClass(class_noMatch);
+        $textBox_hint.removeClass(class_noMatch);
+
+        var mainInput_lowerCase = getMainInput_lowerCase();
+
+        if (!mainInput_lowerCase) {
+            $currentMatches = $(); // TODO: handle this differently as a special case for when typing on hint input
             return;
         }
 
-        var $elems, matchedIndex = -1;
+        $currentMatches = $elemsInViewport.filter(function() {
+            var text_lowerCase = getElementText_all(this).toLowerCase();
+            if (fuzzyMatch(text_lowerCase, mainInput_lowerCase)) {
+                return true;
+            }
+        });
 
-        if (usageMode === 1) {
-            $elems = $getAllLinkLikeElems();
-            $matching = $elems.filter(function doesLinkMatch() {
-                if (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this)) {
-                    var text_lowerCase = (this.innerText + " " + this.value + " " + this.placeholder).toLowerCase();
-                    if (fuzzyMatch(text_lowerCase, searchText_lowerCase)) {
-                        return true;
-                    }
-                }
-            });
-        }
-        else if (usageMode === 2) {
-            $elems = $('.' + class_elementWithHint);
-            $matching = $elems.filter(function doesLinkMatch(index) {
-                var hint_lowerCase = (this.dataset.unitsHintLabel).toLowerCase();
-                if (hint_lowerCase.substring(0, searchText_lowerCase.length) === searchText_lowerCase) {
-                    if (matchedIndex === -1 && hint_lowerCase === searchText_lowerCase) {
-                        matchedIndex = index;
-                    }
-                    return true;
-                }
-            });
-        }
+        if ($currentMatches.length) {
+            $currentMatches.addClass(matchingLink_class);
 
-        // this is done to make the same code work for cases: usageMode === 1 and usageMode === 2
-        if (matchedIndex === -1) {
-            matchedIndex = 0;
-        }
-        if ($matching.length) {
-            $matching.addClass(matchingLink_class);
-            setFakeFocus($matching[0]);
-            $countLabel[0].innerText = (matchedIndex + 1) + " of " + $matching.length;
-            $textBox_main.removeClass(class_noMatch);
+            styleAsActive($currentMatches[0], 0);
         }
         else {
-            $countLabel[0].innerText = "0 of 0";
             $textBox_main.addClass(class_noMatch);
+        }
+    }
+
+    // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
+    // keeps typing continuously
+    function onMainInput() {
+        // compare explicitly with false, which is how we reset it
+        if (timeout_findMatches_mainInput === false) {
+            timeout_findMatches_mainInput = setTimeout(findMatches_mainInput, maxDelay_mainInputMatching);
+        }
+    }
+
+    function onHintInput() {
+       
+        if (!$currentMatches.length) {
+            $textBox_hint.val(''); // don't accept input
+            $textBox_hint.addClass(class_noMatch);
+        }
+        var hintInput_upperCase = getHintInput_upperCase();
+
+        if (!hintInput_upperCase) {
+            return;
+        }
+
+        var elemWithExactMatch = null,
+            $matching_partialOrExact;
+
+        $matching_partialOrExact = $currentMatches.filter(function () {
+            var elemHint_upperCase = (this.dataset.unitsHintLabel).toUpperCase();
+            if (elemHint_upperCase.substring(0, hintInput_upperCase.length) === hintInput_upperCase) {
+                if (!elemWithExactMatch && elemHint_upperCase === hintInput_upperCase) {
+                    elemWithExactMatch = this;
+                }
+                return true;
+            }
+        });
+
+        if ($matching_partialOrExact.length) {
+            elemWithExactMatch && styleAsActive(elemWithExactMatch);
+            $textBox_hint.removeClass(class_noMatch);
+        }
+        else {
+            removeActiveElementStyling();
+            $textBox_hint.addClass(class_noMatch);
         }
     }
 
@@ -263,22 +306,37 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 //        return {element: $set[0], index: 0};
 //    }
 
-    // 1) Styles the specified element as active (while the actual focus continues to
+    // Styles the specified element as active (while the actual focus continues to
     // remain on the select-link-textbox).
     // 2) Briefly sets actual focus to the specified element, before reverting it, in
     // order to get the element in the viewport if it isn't already
-    function setFakeFocus(el) {
+    /**
+     * 1) Styles the specified element as active (while the actual focus continues to
+     * remain on the selectLinkUI).
+     * 2) Briefly sets actual focus to the specified element, before reverting it, in
+     * order to get the element in the viewport if it isn't already
+     * 3) Updates count label indicating which element is selected
+     * @param el
+     * @param [index] optional - index of el in $currentMatches (if not specified,
+     * this will be calculated. If it is known, passing it is useful to avoid the
+     * needless computation)
+     */
+    function styleAsActive(el, index) {
         removeActiveElementStyling();
         elementStyledAsActive = el;
         var saved = document.activeElement;
-        $textBox_main.off('focusout', onTextBoxFocusOut);      // remove event handler
+        remove_focusRelatedEvents();    // temporarily remove event binding
         el.focus();
         saved.focus();
-        $textBox_main.on('focusout', onTextBoxFocusOut); // restore event handler ('focusout' is used since it supports e.relatedTarget)
+        setup_focusRelatedEvents();     // revent event binding
         mod_basicPageUtils.styleActiveElement(el);
+        if (index === undefined) {
+            index = $currentMatches.index(el);
+        }
+        $countLabel[0].innerText = (index + 1) + " of " + $currentMatches.length;
     }
 
-    function onTextBoxFocusOut(e) {
+    function onFocusOut_textboxes(e) {
         if ($UIContainer.find(e.relatedTarget).length === 0) {
             closeUI();
         }
@@ -286,28 +344,27 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     function closeUI() {
 
-        /////////
-        console.warn('remove this line');
-        return;
-        ////////
-
         var disabledByMe = mod_mutationObserver.disable();
-        clearTimeout(timeout_findMatchingLinks);
-        timeout_findMatchingLinks = false;    // reset
+        clearTimeout(timeout_findMatches_mainInput);
+        timeout_findMatches_mainInput = false;    // reset
 
+        clearTimeout(timeout_viewportChange);
+        timeout_viewportChange = false;    // reset
+        
         // blur (if not already blurred - to prevent infinite recursion)
         if (document.activeElement === $textBox_main[0])
             $textBox_main.blur();
 
         $textBox_main.val('');
-        $countLabel[0].innerText = "";
+        removeActiveElementStyling();
         $textBox_main.removeClass(class_noMatch);
         hideHelpUI();
         $UIContainer.hide();
         endMatching();
         mod_context.set_selectLinkUI_state(false);
         removeEvent_onViewportChange();
-        $hintsContainer.remove();
+        $hintsContainer.hide();
+        removeAssignedHints();
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -315,33 +372,49 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $UIContainer.show();
         $textBox_main.focus();
         mod_context.set_selectLinkUI_state(true);
-        $hintsContainer.show();
+
+        // This global variable is calculated and cached when the UI is invoked (and updated whenever the viewport changes)
+        // Given that new links might dynamically get added to the viewport, ideally we should recalculate this variable
+        // each time we use it. However, the current strategy is more performant (and given how short-lived this UI is
+        // we can ignore the effect of new links getting added etc)
+        $elemsInViewport = $getAllLinkLikeElems().filter(function() {
+            return (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this));
+        });
         setupEvent_onViewportChange();
-        if (usageMode === 2) { // hint mode
-            assignHintLabels();
-        }
     }
 
-    function assignHintLabels() {
-        $hintsContainer.find('.' + class_hintVisible).removeClass(class_hintVisible);
-        var $all = $getAllLinkLikeElems();
-        $all.removeClass(class_elementWithHint);
-        var $elemsToConsider = $all.filter(function doesLinkMatch() {
-            if (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this)) {
-                return true;
-            }
-        });
-        var len = $elemsToConsider.length;
+    function onKeyDown_spaceOrShift() {
+        $textBox_hint.focus();
+    }
+
+    function removeAssignedHints() {
+        $assignedHints.hide();
+        $assignedHints = $();
+    }
+
+    // Assigns hints to `$currentMatches` (and undoes any previous assignment)
+    function assignHints_to_currentMatches() {
+        $hintsContainer.hide();
+        removeAssignedHints();
+
+        findMatches_mainInput(); // first call this (in case it is pending based on a timeout etc)
+
+        $assignedHints = $();
+        // If the current viewport has more (matching) links than `num_hintsToGenerate` (or technically
+        // `hintElements.length` which can be a bit larger), we will ignore links beyond that count (for now).
+        var len = Math.min($currentMatches.length, hintElements.length);
         for (var i = 0; i < len; i++) {
-            var el = $elemsToConsider[i];
+            var el = $currentMatches[i];
             var hintLabel = hintElements[i];
-            hintLabel.classList.add(class_hintVisible);
+            $assignedHints.add(hintLabel);
+
             el.setAttribute('data-units-hint-label', hintLabel.innerText);
-            el.classList.add(class_elementWithHint);
             var offset = mod_commonHelper.getOffsetPosition(el);
             hintLabel.style.top = offset.top + "px";
             hintLabel.style.left = offset.left + "px";
         }
+        $assignedHints.show();
+        $hintsContainer.show();
     }
 
     // returns (at least) 'n'  unique hints based on 'hintCharsStr'
@@ -361,6 +434,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                 for (var j = 0; j < len_lastSet; j++) {
                     currentSet[++innerCount] = hintsArray[++count] = hintCharsArr[i] + lastSet[j];
                 }
+                // this check is made outside the inner loop to avoid unnecessary checks at each
+                // inner iteration, since some extra hints getting generated won't hurt anyway.
                 if(count >= n) {
                     return hintsArray;
                 }
@@ -387,11 +462,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             mod_basicPageUtils.removeActiveElementStyle(elementStyledAsActive);
             elementStyledAsActive = null;
         }
+        $countLabel[0].innerText = "";
     }
 
     function endMatching() {
-        $matching.removeClass(matchingLink_class);
-        $matching = $empty;
+        $currentMatches.removeClass(matchingLink_class);
+        $currentMatches = $();
         var temp = elementStyledAsActive; // save before making the function call below
         removeActiveElementStyling();
         temp && temp.focus();
@@ -409,8 +485,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
     }
 
-    function getSearchText_lowerCase() {
+    function getMainInput_lowerCase() {
         return $textBox_main.val().toLowerCase();
+    }
+
+    function getHintInput_upperCase() {
+        return $textBox_hint.val().toUpperCase();
     }
 
     function fuzzyMatch(text, pattern) {
@@ -495,8 +575,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             timeout_viewportChange = setTimeout(function() {
                 clearTimeout(timeout_viewportChange);
                 timeout_viewportChange = false;
-                showUI();   // to update the UI
-                onInput();  // to re-execute code for matching links (with a brief delay)
+
+                $elemsInViewport = $getAllLinkLikeElems().filter(function() {
+                    return (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this));
+                });
+
+                findMatches_mainInput();
+                if (document.activeElement === $textBox_hint[0]) {
+                    assignHints($currentMatches);
+                }
             }, 250);
         }
     }
