@@ -16,51 +16,33 @@
         $help = $("#help"),
         
         $CUShortcutsSection = $("#CUs-shortcuts"),
-        $generalShortcutsSection = $("#general-shortcuts"),// second column. contains misc, global, and URL-specific page shortcuts
+        $miscShortcutsSection = $("#misc-shortcuts"),// second column. contains misc, global, and URL-specific page shortcuts
         $navigatePageSection = $("#navigate-page-shortcuts"),
         
         $closeButton = $(".close");
 
-    $closeButton.click(function() {
-        parent.postMessage({message: "closeIFrame"}, "*");
-    });
+    // Setup event handlers
+    function setup() {
+        $closeButton.click(function() {
+            parent.postMessage({message: "closeIFrame"}, "*");
+        });
 
+        window.addEventListener('message', function(event) {
+            var data = event.data;
 
-    window.addEventListener('message', function(event) {
-        var data = event.data,
-            sectionDisabledClass = "disabled",
-            $noCUsMessage = $("<span class='disabled'> No content units setup for this page</span>"),
-            $CUsShortcuts = $CUShortcutsSection.find("tbody");
-
-
-        // If the page does not have CUs specified, then hide the shortcuts and show a message.
-        if (data.message === 'pageHasCUsSpecifier') {
-            if (!data.value) {
-                // show the CU shortcuts as disabled
-                $CUShortcutsSection.addClass(sectionDisabledClass);
-                $CUShortcutsSection.append($noCUsMessage);
-                $CUsShortcuts.hide();
-
-                return;
+            if (data.message === 'pageHasCUsSpecifier') {
+                showOrHideCUShortcuts(data);
             }
 
-            $CUShortcutsSection.removeClass(sectionDisabledClass);
-            if ($noCUsMessage) {
-                $noCUsMessage.remove();
-            }
-            $CUsShortcuts.show();
-        }
+            return false;
 
-        return false;
-
-    }, false);
+        }, false);
+    }
 
     function renderHelpUI(settings) {
         renderCUShortcuts(settings);
-        renderGeneralShortcuts(settings);
-        renderNavigatePageShortcuts(settings);
-        appendSpecialCases(settings, $navigatePageSection);
-
+        renderMiscShortcuts(settings);
+        renderPageNavigationShortcuts(settings);
 
         // send message to content script once the UI is rendered (and we have the final height of the contents)
         parent.postMessage({
@@ -71,22 +53,6 @@
         parent.postMessage({
             message: "doesPageHaveCUsSpecifier"
         }, "*");
-    }
-
-    function renderGeneralShortcuts(settings) {
-        var miscShortcuts = settings.miscShortcuts,
-            expandedUrlData = settings.expandedUrlData,
-            globalShortcuts = settings.globalChromeCommands;
-
-        var page_SUs = expandedUrlData && expandedUrlData.page_SUs,
-            page_actions = expandedUrlData && expandedUrlData.page_actions,
-            page_allShortcuts = $.extend({}, page_SUs, page_actions);
-
-        var $shortcutsTable = $generalShortcutsSection.find("table");
-
-        renderShortcutsInSectionTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
-        renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Tab operations");
-        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", "page-specific");
     }
 
     function renderCUShortcuts(settings) {
@@ -108,11 +74,29 @@
         renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site", "page-specific");
     }
 
-    function renderNavigatePageShortcuts(settings) {
+    function renderMiscShortcuts(settings) {
+        var miscShortcuts = settings.miscShortcuts,
+            expandedUrlData = settings.expandedUrlData,
+            globalShortcuts = settings.globalChromeCommands;
+
+        var page_SUs = expandedUrlData && expandedUrlData.page_SUs,
+            page_actions = expandedUrlData && expandedUrlData.page_actions,
+            page_allShortcuts = $.extend({}, page_SUs, page_actions);
+
+        var $shortcutsTable = $miscShortcutsSection.find("table");
+
+        renderShortcutsInSectionTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
+        renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Tab operations");
+        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", "page-specific");
+    }
+
+    function renderPageNavigationShortcuts(settings) {
         var $shortcutsTable =  $navigatePageSection.find("table");
 
         renderShortcutsInSectionTable(settings.pageNavigationShortcuts, $shortcutsTable, "Navigate Page");
         renderShortcutsInSectionTable(settings.elementNavigationShortcuts, $shortcutsTable, "Navigate Page Elements");
+
+        appendSpecialCases(settings, $navigatePageSection);
     }
 
     /***
@@ -180,15 +164,15 @@
         }
     }
 
-    function appendSpecialCases(settings, $generalShortcutsSection) {
+    function appendSpecialCases(settings, $miscShortcutsSection) {
         var pageNavigationShortcuts = settings.pageNavigationShortcuts,
             CUsShortcuts_Default = settings.CUsShortcuts,
             nextCUShortcuts = CUsShortcuts_Default.nextCU.kbdShortcuts,
             prevCUShortcuts = CUsShortcuts_Default.prevCU.kbdShortcuts,
             scrollDownShortcuts = pageNavigationShortcuts.scrollDown.kbdShortcuts,
             scrollUpShortcuts = pageNavigationShortcuts.scrollUp.kbdShortcuts,
-            $scrollDownShortcuts = $generalShortcutsSection.find("#scrollDown td.key"),
-            $scrollUpShortcuts =  $generalShortcutsSection.find("#scrollUp td.key");
+            $scrollDownShortcuts = $miscShortcutsSection.find("#scrollDown td.key"),
+            $scrollUpShortcuts =  $miscShortcutsSection.find("#scrollUp td.key");
 
         var additionalShortcuts,
             i;
@@ -222,4 +206,30 @@
         }
         additionalShortcuts && $scrollUpShortcuts.append(additionalShortcuts);
     }
+
+    function showOrHideCUShortcuts(data) {
+        var sectionDisabledClass = "disabled",
+            $noCUsMessage = $("<span class='disabled'> No content units setup for this page</span>"),
+            $CUsShortcuts = $CUShortcutsSection.find("tbody");
+
+        // If the page does not have CUs specified, then hide the shortcuts and show a message.
+        if (!data.value) {
+            // show the CU shortcuts as disabled
+            $CUShortcutsSection.addClass(sectionDisabledClass);
+            $CUShortcutsSection.append($noCUsMessage);
+            $CUsShortcuts.hide();
+
+            return;
+        }
+
+        $CUShortcutsSection.removeClass(sectionDisabledClass);
+        if ($noCUsMessage) {
+            $noCUsMessage.remove();
+        }
+
+        $CUsShortcuts.show();
+    }
+
+    setup();
+
 })();
