@@ -69,7 +69,7 @@ div#UnitsProj-selectLink-UIContainer {
   bottom: 0px;
   right: 200px !important;
   margin: 0px !important;
-  z-index: $highest-z-index !important;
+  z-index: $highest-z-index - 1 !important;
   background-color: #d8d8d8 !important;
   @include border-radius(6px 6px 0 0 !important);
   padding: 5px !important;
@@ -81,10 +81,11 @@ div#UnitsProj-selectLink-UIContainer {
 
   input#UnitsProj-selectLink-textBox_main {
     width: $selectLink-mainTextBox_width !important;
+    padding-right: 30px !important;
     @include border-radius(4px 0 0 4px !important);
 
     &:hover, &:focus {
-      z-index: $highest-z-index !important;
+      z-index: $highest-z-index - 1 !important;
     }
   }
 
@@ -93,7 +94,7 @@ div#UnitsProj-selectLink-UIContainer {
     margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
 
     &:hover, &:focus {
-      z-index: $highest-z-index !important;
+      z-index: $highest-z-index - 1 !important;
     }
   }
   input.UnitsProj-selectLink-textBox {
@@ -107,7 +108,7 @@ div#UnitsProj-selectLink-UIContainer {
     border: 1px solid darken($selectLink-base-gray, 20) !important;
     height: $selectLinkTextBox_height !important;
     box-sizing: border-box !important;
-    z-index: $highest-z-index - 1 !important;
+    z-index: $highest-z-index - 2 !important;
 
     &.UnitsProj-selectLink-noMatch {
       background-color: pink !important;
@@ -129,6 +130,7 @@ div#UnitsProj-selectLink-UIContainer {
     right: 3px !important;
     font: normal normal normal 11px/14px $sans-serif-font-family !important;
     color: gray !important;
+    z-index: $highest-z-index - 1 !important;
   }
 
   #UnitsProj-selectLink-helpButton {
@@ -145,14 +147,14 @@ div#UnitsProj-selectLink-UIContainer {
     @include border-radius(0 4px 4px 0 !important);
     cursor: default !important;
     margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
-    z-index: $highest-z-index - 1 !important;
+    z-index: $highest-z-index - 2 !important;
     outline: none !important;
 
     &:hover {
       font-weight: bold !important;
       position: relative !important; /* to apply z-index */
       border: 1px solid darken($selectLink-base-gray, 40) !important;
-      z-index: $highest-z-index !important;
+      z-index: $highest-z-index - 1 !important;
     }
 
     &:active {

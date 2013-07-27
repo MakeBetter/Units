@@ -18,7 +18,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         elementStyledAsActive,
         $currentMatches = $(),   // the set of elements in the viewport that match the main textbox input
         $assignedHints = $(),
-        timeout_findMatches_mainInput,
+        timeout_findMatches_mainInput = false,
         maxDelay_mainInputMatching = 200,
         class_noMatch = 'UnitsProj-selectLink-noMatch',
         isHelpVisible = false,
@@ -36,7 +36,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         .addClass("UnitsProj-selectLink-textBox")
         .addClass("UnitsProj-reset-text-input")
         .addClass(class_addedByUnitsProj)
-        .attr('placeholder', "Enter some of link/button's text");
+        .attr('placeholder', "Enter text from link/button");
 
     var $textBox_hint = $('<input type = "text">')
         .attr('id', 'UnitsProj-selectLink-textBox_hint')
@@ -47,10 +47,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     var $countLabel = $('<span></span>').addClass('countLabel');    // this will contain a label like "4 of 20"
 
-    var $textBoxContainer = $('<div></div>')
+    // this container exists only to aid positioning the $countLabel within the textbox (using CSS stylesheet)
+    var $textBoxMain_container = $('<div></div>')
         .attr("id", "UnitsProj-selectLink-textBoxContainer")
         .append($textBox_main)
-        .append($textBox_hint)
         .append($countLabel);
 
     var $helpBtn = $('<span>?</span>')
@@ -69,7 +69,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         .attr("id", "UnitsProj-selectLink-UIContainer")
         .addClass(class_addedByUnitsProj)
         .append($helpUI)
-        .append($textBoxContainer)
+        .append($textBoxMain_container)
+        .append($textBox_hint)
         .append($helpBtn)
         .append($closeButton)
         .hide()     // to prevent from appearing when the page loads
@@ -244,6 +245,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
         else {
             $textBox_main.addClass(class_noMatch);
+            $countLabel[0].innerText = "0 of 0";
         }
     }
 
@@ -346,7 +348,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function closeUI() {
-
         var disabledByMe = mod_mutationObserver.disable();
         clearTimeout(timeout_findMatches_mainInput);
         timeout_findMatches_mainInput = false;    // reset
@@ -593,7 +594,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
                 findMatches_mainInput();
                 if (document.activeElement === $textBox_hint[0]) {
-                    assignHints($currentMatches);
+                    assignHints_to_currentMatches();
                 }
             }, 250);
         }
