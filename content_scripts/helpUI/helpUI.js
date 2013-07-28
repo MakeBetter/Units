@@ -89,8 +89,8 @@
 
         // Additional shortcut to be displayed
         CUsShortcuts_Default.selectAnyLink= {
-            descr: "Select that link",
-            kbdShortcuts: ["Space + [letter link starts with]"],
+            descr: "Select link(s) starting with that letter",
+            kbdShortcuts: ["Space + letter"],
         };
         CUsShortcuts_Default.selectAnyLink[property_importanceHigh] = true;
 
@@ -156,7 +156,7 @@
         }
 
         if ($shortcutsTable.find("tr").length !== 1) {
-            $subSectionTitle.addClass("padding-top");
+            $subSectionTitle.addClass("separator-row");
         }
 
         $.each(shortcutsObj, function(key, value) {
@@ -283,6 +283,16 @@
         $("#" + optionId).addClass("menu-selected");
 
         menuHandlers[optionId] && menuHandlers[optionId]();
+
+        // When filtering is applied, add class "first-visible-row" to the first visible row of each table. We use this
+        // for alignment in CSS.
+
+        var class_firstVisible = "first-visible-row";
+        $(".section table").each(function(index, table) {
+
+            $(table).find("tr").removeClass(class_firstVisible)
+                .filter(":visible").eq(0).addClass(class_firstVisible);
+        });
     }
 
     function showAllShortcuts() {
@@ -291,12 +301,15 @@
         $navigatePageSection.show();
         $footerMessage.show();
 
-        $("tr").show();
+        $("tr").show(); // show all keyboard shortcuts
+
+        $("#filter-message").hide();
     }
 
     function showMostImportantShortcuts() {
         showAllShortcuts();
         $("tr:not(.importance-high)").hide();
+        showFilterMessage("Here's a list of the main shortcuts to help you get started. Remember: j, k, o and enter are your best friends.");
 
         $footerMessage.show();
 
@@ -309,13 +322,23 @@
         $navigatePageSection.hide();
 
         $CUShortcutsSection.show();
+
+        showFilterMessage("These shortcuts are relevant only when Content Units (CUs) are present on a page. Also, some of them " +
+            "would apply only for the <i>selected</i> CU.");
         $footerMessage.hide();
     }
 
     function showPageSpecificShortcuts() {
         showAllShortcuts();
         $("tr:not(.page-specific)").hide();
+
+        showFilterMessage("These shortcuts are specific to the page or website that you are currently on: ");
+
         $footerMessage.hide();
+    }
+
+    function showFilterMessage(message) {
+        $("#filter-message").html(message).show();
     }
 
     setup();

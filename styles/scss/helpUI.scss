@@ -1,12 +1,19 @@
 @import "base";
 @import "modal";
 
+
+.modal-body {
+  position: relative;
+  padding: 10px 12px 20px 12px;
+}
+
+
 body {
   height: 100%; width: 100%;
   margin: 0; padding: 0;
   font-size: 13px;
   background-color: white;
-
+  font-size: 12px;
 }
 
 #help {
@@ -15,9 +22,9 @@ body {
 }
 
 // These calculations can be automated using js. We are manually setting the modalbody-content-width and sidebar width here.
-$modalbody-content-width: 1060px;
-$sidebar: 130px;
-$maincontent-width: $modalbody-content-width - $sidebar; // equals 930px;
+$modalbody-content-width: 1076px;
+$sidebar-width: 130px;
+$maincontent-width: $modalbody-content-width - $sidebar-width; // equals 930px;
 $row-height: 34px;
 
 .sidebar {
@@ -30,16 +37,21 @@ $row-height: 34px;
   width: $maincontent-width;
 }
 
-$section-margin: 5px;
+$section-margin: 3px;
 #help .section {
-    width: ($maincontent-width - ($section-margin * 6))/3;
-    float: left;
-    margin: 0 $section-margin;
+  width: ($maincontent-width - ($section-margin * 6))/3;
+  float: left;
+  margin: 0 $section-margin;
+
+  &:last-child, &:first-child {
+    margin-right: 2px;
+  }
 }
 
 table {
     text-align: left;
     border-spacing: 0;
+    margin: auto; /* Horizontally align in the center of its containing div */
 }
 
 table tr {
@@ -47,40 +59,60 @@ table tr {
 }
 
 $td-padding: 4px;
-$row-border-bottom-color: #ebebeb;
-td, th {
+$td-line-height: 1.2;
+
+$td-border-bottom-color: #ebebeb;
+$td-border-bottom-width: 1px;
+
+td {
     font-family: $sans-serif-font-family;
-    font-size: 13px;
+    font-size: 12px;
     color: $text-color;
     border: none;
     background-color: inherit;
     background: inherit;
     padding: $td-padding;
-    border-bottom: 1px dashed $row-border-bottom-color;
+    border-bottom: 1px dashed $td-border-bottom-color;
+    line-height: $td-line-height;
 
-}
-
-.key {
+  &.key {
     padding-right: 10px;
     text-align: right;
-    line-height: 25px;
+    line-height: 25px; /* so that it wraps nicely to the next line when needed. */
 }
 
-.action {
+  &.action {
     vertical-align: middle;
     color: #444;
-    //padding: 3px 5px 3px 5px; /*padding top and bottom is 3px to be consistent with td.key>span.key*/
+  }
+}
+
+.subsection-title {
+  &.separator-row:not(.first-visible-row)>td {
+    height: 2 * $row-height; /* Assigned the height of two rows, since it demarcates two sub-sections in a table */
+    box-sizing: border-box;
+  }
+
+  &>td {
+    color: $subheading-color;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: bottom;
+    padding-bottom: 6px;
+  }
+}
+
+tr.subsection-end>td{
+  border-bottom: 0;
 }
 
 .key>.key-text {
-  //background-color: #5b6c8d;
   border: 1px solid #ddd;
   border-radius: 3px;
   padding: $td-padding; /* Note: If you change this, then change td or td.action padding as well. They should be consistent. */
   margin: 0 2px;
   color: #444;
   background-color: #fafafa;
-  font-size: 12px;
 }
 
 td.key>span.separator, tr.subsection-title>td {
@@ -96,31 +128,6 @@ td.key>span.separator {
     background-color: #FFFFEA;
 }
 
-#footer-message {
-    text-align: left;
-    background-color: inherit;
-    border: none;
-    font-size: 12px;
-    padding-top: 5px;
-}
-
-tr.subsection-end>td{
-    //padding-bottom: 20px;
-    border-bottom: 0;
-}
-
-.subsection-title>td{
-    font-size: 12px;
-    color: $subheading-color;
-    font-weight: bold;
-    text-align: center;
-    font-family: $serif-font-family;
-}
-
-.subsection-title.padding-top>td {
-  padding-top: 20px;
-}
-
 .disabled .section-message{
   color: $message-disabled-color;
   display: inline-block;
@@ -129,29 +136,49 @@ tr.subsection-end>td{
   padding: $td-padding;
 }
 
+
 $menu-option-margin-top: 8px;
+$menu-padding: 5px;
 #filter-by {
 
   @include simple-vertical-menu;
 
-  &>ul {
-    width: $sidebar;
+  // override/customize properties
 
+  &>ul {
+    width: $sidebar-width;
   }
 
   li {
-    border-bottom: 1px solid $row-border-bottom-color;
+    border-bottom: 1px solid $td-border-bottom-color;
     margin-top: $menu-option-margin-top;
     height: $row-height - $menu-option-margin-top;
     box-sizing: border-box;
+    font-size: 12px;
+    padding: $menu-padding;
 
     &.menu-selected, &:hover {
       color: #ffffea;
-      border-bottom: 1px solid $row-border-bottom-color;
+      border-bottom: 1px solid $td-border-bottom-color;
       background-color: coral;
       transition: none;
     }
-
   }
+}
 
+
+#filter-message {
+  margin: 0;
+  box-sizing: border-box;
+  height: $row-height;
+  display: none;
+  padding-top: $menu-option-margin-top + $menu-padding; /* Align with the menu options on the left. */
+  padding-left: 10px; /* No alignment going on here. Just seems to look good. */
+}
+
+#footer-message {
+  text-align: left;
+  background-color: inherit;
+  border: none;
+  padding-top: 5px;
 }

@@ -15,7 +15,7 @@
                      <div id="filter-by">
                          <ul>
                              <li id="all" class="menu-selected"> All </li>
-                             <li id = "most-important"> Getting Started </li>
+                             <li id = "most-important"> Most Important </li>
                              <li id="specific-to-page"> Current page/site </li>
                              <li id="cu-based"> CU based </li>
                              <!--<li id="cool-features"> Cool Features</li>-->
@@ -23,19 +23,25 @@
                      </div>
                  </div>
                  <div class="main-content">
-                     <div class="section" id="CUs-shortcuts">
-                         <table>
-                         </table>
-                     </div>
+                     <p id="filter-message" class="UnitsProj-message"> </p>
 
-                     <div class="section" id="misc-shortcuts">
-                         <table>
-                         </table>
-                     </div>
+                     <!-- We have a sections-container so that we can identify and apply styles selectively to .section:first-child and
+                      .section:last-child in the CSS -->
+                     <div class="sections-container">
+                         <div class="section" id="CUs-shortcuts">
+                             <table>
+                             </table>
+                         </div>
 
-                     <div class="section" id="navigate-page-shortcuts">
-                         <table>
-                         </table>
+                         <div class="section" id="misc-shortcuts">
+                             <table>
+                             </table>
+                         </div>
+
+                         <div class="section" id="navigate-page-shortcuts">
+                             <table>
+                             </table>
+                         </div>
                      </div>
                      <div class=UnitsProj-float-fixer></div>
                      <p id=footer-message class="UnitsProj-message">* These will scroll the page up/down only when there are no CUs on the page.
