@@ -15,7 +15,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
-        $currentMatches = $(),   // the set of elements in the viewport that match the main textbox input
+        $elemsMatchingMainText = $(),   // the set of elements in the viewport that match the main textbox input
         $assignedHintsSpans = $(),
         timeout_findMatches_mainInput = false,
         maxDelay_mainInputMatching = 200,
@@ -97,8 +97,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         generateHintSpansInDom();
 
         // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
-        // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox_main[0]) for
-        // the same reason. [This binding gets priority based on the order in which modules are set up in the main module]
+        // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $textBox_main[0]
+        // or $textBox_hint[0]) for the same reason. [This binding gets priority over the bindings of mod_CUsMgr based
+        // on the order in which modules are set up in the main module]
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
         $textBox_main.on('input', onMainInput);
         $textBox_hint.on('input', onHintInput);
@@ -116,48 +117,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         $helpBtn.click(onHelpButtonClick);
         $helpUI.text("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (end)");
-    }
-
-    function onFocus_hintTextBox() {
-        resetHintTextBox();
-        assignHints_to_currentMatches();
-    }
-
-    function onBlur_hintTextBox() {
-        resetHintTextBox();
-        removeAssignedHints();  // hints are only visible (and assigned) if it has focus
-    }
-
-    function onFocusOut_textboxes(e) {
-        if ($UIContainer.find(e.relatedTarget).length === 0) {
-            closeUI();
-        }
-    }
-
-    function resetHintTextBox() {
-        $textBox_hint.val('');
-        $textBox_hint.removeClass(class_noMatch);
-    }
-
-    function resetMainTextBox() {
-        $textBox_main.val('');
-        $textBox_main.removeClass(class_noMatch);
-    }
-
-    function setup_focusRelatedEvents() {
-        $textBox_main.on('focusout', onFocusOut_textboxes); // we use focusout instead of blur since it supports e.relatedTarget
-        $textBox_hint.on('focusout', onFocusOut_textboxes);
-
-        $textBox_hint.on('focus', onFocus_hintTextBox);
-        $textBox_hint.on('blur', onBlur_hintTextBox);
-    }
-
-    function remove_focusRelatedEvents() {
-        $textBox_main.off('focusout', onFocusOut_textboxes);
-        $textBox_hint.off('focusout', onFocusOut_textboxes);
-
-        $textBox_hint.off('focus', onFocus_hintTextBox);
-        $textBox_hint.off('blur', onBlur_hintTextBox);
     }
 
     function selectNext() {
@@ -181,8 +140,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
      * @param direction 'n' for next; 'p' for previous
      */
     function select(direction) {
-        if ($currentMatches.length) {
-            var index = $currentMatches.index(elementStyledAsActive);
+        if ($elemsMatchingMainText.length) {
+            var index = $elemsMatchingMainText.index(elementStyledAsActive);
             if (!elementStyledAsActive || index === -1) {
                 index = 0;
                 return;
@@ -190,17 +149,17 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
             if (direction === 'n') {
                 ++index;
-                if (index >= $currentMatches.length) {
+                if (index >= $elemsMatchingMainText.length) {
                     index = 0;
                 }
             }
             else if (direction === 'p') {
                 --index;
                 if (index < 0) {
-                    index = $currentMatches.length - 1;
+                    index = $elemsMatchingMainText.length - 1;
                 }
             }
-            styleAsActive($currentMatches[index], index);
+            styleAsActive($elemsMatchingMainText[index], index);
         }
     }
 
@@ -213,9 +172,19 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         return (el.innerText? el.innerText: "")  + " " + (el.value? el.value: "") + " " + (el.placeholder? el.placeholder: "");
     }
 
-    function resetCurrentMatches() {
-        $currentMatches.removeClass(matchingLink_class);
-        $currentMatches = $();
+    function resetMainTextMatching() {
+        $elemsMatchingMainText.removeClass(matchingLink_class);
+        $elemsMatchingMainText = $();
+        removeActiveElementStyling();
+    }
+
+    // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
+    // keeps typing continuously
+    function onMainInput() {
+        // compare explicitly with false, which is how we reset it
+        if (timeout_findMatches_mainInput === false) {
+            timeout_findMatches_mainInput = setTimeout(findMatches_mainInput, maxDelay_mainInputMatching);
+        }
     }
 
     /**
@@ -227,7 +196,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         clearTimeout(timeout_findMatches_mainInput);
         timeout_findMatches_mainInput = false;    // reset
 
-        resetCurrentMatches();
+        resetMainTextMatching();
 
         removeActiveElementStyling();
         $textBox_main.removeClass(class_noMatch);
@@ -240,10 +209,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
 
         if (!mainInput_lowerCase && matchAllForEmptyInput) {
-            $currentMatches = $elemsInViewport;
+            $elemsMatchingMainText = $elemsInViewport;
         }
         else {
-            $currentMatches = $elemsInViewport.filter(function() {
+            $elemsMatchingMainText = $elemsInViewport.filter(function() {
                 var text_lowerCase = getElementText_all(this).toLowerCase();
                 if (fuzzyMatch(text_lowerCase, mainInput_lowerCase)) {
                     return true;
@@ -251,10 +220,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             });
         }
 
-        if ($currentMatches.length) {
-            $currentMatches.addClass(matchingLink_class);
+        if ($elemsMatchingMainText.length) {
+            $elemsMatchingMainText.addClass(matchingLink_class);
 
-            styleAsActive($currentMatches[0], 0);
+            styleAsActive($elemsMatchingMainText[0], 0);
         }
         else {
             $textBox_main.addClass(class_noMatch);
@@ -262,25 +231,20 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
     }
 
-    // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
-    // keeps typing continuously
-    function onMainInput() {
-        // compare explicitly with false, which is how we reset it
-        if (timeout_findMatches_mainInput === false) {
-            timeout_findMatches_mainInput = setTimeout(findMatches_mainInput, maxDelay_mainInputMatching);
-        }
+    function onHintInput() {
+        findMatches_hintInput();
     }
 
-    function onHintInput() {
+    function findMatches_hintInput() {
 
-        if (!$currentMatches.length) {
+        if (!$elemsMatchingMainText.length) {
             $textBox_hint.val(''); // don't accept input
             $textBox_hint.addClass(class_noMatch);
         }
         var hintInput_upperCase = getHintInput_upperCase();
 
         if (!hintInput_upperCase) {
-            $assignedHintsSpans.addClass(class_hintVisible);
+            $assignedHintsSpans.addClass(class_hintVisible);    // if there no hint input, show hints on all
             return;
         }
 
@@ -326,28 +290,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
     }
 
-    // From among the set of elements specified ($set), this returns the first element
-    // in the viewport. If none is found to be in the viewport, returns the first element.
-    // The return value is an object of the format:
-    // {
-    //      element: <element>,         // DOM element
-    //      index: <indexInArray>,      // 0 based index in $set
-    // }
-//    function getElementToFocusInfo($set) {
-//        var len = $set.length;
-//        for (var i = 0; i < len; i++) {
-//            var elem = $set[i];
-//            if (isAnyPartOfElementInViewport(elem)) {
-//                return {element: elem, index: i};
-//            }
-//        }
-//        return {element: $set[0], index: 0};
-//    }
-
-    // Styles the specified element as active (while the actual focus continues to
-    // remain on the select-link-textbox).
-    // 2) Briefly sets actual focus to the specified element, before reverting it, in
-    // order to get the element in the viewport if it isn't already
     /**
      * 1) Styles the specified element as active (while the actual focus continues to
      * remain on the selectLinkUI).
@@ -355,7 +297,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
      * order to get the element in the viewport if it isn't already
      * 3) Updates count label indicating which element is selected
      * @param el
-     * @param [index] optional - index of el in $currentMatches (if not specified,
+     * @param [index] optional - index of el in $elemsMatchingMainText (if not specified,
      * this will be calculated. If it is known, passing it is useful to avoid the
      * needless computation)
      */
@@ -369,9 +311,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         setup_focusRelatedEvents();     // revent event binding
         mod_basicPageUtils.styleActiveElement(el);
         if (index === undefined) {
-            index = $currentMatches.index(el);
+            index = $elemsMatchingMainText.index(el);
         }
-        $countLabel[0].innerText = (index + 1) + " of " + $currentMatches.length;
+        $countLabel[0].innerText = (index + 1) + " of " + $elemsMatchingMainText.length;
     }
 
     function closeUI() {
@@ -386,11 +328,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $hintsContainer.hide();
         $helpUI.hide();
 
-        resetCurrentMatches();
         removeAssignedHints();
 
-        var elToFocus = elementStyledAsActive; // save reference before calling removeActiveElementStyling()
-        removeActiveElementStyling();
+        var elToFocus = elementStyledAsActive; // save reference before calling resetMainTextMatching()
+        resetMainTextMatching();
         if (elToFocus) {
             elToFocus.focus();
         }
@@ -411,10 +352,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function showUI() {
-        $UIContainer.show();
-        $textBox_main.focus();
-        mod_context.set_selectLinkUI_state(true);
-
         // This global variable is calculated and cached when the UI is invoked (and updated whenever the viewport changes)
         // Given that new links might dynamically get added to the viewport, ideally we should recalculate this variable
         // each time we use it. However, the current strategy is more performant (and given how short-lived this UI is
@@ -422,6 +359,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $elemsInViewport = $getAllLinkLikeElems().filter(function() {
             return (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this));
         });
+
+        $UIContainer.show();
+        $textBox_main.focus();
+        mod_context.set_selectLinkUI_state(true);
+
         setupEvent_onViewportChange();
     }
 
@@ -434,7 +376,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $assignedHintsSpans = $();
     }
 
-    // Assigns hints to `$currentMatches` (and undoes any previous assignment)
+    // Assigns hints to `$elemsMatchingMainText` (and undoes any previous assignment)
     function assignHints_to_currentMatches() {
         $hintsContainer.hide();
         removeAssignedHints();
@@ -442,7 +384,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         findMatches_mainInput(true); // first call this (in case it is pending due to a timeout etc)
 
         var hintSpansToUse;
-        if ($currentMatches.length <= hintSpans_singleDigit.length) {
+        if ($elemsMatchingMainText.length <= hintSpans_singleDigit.length) {
             hintSpansToUse = hintSpans_singleDigit;
         }
         else {
@@ -453,9 +395,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         // Note: If the extremely unlikely scenario that the current *viewport* has more (matching) links than
         // `hintSpans_doubleDigit.length`, we will ignore links beyond that count (for now) -- the code won't
         // break, but these links will simply have no hint assigned.
-        var len = Math.min($currentMatches.length, hintSpansToUse.length);
+        var len = Math.min($elemsMatchingMainText.length, hintSpansToUse.length);
         for (var i = 0; i < len; i++) {
-            var el = $currentMatches[i];
+            var el = $elemsMatchingMainText[i];
             var hintSpan = hintSpansToUse[i];
             assignedHintSpans[i] = hintSpan;
 
@@ -519,7 +461,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function onKeydown_handleEsc(e) {
         var code = e.which;
         // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
-        if (e.target === $textBox_main[0] && [17, 18, 91, 93].indexOf(code) == -1) {
+        if ((e.target === $textBox_main[0] || e.target === $textBox_hint[0]) && [17, 18, 91, 93].indexOf(code) == -1) {
 
             if (code === 27) { // Esc
                 mod_contentHelper.suppressEvent(e);
@@ -605,6 +547,58 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             ((left + width) > window.scrollX);                      // elRight > winLeft
     }
 
+    function resetHintTextBox() {
+        $textBox_hint.val('');
+        $textBox_hint.removeClass(class_noMatch);
+    }
+
+    function resetMainTextBox() {
+        $textBox_main.val('');
+        $textBox_main.removeClass(class_noMatch);
+    }
+
+    function setup_focusRelatedEvents() {
+        $textBox_main.on('focusout', onFocusOut_textboxes); // we use focusout instead of blur since it supports e.relatedTarget
+        $textBox_hint.on('focusout', onFocusOut_textboxes);
+
+        $textBox_main.on('focus', onFocus_mainTextBox);
+        $textBox_hint.on('focus', onFocus_hintTextBox);
+        $textBox_hint.on('blur', onBlur_hintTextBox);
+    }
+
+    function remove_focusRelatedEvents() {
+        $textBox_main.off('focusout', onFocusOut_textboxes);
+        $textBox_hint.off('focusout', onFocusOut_textboxes);
+
+        $textBox_main.off('focus', onFocus_mainTextBox);
+        $textBox_hint.off('focus', onFocus_hintTextBox);
+        $textBox_hint.off('blur', onBlur_hintTextBox);
+    }
+
+    function onFocus_mainTextBox() {
+        resetHintTextBox();
+        if (!$textBox_main.val()) {
+            // even if this if condition is true, $elemsMatchingMainText might exist set due to $textBox_hint having focus
+            resetMainTextMatching();
+        }
+    }
+
+    function onFocus_hintTextBox() {
+        resetHintTextBox();
+        assignHints_to_currentMatches();
+    }
+
+    function onBlur_hintTextBox() {
+        resetHintTextBox();
+        removeAssignedHints();  // hints are only visible (and assigned) if it has focus
+    }
+
+    function onFocusOut_textboxes(e) {
+        if ($UIContainer.find(e.relatedTarget).length === 0) {
+            closeUI();
+        }
+    }
+
     function setupEvent_onViewportChange() {
         $(window).on('resize scroll', onViewportChange);
     }
@@ -613,21 +607,24 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $(window).off('resize scroll', onViewportChange);
     }
 
+    function _onViewPortChange() {
+        clearTimeout(timeout_viewportChange);
+        timeout_viewportChange = false;
+
+        $elemsInViewport = $getAllLinkLikeElems().filter(function() {
+            return (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this));
+        });
+
+        findMatches_mainInput();
+        resetHintTextBox();
+        if (document.activeElement === $textBox_hint[0]) {
+            assignHints_to_currentMatches();
+        }
+    }
+
     function onViewportChange() {
         if (timeout_viewportChange === false) {
-            timeout_viewportChange = setTimeout(function() {
-                clearTimeout(timeout_viewportChange);
-                timeout_viewportChange = false;
-
-                $elemsInViewport = $getAllLinkLikeElems().filter(function() {
-                    return (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this));
-                });
-
-                findMatches_mainInput();
-                if (document.activeElement === $textBox_hint[0]) {
-                    assignHints_to_currentMatches();
-                }
-            }, 250);
+            timeout_viewportChange = setTimeout(_onViewPortChange, 250);
         }
     }
 
