@@ -271,7 +271,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             return;
         }
 
-        var elemWithExactMatch = null,
+        var elem_exactMatch = null,
+            hintSpan_exactMatch,
             $matching_partialOrExact = $();
 
         var len = $assignedHints.length;
@@ -281,8 +282,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
             var elemHint_upperCase = hintSpan.innerText.toUpperCase();
             if (elemHint_upperCase.substring(0, hintInput_upperCase.length) === hintInput_upperCase) {
-                if (!elemWithExactMatch && elemHint_upperCase === hintInput_upperCase) {
-                    elemWithExactMatch = elem;
+                if (!elem_exactMatch && elemHint_upperCase === hintInput_upperCase) {
+                    elem_exactMatch = elem;
+                    hintSpan_exactMatch = hintSpan;
                 }
                 hintSpan.classList.add(class_hintVisible);
                 $matching_partialOrExact = $matching_partialOrExact.add(elem);
@@ -294,8 +296,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
 
         if ($matching_partialOrExact.length) {
-            if (elemWithExactMatch) {
-                styleAsActive(elemWithExactMatch);
+            if (elem_exactMatch) {
+                styleAsActive(elem_exactMatch);
+                // exact element found. hide it's hint to prevent (part of) the element being occluded by the hint
+                // (which something I greatly disliked about 'hints' in Vimium etc.)
+                hintSpan_exactMatch.classList.remove(class_hintVisible);
             }
             else {
                 styleAsActive($matching_partialOrExact[0]);
