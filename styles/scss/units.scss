@@ -92,6 +92,7 @@ div#UnitsProj-selectLink-UIContainer {
   input#UnitsProj-selectLink-textBox_hint {
     width: $selectLink-mainTextBox_width/3 !important;
     margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
+    @include border-radius(0 0 0 0 !important);
 
     &:hover, &:focus {
       z-index: $highest-z-index - 1 !important;
@@ -187,16 +188,6 @@ div#UnitsProj-selectLink-UIContainer {
     display: inline !important;
   }
 
-  //
-  ///* class for all assigned hints. The class is used via JS, and (currently) has no specific styling rules. */
-  //&.UnitsProj-hintLabel-assigned {
-  //  display: inline !important;
-  //}
-  //
-  ///* class for hints that are invisible (while being assigned) */
-  //&.UnitsProj-hintLabel-invisible {
-  //  visibility: hidden !important;
-  //}
 }
 
 /************* Focused element styles *************/
