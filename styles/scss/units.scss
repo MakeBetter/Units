@@ -98,12 +98,6 @@ div#UnitsProj-selectLink-UIContainer {
     }
   }
   input.UnitsProj-selectLink-textBox {
-    /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
-    //margin: 2px !important;
-    //margin-right: 0px !important;
-    //padding: 2px !important;
-    //padding-right: 35px !important; /* to prevent typing on top of the count label text */
-
     position: relative !important;
     border: 1px solid darken($selectLink-base-gray, 20) !important;
     height: $selectLinkTextBox_height !important;
@@ -179,7 +173,7 @@ div#UnitsProj-selectLink-UIContainer {
 /* class for all hint labels */
 .UnitsProj-hintLabel {
   display: none;
-  z-index: $highest-z-index - 1 !important;
+  z-index: $highest-z-index - 3 !important; /* so that the hints don't appear on top of the input textbox(es) */
   opacity: 0.7 !important;
   position: absolute !important;
   font: normal normal normal 9px/9px $sans-serif-font-family !important;
