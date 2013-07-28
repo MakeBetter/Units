@@ -7,7 +7,7 @@ Also, hence the generous use of !important property here.
 
 .CU-overlay {
   position: absolute;
-  pointer-events: none; /*NOTE: pointer-events is not a CSS standard yet, but is supported  by webkit browsers and firefox*/
+  pointer-events: none;
 }
 
 .CU-overlay-selected-marker {
@@ -119,6 +119,7 @@ div#UnitsProj-selectLink-UIContainer {
   }
 
   span.countLabel {
+    pointer-events: none !important;
     position: absolute !important;
     top: 4px !important;
     right: 3px !important;
