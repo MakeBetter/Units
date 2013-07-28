@@ -6,15 +6,16 @@
 <div id="unitsPopup">
     <div id= "extension-enabled" style="display: none">
         <div id="popupOptions">
+
+            <div id="disableTemporarily" class="action">
+                <p class="strong">Disable Units on this page, for now</p>
+                <input type="button" id= "disable-temporarily" value="Disable for now">
+            </div>
             <div id="disableDomain" class="action">
                 <p class="strong">Disable for this domain <sup>+</sup> </p>
                 <input type="text" id="url-pattern-to-disable"/>
                 <input type="button" id= "disable-url-permanently" value="Disable" tabindex="1">
                 <p class="advanced"><sup>+</sup>Or, tweak the URL pattern as needed.</p>
-            </div>
-            <div id="disableTemporarily" class="action">
-                <p class="strong">Disable on this page, for now</p>
-                <input type="button" id= "disable-temporarily" value="Disable for now">
             </div>
         </div>
     </div>
