@@ -44,10 +44,10 @@ Also, hence the generous use of !important property here.
 }
 
 /* ****** 'Select Link' module styles ***** */
-
+$matchingLink-background-color: #ffffc8;
 .UnitsProj-matchingLink {
-  outline: 1px solid #dbcb7a !important;
-  background-color: #fff89f !important;
+  outline: 1px solid darken($matchingLink-background-color, 50) !important;
+  background-color: $matchingLink-background-color !important;
   color: #433210 !important;
 }
 
@@ -215,7 +215,7 @@ div#UnitsProj-selectLink-UIContainer {
 /* Set background for all a's and buttons */
 .UnitsProj-focused-link-or-button {
   //background-color: #e6fff1 !important;
-  background-color: #e6fff1 !important;
+  background-color: #dbf3db !important;
   color: #333 !important;
 }
 
