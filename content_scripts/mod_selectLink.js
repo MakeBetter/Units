@@ -267,24 +267,39 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         var hintInput_upperCase = getHintInput_upperCase();
 
         if (!hintInput_upperCase) {
+            $assignedHints.addClass(class_hintVisible);
             return;
         }
 
         var elemWithExactMatch = null,
-            $matching_partialOrExact;
+            $matching_partialOrExact = $();
 
-        $matching_partialOrExact = $currentMatches.filter(function () {
-            var elemHint_upperCase = (this.dataset.unitsHintLabel).toUpperCase();
+        var len = $assignedHints.length;
+        for (var i = 0; i < len; i++) {
+            var hintSpan = $assignedHints[i],
+                elem = $(hintSpan).data('element');
+
+            var elemHint_upperCase = hintSpan.innerText.toUpperCase();
             if (elemHint_upperCase.substring(0, hintInput_upperCase.length) === hintInput_upperCase) {
                 if (!elemWithExactMatch && elemHint_upperCase === hintInput_upperCase) {
-                    elemWithExactMatch = this;
+                    elemWithExactMatch = elem;
                 }
-                return true;
+                hintSpan.classList.add(class_hintVisible);
+                $matching_partialOrExact = $matching_partialOrExact.add(elem);
             }
-        });
+            else {
+                hintSpan.classList.remove(class_hintVisible);
+            }
+
+        }
 
         if ($matching_partialOrExact.length) {
-            elemWithExactMatch && styleAsActive(elemWithExactMatch);
+            if (elemWithExactMatch) {
+                styleAsActive(elemWithExactMatch);
+            }
+            else {
+                styleAsActive($matching_partialOrExact[0]);
+            }
             $textBox_hint.removeClass(class_noMatch);
         }
         else {
@@ -422,11 +437,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             var hintSpan = hintSpansToUse[i];
             $assignedHints = $assignedHints.add(hintSpan);
 
-            el.setAttribute('data-units-hint-label', hintSpan.innerText);
             var offset = mod_commonHelper.getOffsetPosition(el);
             hintSpan.style.top = offset.top + "px";
             hintSpan.style.left = offset.left + "px";
+            $(hintSpan).data('element', el);
         }
+
         $assignedHints.addClass(class_hintVisible);
         $hintsContainer.show();
     }
