@@ -13,7 +13,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible
-        suppressEvent = mod_contentHelper.suppressEvent,
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
         $currentMatches = $(),   // the set of elements in the viewport that match the main textbox input
@@ -21,7 +20,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         timeout_findMatches_mainInput = false,
         maxDelay_mainInputMatching = 200,
         class_noMatch = 'UnitsProj-selectLink-noMatch',
-        isHelpVisible = false,
         timeout_viewportChange = false,
         $elemsInViewport;   // elements currently in the viewport (excluding elements that are belong to this extension)
 
@@ -116,11 +114,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         mod_keyboardLib.bind(selectLinkShortcuts.openSelectedLink.kbdShortcuts, openSelectedLink, {selectLinkUIActive: true}, true);
         mod_keyboardLib.bind(selectLinkShortcuts.openSelectedLinkInNewTab.kbdShortcuts, openSelectedLink_newTab, {selectLinkUIActive: true}, true);
 
-        $helpBtn.click(toggleHelpUI);
+        $helpBtn.click(onHelpButtonClick);
         $helpUI.text("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (end)");
     }
 
-    
     function onFocus_hintTextBox() {
         resetHintTextBox();
         assignHints_to_currentMatches();
@@ -128,12 +125,23 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     function onBlur_hintTextBox() {
         resetHintTextBox();
-        removeAssignedHints();
+        removeAssignedHints();  // hints are only visible (and assigned) if it has focus
     }
-    
+
+    function onFocusOut_textboxes(e) {
+        if ($UIContainer.find(e.relatedTarget).length === 0) {
+            closeUI();
+        }
+    }
+
     function resetHintTextBox() {
-        $hintsContainer.val('');
+        $textBox_hint.val('');
         $textBox_hint.removeClass(class_noMatch);
+    }
+
+    function resetMainTextBox() {
+        $textBox_main.val('');
+        $textBox_main.removeClass(class_noMatch);
     }
 
     function setup_focusRelatedEvents() {
@@ -205,6 +213,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         return (el.innerText? el.innerText: "")  + " " + (el.value? el.value: "") + " " + (el.placeholder? el.placeholder: "");
     }
 
+    function resetCurrentMatches() {
+        $currentMatches.removeClass(matchingLink_class);
+        $currentMatches = $();
+    }
+
     /**
      *
      * @param [matchAllForEmptyInput] Optional. Should be passed as true if empty input should match all links
@@ -214,7 +227,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         clearTimeout(timeout_findMatches_mainInput);
         timeout_findMatches_mainInput = false;    // reset
 
-        $currentMatches.removeClass(matchingLink_class);
+        resetCurrentMatches();
+
         removeActiveElementStyling();
         $textBox_main.removeClass(class_noMatch);
         $textBox_hint.removeClass(class_noMatch);
@@ -222,7 +236,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         var mainInput_lowerCase = getMainInput_lowerCase();
 
         if (!mainInput_lowerCase && !matchAllForEmptyInput) {
-            $currentMatches = $(); // TODO: handle this differently as a special case for when typing on hint input
             return;
         }
 
@@ -259,7 +272,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function onHintInput() {
-       
+
         if (!$currentMatches.length) {
             $textBox_hint.val(''); // don't accept input
             $textBox_hint.addClass(class_noMatch);
@@ -361,34 +374,39 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $countLabel[0].innerText = (index + 1) + " of " + $currentMatches.length;
     }
 
-    function onFocusOut_textboxes(e) {
-        if ($UIContainer.find(e.relatedTarget).length === 0) {
-            closeUI();
-        }
-    }
-
     function closeUI() {
         var disabledByMe = mod_mutationObserver.disable();
+
         clearTimeout(timeout_findMatches_mainInput);
         timeout_findMatches_mainInput = false;    // reset
-
         clearTimeout(timeout_viewportChange);
         timeout_viewportChange = false;    // reset
-        
-        // blur (if not already blurred - to prevent infinite recursion)
-        if (document.activeElement === $textBox_main[0])
-            $textBox_main.blur();
 
-        $textBox_main.val('');
-        removeActiveElementStyling();
-        $textBox_main.removeClass(class_noMatch);
-        hideHelpUI();
         $UIContainer.hide();
-        endMatching();
-        mod_context.set_selectLinkUI_state(false);
-        removeEvent_onViewportChange();
         $hintsContainer.hide();
+        $helpUI.hide();
+
+        resetCurrentMatches();
         removeAssignedHints();
+
+        var elToFocus = elementStyledAsActive; // save reference before calling removeActiveElementStyling()
+        removeActiveElementStyling();
+        if (elToFocus) {
+            elToFocus.focus();
+        }
+        else if (document.activeElement === $textBox_main[0]) {
+            // blur (if not already blurred - to prevent infinite recursion)
+            $textBox_main.blur();
+        }
+        else if (document.activeElement === $textBox_hint[0]) {
+            $textBox_hint.blur();
+        }
+
+        resetMainTextBox();
+        resetHintTextBox();
+        removeEvent_onViewportChange();
+        mod_context.set_selectLinkUI_state(false);
+
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -498,21 +516,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $countLabel[0].innerText = "";
     }
 
-    function endMatching() {
-        $currentMatches.removeClass(matchingLink_class);
-        $currentMatches = $();
-        var temp = elementStyledAsActive; // save before making the function call below
-        removeActiveElementStyling();
-        temp && temp.focus();
-    }
-
     function onKeydown_handleEsc(e) {
         var code = e.which;
         // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
         if (e.target === $textBox_main[0] && [17, 18, 91, 93].indexOf(code) == -1) {
 
             if (code === 27) { // Esc
-                suppressEvent(e);
+                mod_contentHelper.suppressEvent(e);
                 closeUI();
             }
         }
@@ -621,25 +631,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
     }
 
-    function toggleHelpUI() {
-        if (isHelpVisible) {
-            hideHelpUI();
+    function onHelpButtonClick() {
+        if ($helpUI.is(':visible')) {
+            $helpUI.hide();
         }
         else {
-            showHelpUI();
+            $helpUI.show();
         }
-    }
-
-    function hideHelpUI() {
-        isHelpVisible = false;
-        $helpUI.hide();
-        $textBox_main.focus();
-    }
-
-    function showHelpUI() {
-        isHelpVisible = true;
-        $helpUI.show();
-        $textBox_main.focus();
+        $textBox_main.focus();  // do this in either case
     }
 
     return thisModule;
