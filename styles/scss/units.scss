@@ -105,7 +105,7 @@ div#UnitsProj-selectLink-UIContainer {
     box-sizing: border-box !important;
     z-index: $highest-z-index - 2 !important;
 
-    &.UnitsProj-selectLink-noMatch {
+    &.UnitsProj-selectLink-textBox-noMatch {
       background-color: pink !important;
     }
 
@@ -176,7 +176,7 @@ div#UnitsProj-selectLink-UIContainer {
 .UnitsProj-hintLabel {
   display: none;
   z-index: $highest-z-index - 3 !important; /* so that the hints don't appear on top of the input textbox(es) */
-  opacity: 0.7 !important;
+  opacity: 0.8 !important;
   position: absolute !important;
   font: normal normal normal 9px/9px $sans-serif-font-family !important;
   color: #d7f0d7 !important;

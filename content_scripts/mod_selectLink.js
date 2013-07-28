@@ -19,7 +19,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $assignedHintsSpans = $(),
         timeout_findMatches_mainInput = false,
         maxDelay_mainInputMatching = 200,
-        class_noMatch = 'UnitsProj-selectLink-noMatch',
+        class_textBox_noMatch = 'UnitsProj-selectLink-textBox-noMatch',
         timeout_viewportChange = false,
         $elemsInViewport;   // elements currently in the viewport (excluding elements that are belong to this extension)
 
@@ -199,8 +199,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         resetMainTextMatching();
 
         removeActiveElementStyling();
-        $textBox_main.removeClass(class_noMatch);
-        $textBox_hint.removeClass(class_noMatch);
+        $textBox_main.removeClass(class_textBox_noMatch);
+        $textBox_hint.removeClass(class_textBox_noMatch);
 
         var mainInput_lowerCase = getMainInput_lowerCase();
 
@@ -226,7 +226,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             styleAsActive($elemsMatchingMainText[0], 0);
         }
         else {
-            $textBox_main.addClass(class_noMatch);
+            $textBox_main.addClass(class_textBox_noMatch);
             $countLabel[0].innerText = "0 of 0";
         }
     }
@@ -239,7 +239,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         if (!$elemsMatchingMainText.length) {
             $textBox_hint.val(''); // don't accept input
-            $textBox_hint.addClass(class_noMatch);
+            $textBox_hint.addClass(class_textBox_noMatch);
         }
         var hintInput_upperCase = getHintInput_upperCase();
 
@@ -282,11 +282,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             else {
                 styleAsActive(potentialMatches[0]);
             }
-            $textBox_hint.removeClass(class_noMatch);
+            $textBox_hint.removeClass(class_textBox_noMatch);
         }
         else {
             removeActiveElementStyling();
-            $textBox_hint.addClass(class_noMatch);
+            $textBox_hint.addClass(class_textBox_noMatch);
         }
     }
 
@@ -549,12 +549,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     function resetHintTextBox() {
         $textBox_hint.val('');
-        $textBox_hint.removeClass(class_noMatch);
+        $textBox_hint.removeClass(class_textBox_noMatch);
     }
 
     function resetMainTextBox() {
         $textBox_main.val('');
-        $textBox_main.removeClass(class_noMatch);
+        $textBox_main.removeClass(class_textBox_noMatch);
     }
 
     function setup_focusRelatedEvents() {
