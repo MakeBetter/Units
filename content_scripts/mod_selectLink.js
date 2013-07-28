@@ -16,7 +16,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         matchingLink_class = 'UnitsProj-matchingLink',
         elementStyledAsActive,
         $currentMatches = $(),   // the set of elements in the viewport that match the main textbox input
-        $assignedHints = $(),
+        $assignedHintsSpans = $(),
         timeout_findMatches_mainInput = false,
         maxDelay_mainInputMatching = 200,
         class_noMatch = 'UnitsProj-selectLink-noMatch',
@@ -280,17 +280,17 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         var hintInput_upperCase = getHintInput_upperCase();
 
         if (!hintInput_upperCase) {
-            $assignedHints.addClass(class_hintVisible);
+            $assignedHintsSpans.addClass(class_hintVisible);
             return;
         }
 
         var elem_exactMatch = null,
             hintSpan_exactMatch,
-            $matching_partialOrExact = $();
+            potentialMatches = [];
 
-        var len = $assignedHints.length;
+        var len = $assignedHintsSpans.length;
         for (var i = 0; i < len; i++) {
-            var hintSpan = $assignedHints[i],
+            var hintSpan = $assignedHintsSpans[i],
                 elem = $(hintSpan).data('element');
 
             var elemHint_upperCase = hintSpan.innerText.toUpperCase();
@@ -300,7 +300,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                     hintSpan_exactMatch = hintSpan;
                 }
                 hintSpan.classList.add(class_hintVisible);
-                $matching_partialOrExact = $matching_partialOrExact.add(elem);
+                potentialMatches.push(elem);
             }
             else {
                 hintSpan.classList.remove(class_hintVisible);
@@ -308,7 +308,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         }
 
-        if ($matching_partialOrExact.length) {
+        if (potentialMatches.length) {
             if (elem_exactMatch) {
                 styleAsActive(elem_exactMatch);
                 // exact element found. hide it's hint to prevent (part of) the element being occluded by the hint
@@ -316,7 +316,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                 hintSpan_exactMatch.classList.remove(class_hintVisible);
             }
             else {
-                styleAsActive($matching_partialOrExact[0]);
+                styleAsActive(potentialMatches[0]);
             }
             $textBox_hint.removeClass(class_noMatch);
         }
@@ -430,8 +430,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function removeAssignedHints() {
-        $assignedHints.removeClass(class_hintVisible);
-        $assignedHints = $();
+        $assignedHintsSpans.removeClass(class_hintVisible);
+        $assignedHintsSpans = $();
     }
 
     // Assigns hints to `$currentMatches` (and undoes any previous assignment)
@@ -449,8 +449,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             hintSpansToUse = hintSpans_doubleDigit;
         }
 
-        $assignedHints = $();
-
+        var assignedHintSpans = [];
         // Note: If the extremely unlikely scenario that the current *viewport* has more (matching) links than
         // `hintSpans_doubleDigit.length`, we will ignore links beyond that count (for now) -- the code won't
         // break, but these links will simply have no hint assigned.
@@ -458,7 +457,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         for (var i = 0; i < len; i++) {
             var el = $currentMatches[i];
             var hintSpan = hintSpansToUse[i];
-            $assignedHints = $assignedHints.add(hintSpan);
+            assignedHintSpans[i] = hintSpan;
 
             var offset = mod_commonHelper.getOffsetPosition(el);
             hintSpan.style.top = offset.top + "px";
@@ -466,7 +465,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             $(hintSpan).data('element', el);
         }
 
-        $assignedHints.addClass(class_hintVisible);
+        $assignedHintsSpans = $(assignedHintSpans);
+        $assignedHintsSpans.addClass(class_hintVisible);
         $hintsContainer.show();
     }
 
