@@ -123,6 +123,13 @@
     function renderPageNavigationShortcuts(settings) {
         var $shortcutsTable =  $navigatePageSection.find("table");
 
+        var elementNavigationShortcuts = settings.elementNavigationShortcuts;
+        var openShortcuts = elementNavigationShortcuts.open && elementNavigationShortcuts.open.kbdShortcuts;
+        openShortcuts.unshift("enter");
+
+        var openInNewTabShortcuts = elementNavigationShortcuts.openInNewTab && elementNavigationShortcuts.openInNewTab.kbdShortcuts;
+        openInNewTabShortcuts.unshift("command + enter");
+
         renderShortcutsInSectionTable(settings.pageNavigationShortcuts, $shortcutsTable, "Navigate Page");
         renderShortcutsInSectionTable(settings.elementNavigationShortcuts, $shortcutsTable, "Navigate Page Elements");
 
