@@ -106,7 +106,7 @@ var defaultSettings = {
     elementNavigationShortcuts: {
         open: { //TODO: should 'enter' be spcified here
             descr: "Open/invoke selected item",
-            kbdShortcuts: ['shift+o']  // alt+o allows invoking only with one hand (at least in windows)
+            kbdShortcuts: ['shift+o']
         },
         openInNewTab: {
             descr: "Open selected link in new tab",
