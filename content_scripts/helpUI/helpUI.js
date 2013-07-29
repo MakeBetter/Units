@@ -41,10 +41,9 @@
 
     // Setup event handlers
     function setup() {
-        $closeButton.click(function() {
-            parent.postMessage({message: "closeIFrame"}, "*");
-        });
 
+        // Send message to content script, to check if CUs are specified for page. Show/Hide CUs based shortcuts based
+        // on that. 
         window.addEventListener('message', function(event) {
             var data = event.data;
 
@@ -56,6 +55,20 @@
 
         }, false);
 
+
+        // Close UI if close button is clicked on or if Esc is pressed.
+        $closeButton.click(function() {
+            close();
+        });
+
+        document.addEventListener("keydown", function(e) {
+            var keyCode = e.which || e.keyCode;
+            if (keyCode === 27) { // If Esc is pressed
+                close();
+            }
+        });
+
+        // Setup filter menu
         $filterMenu.click(onMenuClick);
 
     }
@@ -346,6 +359,10 @@
 
     function showFilterMessage(message) {
         $("#filter-message").html(message).show();
+    }
+
+    function close() {
+        parent.postMessage({message: "closeIFrame"}, "*");
     }
 
     setup();
