@@ -211,7 +211,7 @@
             return;
         }
 
-        if (data.message === 'closeIFrame') {
+        if (data.message === 'hideHelpUI') {
             mod_help.hideHelp(); // hide the help iframe
             window.focus(); // restore focus to the window.
         }

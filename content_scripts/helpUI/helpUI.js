@@ -43,7 +43,7 @@
     function setup() {
 
         // Send message to content script, to check if CUs are specified for page. Show/Hide CUs based shortcuts based
-        // on that. 
+        // on that.
         window.addEventListener('message', function(event) {
             var data = event.data;
 
@@ -362,7 +362,7 @@
     }
 
     function close() {
-        parent.postMessage({message: "closeIFrame"}, "*");
+        parent.postMessage({message: "hideHelpUI"}, "*");
     }
 
     setup();
