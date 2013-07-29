@@ -63,6 +63,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         .addClass('UnitsProj-selectLink-helpUI')
         .hide();
 
+    var $tip = $("<div class = 'UnitsProj-selectLinkTip'>Keep <span class = 'UnitsProj-selectLink-KeyName'>space</span> (or <span class = 'UnitsProj-selectLink-KeyName'>shift</span>&nbsp;) pressed down to type hint letters<div>");
+
     var $UIContainer = $('<div></div>')
         .attr("id", "UnitsProj-selectLink-UIContainer")
         .addClass(class_addedByUnitsProj)
@@ -71,6 +73,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         .append($textBox_hint)
         .append($helpBtn)
         .append($closeButton)
+        .append($tip)
         .hide()     // to prevent from appearing when the page loads
         .appendTo(_u.$topLevelContainer);
 
@@ -101,6 +104,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         // or $textBox_hint[0]) for the same reason. [This binding gets priority over the bindings of mod_CUsMgr based
         // on the order in which modules are set up in the main module]
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
+
+        mod_domEvents.addEventListener(document, 'keydown', onKeyDown_spaceOrShift, true);
+        mod_domEvents.addEventListener(document, 'keyup', onKeyUp_spaceOrShift, true);
         $textBox_main.on('input', onMainInput);
         $textBox_hint.on('input', onHintInput);
         $closeButton.on('click', closeUI);
@@ -175,7 +181,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function resetMainTextMatching() {
         $elemsMatchingMainText.removeClass(matchingLink_class);
         $elemsMatchingMainText = $();
-        removeActiveElementStyling();
     }
 
     // to allow search-as-you-type, while executing the findMatchingLinks code only periodically even if the user
@@ -197,7 +202,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         timeout_findMatches_mainInput = false;    // reset
 
         resetMainTextMatching();
-
         removeActiveElementStyling();
         $textBox_main.removeClass(class_textBox_noMatch);
         $textBox_hint.removeClass(class_textBox_noMatch);
@@ -329,9 +333,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $helpUI.hide();
 
         removeAssignedHints();
-
-        var elToFocus = elementStyledAsActive; // save reference before calling resetMainTextMatching()
         resetMainTextMatching();
+        var elToFocus = elementStyledAsActive; // save reference before calling removeActiveElementStyling()
+        removeActiveElementStyling();
         if (elToFocus) {
             elToFocus.focus();
         }
@@ -342,6 +346,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         else if (document.activeElement === $textBox_hint[0]) {
             $textBox_hint.blur();
         }
+
 
         resetMainTextBox();
         resetHintTextBox();
@@ -367,8 +372,25 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         setupEvent_onViewportChange();
     }
 
-    function onKeyDown_spaceOrShift() {
-        $textBox_hint.focus();
+
+    function onKeyDown_spaceOrShift(e) {
+        if (e.target === $textBox_main[0] || e.target === $textBox_hint[0]) {
+            var code = e.which || e.keyCode;
+            if (code === 16 || code === 32) { // 16 shift, 32 space
+                $textBox_hint[0].focus();
+                mod_contentHelper.suppressEvent(e);
+            }
+        }
+    }
+
+    function onKeyUp_spaceOrShift(e) {
+        if (e.target === $textBox_main[0] || e.target === $textBox_hint[0]) {
+            var code = e.which || e.keyCode;
+            if (code === 16 || code === 32) { // 16 shift, 32 space
+                $textBox_main[0].focus();
+                mod_contentHelper.suppressEvent(e);
+            }
+        }
     }
 
     function removeAssignedHints() {
@@ -578,8 +600,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function onFocus_mainTextBox() {
         resetHintTextBox();
         if (!$textBox_main.val()) {
-            // even if this if condition is true, $elemsMatchingMainText might exist set due to $textBox_hint having focus
+            // even if this if condition is true, $elemsMatchingMainText might be set due to $textBox_hint having focus
             resetMainTextMatching();
+            $countLabel[0].innerText = "";
         }
     }
 
@@ -607,6 +630,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         $(window).off('resize scroll', onViewportChange);
     }
 
+    function onViewportChange() {
+        if (timeout_viewportChange === false) {
+            timeout_viewportChange = setTimeout(_onViewPortChange, 400);
+        }
+    }
+
     function _onViewPortChange() {
         clearTimeout(timeout_viewportChange);
         timeout_viewportChange = false;
@@ -619,12 +648,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         resetHintTextBox();
         if (document.activeElement === $textBox_hint[0]) {
             assignHints_to_currentMatches();
-        }
-    }
-
-    function onViewportChange() {
-        if (timeout_viewportChange === false) {
-            timeout_viewportChange = setTimeout(_onViewPortChange, 250);
         }
     }
 
