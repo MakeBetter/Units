@@ -22,7 +22,7 @@ h3 {
   color: lighten($subheading-color, 5);
   font-weight: normal;
   font-style: italic;
-  border-left: 10px solid #eee;
+  //border-left: 10px solid #eee;
   padding-left: 5px;
 }
 
@@ -176,16 +176,22 @@ Basic Options styles
 
   tr {
     height: 20px;
-  }
-  tr:nth-child(2n+1) {
-    background-color: #fafafa;
-  }
+    $color: #f6f6f6;
 
-  tr:hover {
-/*    Show the descendant hidden buttons when row is hovered over*/
-    .hidden {
-    /* Needs to be marked as important, because properties in .delete-button and .hidden are marked as important. */
-      display: inline-block !important;
+    &:nth-child(2n+1) {
+      background-color: $color;
+    }
+
+    &:nth-child(2n):last-child td{
+      border-bottom: 1px solid $color;
+    }
+
+    &:hover {
+      /*    Show the descendant hidden buttons when row is hovered over*/
+      .hidden {
+        /* Needs to be marked as important, because properties in .delete-button and .hidden are marked as important. */
+        display: inline-block !important;
+      }
     }
   }
 
