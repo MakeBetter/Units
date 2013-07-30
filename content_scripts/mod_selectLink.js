@@ -22,20 +22,21 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         maxDelay_mainInputMatching = 200,
         class_textBox_noMatch = 'UnitsProj-selectLink-textBox-noMatch',
         timeout_viewportChange = false,
-        $elemsInViewport;   // elements currently in the viewport (excluding elements that are belong to this extension)
+        $elemsInViewport;   // elements currently in the viewport (excluding elements that belong to this extension)
 
     // vars related to hint chars (TODO: decide which set to use based on user settings)
-    var reducedSet = "jfkdhglsurieytnvmbc",
+    var reducedSet = "jfkdhglsurieytnvmbc", // easiest to press keys (roughly in order)
         remainingSet = "axzwoqp",
         // hint chars: set of letters used for hints. easiest to reach letters should come first
         hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
 
+    var placeholderMain = "Enter text from link/button";
     var $textBox_main = $('<input type = "text">')
         .attr('id', 'UnitsProj-selectLink-textBox_main')
         .addClass("UnitsProj-selectLink-textBox")
         .addClass("UnitsProj-reset-text-input")
         .addClass(class_addedByUnitsProj)
-        .attr('placeholder', "Enter text from link/button");
+        .attr('placeholder', placeholderMain);
 
     var $textBox_hint = $('<input type = "text">')
         .attr('id', 'UnitsProj-selectLink-textBox_hint')
@@ -586,21 +587,25 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function setup_focusRelatedEvents() {
-        $textBox_main.on('focusout', onFocusOut_textboxes); // we use focusout instead of blur since it supports e.relatedTarget
-        $textBox_hint.on('focusout', onFocusOut_textboxes);
+        /* setting up using addEventListener to bind on capturing phase, and binding
+           on `document` so that event handler executes when earliest possible.
+           This was done as an attempt to fix github issue #115. Even though a
+           separate hack was required to fix that issue, this code is being left
+           since it might be useful to prevent a similar issue on another website.
+         */
+        mod_domEvents.addEventListener(document, 'focusout', onFocusOut_textboxes, true);
 
         $textBox_main.on('focus', onFocus_mainTextBox);
         $textBox_hint.on('focus', onFocus_hintTextBox);
-        $textBox_hint.on('blur', onBlur_hintTextBox);
     }
 
     function remove_focusRelatedEvents() {
-        $textBox_main.off('focusout', onFocusOut_textboxes);
-        $textBox_hint.off('focusout', onFocusOut_textboxes);
+        // TODO: implement mod_domEvents.removeEventListener() and use that instead
+        document.removeEventListener('focusout', onFocusOut_textboxes, true);
 
+        // TODO: override $.fn.off in mod_domEvents
         $textBox_main.off('focus', onFocus_mainTextBox);
         $textBox_hint.off('focus', onFocus_hintTextBox);
-        $textBox_hint.off('blur', onBlur_hintTextBox);
     }
 
     function onFocus_mainTextBox() {
@@ -617,15 +622,24 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         assignHints_to_currentMatches();
     }
 
-    function onBlur_hintTextBox() {
-        resetHintTextBox();
-        removeAssignedHints();  // hints are only visible (and assigned) if it has focus
-    }
-
     function onFocusOut_textboxes(e) {
-        if ($UIContainer.find(e.relatedTarget).length === 0) {
-            closeUI();
+        if (e.target === $textBox_main[0] || e.target === $textBox_hint[0]) {
+            mod_contentHelper.suppressEvent(e);
+
+            // This FB specific hack exists solely to fix GitHub issue #115
+            if ($textBox_main.val() === placeholderMain) {
+                $textBox_main.val('');
+            }
+
+            if ($UIContainer.find(e.relatedTarget).length === 0) {
+                closeUI();
+            }
+            if (e.target === $textBox_hint[0]) {
+                resetHintTextBox();
+                removeAssignedHints();  // hints are only visible (and assigned) if it has focus
+            }
         }
+
     }
 
     function setupEvent_onViewportChange() {

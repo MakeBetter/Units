@@ -47,6 +47,18 @@ _u.mod_domEvents = (function($) {
     }
 
 
+    // this function is not being defined as of now, since it serves no real pupose,
+    // unless the TODO is implemented. A similar thing will have to be done for
+    // $.fn.off
+//    function removeEventListener(target, event, handler, useCapture) {
+//        target.removeEventListener(event, handler, useCapture);
+//        // TODO: remove from `addEventListener_eventHandlers`, the the entry corresponding to the
+//        // event binding just removed. (strictly speaking, there should be no issue even if this
+//        // isn't done, but it should be done to be just to be technically correct, and since
+//        // some future code might depend on the contents of addEventListener_eventHandlers)
+//    }
+
+
     /**
      * Removes all event handlers that were previously setup using the overridden `jQuery.on` and `addEventListener`
      * defined in this module
