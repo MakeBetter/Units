@@ -310,7 +310,7 @@ div#UnitsProj-filterUI-container {
 
   /*for the sliding effect*/
   @include transition-important(top, 0.1s, ease-out, !important);
-  z-index: $highest-z-index - 1 !important; /* More than the z-index of zen mode backdrop, and less than help backdrop */
+  z-index: $highest-z-index !important; /* More than the z-index of zen mode backdrop, and less than help backdrop */
 
   .UnitsProj-close-button {
     @include close-button;
@@ -397,3 +397,23 @@ style more specific by using id's of the elements. Fix for #9.
   visibility: visible !important;
 }
 
+#UnitsProj-zen-mode-button {
+  position: fixed !important;
+  bottom: 30px !important;
+  right: 20px !important;
+  padding: 7px 10px !important;
+  border-radius: 2px !important;
+  background-color: darken(#fcfcfc,1) !important;
+  border: 1px solid #ddd !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  color: darken(#a9a9a9,12) !important;
+  font-size: 12px !important;
+  font-family: $sans-serif-font-family;
+  opacity: 0.7;
+
+}
+
+.UnitsProj-zen-mode-visible #UnitsProj-zen-mode-button {
+  background-color: lighten(#e6fad8,2) !important;
+}
