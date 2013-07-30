@@ -63,12 +63,12 @@ var defaultSettings = {
     */
     pageNavigationShortcuts: {
         scrollDown: {
-            descr: "Scroll down",
+            descr: "Scroll page down",
             kbdShortcuts: ['shift+j'],
             importanceHigh: true /* We use this flag in the Help UI to highlight 'important' labels */
         },
         scrollUp: {
-            descr: "Scroll up",
+            descr: "Scroll page up",
             kbdShortcuts: ['shift+k'],
             importanceHigh: true
         },
