@@ -204,6 +204,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         timeout_findMatches_mainInput = false;    // reset
 
         resetMainTextMatching();
+        var lastSelectedEl = selectedEl;    // save ref before calling deselectSelectedEl
         deselectSelectedElem();
         $textBox_main.removeClass(class_textBox_noMatch);
         $textBox_hint.removeClass(class_textBox_noMatch);
@@ -226,11 +227,16 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             });
         }
 
+        var index;
         if ($elemsMatchingMainText.length) {
             $elemsMatchingMainText.addClass(class_matchingElem);
 
             if ($elemsMatchingMainText.length === 1) { // if only one match
                 closeUI($elemsMatchingMainText[0]);
+            }
+            //
+            else if (lastSelectedEl && ((index = $elemsMatchingMainText.index(selectedEl)) >= 0)) {
+                selectElem(lastSelectedEl, index);
             }
             else {
                 selectElem($elemsMatchingMainText[0], 0);
