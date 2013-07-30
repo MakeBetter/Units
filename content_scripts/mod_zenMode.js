@@ -2,7 +2,7 @@
  * Implements the zen mode. Hide everything on the page except CUs, zenMode whitelisted elements and UnitsProj elements when
  * invoked. Restore the page when mode is switched off.
  */
-_u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
+_u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -13,7 +13,9 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
         start: start
     });
 
-    var _isActive = false,
+    var _isActive = false, // true when zen mode is active/ started on a page
+        _isZenModeApplicable = false,// true if zen mode is relevant for the current page's DOM. Is updated on DOM mutations.
+
         $style_whiteList,
         class_hidden = CONSTS.class_zenModeHidden,
         class_visible = CONSTS.class_zenModeVisible,
@@ -21,17 +23,35 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
         expandedUrlData,
         isModuleSetup = false; // true if the module has been set up
 
+    var $zenModeToggleButton,
+        id_zenMode = 'UnitsProj-zen-mode-button',
+        $topLevelContainer = _u.$topLevelContainer;
+
+
+    var timeout_updateZenMode = false,
+        lit_updateZenMode;
+
     /*-- Module implementation --*/
     function reset() {
-
+        $zenModeToggleButton && $zenModeToggleButton.remove();
+        thisModule.stopListening();
+        isModuleSetup = false;
+        timeout_updateZenMode = false;
     }
     function setup(settings) {
         reset();
 
         expandedUrlData = settings.expandedUrlData;
-        if (!(expandedUrlData && (expandedUrlData.CUs_specifier || expandedUrlData.zenModeWhiteList))) {
+
+        var CUs_specifier = expandedUrlData && expandedUrlData.CUs_specifier,
+            zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
+        if (!(CUs_specifier || zenModeWhiteListSelector)) {
             return;     // don't setup this module if no elements are specified to be shown in this mode.
         }
+
+        setupZenModeUI();
+
+        bindMutationEvents();
 
         var miscShortcuts = settings.miscShortcuts;
         mod_keyboardLib.bind(miscShortcuts.toggleZenMode.kbdShortcuts, toggle);
@@ -43,8 +63,42 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
             }
         });
 
+        onDomMutations_updateZenModeStatus();
+
         isModuleSetup = true;
+
     }
+
+    function onDomMutations_updateZenModeStatus() {
+
+        var $document = $(document),
+            zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
+
+        if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(zenModeWhiteListSelector).length)) {
+
+            _isZenModeApplicable = false;
+            $zenModeToggleButton.hide();
+
+            return;
+        }
+
+        _isZenModeApplicable = true;
+        $zenModeToggleButton.show();
+    }
+
+    function setupZenModeUI() {
+
+        $zenModeToggleButton = $("<div><span>Z</span></div>");
+
+        $zenModeToggleButton
+            .attr('id', id_zenMode)
+            .addClass(class_addedByUnitsProj)
+            .appendTo($topLevelContainer)
+            .hide();
+
+        $zenModeToggleButton.click(toggle);
+    }
+
 
     // public function
     function toggle() {
@@ -58,7 +112,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
 
     function start() {
         // if the module was not set up initially, then do not start/stop the zen mode.
-        if (!isModuleSetup) {
+        if (!isModuleSetup || !_isZenModeApplicable) {
             return;
         }
 
@@ -110,6 +164,35 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, CONSTS) {
         }
     }
 
+    function bindMutationEvents() {
+        thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onDomMutations);
+    }
+
+    function onDomMutations() {
+        // compare explicitly with false, which is how we reset it
+        if (timeout_updateZenMode === false) {
+
+            // NOTE copied from mod_CUsMgr where this code is originally used.
+
+//            // In the following line, we restrict the minimum value of the timeout delay to
+//            // 0. This should not normally be required since negative delay is supposed to
+//            // have the same effect as a 0 delay. However, doing this fixes  #76 (Github).
+//            // This is mostly likely due to some quirk in Chrome.
+            timeout_updateZenMode = setTimeout(_onDomMutations, Math.max(0, 1000 -
+                (Date.now() - lit_updateZenMode)));
+        }
+    }
+
+    function _onDomMutations() {
+        if (timeout_updateZenMode) {
+            clearTimeout(timeout_updateZenMode);
+            timeout_updateZenMode = false;    // reset
+        }
+        lit_updateZenMode = Date.now();
+        onDomMutations_updateZenModeStatus();
+    }
+
+
     return thisModule;
 
-})(jQuery, _u.mod_CUsMgr, _u.mod_keyboardLib, _u.CONSTS);    // pass as input external modules that this modules depends on
+})(jQuery, _u.mod_CUsMgr, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.CONSTS);    // pass as input external modules that this modules depends on
