@@ -218,6 +218,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         if (!mainInput_lowerCase && matchAllForEmptyInput) {
             $elemsMatchingMainText = $elemsInViewport;
         }
+        else if (mainInput_lowerCase === ".") {
+            $elemsMatchingMainText = $elemsInViewport.filter(function() {
+                return !(getElementText_all(this).trim());
+            });
+        }
         else {
             $elemsMatchingMainText = $elemsInViewport.filter(function() {
                 var text_lowerCase = getElementText_all(this).toLowerCase();
