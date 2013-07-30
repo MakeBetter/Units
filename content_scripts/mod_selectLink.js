@@ -608,10 +608,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         if (!$textBox_main.val()) {
             // even if this if condition is true, $elemsMatchingMainText might be set due to $textBox_hint having focus
             resetMainTextMatching();
-            if (selectedEl) {
-                selectedEl.focus();
-                deselectSelectedElem();
-            }
             $countLabel[0].innerText = "";
         }
     }
