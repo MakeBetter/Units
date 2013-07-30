@@ -13,8 +13,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible
-        matchingLink_class = 'UnitsProj-matchingLink',
-        elementStyledAsActive,
+        class_matchingElem = 'UnitsProj-matchingElem',
+        class_selectedElem = 'UnitsProj-selectedElem',
+        selectedEl,
         $elemsMatchingMainText = $(),   // the set of elements in the viewport that match the main textbox input
         $assignedHintsSpans = $(),
         timeout_findMatches_mainInput = false,
@@ -134,11 +135,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function openSelectedLink() {
-        mod_basicPageUtils.openLink(elementStyledAsActive);
+        mod_basicPageUtils.openLink(selectedEl);
     }
 
     function openSelectedLink_newTab() {
-        mod_basicPageUtils.openLink(elementStyledAsActive, true);
+        mod_basicPageUtils.openLink(selectedEl, true);
     }
 
     /**
@@ -147,8 +148,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
      */
     function select(direction) {
         if ($elemsMatchingMainText.length) {
-            var index = $elemsMatchingMainText.index(elementStyledAsActive);
-            if (!elementStyledAsActive || index === -1) {
+            var index = $elemsMatchingMainText.index(selectedEl);
+            if (!selectedEl || index === -1) {
                 index = 0;
                 return;
             }
@@ -165,7 +166,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                     index = $elemsMatchingMainText.length - 1;
                 }
             }
-            styleAsActive($elemsMatchingMainText[index], index);
+            selectElem($elemsMatchingMainText[index], index);
         }
     }
 
@@ -179,7 +180,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function resetMainTextMatching() {
-        $elemsMatchingMainText.removeClass(matchingLink_class);
+        $elemsMatchingMainText.removeClass(class_matchingElem);
         $elemsMatchingMainText = $();
     }
 
@@ -202,7 +203,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         timeout_findMatches_mainInput = false;    // reset
 
         resetMainTextMatching();
-        removeActiveElementStyling();
+        deselectSelectedElem();
         $textBox_main.removeClass(class_textBox_noMatch);
         $textBox_hint.removeClass(class_textBox_noMatch);
 
@@ -225,9 +226,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
 
         if ($elemsMatchingMainText.length) {
-            $elemsMatchingMainText.addClass(matchingLink_class);
+            $elemsMatchingMainText.addClass(class_matchingElem);
 
-            styleAsActive($elemsMatchingMainText[0], 0);
+            if ($elemsMatchingMainText.length === 1) { // if only one match
+                closeUI($elemsMatchingMainText[0]);
+            }
+            else {
+                selectElem($elemsMatchingMainText[0], 0);
+            }
         }
         else {
             $textBox_main.addClass(class_textBox_noMatch);
@@ -277,50 +283,49 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         }
 
         if (potentialMatches.length) {
+            $textBox_hint.removeClass(class_textBox_noMatch);
             if (elem_exactMatch) {
-                styleAsActive(elem_exactMatch);
-                // exact element found. hide it's hint to prevent (part of) the element being occluded by the hint
-                // (which something I greatly disliked about 'hints' in Vimium etc.)
-                hintSpan_exactMatch.classList.remove(class_hintVisible);
+                closeUI(elem_exactMatch);
             }
             else {
-                styleAsActive(potentialMatches[0]);
+                selectElem(potentialMatches[0]);
             }
-            $textBox_hint.removeClass(class_textBox_noMatch);
         }
         else {
-            removeActiveElementStyling();
+            deselectSelectedElem();
             $textBox_hint.addClass(class_textBox_noMatch);
         }
     }
 
     /**
-     * 1) Styles the specified element as active (while the actual focus continues to
-     * remain on the selectLinkUI).
+     * 1) Styles the specified element as selected
      * 2) Briefly sets actual focus to the specified element, before reverting it, in
      * order to get the element in the viewport if it isn't already
      * 3) Updates count label indicating which element is selected
      * @param el
      * @param [index] optional - index of el in $elemsMatchingMainText (if not specified,
-     * this will be calculated. If it is known, passing it is useful to avoid the
-     * needless computation)
+     * this will be calculated. If it is known, pass it to avoid the needless computation)
      */
-    function styleAsActive(el, index) {
-        removeActiveElementStyling();
-        elementStyledAsActive = el;
+    function selectElem(el, index) {
+        deselectSelectedElem();
+        selectedEl = el;
         var saved = document.activeElement;
         remove_focusRelatedEvents();    // temporarily remove event binding
         el.focus();
         saved.focus();
         setup_focusRelatedEvents();     // revent event binding
-        mod_basicPageUtils.styleActiveElement(el);
+        selectedEl.classList.add(class_selectedElem);
         if (index === undefined) {
             index = $elemsMatchingMainText.index(el);
         }
         $countLabel[0].innerText = (index + 1) + " of " + $elemsMatchingMainText.length;
     }
 
-    function closeUI() {
+    /**
+     * Closes UI and resets state. If elToFocus is specified, that element gets focus after the UI closes
+     * @param [elToFocus]
+     */
+    function closeUI(elToFocus) {
         var disabledByMe = mod_mutationObserver.disable();
 
         clearTimeout(timeout_findMatches_mainInput);
@@ -334,19 +339,20 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         removeAssignedHints();
         resetMainTextMatching();
-        var elToFocus = elementStyledAsActive; // save reference before calling removeActiveElementStyling()
-        removeActiveElementStyling();
+        if (!elToFocus) {
+            elToFocus = selectedEl; // save reference before calling deselectSelectedElem()
+        }
+        deselectSelectedElem();
         if (elToFocus) {
             elToFocus.focus();
         }
+        // blus the textboxes (if not already blurred - to prevent infinite recursion)
         else if (document.activeElement === $textBox_main[0]) {
-            // blur (if not already blurred - to prevent infinite recursion)
             $textBox_main.blur();
         }
         else if (document.activeElement === $textBox_hint[0]) {
             $textBox_hint.blur();
         }
-
 
         resetMainTextBox();
         resetHintTextBox();
@@ -472,10 +478,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         return hintSpans;
     }
 
-    function removeActiveElementStyling() {
-        if (elementStyledAsActive) {
-            mod_basicPageUtils.removeActiveElementStyle(elementStyledAsActive);
-            elementStyledAsActive = null;
+    function deselectSelectedElem() {
+        if (selectedEl) {
+            selectedEl.classList.remove(class_selectedElem);
+            selectedEl = null;
         }
         $countLabel[0].innerText = "";
     }
@@ -602,6 +608,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         if (!$textBox_main.val()) {
             // even if this if condition is true, $elemsMatchingMainText might be set due to $textBox_hint having focus
             resetMainTextMatching();
+            if (selectedEl) {
+                selectedEl.focus();
+                deselectSelectedElem();
+            }
             $countLabel[0].innerText = "";
         }
     }

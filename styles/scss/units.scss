@@ -45,19 +45,26 @@ Also, hence the generous use of !important property here.
 
 /* ****** 'Select Link' module styles ***** */
 $matchingLink-background-color: #ffffc8;
-.UnitsProj-matchingLink {
-  outline: 1px solid darken($matchingLink-background-color, 50) !important;
+$selectedLink-background-color: #d8ff78;
+$selectLinkUI-base-gray: #eee;
+$selectLinkTextBox_height: 20px;
+$selectLink-mainTextBox_width: 180px;
+
+.UnitsProj-matchingElem {
   background-color: $matchingLink-background-color !important;
+  outline: 1px solid darken($matchingLink-background-color, 50) !important;
+  color: #433210 !important;
+}
+
+.UnitsProj-selectedElem {
+  background-color: $selectedLink-background-color !important;
+  outline: 1px solid darken($selectedLink-background-color, 60) !important;
   color: #433210 !important;
 }
 
 /* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
 margin of the #UnitsProj-selectLink-textBox or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
 box-sizing to border-box)*/
-
-$selectLink-base-gray: #eee;
-$selectLinkTextBox_height: 20px;
-$selectLink-mainTextBox_width: 180px;
 
 div#UnitsProj-selectLink-UIContainer {
   //width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
@@ -100,7 +107,7 @@ div#UnitsProj-selectLink-UIContainer {
   }
   input.UnitsProj-selectLink-textBox {
     position: relative !important;
-    border: 1px solid darken($selectLink-base-gray, 20) !important;
+    border: 1px solid darken($selectLinkUI-base-gray, 20) !important;
     height: $selectLinkTextBox_height !important;
     box-sizing: border-box !important;
     z-index: $highest-z-index - 2 !important;
@@ -134,9 +141,9 @@ div#UnitsProj-selectLink-UIContainer {
     color: #666 !important;
     display: inline-block !important;
     box-sizing: border-box !important;
-    border: 1px solid darken($selectLink-base-gray, 20) !important;
+    border: 1px solid darken($selectLinkUI-base-gray, 20) !important;
     height: $selectLinkTextBox_height !important;
-    background-color: $selectLink-base-gray !important;
+    background-color: $selectLinkUI-base-gray !important;
     padding: 0px 8px !important;
     padding-top: 2px !important;
     vertical-align: top !important;
@@ -149,12 +156,12 @@ div#UnitsProj-selectLink-UIContainer {
     &:hover {
       font-weight: bold !important;
       position: relative !important; /* to apply z-index */
-      border: 1px solid darken($selectLink-base-gray, 40) !important;
+      border: 1px solid darken($selectLinkUI-base-gray, 40) !important;
       z-index: $highest-z-index - 1 !important;
     }
 
     &:active {
-      background-color: darken($selectLink-base-gray, 10) !important;
+      background-color: darken($selectLinkUI-base-gray, 10) !important;
     }
   }
 
