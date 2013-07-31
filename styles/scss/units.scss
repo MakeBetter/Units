@@ -417,7 +417,7 @@ style more specific by using id's of the elements. Fix for #9.
   visibility: visible !important;
 }
 
-#UnitsProj-zen-mode-button {
+#UnitsProj-zen-mode-indicator {
   position: fixed !important;
   bottom: 30px !important;
   right: 20px !important;
@@ -428,12 +428,11 @@ style more specific by using id's of the elements. Fix for #9.
   cursor: pointer !important;
   font-weight: bold !important;
   color: darken(#a9a9a9,12) !important;
-  font-size: 12px !important;
+  font-size: 12px !important;   line-height: 12px !important;
   font-family: $sans-serif-font-family;
   opacity: 0.7;
-
 }
 
-.UnitsProj-zen-mode-visible #UnitsProj-zen-mode-button {
+.UnitsProj-zen-mode-visible #UnitsProj-zen-mode-indicator {
   background-color: lighten(#e6fad8,2) !important;
 }

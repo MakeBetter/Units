@@ -13,97 +13,129 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         start: start
     });
 
-    var _isActive = false, // true when zen mode is active/ started on a page
-        _isZenModeApplicable = false,// true if zen mode is relevant for the current page's DOM. Is updated on DOM mutations.
+    var _isStarted = false, // true when zen mode is active/ started on a page
+        _isStoppedByUser = false, // true if mode is explicitly stopped by user
+        _isSupportedOnCurrentPage = false ,// Is evaluated by checking the currently present DOM elements on page. Value is
+        // updated on DOM change.
 
         $style_whiteList,
         class_hidden = CONSTS.class_zenModeHidden,
         class_visible = CONSTS.class_zenModeVisible,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         expandedUrlData,
-        isModuleSetup = false; // true if the module has been set up
+        zenModeAutoOn,
 
-    var $zenModeToggleButton,
-        id_zenMode = 'UnitsProj-zen-mode-button',
+        $document,
+        zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
+
+
+    var $zenModeIndicator,
+        id_zenModeIndicator = 'UnitsProj-zen-mode-indicator',
         $topLevelContainer = _u.$topLevelContainer;
 
 
-    var timeout_updateZenMode = false,
-        lit_updateZenMode;
+    var timeout_updateZenMode = false;
 
     /*-- Module implementation --*/
     function reset() {
-        $zenModeToggleButton && $zenModeToggleButton.remove();
+        $zenModeIndicator && $zenModeIndicator.remove();
         thisModule.stopListening();
-        isModuleSetup = false;
+
+        zenModeAutoOn = false;
+
+        _isStarted = false;
+        _isStoppedByUser = false;
+        _isSupportedOnCurrentPage = false;
+
         timeout_updateZenMode = false;
+
     }
+
     function setup(settings) {
         reset();
 
         expandedUrlData = settings.expandedUrlData;
 
+        // Do not setup this module if there are zen mode aware elements specified for current URL
         var CUs_specifier = expandedUrlData && expandedUrlData.CUs_specifier,
             zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
         if (!(CUs_specifier || zenModeWhiteListSelector)) {
             return;     // don't setup this module if no elements are specified to be shown in this mode.
         }
 
-        setupZenModeUI();
+        // Cached global variables
+        $document = $(document);
+        zenModeAutoOn = settings.miscSettings && settings.miscSettings.zenModeAutoOn;
 
-        bindMutationEvents();
-
+        // Setup keyboard shortcut for this module
         var miscShortcuts = settings.miscShortcuts;
         mod_keyboardLib.bind(miscShortcuts.toggleZenMode.kbdShortcuts, toggle);
 
+        // Setup indicator UI to be shown on the page when zen mode is supported.
+        setupZenModeUI();
+
+        // On DOM mutation, update zen mode status for the current page.
+        bindMutationEvents();
+
+        // On CUs change event, update CUs for zen mode
         thisModule.listenTo(mod_CUsMgr, 'CUs-all-change', function() {
-            if (_isActive) {
+            if (_isStarted) {
                 updateCUsState(); // Update the zen mode state for any added CUs (for sites where CUs get dynamically added
                 // due to infinite scroll)
             }
         });
 
+        // Update zen mode status the first time during setup.
         onDomMutations_updateZenModeStatus();
-
-        isModuleSetup = true;
 
     }
 
     function onDomMutations_updateZenModeStatus() {
 
-        var $document = $(document),
-            zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
-
         if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(zenModeWhiteListSelector).length)) {
+            _isSupportedOnCurrentPage = false;
 
-            _isZenModeApplicable = false;
-            $zenModeToggleButton.hide();
+            if ($zenModeIndicator[0].offsetHeight) {
+                $zenModeIndicator.hide();
+            }
+
+            if (zenModeAutoOn) {
+                stop();
+            }
 
             return;
         }
 
-        _isZenModeApplicable = true;
-        $zenModeToggleButton.show();
+        _isSupportedOnCurrentPage = true;
+
+        // Show if not currently present on page
+        if (!$zenModeIndicator[0].offsetHeight) {
+            $zenModeIndicator.show();
+        }
+
+        if (zenModeAutoOn && !_isStoppedByUser) {
+            start();
+        }
     }
 
     function setupZenModeUI() {
 
-        $zenModeToggleButton = $("<div><span>Z</span></div>");
+        $zenModeIndicator = $("<div><span>Z</span></div>");
 
-        $zenModeToggleButton
-            .attr('id', id_zenMode)
+        $zenModeIndicator
+            .attr('id', id_zenModeIndicator)
             .addClass(class_addedByUnitsProj)
             .appendTo($topLevelContainer)
             .hide();
 
-        $zenModeToggleButton.click(toggle);
+        $zenModeIndicator.click(toggle);
     }
 
 
     // public function
     function toggle() {
-        if (_isActive) {
-            stop();
+        if (_isStarted) {
+            stop(true);
         }
         else {
             start();
@@ -112,36 +144,38 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
     function start() {
         // if the module was not set up initially, then do not start/stop the zen mode.
-        if (!isModuleSetup || !_isZenModeApplicable) {
+        if (!_isSupportedOnCurrentPage) {
             return;
         }
 
-        _isActive = true;
+        if (!_isStarted) {
+            _isStarted = true;
+            _isStoppedByUser = false;
 
-        $("body").addClass(class_hidden);
-        $("." + class_addedByUnitsProj).addClass(class_visible);
+            $("body").addClass(class_hidden);
+            $("." + class_addedByUnitsProj).addClass(class_visible);
 
-        updateCUsState();
+            updateCUsState();
 
-        $style_whiteList = $('<style>' + expandedUrlData.zenModeWhiteList + '{ visibility: visible }</style>');
-        $('html > head').append($style_whiteList);
-
+            $style_whiteList = $('<style>' + expandedUrlData.zenModeWhiteList + '{ visibility: visible }</style>');
+            $('html > head').append($style_whiteList);
+        }
     }
 
-    function stop() {
-        if (!isModuleSetup) {
-            return;
+    function stop(isUserInitiated) {
+        if (_isStarted) {
+            _isStarted = false;
+            if (isUserInitiated) {
+                _isStoppedByUser = true;
+            }
+
+            $("body").removeClass(class_hidden);
+            $("." + class_addedByUnitsProj).removeClass(class_visible);
+
+            updateCUsState();
+
+            $style_whiteList && $style_whiteList.remove();
         }
-
-        _isActive = false;
-
-        $("body").removeClass(class_hidden);
-        $("." + class_addedByUnitsProj).removeClass(class_visible);
-
-        updateCUsState();
-
-        $style_whiteList && $style_whiteList.remove();
-
     }
 
     function updateCUsState() {
@@ -154,7 +188,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             for (var j = 0; j < $CU.length; j++) {
                 $el = $CU.eq(j);
 
-                if (_isActive) {
+                if (_isStarted) {
                     $el.addClass(class_visible);
                 }
                 else {
@@ -171,15 +205,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     function onDomMutations() {
         // compare explicitly with false, which is how we reset it
         if (timeout_updateZenMode === false) {
-
-            // NOTE copied from mod_CUsMgr where this code is originally used.
-
-//            // In the following line, we restrict the minimum value of the timeout delay to
-//            // 0. This should not normally be required since negative delay is supposed to
-//            // have the same effect as a 0 delay. However, doing this fixes  #76 (Github).
-//            // This is mostly likely due to some quirk in Chrome.
-            timeout_updateZenMode = setTimeout(_onDomMutations, Math.max(0, 1000 -
-                (Date.now() - lit_updateZenMode)));
+            timeout_updateZenMode = setTimeout(_onDomMutations, 500);
         }
     }
 
@@ -188,7 +214,6 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             clearTimeout(timeout_updateZenMode);
             timeout_updateZenMode = false;    // reset
         }
-        lit_updateZenMode = Date.now();
         onDomMutations_updateZenModeStatus();
     }
 
