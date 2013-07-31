@@ -19,7 +19,9 @@ _u.mod_selectFocusables = (function($, mod_keyboardLib, mod_domEvents, mod_CUsMg
 
         var code = e.which || e.keycode;
 
-        if (mod_keyboardLib.isSpaceDown() && code !== 32 && code !== 16) { // 32 is space, 16 shift
+        if (mod_keyboardLib.isSpaceDown() &&
+            mod_keyboardLib.allowSpaceAsModifier(e) &&
+            code !== 32 && code !== 16) { // 32 is space, 16 shift (shift is used to cycle backwards)
 
             if (code === 190) { // code for '.'
                 selectFocusable(e.shiftKey? "prev": "next", null);

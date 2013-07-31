@@ -28,6 +28,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         setup: setup,
         bind: bind,
         isSpaceDown: isSpaceDown,
+        allowSpaceAsModifier: allowSpaceAsModifier,
         shouldHandleShortcut: shouldHandleShortcut, // exposed publicly for Mousetrap library (mousetrap-modified.js)
     });
 
@@ -114,6 +115,10 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         return Mousetrap.isSpaceDown;
     }
 
+    function allowSpaceAsModifier(e) {
+        return (mod_contentHelper.elementAllowsSingleKeyShortcut(e.target) || (e.altKey || e.ctrlKey || e.metaKey));
+    }
+
     /**
      * This function handles the <space> keydown and keyup events to allow <space> to be used as a modifier. Importantly,
      * 1) It maintains the state of the two global variables 'isSpaceDown' and 'spaceUsedAsModifier'. The modified
@@ -134,14 +139,13 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
             if (e.type === 'keydown') {
                 Mousetrap.isSpaceDown = true;
 
-                // First, ensure that we don't consider <space> a (potential) modifier if:
+                // Ensure that we don't consider <space> a (potential) modifier if:
                 // the target element is a type-able element etc AND there is no other non-shift modifier key
-                if(!mod_contentHelper.elementAllowsSingleKeyShortcut(e.target) && !(e.altKey || e.ctrlKey || e.metaKey)) {
+                if(!allowSpaceAsModifier(e)) {
                     return;
                 }
 
                 // else...
-//
                 Mousetrap.spaceUsedAsModifier = false; // reset
                 mod_contentHelper.suppressEvent(e);
 
@@ -157,7 +161,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         }
         // any other key than space
         else {
-            if (e.type === 'keydown' && Mousetrap.isSpaceDown) {
+            if (e.type === 'keydown' && Mousetrap.isSpaceDown && allowSpaceAsModifier(e)) {
                 Mousetrap.spaceUsedAsModifier = true;
             }
         }
