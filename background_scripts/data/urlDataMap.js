@@ -609,11 +609,12 @@ defaultSettings.urlDataMap = {
             // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
             // http://stackoverflow.com/
             urlPatterns: ["*.stackexchange.com/questions", "*.stackexchange.com/questions/tagged*",
-                "*.stackexchange.com"],
+                "*.stackexchange.com", "*.stackexchange.com/search?*", "*.stackexchange.com/?tab=@"],
             urlRegexps: [/^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions$/,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/questions\/tagged\//,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)$/,
                 /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/search?/,
+                /^(meta\.)?(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)\/\?tab=[^\\.\/]+/,
 
                 /^(meta\.)?(mathoverflow\.net)\/questions$/,
                 /^(meta\.)?(mathoverflow\.net)\/questions\/tagged\//,
