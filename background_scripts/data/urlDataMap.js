@@ -387,7 +387,7 @@ defaultSettings.urlDataMap = {
             }
         },
         {
-            // for scholar.google.com etc.
+            // for scholar.google.co*
             urlPatterns: ["scholar.google.@/*", "scholar.google.co.@/*"],
             CUs_specifier: ".gs_r, #gs_n td:last-child",
             CUs_style:{
@@ -436,10 +436,13 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["www.nytimes.com/**"],
             zenModeWhiteList: "#article"
+        },
+        {
+            urlPatterns:["www.nytimes.com"],
+            CUs_specifier: ".column.last .columnGroup, #main .module .column, #insideNYTimesBrowser td"
 
         }
     ],
-
     "quora.com": [
         {
             // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
