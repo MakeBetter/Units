@@ -436,7 +436,6 @@ Tip: If you want to get Hints for all elements, just press [space] without enter
         if (e.target === $textBox_main[0] || e.target === $textBox_hint[0]) {
             var code = e.which || e.keyCode;
             // 16 shift, 32 space
-            console.log("mod_keyboardLib.isSpaceDown()", mod_keyboardLib.isSpaceDown());
             if ((code === 16 || code === 32) && !(e.shiftKey || mod_keyboardLib.isSpaceDown()) ) {
                 $textBox_main[0].focus();
                 mod_contentHelper.suppressEvent(e);
