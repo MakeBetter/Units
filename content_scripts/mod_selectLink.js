@@ -1,3 +1,4 @@
+/*jshint -W043 */
 _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper,
                               mod_basicPageUtils, mod_keyboardLib, mod_context,
                               mod_mutationObserver, CONSTS) {
@@ -59,11 +60,34 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
         .addClass("UnitsProj-close-button")
-        .addClass(class_addedByUnitsProj);
+        .addClass(class_addedByUnitsProj)
+        .attr('tabindex', 0);   // otherwise clicking it will close UI even when help UI is visible
 
-    var $helpUI = $('<div></div>')
-        .addClass('UnitsProj-selectLink-helpUI')
-        .hide();
+    var $helpUI = $("<div><ul><li>Enter a few letters of the link/button you want to click<br><br>\
+ - Partial matches work: E.g: For the link 'A new day', all of these will match: 'new', 'nd', and 'neda'<br><br>\
+ - To match links without any text, just type in a dot (.)</li><br>\
+<li>\
+Use [tab] and [shift+tab] to cycle between matches\
+</li><br>\
+<li>\
+Once you reach the desired element, you can<br><br>\
+ - Press the [esc] key to focus<strong>*</strong> that element (and close this UI)<br><br>\
+ - Or, press [enter] to directly open the selected element, or [cmd+enter] or [alt+enter] to open it in a new tab<br>\
+</li><br>\
+<li>\
+If there are too many matches, press [space] (or [shift]) to see a Hint next to each matched link.<br><br>\
+  - While keeping [space] pressed, type in the Hint to focus<strong>*</strong> the element instantly<br>\
+</li><br>\
+<li>\
+Tip: If you want to get Hints for all elements, just press [space] without entering any text</li>\
+<br>\
+</li>\
+<span class = 'UnitsProj-finePrint'><strong>*</strong> Once an element is focused, it can be interacted with normally, by pressing [o], [enter], [tab] etc</span></div>");
+
+
+       $helpUI.addClass('UnitsProj-selectLink-helpUI')
+           .attr('tabindex', 0)
+           .hide();
 
     var $tip = $("<div class = 'UnitsProj-selectLinkTip'>Keep <span class = 'UnitsProj-selectLink-KeyName'>space</span> (or <span class = 'UnitsProj-selectLink-KeyName'>shift</span>&nbsp;) pressed down to type hint letters<div>");
 
@@ -111,7 +135,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         mod_domEvents.addEventListener(document, 'keyup', onKeyUp_spaceOrShift, true);
         $textBox_main.on('input', onMainInput);
         $textBox_hint.on('input', onHintInput);
-        $closeButton.on('click', closeUI);
+        $closeButton.on('click', function() {
+            // we don't specify `closeUI` directly as the event handler because
+            // we don't want it to be called with any argument in this scenario
+            closeUI();
+        });
         setup_focusRelatedEvents();
 
         var selectLinkShortcuts = settings.selectLinkShortcuts,
@@ -124,7 +152,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         mod_keyboardLib.bind(selectLinkShortcuts.openSelectedLinkInNewTab.kbdShortcuts, openSelectedLink_newTab, {selectLinkUIActive: true}, true);
 
         $helpBtn.click(onHelpButtonClick);
-        $helpUI.text("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (end)");
     }
 
     function selectNext() {
@@ -152,7 +179,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             var index = $elemsMatchingMainText.index(selectedEl);
             if (!selectedEl || index === -1) {
                 index = 0;
-                return;
             }
 
             if (direction === 'n') {
@@ -340,6 +366,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function closeUI(elToFocus) {
         var disabledByMe = mod_mutationObserver.disable();
 
+        if (!elToFocus && $helpUI.is(":visible")) {
+            $helpUI.hide();
+            return;
+        }
+
         clearTimeout(timeout_findMatches_mainInput);
         timeout_findMatches_mainInput = false;    // reset
         clearTimeout(timeout_viewportChange);
@@ -404,7 +435,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     function onKeyUp_spaceOrShift(e) {
         if (e.target === $textBox_main[0] || e.target === $textBox_hint[0]) {
             var code = e.which || e.keyCode;
-            if (code === 16 || code === 32) { // 16 shift, 32 space
+            // 16 shift, 32 space
+            console.log("mod_keyboardLib.isSpaceDown()", mod_keyboardLib.isSpaceDown());
+            if ((code === 16 || code === 32) && !(e.shiftKey || mod_keyboardLib.isSpaceDown()) ) {
                 $textBox_main[0].focus();
                 mod_contentHelper.suppressEvent(e);
             }

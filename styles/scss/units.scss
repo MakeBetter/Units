@@ -168,14 +168,33 @@ div#UnitsProj-selectLink-UIContainer {
   .UnitsProj-close-button {
     @include close-button;
     margin-left: 4px !important;
+    outline: none !important;
   }
 
   .UnitsProj-selectLink-helpUI {
     //position: fixed !important;
     //bottom: 25px !important;
-    width: 215px !important;
+    width: 278px !important;
     background-color: $background-color-gray !important;
-    padding: 4px !important;
+    margin: -4px 2px !important;
+    font: normal normal normal 11px $sans-serif-font-family !important;
+    outline: none !important;
+
+    ul {
+      padding: 5px !important;
+      padding-left: 20px !important;
+      margin: 3px -3px 7px -3px !important;
+      background-color: lighten($background-color-gray, 10) !important;
+      @include border-radius(4px 4px 4px 4px !important);
+
+    }
+  }
+  .UnitsProj-finePrint {
+    font: normal normal normal 9px $sans-serif-font-family !important;
+    strong {
+      font-size: 11px !important;
+      font-weight: bold;
+    }
   }
 
   div.UnitsProj-selectLinkTip {
