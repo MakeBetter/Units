@@ -132,6 +132,8 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         if (keycode === 32) { // space
 
             if (e.type === 'keydown') {
+                Mousetrap.isSpaceDown = true;
+
                 // First, ensure that we don't consider <space> a (potential) modifier if:
                 // the target element is a type-able element etc AND there is no other non-shift modifier key
                 if(!mod_contentHelper.elementAllowsSingleKeyShortcut(e.target) && !(e.altKey || e.ctrlKey || e.metaKey)) {
@@ -139,15 +141,12 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
                 }
 
                 // else...
-
-//            console.log('space down');
-                Mousetrap.isSpaceDown = true;
+//
                 Mousetrap.spaceUsedAsModifier = false; // reset
                 mod_contentHelper.suppressEvent(e);
 
             }
             else { // 'keyup'
-//            console.log('space up');
                 Mousetrap.isSpaceDown = false;
                 if (!Mousetrap.spaceUsedAsModifier) {
                     invokeSpaceOnElement(e.target);
