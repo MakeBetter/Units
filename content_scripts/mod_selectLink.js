@@ -280,6 +280,7 @@ Tip: If you want to get Hints for all elements, just press [space] without enter
     }
 
     function onHintInput() {
+        $textBox_hint[0].value = $textBox_hint[0].value.toUpperCase();  // using "text-transform" style changes placeholder as well
         findMatches_hintInput();
     }
 
