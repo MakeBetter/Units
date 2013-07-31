@@ -25,9 +25,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         expandedUrlData,
         zenModeAutoOn,
 
-        $document,
-        zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
-
+        $document;
 
     var $zenModeIndicator,
         id_zenModeIndicator = 'UnitsProj-zen-mode-indicator',
@@ -59,6 +57,8 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         // Do not setup this module if there are zen mode aware elements specified for current URL
         var CUs_specifier = expandedUrlData && expandedUrlData.CUs_specifier,
             zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
+
+
         if (!(CUs_specifier || zenModeWhiteListSelector)) {
             return;     // don't setup this module if no elements are specified to be shown in this mode.
         }
@@ -91,6 +91,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     }
 
     function onDomMutations_updateZenModeStatus() {
+        var zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
 
         if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(zenModeWhiteListSelector).length)) {
             _isSupportedOnCurrentPage = false;
