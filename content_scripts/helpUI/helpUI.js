@@ -109,8 +109,8 @@
 
         var $shortcutsTable = $CUShortcutsSection.find("table");
 
-        renderShortcutsInSectionTable(CUsShortcuts_Default, $shortcutsTable, "Content Unit (CU) based");
-        renderShortcutsInSectionTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site",class_pageSpecificShortcuts);
+        addShortcutsSubsectionToParentTable(CUsShortcuts_Default, $shortcutsTable, "Content Unit (CU) based");
+        addShortcutsSubsectionToParentTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site",class_pageSpecificShortcuts);
     }
 
     function renderMiscShortcuts(settings) {
@@ -128,9 +128,9 @@
             shortcut[property_importanceHigh] = true;
         });
 
-        renderShortcutsInSectionTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
-        renderShortcutsInSectionTable(globalShortcuts, $shortcutsTable, "Tab operations");
-        renderShortcutsInSectionTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", class_pageSpecificShortcuts);
+        addShortcutsSubsectionToParentTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
+        addShortcutsSubsectionToParentTable(globalShortcuts, $shortcutsTable, "Tab operations");
+        addShortcutsSubsectionToParentTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", class_pageSpecificShortcuts);
     }
 
     function renderPageNavigationShortcuts(settings) {
@@ -143,22 +143,22 @@
         var openInNewTabShortcuts = elementNavigationShortcuts.openInNewTab && elementNavigationShortcuts.openInNewTab.kbdShortcuts;
         openInNewTabShortcuts.unshift("command + enter");
 
-        renderShortcutsInSectionTable(settings.pageNavigationShortcuts, $shortcutsTable, "Navigate Page");
-        renderShortcutsInSectionTable(settings.elementNavigationShortcuts, $shortcutsTable, "Navigate Page Elements");
+        addShortcutsSubsectionToParentTable(settings.pageNavigationShortcuts, $shortcutsTable, "Navigate Page");
+        addShortcutsSubsectionToParentTable(settings.elementNavigationShortcuts, $shortcutsTable, "Navigate Page Elements");
 
         appendSpecialCases(settings, $navigatePageSection);
     }
 
     /***
-     * Append a subsection in the given $shortcutsTable by rendering shortcuts in shortcutsObj. Add a title to this
+     * Append a subsection in the given $parentTable by rendering shortcuts in shortcutsObj. Add a title to this
      * subsection if specified as subsectionTitle.
      * @param shortcutsObj
-     * @param $shortcutsTable
+     * @param $parentTable
      * @param [subSectionTitle]
      * @param [rowClass]
      */
-    function renderShortcutsInSectionTable(shortcutsObj, $shortcutsTable, subSectionTitle, rowClass) {
-        if (!shortcutsObj || !$shortcutsTable) {
+    function addShortcutsSubsectionToParentTable(shortcutsObj, $parentTable, subSectionTitle, rowClass) {
+        if (!shortcutsObj || !$parentTable) {
             return;
         }
 
@@ -172,10 +172,10 @@
                 .addClass(class_subsectionTitle)
                 .addClass(rowClass)
                 .find("td").text(subSectionTitle);
-            $shortcutsTable.append($subSectionTitle);
+            $parentTable.append($subSectionTitle);
         }
 
-        if ($shortcutsTable.find("tr").length !== 1) {
+        if ($parentTable.find("tr").length !== 1) {
             $subSectionTitle.addClass("separator-row");
         }
 
@@ -202,7 +202,7 @@
                 // in the project.
 
                 var row = $("<tr></tr>")
-                            .appendTo($shortcutsTable)
+                            .appendTo($parentTable)
                             .attr("id", key)
                             .addClass(rowClass)
                             .append($("<td class= key></td>").html(kbdShortcutsHtml))
@@ -218,7 +218,7 @@
         });
 
         if (hasAtLeastOneShortcut) {
-            $shortcutsTable.find("tr:last-child").addClass(class_subsectionEnd);
+            $parentTable.find("tr:last-child").addClass(class_subsectionEnd);
 
             if (hasAtleastOneImportantShortcut) {
                 $subSectionTitle.addClass(class_importanceHigh);
