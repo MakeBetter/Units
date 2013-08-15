@@ -207,7 +207,7 @@ defaultSettings.urlDataMap = {
         }
     ],
     "backbonejs.org":  {
-        urlPatterns: ["backbonejs.org"],
+        urlPatterns: ["backbonejs.org*"],
         CUs_specifier: {
             buildCUAround: ".container p:has(.header), h2",
         },
