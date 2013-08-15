@@ -446,9 +446,12 @@ defaultSettings.urlDataMap = {
     "quora.com": [
         {
             urlPatterns: ["www.quora.com/search?*"],
-            CUs_specifier: ".question_query_result, .results_page_add_question",
+            CUs_specifier: ".query_result, .results_page_add_question",
             CUs_SUs: {
                 "std_seeMore": ".more_link"
+            },
+            CUs_style: {
+                overlayPadding: "0 0 0 5px"
             }
         },
         {
