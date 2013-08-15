@@ -46,6 +46,10 @@ $section-margin: 3px;
   &:last-child, &:first-child {
     margin-right: 2px;
   }
+
+  &.disabled {
+    opacity: 0.3;
+  }
 }
 
 table {
@@ -128,15 +132,6 @@ td.key>span.separator {
     background-color: #FFFFEA;
 }
 
-.disabled .section-message{
-  color: $message-disabled-color;
-  display: inline-block;
-  width: 100%;
-  text-align: center;
-  padding: $td-padding;
-}
-
-
 $menu-option-margin-top: 8px;
 $menu-padding: 5px;
 #filter-by {
@@ -174,6 +169,12 @@ $menu-padding: 5px;
   display: none;
   padding-top: $menu-option-margin-top + $menu-padding; /* Align with the menu options on the left. */
   padding-left: 10px; /* No alignment going on here. Just seems to look good. */
+
+  &>span {
+    background-color: #FDFDF0;
+    padding: 5px;
+    color: #666;
+  }
 }
 
 #footer-message {

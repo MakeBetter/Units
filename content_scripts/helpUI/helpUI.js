@@ -48,7 +48,7 @@
             var data = event.data;
 
             if (data.message === 'pageHasCUsSpecifier') {
-                showOrHideCUShortcuts_onSetup(data);
+                disableCUShortcutsIfUnavailable(data);
             }
 
             return false;
@@ -272,28 +272,16 @@
         additionalShortcuts && $scrollUpShortcuts.append(additionalShortcuts);
     }
 
-    function showOrHideCUShortcuts_onSetup(data) {
-        var sectionDisabledClass = "disabled",
-            $noCUsMessage = $("<span class='section-message'> No content units setup for this page</span>"),
-            $CUsShortcuts = $CUShortcutsSection.find("tbody");
+    function disableCUShortcutsIfUnavailable(data) {
+        var sectionDisabledClass = "disabled";
 
         areCUsSpecifiedForPage = data.value;
-        // If the page does not have CUs specified, then hide the shortcuts and show a message.
+        // If the page does not have CUs specified, then gray out the CUs shortcuts section
         if (!areCUsSpecifiedForPage) {
 
             $CUShortcutsSection.addClass(sectionDisabledClass);
-            $CUShortcutsSection.append($noCUsMessage);
-            $CUsShortcuts.hide();
-
             return;
         }
-
-        $CUShortcutsSection.removeClass(sectionDisabledClass);
-        if ($noCUsMessage) {
-            $noCUsMessage.remove();
-        }
-
-        $CUsShortcuts.show();
     }
 
     function onMenuClick(event) {
@@ -358,7 +346,9 @@
     }
 
     function showFilterMessage(message) {
-        $("#filter-message").html(message).show();
+        $("#filter-message")
+            .show()
+            .find("span").text(message);
     }
 
     function close() {
