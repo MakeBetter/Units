@@ -445,6 +445,13 @@ defaultSettings.urlDataMap = {
     ],
     "quora.com": [
         {
+            urlPatterns: ["www.quora.com/search?*"],
+            CUs_specifier: ".question_query_result, .results_page_add_question",
+            CUs_SUs: {
+                "std_seeMore": ".more_link"
+            }
+        },
+        {
             // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
             // 'about', 'questions', 'new'. These are special pages in Quora, pertaining to a topic generally. These should be
             // handled by the CU selector for www.quora.com/* pattern (specified later).
