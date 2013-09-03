@@ -215,7 +215,15 @@ defaultSettings.urlDataMap = {
             overlayPadding: "10px",
         }
     },
-    "facebook.com": [
+
+    "indiatimes.com": [
+        {
+            urlPatterns: ["timesofindia.indiatimes.com/*"],
+            zenModeWhiteList: ".maintable12, .left_bdr"
+        }
+    ],
+
+        "facebook.com": [
         {
             // Facebook main feed page
             urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*", "www.facebook.com/hashtag/*"],
@@ -243,7 +251,7 @@ defaultSettings.urlDataMap = {
             page_SUs: {
                 std_header: "#headNav",
             },
-            zenModeWhiteList: ".uiLayer"
+            zenModeWhiteList: ".uiLayer, #pagelet_stream_pager"
         },
         {
             urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type facebook.com/pages*
@@ -604,9 +612,9 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-    "guardian.co.uk": [
+    "theguardian.com": [
         {
-            urlPatterns: ["www.guardian.co.uk/**"],
+            urlPatterns: ["www.theguardian.com/**"],
             zenModeWhiteList: "#main-article-info, #content, .share-links.b3"
         }
     ],
@@ -696,7 +704,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["twitter.com/*"], // works on all pages of twitter. Relevant URLS:  main feed page, user page, tweet page
     //        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
             CUs_specifier: {
-                selector: ".js-actionable-tweet" // can alternately use #stream-items-id>li if we don't want to select comment
+                selector: ".js-actionable-tweet, .stream-user-gallery" // can alternately use #stream-items-id>li if we don't want to select comment
                 // tweets on twitter main page.
             },
             CUs_SUs: {
