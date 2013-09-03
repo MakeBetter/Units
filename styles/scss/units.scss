@@ -411,6 +411,11 @@ style more specific by using id's of the elements. Fix for #9.
 
 .UnitsProj-zen-mode-hidden {
   visibility: hidden !important;
+
+  // visibility:hidden does not work for iframes.
+  iframe{
+    opacity: 0 !important;
+  }
 }
 
 .UnitsProj-zen-mode-visible {
