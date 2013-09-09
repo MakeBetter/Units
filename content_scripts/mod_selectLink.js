@@ -121,7 +121,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             var $elemsInViewport = getElemsInViewport(),
                 $matchingElems;
 
-
             // space + '.' targets all links without an inner text
             if (code === 190) { // code for '.'
                 $matchingElems = $elemsInViewport.filter(function() {
@@ -208,7 +207,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
         for (var i = 0; i < len; ++i) {
             for (var j = 0; j < len; ++j) {
-                doubleDigitHints[++count] = singleDigitHints[i] + singleDigitHints[j];
+                // [j] + [i] instead of [i] + [j] so that the the first character
+                // of neighbouring double digit hints is scattered (which is nicer)
+                doubleDigitHints[++count] = singleDigitHints[j] + singleDigitHints[i];
             }
         }
         return {singleDigit: singleDigitHints, doubleDigit: doubleDigitHints};
