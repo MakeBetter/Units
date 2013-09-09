@@ -19,11 +19,14 @@
         $miscShortcutsSection = $("#misc-shortcuts"),// second column. contains misc, global, and URL-specific page shortcuts
         $navigatePageSection = $("#navigate-page-shortcuts"),
 
+        $shortcutsContainer = $("#shortcuts-container"),
         $closeButton = $(".close"),
-
         $filterMenu = $("#filter-by"),
+        $footerMessage = $("#footer-message"),
+        $gettingStarted = $("#getting-started-content"),
+        $filterMessage = $("#filter-message"),
+        $modalTitle = $(".modal-title");
 
-        $footerMessage = $("#footer-message");
 
     var areCUsSpecifiedForPage,
         menuHandlers = {
@@ -31,6 +34,7 @@
             "most-important": showMostImportantShortcuts,
             "cu-based": showCUBasedShortcuts,
             "specific-to-page": showPageSpecificShortcuts,
+            "getting-started": showGettingStartedSection
         },
 
         class_pageSpecificShortcuts = "page-specific",
@@ -70,7 +74,6 @@
 
         // Setup filter menu
         $filterMenu.click(onMenuClick);
-
     }
 
     function renderHelpUI(settings) {
@@ -304,6 +307,8 @@
     }
 
     function showAllShortcuts() {
+        resetUI();
+
         $CUShortcutsSection.show();
         $miscShortcutsSection.show();
         $navigatePageSection.show();
@@ -311,7 +316,7 @@
 
         $("tr").show(); // show all keyboard shortcuts
 
-        $("#filter-message").hide();
+        $filterMessage.hide();
     }
 
     function showMostImportantShortcuts() {
@@ -346,10 +351,25 @@
     }
 
     function showFilterMessage(message) {
-        $("#filter-message")
+        $filterMessage
             .show()
-            .find("span").text(message);
+            .find("span").html(message);
     }
+
+    function showGettingStartedSection() {
+        $shortcutsContainer.hide();
+        $filterMessage.hide();
+        $gettingStarted.show();
+        $modalTitle.text("Units: Getting Started");
+    }
+
+    function resetUI() {
+        $modalTitle.text("Units Shortcuts");
+
+        $gettingStarted.hide();
+        $shortcutsContainer.show();
+    }
+
 
     function close() {
         parent.postMessage({message: "hideHelpUI"}, "*");
