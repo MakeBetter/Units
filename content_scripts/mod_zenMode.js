@@ -24,6 +24,8 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         expandedUrlData,
         zenModeAutoOn,
+        mainContentSelector_include,
+        mainContentSelector_exclude,
 
         $document;
 
@@ -56,16 +58,21 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
         // Do not setup this module if there are zen mode aware elements specified for current URL
         var CUs_specifier = expandedUrlData && expandedUrlData.CUs_specifier,
-            zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
+            mainContentSpecifier = expandedUrlData && expandedUrlData.page_mainContent;
 
 
-        if (!(CUs_specifier || zenModeWhiteListSelector)) {
+        if (!(CUs_specifier || mainContentSpecifier)) {
             return;     // don't setup this module if no elements are specified to be shown in this mode.
         }
 
         // Cached global variables
         $document = $(document);
         zenModeAutoOn = settings.miscSettings && settings.miscSettings.zenModeAutoOn;
+
+        if (mainContentSpecifier) {
+            mainContentSelector_include = mainContentSpecifier.include || mainContentSpecifier;
+            mainContentSelector_exclude = mainContentSpecifier.exclude;
+        }
 
         // Setup keyboard shortcut for this module
         var miscShortcuts = settings.miscShortcuts;
@@ -91,9 +98,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     }
 
     function onDomMutations_updateZenModeStatus() {
-        var zenModeWhiteListSelector = expandedUrlData && expandedUrlData.zenModeWhiteList;
-
-        if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(zenModeWhiteListSelector).length)) {
+        if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(mainContentSelector_include).length)) {
             _isSupportedOnCurrentPage = false;
 
             if ($zenModeIndicator[0].offsetHeight) {
@@ -158,13 +163,11 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
             updateCUsState();
 
-            var zenModeWhiteList = expandedUrlData.zenModeWhiteList;
-
-            if (zenModeWhiteList) {
-                $style_whiteList = $('<style>' + zenModeWhiteList + '{visibility: visible;} ' +
+            if (mainContentSelector_include) {
+                $style_whiteList = $('<style>' + mainContentSelector_include + '{visibility: visible;} ' +
                    '</style>');
                 $('html > head').append($style_whiteList);
-                $(zenModeWhiteList).addClass(class_visible); //class used in CSS
+                $(mainContentSelector_include).addClass(class_visible); //class used in CSS
             }
         }
     }
@@ -182,7 +185,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             updateCUsState();
 
             $style_whiteList && $style_whiteList.remove();
-            $(expandedUrlData.zenModeWhiteList).removeClass(class_visible);
+            $(mainContentSelector_include).removeClass(class_visible);
         }
     }
 
