@@ -196,26 +196,26 @@ defaultSettings.urlDataMap = {
                     }
                 }
             },
+
            /*  This property is used to indicate the 'main content' on the page. It is currently being used to enable zen
             mode.
 
-            The 'include' and 'exclude' properties are not symmetric. The 'include' property is applied first, to filter
-            out elements that need to be included.  The 'exclude' selector is then used to remove elements only
-            from the 'included' elements set.
+            The 'selector' property specifies the main elements. 'exclude' property is then used to remove elements from
+            the included elements. 
 
             NOTE:
-            1) If the 'include' property is not specified, then 'exclude' is applied to the entire page.
+            1) If the 'selector' property is not specified, then 'exclude' is applied to the entire page.
 
-            2) To  specify only the 'include' elements, this shorthand notation can be used:
-            page_mainContent: "#article-container"
+            2) To  specify only the 'include' elements, the shorthand notation page_mainContent: "#article-container"
+            can be used.
             */
 
             page_mainContent: {
-                include: "#article-container",
-                exclude: "#ads" // This specifies the content to be excluded within the 'include' selector.
+                selector: "#article-container",
+                exclude: ".advert"
             }
         },
-        
+
         // Data object that will be shared with all URLs under this main domain.
         // More specifically, the matching URL data will extend the shared data to get the final data for a URL.
         {

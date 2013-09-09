@@ -24,7 +24,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         expandedUrlData,
         zenModeAutoOn,
-        mainContentSelector_include,
+        mainContentSelector,
         mainContentSelector_exclude,
 
         $document;
@@ -70,7 +70,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         zenModeAutoOn = settings.miscSettings && settings.miscSettings.zenModeAutoOn;
 
         if (mainContentSpecifier) {
-            mainContentSelector_include = mainContentSpecifier.include || mainContentSpecifier;
+            mainContentSelector = mainContentSpecifier.selector || mainContentSpecifier;
             mainContentSelector_exclude = mainContentSpecifier.exclude;
         }
 
@@ -98,7 +98,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     }
 
     function onDomMutations_updateZenModeStatus() {
-        if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(mainContentSelector_include).length)) {
+        if (!(( mod_CUsMgr.getAllCUs().length) || $document.find(mainContentSelector).length)) {
             _isSupportedOnCurrentPage = false;
 
             if ($zenModeIndicator[0].offsetHeight) {
@@ -163,11 +163,11 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
             updateCUsState();
 
-            if (mainContentSelector_include) {
-                $style_whiteList = $('<style>' + mainContentSelector_include + '{visibility: visible;} ' +
+            if (mainContentSelector) {
+                $style_whiteList = $('<style>' + mainContentSelector + '{visibility: visible;} ' +
                    '</style>');
                 $('html > head').append($style_whiteList);
-                $(mainContentSelector_include).addClass(class_visible); //class used in CSS
+                $(mainContentSelector).addClass(class_visible); //class used in CSS
             }
         }
     }
@@ -185,7 +185,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             updateCUsState();
 
             $style_whiteList && $style_whiteList.remove();
-            $(mainContentSelector_include).removeClass(class_visible);
+            $(mainContentSelector).removeClass(class_visible);
         }
     }
 
