@@ -219,7 +219,7 @@ defaultSettings.urlDataMap = {
     "indiatimes.com": [
         {
             urlPatterns: ["timesofindia.indiatimes.com/*"],
-            zenModeWhiteList: ".maintable12, .left_bdr"
+            zenModeWhiteList: "left_bdr  h1, .left_bdr #storydiv"
         }
     ],
 
@@ -535,7 +535,8 @@ defaultSettings.urlDataMap = {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"],
                     descr: "Follow"
-                }
+                },
+                "std_seeMore": ".more_link"
             },
             CUs_style: {
                 overlayPadding: "0 0 0 5px"
@@ -615,7 +616,7 @@ defaultSettings.urlDataMap = {
     "theguardian.com": [
         {
             urlPatterns: ["www.theguardian.com/**"],
-            zenModeWhiteList: "#main-article-info, #content, .share-links.b3"
+            zenModeWhiteList: "#article-header, #content, .share-links.b3"
         }
     ],
 
@@ -699,6 +700,14 @@ defaultSettings.urlDataMap = {
     "askubuntu.com": "stackexchange.com",
     "mathoverflow.net" : "stackexchange.com",
 
+
+    "thehindu.com": [
+        {
+            urlPatterns: ["www.thehindu.com/**"],
+            zenModeWhiteList: "#left-column"
+        }
+    ],
+
     "twitter.com": [
         {
             urlPatterns: ["twitter.com/*"], // works on all pages of twitter. Relevant URLS:  main feed page, user page, tweet page
@@ -763,6 +772,13 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "washingtonpost.com": [
+        {
+            urlPatterns: ["www.washingtonpost.com/**"],
+            zenModeWhiteList: "#content[role=main], #article-leaf-page>.main-content"
+        }
+    ],
+
     // only support on the first page
     "ycombinator.com": {
         urlPatterns: ["news.ycombinator.com/*"],
@@ -813,7 +829,7 @@ defaultSettings.urlDataMap = {
             page_SUs: {
 //                std_logout: "#masthead-expanded-menu-account-container a:contains('Sign out')"
             }
-        },
+        }
     ],
 
     //Data that may need to be removed for friend release. 1) These sites are either not very commonly known. 2) They are
