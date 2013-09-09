@@ -153,30 +153,6 @@ var defaultSettings = {
     },
 
     /*
-    Shortcuts related to Select Link module.
-    NOTE: The shortcut to invoke the select link UI is included in miscShortcuts.
-     */
-
-    selectLinkShortcuts: {
-        selectNextMatchedLink: {
-            descr: "Selects the Next matched link",
-            kbdShortcuts: ['tab']
-        },
-        selectPrevMatchedLink: {
-            descr: "Selects the Previous matched link",
-            kbdShortcuts: ['shift+tab']
-        },
-        openSelectedLink: {
-            descr: "Opens the Selected link",
-            kbdShortcuts: ['enter']
-        },
-        openSelectedLinkInNewTab: {
-            descr: "Opens the Selected link in a New Tab",
-            kbdShortcuts: ['command+enter', 'alt+enter', 'shift+enter']
-        }
-    },
-
-    /*
     Default shortcuts that need CUs to be defined on a page.
     * */
     CUsShortcuts: {

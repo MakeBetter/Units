@@ -44,172 +44,14 @@ Also, hence the generous use of !important property here.
 }
 
 /* ****** 'Select Link' module styles ***** */
-$matchingLink-background-color: #ffffc8;
-$selectedLink-background-color: #fed795;
-$selectLinkUI-base-gray: #eee;
-$selectLinkTextBox_height: 20px;
-$selectLink-mainTextBox_width: 180px;
-
-.UnitsProj-matchingElem {
-  background-color: $matchingLink-background-color !important;
-  outline: 1px solid darken($matchingLink-background-color, 50) !important;
-  color: #433210 !important;
-}
-
-.UnitsProj-selectedElem {
-  background-color: $selectedLink-background-color !important;
-  outline: 1px solid darken($selectedLink-background-color, 60) !important;
-  color: #433210 !important;
-}
-
-/* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
-margin of the #UnitsProj-selectLink-textBox or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
-box-sizing to border-box)*/
-
-div#UnitsProj-selectLink-UIContainer {
-  //width: 181px !important; height: 30px !important; /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
-  //box-sizing: border-box !important; /*using border-box to make calculations easier.*/
-
-  //text-align: left !important; /*this is important to be set to ensure that the input box and span align as required.*/
-
+input.UnitsProj-dummyHintInput {
+  opacity: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
   position: fixed !important;
-  bottom: 0px;
-  right: 200px !important;
-  margin: 0px !important;
-  z-index: $highest-z-index - 1 !important;
-  background-color: #d8d8d8 !important;
-  @include border-radius(6px 6px 0 0 !important);
-  padding: 5px !important;
-
-  #UnitsProj-selectLink-textBoxContainer {
-    display: inline-block;
-    position: relative; /*to make it a positioned element*/
-  }
-
-  input#UnitsProj-selectLink-textBox_main {
-    width: $selectLink-mainTextBox_width !important;
-    padding-right: 30px !important;
-    @include border-radius(4px 0 0 4px !important);
-
-    &:hover, &:focus {
-      z-index: $highest-z-index - 1 !important;
-    }
-  }
-
-  input#UnitsProj-selectLink-textBox_hint {
-    width: $selectLink-mainTextBox_width/3 !important;
-    margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
-    @include border-radius(0 0 0 0 !important);
-
-    &:hover, &:focus {
-      z-index: $highest-z-index - 1 !important;
-    }
-  }
-  input.UnitsProj-selectLink-textBox {
-    position: relative !important;
-    border: 1px solid darken($selectLinkUI-base-gray, 20) !important;
-    height: $selectLinkTextBox_height !important;
-    box-sizing: border-box !important;
-    z-index: $highest-z-index - 2 !important;
-
-    &.UnitsProj-selectLink-textBox-noMatch {
-      background-color: pink !important;
-    }
-
-    &:focus {
-      border: 1px solid $focused-element-or-CU-color !important;
-      outline: none !important;
-    }
-
-    &::-webkit-input-placeholder {
-      font: normal normal normal 11px/14px $sans-serif-font-family !important;
-    }
-  }
-
-  span.countLabel {
-    pointer-events: none !important;
-    position: absolute !important;
-    top: 4px !important;
-    right: 3px !important;
-    font: normal normal normal 11px/14px $sans-serif-font-family !important;
-    color: gray !important;
-    z-index: $highest-z-index - 1 !important;
-  }
-
-  #UnitsProj-selectLink-helpButton {
-    font: normal normal normal 11px/14px $sans-serif-font-family !important;
-    color: #666 !important;
-    display: inline-block !important;
-    box-sizing: border-box !important;
-    border: 1px solid darken($selectLinkUI-base-gray, 20) !important;
-    height: $selectLinkTextBox_height !important;
-    background-color: $selectLinkUI-base-gray !important;
-    padding: 0px 8px !important;
-    padding-top: 2px !important;
-    vertical-align: top !important;
-    @include border-radius(0 4px 4px 0 !important);
-    cursor: default !important;
-    margin-left: -1 !important; /* in order to make its left border overlap with the right border of the textbox to its left*/
-    z-index: $highest-z-index - 2 !important;
-    outline: none !important;
-
-    &:hover {
-      font-weight: bold !important;
-      position: relative !important; /* to apply z-index */
-      border: 1px solid darken($selectLinkUI-base-gray, 40) !important;
-      z-index: $highest-z-index - 1 !important;
-    }
-
-    &:active {
-      background-color: darken($selectLinkUI-base-gray, 10) !important;
-    }
-  }
-
-  .UnitsProj-close-button {
-    @include close-button;
-    margin-left: 4px !important;
-    outline: none !important;
-  }
-
-  .UnitsProj-selectLink-helpUI {
-    //position: fixed !important;
-    //bottom: 25px !important;
-    width: 278px !important;
-    background-color: $background-color-gray !important;
-    margin: -4px 2px !important;
-    font: normal normal normal 11px $sans-serif-font-family !important;
-    outline: none !important;
-
-    ul {
-      padding: 5px !important;
-      padding-left: 20px !important;
-      margin: 3px -3px 7px -3px !important;
-      background-color: lighten($background-color-gray, 10) !important;
-      @include border-radius(4px 4px 4px 4px !important);
-
-    }
-  }
-  .UnitsProj-finePrint {
-    font: normal normal normal 9px $sans-serif-font-family !important;
-    strong {
-      font-size: 11px !important;
-      font-weight: bold;
-    }
-  }
-
-  div.UnitsProj-selectLinkTip {
-    padding-top: 2px !important;
-    margin-bottom: -2px !important;
-    color: gray !important;
-    font: normal normal normal 10px $sans-serif-font-family !important;
-
-    span.UnitsProj-selectLink-KeyName {
-      $color: #e6e6e6;
-      background-color: $color !important;
-      padding: 0px 1px !important;
-      border: 1px solid darken($color, 10) !important;
-    }
-  }
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: none !important;
 }
 
 /* class for all hint labels */
@@ -224,6 +66,7 @@ div#UnitsProj-selectLink-UIContainer {
   padding: 1px 2px !important;
   letter-spacing: 1px !important;
 
+  /* class for visible hint labels */
   &.UnitsProj-hintLabel-visible {
     display: inline !important;
   }
@@ -372,7 +215,7 @@ span#filter-message {
 
 #UnitsProj-iframe-help {
   box-sizing: content-box !important;
-  width: 1100px !important;
+  width: 1120px !important;
   position: fixed !important;
   left: 50%; margin-left: -550px; /*center the div horizontally*/
   z-index: $highest-z-index !important; /*highest z-index for a 32-bit int value*/
