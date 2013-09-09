@@ -158,8 +158,14 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
             updateCUsState();
 
-            $style_whiteList = $('<style>' + expandedUrlData.zenModeWhiteList + '{ visibility: visible }</style>');
-            $('html > head').append($style_whiteList);
+            var zenModeWhiteList = expandedUrlData.zenModeWhiteList;
+
+            if (zenModeWhiteList) {
+                $style_whiteList = $('<style>' + zenModeWhiteList + '{visibility: visible;} ' +
+                   '</style>');
+                $('html > head').append($style_whiteList);
+                $(zenModeWhiteList).addClass(class_visible); //class used in CSS
+            }
         }
     }
 
@@ -176,6 +182,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             updateCUsState();
 
             $style_whiteList && $style_whiteList.remove();
+            $(expandedUrlData.zenModeWhiteList).removeClass(class_visible);
         }
     }
 

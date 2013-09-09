@@ -412,8 +412,8 @@ style more specific by using id's of the elements. Fix for #9.
 .UnitsProj-zen-mode-hidden {
   visibility: hidden !important;
 
-  // visibility:hidden does not work for iframes.
-  iframe{
+  // Since visibility:hidden does not seem to work for iframes and objects, we set the opacity to 0.
+  iframe:not(.UnitsProj-zen-mode-visible iframe), object:not(.UnitsProj-zen-mode-visible object), embed:not(.UnitsProj-zen-mode-visible embed){
     opacity: 0 !important;
   }
 }
