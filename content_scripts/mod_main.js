@@ -28,8 +28,8 @@
         isDisabled_temporarily = false,
 
         // modules that require setup() and/or reset() to be called during extension initialization and disabling
-        // respectively. All else being equal, modules should be setup in relative order of priority of keyboard
-        // shortcuts (his is the order in which they are listed in the arraybelow), while reset() is called in the
+        // respectively. Generally, modules should be setup in relative order of priority of keyboard shortcuts
+        // (this is the order in which they are listed in the array below), while reset() is called in the
         // opposite order
         modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_chromeAltHack,
             // modules which define keyboard shortcuts are listed next, in order of priority
