@@ -52,9 +52,11 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
 
     /**
      * The bind function maps an array of keyboard shortcuts to a handler. Before the handler is triggered for a
-     * particular keyboard shortcut, and the event suppressed, `shouldHandleShortcut` is called to determine if it
-     * should be invoked. If multiple handlers are bound to the same shortcut, the first one to successfully be handled
-     * will stop further propagation of the event.
+     * particular keyboard shortcut (and the the corresponding keyboard event suppressed), we call `shouldHandleShortcut`
+     * to determine if the handler should be invoked. If multiple handlers are bound to the same shortcut, the first
+     * one to successfully be handled will stop further propagation of the event, ensuring that only one handler
+     * is invoked for a particular keyboard shortcut.
+     *
      * @param {Array} shortcuts
      * @param {Function} handler
      * @param {Object|Function}[context] An object specifying the "context" for this shortcut to be applicable (refer:
@@ -68,10 +70,11 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
      1) When handling a shortcut, we suppress further propagation of the event. This seems reasonable since if a
      shortcut has been invoked, nothing else should happen. (If required in the future, this behavior can be changed
      with an optional parameter. One particular example where event suppression is required is the Google search
-     results page, where otherwise pressing keys results in then  getting typed into the search box. (In addition,
-     we change Mousetrap (mousetrap-modified.js) to bind events in the capturing phase for this to work)
-     2) Currently, specifying a shortcut means, it gets invoked on 'keydown' (while the corresponding 'keypress' an
-     'keyup' events are handled are simply supresed. This aids simplicity and consistency, but if found to be causing
+     results page, where otherwise pressing keys results in corresponding text  getting typed into the search box.
+     (In addition, Mousetrap (mousetrap-modified.js) has been changed to bind events in the capturing phase for this
+     to work)
+     2) Currently, each specified shortcut is bound on the 'keydown' event (while the corresponding 'keypress' and
+     'keyup' events are handled are simply suppresed. This aids simplicity and consistency, but if found to be causing
      issues, can be re-thought.
      3) Binding is done for the capturing phase of the event (by modifying Mousetrap library)
      4) Owing to point 1), modules which have conflicting shortcuts should have their shortcuts bound in order of
