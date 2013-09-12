@@ -94,7 +94,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         };
 
         Mousetrap.bind(shortcuts, function(e, shortcut) {
-            if (suppressPropagationIfHandling(e, shortcut, dependsOnlyOnContext)) {
+            if (suppressPropagationIfHandling(e, shortcut)) {
                 e.__handledByUnitsProj = true;  // is checked within mousetrap-modified.js
                 handler();
             }
@@ -171,7 +171,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
     }
 
     /**
-     * (If the element would have got selected/toggled etc on space being pressed on it,) this function tries to simulate the
+     * (If the element would have got selected/toggled etc on space being pressed on it,) this function tries to
      * simulate that effect (currently simply by clicking it)
      * //TODO: is this good enough? can we handle the <select> element as well
      * @param element
@@ -197,6 +197,9 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
 
      */
     function shouldHandleShortcut(shortcut, targetElement, context, dependsOnlyOnContext) {
+        if (mod_context.hintsEnabled) {
+            return false;
+        }
         if (!dependsOnlyOnContext && !canTreatAsShortcut(shortcut, targetElement)) {
             return false;
         }

@@ -1,5 +1,5 @@
 
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper, mod_keyboardLib, CONSTS) {
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper, mod_keyboardLib, mod_context, CONSTS) {
 
     "use strict";
 
@@ -13,7 +13,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible,
-        $assignedHintsSpans = $();
+        $assignedHintsSpans = $(),
+        hintsEnabled,
+        hintInputStr_upperCase;
 
     // vars related to hint chars 
     var reducedSet = "jfkdhglsurieytnvmbc", // easiest to press keys (roughly in order)
@@ -21,18 +23,15 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         // hint chars: set of letters used for hints. easiest to reach letters should come first
         hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
 
-    // "dummy" text box (based on css styling) used only to get the user's hint input  
-    var $hintTextBox = $('<input type = "text">').
-        addClass(class_addedByUnitsProj).
-        addClass('UnitsProj-dummyHintInput').
-        appendTo(_u.$topLevelContainer);
-
     // The hints container element is used to group the all the hint label spans
-    // under a common element. It (a non-positioned element) is appended directly
-    // to the $topLevelContainer (also a non-positioned element) so that its contents
-    // can be positioned relative to the document, using "absolute" positioning
+    // within a common parent. It is a 'static' positioned element within the
+    // $topLevelContainer (also a 'static' positioned element) so that its contents,
+    // i.e. the hint labels, can be positioned relative to the document, using 
+    // "absolute" positioning. This allows displayed hint labels to move with 
+    // the corresponding elements if the page is scrolled
     var $hintsContainer = $("<div></div>")
         .addClass('UnitsProj-hintsContainer')
+        .addClass(class_addedByUnitsProj)
         .hide()
         .appendTo(_u.$topLevelContainer);
 
@@ -41,21 +40,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         hintSpans_doubleDigit = [];
 
     function setup() {
-
-        // Instead of specifying 'keydown' as part of the on() call below, use addEventListener to have priority over
-        // `onKeydown_Esc` which is bound in mod_CUsMgr. We bind the event on `document` (instead of $hintTextBox) for
-        // the same reason. [This binding gets priority over the bindings of mod_CUsMgr based
-        // on the order in which modules are set up in the main module]
-        mod_domEvents.addEventListener(document, 'keydown', onKeydown_handleEsc, true);
-        mod_domEvents.addEventListener(document, 'keydown', onKeydown_spacePlusKey, true);
-
-        $hintTextBox.on('input', onHintInput);
-        $hintTextBox.on('blur', stopMatchingInput);
-
+        mod_domEvents.addEventListener(document, 'keypress', onKeyPress_forSpacePlusKey, true);
+        mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
     }
 
-    function onHintInput() {
-        var hintInput_upperCase = $hintTextBox[0].value.toUpperCase();
+    function onHintInput(character) {
+        hintInputStr_upperCase += character.toUpperCase();
 
         var elem_exactMatch = null,
             partialMatches = [];
@@ -66,10 +56,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                 elem = $(hintSpan).data('element');
 
             var elemHint_upperCase = hintSpan.innerText;
-            if (elemHint_upperCase.substring(0, hintInput_upperCase.length) === hintInput_upperCase) {
+            if (elemHint_upperCase.substring(0, hintInputStr_upperCase.length) === hintInputStr_upperCase) {
                 hintSpan.classList.add(class_hintVisible);
                 partialMatches.push(elem);
-                if (elemHint_upperCase === hintInput_upperCase) {
+                if (elemHint_upperCase === hintInputStr_upperCase) {
                     elem_exactMatch = elem;
                     break;
                 }
@@ -82,79 +72,85 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         // exact match
         if (elem_exactMatch) {
             elem_exactMatch.focus();
-            stopMatchingInput();
+            removeHints();
         }
         // no match
         else if (!partialMatches.length) {
-            stopMatchingInput();
+            removeHints();
         }
-        // else, for partial match: do nothing
+        // else, for partial match: nothing more to be done for now
     }
 
-    function stopMatchingInput() {
-        // check condition to prevent infinite callbacks for the 'blur' event on $hintTextBox
-        if (document.activeElement === $hintTextBox[0]) {
-            document.body.focus();
-        }
-        $hintTextBox.val('');
+    function removeHints() {
         removeAssignedHints();
+        hintsEnabled = mod_context.hintsEnabled = false;
+    }
+    
+    function showHints() {
+        hintInputStr_upperCase = "";
+        hintsEnabled = mod_context.hintsEnabled = true;
     }
 
-    function onKeydown_handleEsc(e) {
-        var code = e.which;
-        if (code === 27 && e.target === $hintTextBox[0]) {
+    function onKeydown(e) {
+        if (hintsEnabled && e.which === 27) { // 27 - Esc
             mod_contentHelper.suppressEvent(e);
-            stopMatchingInput();
+            removeHints();
+        }
+        else if (hintsEnabled) {
+            mod_contentHelper.suppressEvent(e);
+            onHintInput(String.fromCharCode(e.which || e.keyCode));
         }
     }
 
-    function onKeydown_spacePlusKey (e) {
+    // this is bound to the the 'keypress' event rather than the usual 'keydown'
+    // so that we get the correct charCode value even in those cases where shift
+    // was pressed along with a digit/symbol key (in addition to space)
+    function onKeyPress_forSpacePlusKey(e) {
+        var code = e.which || e.charCode;
 
-        var code = e.which || e.keycode;
-
-        if (mod_keyboardLib.isSpaceDown() &&
-            mod_keyboardLib.allowSpaceAsModifier(e) &&
-            code !== 32 && code !== 16) { // 32 is space, 16 shift
-
+        if (mod_keyboardLib.isSpaceDown() &&  mod_keyboardLib.allowSpaceAsModifier(e)) {
             mod_contentHelper.suppressEvent(e);
+            onSpacePlusKey(code, e);
+        }
+    }
 
-            var $elemsInViewport = getElemsInViewport(),
-                $matchingElems;
+    function onSpacePlusKey(code, e) {
+        var $elemsInViewport = getElemsInViewport(),
+            $matchingElems,
+            char_lowerCase = String.fromCharCode(code).toLowerCase(); // for case insensitive matching
 
-            // space + '.' targets all links without an inner text
-            if (code === 190) { // code for '.'
-                $matchingElems = $elemsInViewport.filter(function() {
-                    return !(getElementText(this).trim());
-                });
+        // space + '.' targets all links without an inner text
+        if (char_lowerCase === '.') {
+            $matchingElems = $elemsInViewport.filter(function() {
+                return !(getElementText(this).trim());
+            });
+        }
+
+        // space + '/' targets all links
+        else if (char_lowerCase === '/') {
+            $matchingElems = $elemsInViewport;
+        }
+
+        // space + <key> targets all links starting with <key>
+        // [More specifically, for increased usability, this targets all links
+        // whose first letter, digit or special symbol is <key>.
+        // E.g: a link with the text "+3.5 AAPL" (without the quotes) will be
+        // matched if <key> is either 'a' (case insensitive), or '+', or '3']
+        // TODO: implement the above
+        else {
+            $matchingElems = $elemsInViewport.filter(function() {
+                var text_lowerCase = getElementText(this).toLowerCase();
+                return text_lowerCase[0] === char_lowerCase;
+            });
+        }
+
+        if ($matchingElems.length) {
+            if ($matchingElems.length === 1) {
+                $matchingElems.focus();
             }
-
-            // space + '/' targets all links
-            else if (code === 191) { // code for '/'
-                $matchingElems = $elemsInViewport;
-            }
-
-            // space + <key> targets all links starting with <key>
-            // [More specifically, for increased usability, this targets all links
-            // whose first character, digit or special symbol is <key>.
-            // E.g: a link with the text "+3% AAP" (without the quotes) will be
-            // matched if <key> is either 'a' (case insensitive), or '+', or '3']
-            // TODO: implement the above
             else {
-                var key = String.fromCharCode(code).toLowerCase();
-                $matchingElems = $elemsInViewport.filter(function() {
-                    var text_lowerCase = getElementText(this).toLowerCase();
-                    return text_lowerCase[0] === key;
-                });
-            }
-
-            if ($matchingElems.length) {
-                if ($matchingElems.length === 1) {
-                    $matchingElems.focus();
-                }
-                else {
-                    assignHints($matchingElems);
-                    $hintTextBox.val('').focus();
-                }
+                assignHints($matchingElems);
+                showHints();
             }
         }
     }
@@ -251,7 +247,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                     (el.placeholder? el.placeholder: "")
                 )
             );
-
     }
 
     function getElemsInViewport() {
@@ -281,5 +276,5 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_keyboardLib, _u.CONSTS);
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_keyboardLib, _u.mod_context, _u.CONSTS);
 

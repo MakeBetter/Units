@@ -21,14 +21,20 @@ _u.mod_context = (function(mod_contentHelper){
         isContextValid: isContextValid,
         setCUSelectedState: setCUSelectedState,
         setCUsCount: setCUsCount,
-        set_selectLinkUI_state: set_selectLinkUI_state
+
+        // The following properties are directly set by various modules
+        // as a way to share globally visible data
+
+        // This is set by mod_selectLink to indicate if hints are currently
+        // visible (and so  input should be used to match hints). When this is
+        // true, mod_keyboardLib doesn't trigger any shortcuts
+        hintsEnabled: false
     };
 
     var pageHasUrlData,
         pageHasCUsSpecifier,
         isCUSelected,
-        numCUs, // number of CUs currently on the page
-        is_selectLinkUI_active;
+        numCUs; // number of CUs currently on the page
 
     // Method inside `supportedContexts` have names corresponding to supported context properties (see isContextValid(),
     // which calls the the corresponding method in `supportedContexts` when evaluating a specific property's status)
@@ -51,9 +57,6 @@ _u.mod_context = (function(mod_contentHelper){
         pageHasCUs: function() {
             return (numCUs > 0);
         },
-        selectLinkUIActive: function() {
-          return is_selectLinkUI_active;
-        }
     };
 
     function setup(settings) {
@@ -97,10 +100,6 @@ _u.mod_context = (function(mod_contentHelper){
 
     function setCUsCount(n) {
         numCUs = n;
-    }
-
-    function set_selectLinkUI_state(state) {
-        is_selectLinkUI_active = state;
     }
 
     return thisModule;
