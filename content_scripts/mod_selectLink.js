@@ -13,7 +13,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible,
-        $assignedHintsSpans = $(),
         hintsEnabled,
         hintInputStr_upperCase;
 
@@ -48,16 +47,16 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         hintInputStr_upperCase += character.toUpperCase();
 
         var elem_exactMatch = null,
-            partialMatches = [];
-
-        var len = $assignedHintsSpans.length;
+            partialMatches = [],
+            $assignedHintSpans = $('.' + class_hintVisible);
+            
+        var len = $assignedHintSpans.length;
         for (var i = 0; i < len; i++) {
-            var hintSpan = $assignedHintsSpans[i],
+            var hintSpan = $assignedHintSpans[i],
                 elem = $(hintSpan).data('element');
 
             var elemHint_upperCase = hintSpan.innerText;
             if (elemHint_upperCase.substring(0, hintInputStr_upperCase.length) === hintInputStr_upperCase) {
-                hintSpan.classList.add(class_hintVisible);
                 partialMatches.push(elem);
                 if (elemHint_upperCase === hintInputStr_upperCase) {
                     elem_exactMatch = elem;
@@ -157,8 +156,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     function removeAssignedHints() {
         $hintsContainer.hide();
-        $assignedHintsSpans.removeClass(class_hintVisible);
-        $assignedHintsSpans = $();
+        $('.' + class_hintVisible).removeClass(class_hintVisible);
     }
 
     function assignHints($matchingElems) {
@@ -169,8 +167,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             generateHintSpansInDom();
         }
 
-        var hintSpansToUse,
-            assignedHintSpans = [];
+        var hintSpansToUse;
 
         hintSpansToUse = $matchingElems.length <= hintSpans_singleDigit.length?
             hintSpans_singleDigit: hintSpans_doubleDigit;
@@ -181,7 +178,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         for (var i = 0; i < len; i++) {
             var el = $matchingElems[i];
             var hintSpan = hintSpansToUse[i];
-            assignedHintSpans[i] = hintSpan;
+            hintSpan.classList.add(class_hintVisible);
 
             var offset = mod_commonHelper.getOffsetPosition(el);
             hintSpan.style.top = offset.top + "px";
@@ -189,8 +186,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             $(hintSpan).data('element', el);
         }
 
-        $assignedHintsSpans = $(assignedHintSpans);
-        $assignedHintsSpans.addClass(class_hintVisible);
         $hintsContainer.show();
     }
 
