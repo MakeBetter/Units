@@ -390,14 +390,23 @@ mod_basicOptions.
                 continue;
             }
 
-            // if this is a keypress event and the meta key and control key
+            // if this is a keypress event and the meta/control/space keys
             // are not pressed that means that we need to only look at the
             // character, otherwise check the modifiers as well
             //
             // chrome will not fire a keypress if meta or control is down
             // safari will fire a keypress if meta or meta+shift is down
             // firefox will fire a keypress if meta or control is down
-            if ((action == 'keypress' && !e.metaKey && !e.ctrlKey) || _modifiersMatch(modifiers, callback.modifiers)) {
+
+            //[Modification for UnitsProj]
+            // "&& !Mousetrap.isSpaceDown" added to the condition below
+            // NOTE to self (from Himanshu): if replacing mousetrap with a library of your own,
+            // we won't need these special cases for 'keypress' etc, if we only enable shortcuts
+            // to be specified as <modifiers> + <key> (using only keydown), which is what we are
+            // doing at the moment (13 Sep 2013), both in code and the UI for specifying shortcuts.
+            if ((action == 'keypress' && !e.metaKey && !e.ctrlKey && !Mousetrap.isSpaceDown) ||
+
+                _modifiersMatch(modifiers, callback.modifiers)) {
 
                 // remove is used so if you change your mind and call bind a
                 // second time with a new function the first one is overwritten
