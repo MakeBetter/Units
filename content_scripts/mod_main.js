@@ -5,7 +5,7 @@
  */
 (function($, mod_domEvents, mod_basicPageUtils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver,
           mod_keyboardLib, mod_selectLink, mod_filterCUs, mod_zenMode, mod_help, mod_quickSearchSelectedText,
-          mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context) {
+          mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_globals) {
     "use strict";
 
     /*-- Public interface --*/
@@ -31,7 +31,7 @@
         // respectively. Generally, modules should be setup in relative order of priority of keyboard shortcuts
         // (this is the order in which they are listed in the array below), while reset() is called in the
         // opposite order
-        modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_context, mod_chromeAltHack,
+        modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_globals, mod_chromeAltHack,
             // modules which define keyboard shortcuts are listed next, in order of priority
             mod_quickSearchSelectedText, mod_help, mod_selectLink, mod_basicPageUtils, mod_filterCUs, mod_zenMode,
             mod_urlSpecificShortcuts, mod_CUsMgr];
@@ -219,7 +219,7 @@
             mod_help.positionHelpUI(data.height);
         }
         else if(data.message === 'doesPageHaveCUsSpecifier') {
-            var pageHasCUsSpecifier = mod_context.isContextValid({pageHasCUsSpecifier: true});
+            var pageHasCUsSpecifier = mod_globals.pageHasCUsSpecifier;
 
             var iframeHelp = document.getElementById("UnitsProj-iframe-help");
             iframeHelp.contentWindow.postMessage({message: 'pageHasCUsSpecifier', value: pageHasCUsSpecifier}, '*');
@@ -248,4 +248,4 @@
 
 })(jQuery, _u.mod_domEvents, _u.mod_basicPageUtils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver,
         _u.mod_keyboardLib, _u.mod_selectLink, _u.mod_filterCUs, _u.mod_zenMode, _u.mod_help, _u.mod_quickSearchSelectedText,
-        _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context);
+        _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_globals);

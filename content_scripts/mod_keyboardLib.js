@@ -4,8 +4,9 @@
 /*
  mod_keyboardLib
 
- This module provides a wrapper around, and extension to, the MouseTrap library for the rest of the module. If the MouseTrap
- library can be replaced with something else, this is the only module that will have to be changed.
+ This module provides a wrapper around, and extension to, the MouseTrap library for the rest of the module.
+ If/when the MouseTrap library is replaced with something else, this is the only module that will have to be
+ changed.
 
  The following extensions are made to the original Mousetrap library:
  1) Add code which enables the use of 'space' key as a modifier (working in conjunction with the mousetrap-modified.js
@@ -19,7 +20,7 @@
  3) Allowing alt+<key> type shortcuts to work well on Chrome+Windows (ref: mod_chromeAltHack)
  */
 
-_u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_domEvents, mod_chromeAltHack) {
+_u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_domEvents, mod_chromeAltHack) {
     "use strict";
 
     /*-- Public interface --*/
@@ -60,7 +61,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
      * @param {Array} shortcuts
      * @param {Function} handler
      * @param {Object|Function}[context] An object specifying the "context" for this shortcut to be applicable (refer:
-     * mod_context.isContextValid()). A function can also be specified -- the shortcut will be handled if the function
+     * isContextValid()). A function can also be specified -- the shortcut will be handled if the function
      * evaluates to true when the shortcut is invoked. If no `context` is specified, the shortcut is deemed valid in
      * any context.
      * @param {boolean} [dependsOnlyOnContext] If this is true, the function `canTreatAsShortcut` is not used to
@@ -189,7 +190,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
      * @param {string} shortcut String representation of keyboard shortcut invoked
      * @param targetElement
      * @param {Object|Function}[context] An object specifying the "context" for this shortcut to be applicable (refer:
-     * mod_context.isContextValid()). A function can also be specified -- the shortcut will be handled if the function
+     * isContextValid()). A function can also be specified -- the shortcut will be handled if the function
      * evaluates to true when the shortcut is invoked. If no `context` is specified, the shortcut is deemed valid in
      * any context.
      * @param {boolean} [dependsOnlyOnContext] If this is true, the function `canTreatAsShortcut` is not used to
@@ -197,18 +198,18 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
 
      */
     function shouldHandleShortcut(shortcut, targetElement, context, dependsOnlyOnContext) {
-        if (mod_context.hintsEnabled) {
+        if (mod_globals.hintsEnabled) {
             return false;
         }
         if (!dependsOnlyOnContext && !canTreatAsShortcut(shortcut, targetElement)) {
             return false;
         }
         if (protectedWebpageShortcuts && protectedWebpageShortcuts.length &&
-            protectedWebpageShortcuts.indexOf(shortcut) >= 0 && mod_context.isContextValid({pageUIHasFocus: true})) {
+            protectedWebpageShortcuts.indexOf(shortcut) >= 0 && isContextValid({pageUIHasFocus: true})) {
             return false;
         }
         if (typeof context === "object") {
-            return mod_context.isContextValid(context);
+            return isContextValid(context);
         }
         else if(typeof context === "function") {
             return context();
@@ -274,7 +275,52 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_context, mod_do
         return false;
     };
 
+    // Method inside `supportedContexts` have names corresponding to supported context properties
+    // supported by isContextValid()
+    var supportedContexts = {
+        CUSelected: function() {
+            return mod_globals.isCUSelected;
+        },
+        pageUIHasFocus: function () {
+            return !mod_contentHelper.isUnitsProjNode(document.activeElement);
+        },
+        unitsProjUIHasFocus: function () {
+            return mod_contentHelper.isUnitsProjNode(document.activeElement);
+        },
+        pageHasUrlData: function() {
+            return mod_globals.pageHasUrlData;
+        },
+        pageHasCUsSpecifier: function() {
+            return mod_globals.pageHasCUsSpecifier;
+        },
+        pageHasCUs: function() {
+            return (mod_globals.numCUs_filtered > 0);
+        },
+    };
+
+    /**
+     * Returns true if all the conditions (specified as key/value pairs in the supplied `context` object)
+     * are valid. Else false.
+     * The list of context conditions is specified in `supportedContexts`
+     * Examples of `context` object:
+     * {CUSelected: true}, {CUSelected: false, pageUIHasFocus: true}, {unitsProjUIHasFocus: true}, etc
+     * (Properties not specified in the `context` object are simply ignored)
+     * @param context
+     * @returns {boolean}
+     */
+    function isContextValid(context) {
+
+        for (var prop in context) {
+            if (context.hasOwnProperty(prop)) {
+                if (context[prop] !== supportedContexts[prop]()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     return thisModule;
 
-})(Mousetrap, _u.mod_contentHelper, _u.mod_context, _u.mod_domEvents, _u.mod_chromeAltHack);
+})(Mousetrap, _u.mod_contentHelper, _u.mod_globals, _u.mod_domEvents, _u.mod_chromeAltHack);
 

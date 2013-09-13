@@ -2,7 +2,7 @@
 
 
 _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib, mod_mutationObserver, mod_filterCUs,
-                          mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_context,
+                          mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_globals,
                           mod_smoothScroll, CONSTS) {
 
     "use strict";
@@ -140,8 +140,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         dehoverCU();
         deselectCU();
         CUs_filtered = CUs_all = [];   // these can point to the same array at this point
-        mod_context.setCUSelectedState(false);
-        mod_context.setCUsCount(0);
+        mod_globals.isCUSelected = false;
+        mod_globals.numCUs_all = mod_globals.numCUs_filtered = 0;
 
         lit_updateCUsEtc = lit_selectCU = lit_CUSelectOrDeselect = 0;
         timeout_updateCUs = false;
@@ -290,7 +290,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         deselectCU(); // before proceeding, deselect currently selected CU, if any
         selectedCUIndex = indexOf$CU;
-        mod_context.setCUSelectedState(true);
+        mod_globals.isCUSelected = true;
         var $overlaySelected = showOverlay($CU, 'selected');
         dehoverCU(); // since the hover overlay is only an aid to select CUs, it can be removed now
 
@@ -356,7 +356,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             }
         }
         selectedCUIndex = -1;
-        mod_context.setCUSelectedState(false);
+        mod_globals.isCUSelected = false;
     }
 
     // returns a jQuery set composed of all focusable DOM elements contained in the
@@ -1164,7 +1164,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, false);
         }
 
-        mod_context.setCUsCount(CUs_filtered.length);   // do this after filtering is applied
+        mod_globals.numCUs_all = CUs_all.length;
+        mod_globals.numCUs_filtered = CUs_filtered.length; // do this after filtering is applied
 
         // if this is the first time CUs were found...
         if (!CUsFoundOnce && CUs_filtered.length) {
@@ -1989,7 +1990,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     return thisModule;
 
 })(jQuery, _u.mod_basicPageUtils, _u.mod_domEvents, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_filterCUs,
-        _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_context,
+        _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_globals,
         _u.mod_smoothScroll, _u.CONSTS);
 
 

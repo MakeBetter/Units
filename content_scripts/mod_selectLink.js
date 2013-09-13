@@ -1,5 +1,5 @@
 
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper, mod_keyboardLib, mod_context, CONSTS) {
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper, mod_keyboardLib, mod_globals, CONSTS) {
 
     "use strict";
 
@@ -82,12 +82,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     function removeHints() {
         removeAssignedHints();
-        hintsEnabled = mod_context.hintsEnabled = false;
+        hintsEnabled = mod_globals.hintsEnabled = false;
     }
     
     function showHints() {
         hintInputStr_upperCase = "";
-        hintsEnabled = mod_context.hintsEnabled = true;
+        hintsEnabled = mod_globals.hintsEnabled = true;
     }
 
     function onKeydown(e) {
@@ -271,5 +271,5 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_keyboardLib, _u.mod_context, _u.CONSTS);
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_keyboardLib, _u.mod_globals, _u.CONSTS);
 
