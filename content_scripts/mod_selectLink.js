@@ -81,13 +81,29 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function removeHints() {
-        removeAssignedHints();
+        $hintsContainer.hide();
+        $('.' + class_hintVisible).removeClass(class_hintVisible);
         hintsEnabled = mod_globals.hintsEnabled = false;
+        removeEventForViewportChange();
     }
     
-    function showHints() {
+    function showHints($matchingElems) {
+        assignHints($matchingElems);
         hintInputStr_upperCase = "";
         hintsEnabled = mod_globals.hintsEnabled = true;
+        setupEventForViewportChange();
+    }
+
+    function setupEventForViewportChange() {
+        $(window).on('resize scroll', onViewportChange);
+    }
+
+    function removeEventForViewportChange() {
+        $(window).off('resize scroll', onViewportChange);
+    }
+
+    function onViewportChange() {
+        removeHints();
     }
 
     function onKeydown(e) {
@@ -153,19 +169,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
                 $matchingElems.focus();
             }
             else {
-                assignHints($matchingElems);
-                showHints();
+                showHints($matchingElems);
             }
         }
     }
 
-    function removeAssignedHints() {
+    function assignHints($matchingElems) {
         $hintsContainer.hide();
         $('.' + class_hintVisible).removeClass(class_hintVisible);
-    }
-
-    function assignHints($matchingElems) {
-        removeAssignedHints();
 
         // generate the hint spans and put them in the DOM if not done yet
         if (!hintSpans_singleDigit.length) {
