@@ -91,13 +91,18 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
     }
 
     function onKeydown(e) {
-        if (hintsEnabled && e.which === 27) { // 27 - Esc
-            mod_contentHelper.suppressEvent(e);
-            removeHints();
-        }
-        else if (hintsEnabled) {
-            mod_contentHelper.suppressEvent(e);
-            onHintInput(String.fromCharCode(e.which || e.keyCode));
+        // Modifiers are not required (or expected) to be pressed, so exclude keydown events having them
+        // In particular, this check fixes #142 (gitHub)
+        if (!(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey || mod_keyboardLib.isSpaceDown())) {
+
+            if (hintsEnabled && e.which === 27) { // 27 - Esc
+                mod_contentHelper.suppressEvent(e);
+                removeHints();
+            }
+            else if (hintsEnabled) {
+                mod_contentHelper.suppressEvent(e);
+                onHintInput(String.fromCharCode(e.which || e.keyCode));
+            }
         }
     }
 
