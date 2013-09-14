@@ -48,9 +48,9 @@ Also, hence the generous use of !important property here.
 /* class for all hint labels */
 .UnitsProj-hintLabel {
   display: none;
-  z-index: $highest-z-index - 3 !important; /* so that the hints don't appear on top of the input textbox(es) */
+  z-index: $highest-z-index - 1 !important;
   opacity: 0.8 !important;
-  position: absolute !important;
+  position: fixed !important;
   font: normal normal normal 9px/9px Verdana $sans-serif-font-family !important;
   color: #d7f0d7 !important;
   background-color: #052805 !important;

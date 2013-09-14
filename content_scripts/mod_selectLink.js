@@ -1,5 +1,5 @@
 
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHelper, mod_keyboardLib, mod_globals, CONSTS) {
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardLib, mod_globals, CONSTS) {
 
     "use strict";
 
@@ -22,12 +22,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
         // hint chars: set of letters used for hints. easiest to reach letters should come first
         hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
 
-    // The hints container element is used to group the all the hint label spans
-    // within a common parent. It is a 'static' positioned element within the
-    // $topLevelContainer (also a 'static' positioned element) so that its contents,
-    // i.e. the hint labels, can be positioned relative to the document, using 
-    // "absolute" positioning. This allows displayed hint labels to move with 
-    // the corresponding elements if the page is scrolled
+    // This is used to group the all the hint label spans within a common parent
     var $hintsContainer = $("<div></div>")
         .addClass('UnitsProj-hintsContainer')
         .addClass(class_addedByUnitsProj)
@@ -196,9 +191,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
             var hintSpan = hintSpansToUse[i];
             hintSpan.classList.add(class_hintVisible);
 
-            var offset = mod_commonHelper.getOffsetPosition(el);
-            hintSpan.style.top = offset.top + "px";
-            hintSpan.style.left = offset.left + Math.min(20, Math.round(el.offsetWidth/2)) + "px";
+            var viewportOffset = el.getBoundingClientRect();
+            hintSpan.style.top = viewportOffset.top + "px";
+            hintSpan.style.left = viewportOffset.left + Math.min(20, Math.round(el.offsetWidth/2)) + "px";
             $(hintSpan).data('element', el);
         }
 
@@ -287,5 +282,5 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_commonHel
 
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_keyboardLib, _u.mod_globals, _u.CONSTS);
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_keyboardLib, _u.mod_globals, _u.CONSTS);
 
