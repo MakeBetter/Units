@@ -52,12 +52,14 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     /**
      * Returns true when single key shortcuts can be invoked when the specified element has focus. Exceptions are
-     * elements which allow typing text on them + the <select> element
+     * 1) elements which allow typing text in them
+     * 2) the <select> element (which allows filtering based on typed input)
+     * 3) embedded elements (since they might have their own shortcuts, like in a game, flash player etc) 
      * @param {HTMLElement} element
      * @returns {boolean}
      */
     function elementAllowsSingleKeyShortcut(element) {
-        if (elementAllowsTyping(element) || element.tagName.toLowerCase() === "select" || isEmbedElement(element)) {
+        if (elementAllowsTyping(element) || element.tagName.toLowerCase() === "select" || isEmbeddedElement(element)) {
             return false;
         }
         return true;
@@ -93,8 +95,9 @@ _u.mod_contentHelper = (function(CONSTS) {
         return false;
     }
 
-    function isEmbedElement(element) {
-        return ["embed", "object", "iframe"].indexOf(element.nodeName.toLowerCase()) > -1;
+    function isEmbeddedElement(element) {
+        var nodeName = element.nodeName.toLowerCase();
+        return nodeName === "embed" || nodeName === "object";
     }
 
     function suppressEvent(e) {
