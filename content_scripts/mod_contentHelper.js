@@ -96,7 +96,7 @@ _u.mod_contentHelper = (function(CONSTS) {
     }
 
     function isEmbeddedElement(element) {
-        var nodeName = element.nodeName.toLowerCase();
+        var nodeName = element.tagName.toLowerCase();
         return nodeName === "embed" || nodeName === "object";
     }
 
