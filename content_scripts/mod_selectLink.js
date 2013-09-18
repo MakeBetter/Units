@@ -14,7 +14,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible,
         hintsEnabled,
-        hintInputStr_upperCase;
+        hintInputStr_upperCase,
+
+        // arrays of spans showing hints (dom elements)
+        hintSpans_singleDigit = [],
+        hintSpans_doubleDigit = [],
+        timeout_removeHints,
+        timeoutPeriod = 4000;
 
     // vars related to hint chars 
     var reducedSet = "jfkdhglsurieytnvmbc", // easiest to press keys (roughly in order)
@@ -29,11 +35,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         .hide()
         .appendTo(_u.$topLevelContainer);
 
-    // arrays of spans showing hints (dom elements)
-    var hintSpans_singleDigit = [],  
-        hintSpans_doubleDigit = [];
+    function reset() {
+        removeHints();
+    }
 
     function setup() {
+        reset();
         mod_domEvents.addEventListener(document, 'keypress', onKeyPress_forSpacePlusKey, true);
         mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
     }
@@ -72,29 +79,38 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         else if (!partialMatches.length) {
             removeHints();
         }
-        // else, for partial match: nothing more to be done for now
+        // partial match
+        else {
+            // reset the timeout
+            clearTimeout(timeout_removeHints);
+            timeout_removeHints = setTimeout(removeHints, timeoutPeriod);
+        }
     }
 
     function removeHints() {
         $hintsContainer.hide();
         $('.' + class_hintVisible).removeClass(class_hintVisible);
         hintsEnabled = mod_globals.hintsEnabled = false;
-        removeEventForViewportChange();
+
+        // event is unbound when hints are removed since there is no need to track the 'scroll' event continuously
+        $(window).off('resize scroll', onViewportChange);
+        clearTimeout(timeout_removeHints);
+
     }
     
     function showHints($matchingElems) {
-        assignHints($matchingElems);
+        // Call removeHints() for cases where showHints() is called consecutively
+        // without removeHints() being called in between (clears existing
+        // timeout + unbinds bound event + generally resets state)
+        removeHints();
+        _assignHints($matchingElems);
+        $hintsContainer.show();
+
         hintInputStr_upperCase = "";
         hintsEnabled = mod_globals.hintsEnabled = true;
-        setupEventForViewportChange();
-    }
 
-    function setupEventForViewportChange() {
         $(window).on('resize scroll', onViewportChange);
-    }
-
-    function removeEventForViewportChange() {
-        $(window).off('resize scroll', onViewportChange);
+        timeout_removeHints = setTimeout(removeHints, timeoutPeriod);
     }
 
     function onViewportChange() {
@@ -169,17 +185,16 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         }
     }
 
-    function assignHints($matchingElems) {
-        $hintsContainer.hide();
-        $('.' + class_hintVisible).removeClass(class_hintVisible);
-
+    // meant to be called from within showHints()
+    function _assignHints($matchingElems) {
         // generate the hint spans and put them in the DOM if not done yet
         if (!hintSpans_singleDigit.length) {
             generateHintSpansInDom();
         }
 
-        var hintSpansToUse;
+        $('.' + class_hintVisible).removeClass(class_hintVisible);
 
+        var hintSpansToUse;
         hintSpansToUse = $matchingElems.length <= hintSpans_singleDigit.length?
             hintSpans_singleDigit: hintSpans_doubleDigit;
 
@@ -196,8 +211,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             hintSpan.style.left = viewportOffset.left + Math.min(20, Math.round(el.offsetWidth/2)) + "px";
             $(hintSpan).data('element', el);
         }
-
-        $hintsContainer.show();
     }
 
     // gets hints based on hintCharsStr
@@ -252,7 +265,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
                 el.value? el.value:
                     (el.placeholder? el.placeholder: "")
                 )
-            );
+            ).trim();
     }
 
     function getElemsInViewport() {
