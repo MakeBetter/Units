@@ -3,6 +3,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
 
     "use strict";
 
+
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         setup: setup
@@ -20,7 +21,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         hintSpans_singleDigit = [],
         hintSpans_doubleDigit = [],
         timeout_removeHints,
-        timeoutPeriod = 4000;
+        timeoutPeriod = 4000,
+
+        // we don't use on mod_keyboardLib.isSpaceDown() because that might be removed soon (ref: #144, #145)
+        isSpaceDownOnNonInputElement;
 
     // vars related to hint chars 
     var reducedSet = "jfkdhglsurieytnvmbc", // easiest to press keys (roughly in order)
@@ -35,14 +39,22 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         .hide()
         .appendTo(_u.$topLevelContainer);
 
+    // "dummy" text box (based on css styling) used
+    var $dummyTextBox = $('<input type = "text">').
+        addClass(class_addedByUnitsProj).
+        addClass('UnitsProj-dummyInput').
+        appendTo(_u.$topLevelContainer);
+
     function reset() {
         removeHints();
     }
 
     function setup() {
         reset();
-        mod_domEvents.addEventListener(document, 'keypress', onKeyPress_forSpacePlusKey, true);
-        mod_domEvents.addEventListener(document, 'keydown', onKeydown, true);
+        mod_domEvents.addEventListener(document, 'keydown', onKeyDown, true);
+        mod_domEvents.addEventListener(document, 'keyup', onKeyUp_space, true);
+
+        $dummyTextBox.on('input', onDummyTextBoxInput );
     }
 
     function onHintInput(character) {
@@ -117,48 +129,71 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         removeHints();
     }
 
-    function onKeydown(e) {
-        // Modifiers are not required (or expected) to be pressed, so exclude keydown events having them
-        // In particular, this check fixes #142 (gitHub)
-        if (!(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey || mod_keyboardLib.isSpaceDown())) {
+    function onKeyDown(e) {
+        var keyCode = e.which || e.keyCode || e.charCode;
+        var target = e.target;
 
-            if (hintsEnabled && e.which === 27) { // 27 - Esc
+        // space keydown on non-input + non-text-editable element
+        if (keyCode === 32 && canIgnoreSpaceOnElement(target)) {
+            isSpaceDownOnNonInputElement = true;
+            mod_contentHelper.suppressEvent(e); // prevents default action of space like scrolling etc
+        }
+        // non-input-type element focused + space already pressed + some other key's keydown
+        else if (isSpaceDownOnNonInputElement && canIgnoreSpaceOnElement(target)) {
+            $dummyTextBox.val('').focus();
+        }
+        else if (hintsEnabled) {
+            // These modifiers are not required (or expected) to be pressed, so exclude keydown events having them
+            if (!(e.ctrlKey || e.altKey || e.metaKey)) {
                 mod_contentHelper.suppressEvent(e);
-                removeHints();
-            }
-            else if (hintsEnabled) {
-                mod_contentHelper.suppressEvent(e);
-                onHintInput(String.fromCharCode(e.which || e.keyCode));
+                if (e.which === 27) { // 27 - Esc
+                    removeHints();
+                }
+                else {
+                    onHintInput(String.fromCharCode(e.which || e.keyCode));
+                }
             }
         }
     }
 
-    // this is bound to the the 'keypress' event rather than the usual 'keydown'
-    // so that we get the correct charCode value even in those cases where shift
-    // was pressed along with a digit/symbol key (in addition to space)
-    function onKeyPress_forSpacePlusKey(e) {
-        var code = e.which || e.charCode;
-
-        if (mod_keyboardLib.isSpaceDown() &&  mod_keyboardLib.allowSpaceAsModifier(e)) {
-            mod_contentHelper.suppressEvent(e);
-            onSpacePlusKey(code, e);
+    function onKeyUp_space(e) {
+        var keyCode = e.which || e.keyCode || e.charCode;
+        if (keyCode === 32) { // space
+            isSpaceDownOnNonInputElement = false;
         }
     }
 
-    function onSpacePlusKey(code, e) {
+    // We deem space key ignorable it the target is not an input type or allows typing.
+    // This allows us to target links using space+<key>
+    // However, this will prevent user from scrolling the page down using the space key.
+    function canIgnoreSpaceOnElement(elem) {
+        return elem.tagName.toLowerCase() !== "input" && !mod_contentHelper.elementAllowsTyping(elem);
+    }
+
+    // We read input off of this dummy element to determine the actual character
+    // entered by the user rather than the key even while bind to the 'keydown'
+    // event for input rather than 'keypress' (refer: #144)
+    function onDummyTextBoxInput () {
+        var input = $dummyTextBox.val();
+        input = input[input.length - 1]; // consider only the last char typed in case there is more than one
+        var char_lowerCase = input.trim().toLowerCase(); // for case insensitive matching
+        char_lowerCase && onHintCharInput(char_lowerCase);
+        $dummyTextBox.blur();   
+    }
+
+    function onHintCharInput(hintChar_lowerCase) {
         var $elemsInViewport = getElemsInViewport(),
-            $matchingElems,
-            char_lowerCase = String.fromCharCode(code).toLowerCase(); // for case insensitive matching
+            $matchingElems;
 
         // space + '.' targets all links without an inner text
-        if (char_lowerCase === '.') {
+        if (hintChar_lowerCase === '.') {
             $matchingElems = $elemsInViewport.filter(function() {
                 return !(getElementText(this).trim());
             });
         }
 
         // space + '/' targets all links
-        else if (char_lowerCase === '/') {
+        else if (hintChar_lowerCase === '/') {
             $matchingElems = $elemsInViewport;
         }
 
@@ -171,7 +206,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         else {
             $matchingElems = $elemsInViewport.filter(function() {
                 var text_lowerCase = getElementText(this).toLowerCase();
-                return text_lowerCase[0] === char_lowerCase;
+                return text_lowerCase[0] === hintChar_lowerCase;
             });
         }
 

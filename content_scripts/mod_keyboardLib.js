@@ -151,7 +151,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
 
                 // else...
                 Mousetrap.spaceUsedAsModifier = false; // reset
-                mod_contentHelper.suppressEvent(e);
+//                mod_contentHelper.suppressEvent(e); // commented out for now. Refer #144, #145
 
             }
             else { // 'keyup'
