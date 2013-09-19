@@ -1157,8 +1157,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // as it comes back when the user moves the mouse to over to a new element)
         dehoverCU();
 
+        var oldCount_CUs_all = CUs_all.length;
         CUs_filtered = CUs_all = getValidCUs();
         thisModule.trigger("CUs-all-change");
+        if (CUs_all.length !== oldCount_CUs_all) {
+            thisModule.trigger("CUs-all-count-change");
+        }
 
         if (mod_filterCUs.isActive()) {
             CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, false);
