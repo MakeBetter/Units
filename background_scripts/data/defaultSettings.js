@@ -114,8 +114,8 @@ var defaultSettings = {
             importanceHigh: true
         },
         focusFirstTextInput: {
-            descr: "Focus first text box",
-            kbdShortcuts: ['f i', 'alt+i'],
+            descr: "Focus first text (input) box",
+            kbdShortcuts: ['n i', 'alt+i'],
             importanceHigh: true
         },
         focusNextTextInput: {

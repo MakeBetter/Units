@@ -21,13 +21,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         hintSpans_singleDigit = [],
         hintSpans_doubleDigit = [],
         timeout_removeHints,
+        timeout_blurDummyTextbox,
         timeoutPeriod = 4000,
 
         // we don't use on mod_keyboardLib.isSpaceDown() because that might be removed soon (ref: #144, #145)
         isSpaceDownOnNonInputElement;
 
     // vars related to hint chars 
-    var reducedSet = "jfkdhglsurieytnvmbc", // easiest to press keys (roughly in order)
+    var reducedSet = "jkdhglsurieytnvmbc",// easiest to press keys (roughly in order), exluding 'f'
         remainingSet = "axzwoqp",
         // hint chars: set of letters used for hints. easiest to reach letters should come first
         hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
@@ -39,7 +40,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         .hide()
         .appendTo(_u.$topLevelContainer);
 
-    // "dummy" text box (based on css styling) used
+    // "dummy" text box (based on css styling) used to get "link-char" input (input on this triggers onLinkCharInput)
     var $dummyTextBox = $('<input type = "text">').
         addClass(class_addedByUnitsProj).
         addClass('UnitsProj-dummyInput').
@@ -133,14 +134,28 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         var keyCode = e.which || e.keyCode || e.charCode;
         var target = e.target;
 
-        // space keydown on non-input + non-text-editable element
+        // space keydown on non-input-type element
         if (keyCode === 32 && canIgnoreSpaceOnElement(target)) {
             isSpaceDownOnNonInputElement = true;
             mod_contentHelper.suppressEvent(e); // prevents default action of space like scrolling etc
         }
         // non-input-type element focused + space already pressed + some other key's keydown
         else if (isSpaceDownOnNonInputElement && canIgnoreSpaceOnElement(target)) {
-            $dummyTextBox.val('').focus();
+            // since the event is not being suppressed, focusing the dummy textbox lets it
+            // receive the character corresponding to the key being pressed down currently
+            focusDummyTextBoxAndRemoveHints();
+        }
+        // 'f' pressed. focus dummy text box so the that the next next char entered triggers onLinkCharInput   
+        else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
+            !(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) &&
+            (document.activeElement === $dummyTextBox[0] || mod_contentHelper.elementAllowsSingleKeyShortcut(target))) {
+
+            mod_contentHelper.suppressEvent(e);
+            focusDummyTextBoxAndRemoveHints();
+            clearTimeout(timeout_blurDummyTextbox);
+            timeout_blurDummyTextbox = setTimeout(function() {
+                $dummyTextBox.val('').blur();
+            }, timeoutPeriod);
         }
         else if (hintsEnabled) {
             // These modifiers are not required (or expected) to be pressed, so exclude keydown events having them
@@ -163,6 +178,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         }
     }
 
+    function focusDummyTextBoxAndRemoveHints() {
+        $dummyTextBox.val('').focus();
+        removeHints();
+    }
+
     // We deem space key ignorable it the target is not an input type or allows typing.
     // This allows us to target links using space+<key>
     // However, this will prevent user from scrolling the page down using the space key.
@@ -178,7 +198,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         input = input[input.length - 1]; // consider only the last char typed in case there is more than one
         var char_lowerCase = input.trim().toLowerCase(); // for case insensitive matching
         char_lowerCase && onLinkCharInput(char_lowerCase);
-        $dummyTextBox.blur();   
+        $dummyTextBox.val('').blur();   
     }
 
     // Handler for when a "link-char" is input by the user
