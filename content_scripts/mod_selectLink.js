@@ -177,23 +177,27 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         var input = $dummyTextBox.val();
         input = input[input.length - 1]; // consider only the last char typed in case there is more than one
         var char_lowerCase = input.trim().toLowerCase(); // for case insensitive matching
-        char_lowerCase && onHintCharInput(char_lowerCase);
+        char_lowerCase && onLinkCharInput(char_lowerCase);
         $dummyTextBox.blur();   
     }
 
-    function onHintCharInput(hintChar_lowerCase) {
+    // Handler for when a "link-char" is input by the user
+    // A link-char refers to a character typed to match
+    // links starting with it, etc.
+    function onLinkCharInput(linkChar_lowerCase) {
+        removeHints();  // first remove any existing hints
         var $elemsInViewport = getElemsInViewport(),
             $matchingElems;
 
         // space + '.' targets all links without an inner text
-        if (hintChar_lowerCase === '.') {
+        if (linkChar_lowerCase === '.') {
             $matchingElems = $elemsInViewport.filter(function() {
                 return !(getElementText(this).trim());
             });
         }
 
         // space + '/' targets all links
-        else if (hintChar_lowerCase === '/') {
+        else if (linkChar_lowerCase === '/') {
             $matchingElems = $elemsInViewport;
         }
 
@@ -206,7 +210,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         else {
             $matchingElems = $elemsInViewport.filter(function() {
                 var text_lowerCase = getElementText(this).toLowerCase();
-                return text_lowerCase[0] === hintChar_lowerCase;
+                return text_lowerCase[0] === linkChar_lowerCase;
             });
         }
 
