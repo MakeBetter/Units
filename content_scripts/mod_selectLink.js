@@ -134,16 +134,28 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         var keyCode = e.which || e.keyCode || e.charCode;
         var target = e.target;
 
-        // space keydown on non-input-type element
+        // space keydown on non-input type element
         if (keyCode === 32 && canIgnoreSpaceOnElement(target)) {
             isSpaceDownOnNonInputElement = true;
             mod_contentHelper.suppressEvent(e); // prevents default action of space like scrolling etc
         }
-        // non-input-type element focused + space already pressed + some other key's keydown
+        // space (already pressed) + some other key's keydown (+ non-input type element focused)
         else if (isSpaceDownOnNonInputElement && canIgnoreSpaceOnElement(target)) {
-            // since the event is not being suppressed, focusing the dummy textbox lets it
-            // receive the character corresponding to the key being pressed down currently
+            // Focus the dummy text box. And stop the event from propagating, but don't
+            // prevent it's default action, so that it enters text into the text box.
+            // This lets us give focus to the dummy text box just-in-time (i.e. when the
+            // <char> is pressed after pressing space, and not at the keydown of space
+            // itself. This is nicer for a couple of reasons:
+            // 1) it doesn't take away focus from the active element till as late as
+            // possible, and if the user decides to not press anything after pressing
+            // space, the focus will remain where it was.
+            // 2) this will be make it easier to implement in the future a feature where
+            // if the user presses space without pressing anything else the document is
+            // scrolled down by a page (like the default browser behavior which gets broken
+            // due to this feature)
             focusDummyTextBoxAndRemoveHints();
+            e.stopImmediatePropagation();
+
         }
         // 'f' pressed. focus dummy text box so the that the next next char entered triggers onLinkCharInput   
         else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
