@@ -2,7 +2,7 @@
  * This module implements the basic utility features this extension provides by to a page, like scrolling, 
  * going back/forward, etc
  */
-_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll, CONSTS) {
+_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll, mod_mutationObserver) {
     "use strict";
 
     /*-- Public interface --*/
@@ -53,10 +53,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
         miscSettings = settings.miscSettings;
         if (miscSettings.enhanceActiveElementVisibility) {
-            mod_domEvents.addEventListener(document, 'focus', function() {
-                setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
-                // applied its default style for the focused element
-            }, true);
+            mod_domEvents.addEventListener(document, 'focus', onFocus, true);
             mod_domEvents.addEventListener(document, 'blur', onBlur, true);
         }
 
@@ -65,6 +62,11 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
     function onBlur(e) {
         removeActiveElementStyle(e.target);
+    }
+
+    function onFocus() {
+        setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
+        // applied its default style for the focused element
     }
     
     function setupShortcuts(pageNavigationShortcuts, elementNavigationShortcuts, CUsShortcuts) {
@@ -282,13 +284,20 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         }
     }
 
+    // see _styleActiveElement
+    function styleActiveElement(el) {
+        var disabledHere = mod_mutationObserver.disable();
+        _styleActiveElement(el);
+        disabledHere && mod_mutationObserver.enable();
+    }
+
     /**
      This function is used apply our custom "active element" style of an element. If it is being used to style
      * the active, no argument needs to be passed. But in other cases (like when called from the mod_selectLink.js),
      * specify the element you want to apply the styling to.
      * @param [el]
      */
-    function styleActiveElement(el) {
+    function _styleActiveElement(el) {
         el = el || document.activeElement;
         var $el = $(el);
 
@@ -342,13 +351,15 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
     }
 
     function removeActiveElementStyle(element) {
+        var disabledHere = mod_mutationObserver.disable();
         var el = element || document.activeElement;
         $(el)
             .removeClass(class_focusedElement)
             .removeClass(class_focusedImage)
             .removeClass(class_focusedLinkOrButton)
             .removeClass(class_inlineBlock);
+        disabledHere && mod_mutationObserver.enable();
     }
 
     return thisModule;
-})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll, _u.CONSTS);
+})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll, _u.mod_mutationObserver);
