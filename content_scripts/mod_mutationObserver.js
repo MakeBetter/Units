@@ -68,7 +68,10 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     var $selectedCU;
     var $CUsAncestors;
 
-    // enable observing of DOM mutations
+    // Enable observing of DOM mutations
+    // NOTE: a function which wants to disable the mutation observer temporarily
+    // before enabling it again, should make the call to enable() only if true was
+    // returned from calling disable() (for example see how it's done in mod_CUsMgr.js)
     function enable() {
         isEnabled = true;
         clearTimeout(timemout_reenable);
@@ -83,9 +86,10 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     }
 
     /**
-     * disable observing of DOM mutations. Returns 'true' if mod_mutationObserver was disabled due to this call, 'false'
-     * if it was already dsiabled.
-     * @param {boolean} [allowLongDisable] Optional. If this is true, we don't automatically re-enable after a specified period
+     * Disable observing of DOM mutations. Returns 'true' if mod_mutationObserver was disabled due
+     * to this call, 'false' if it was already disabled.
+     * @param {boolean} [allowLongDisable] Optional. If this is true, we don't automatically re-enable
+     * after a specified period
      */
     function disable(allowLongDisable) {
         if (!isEnabled) {
