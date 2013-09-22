@@ -40,7 +40,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         .hide()
         .appendTo(_u.$topLevelContainer);
 
-    // "dummy" text box (based on css styling) used to get "link-char" input (input on this triggers onLinkCharInput)
+    // "dummy" text box (based on css styling) used to get "match-char" input (input on this triggers onMatchCharInput)
     var $dummyTextBox = $('<input type = "text">').
         addClass(class_addedByUnitsProj).
         addClass('UnitsProj-dummyInput').
@@ -157,7 +157,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             e.stopImmediatePropagation();
 
         }
-        // 'f' pressed. focus dummy text box so the that the next next char entered triggers onLinkCharInput   
+        // 'f' pressed. focus dummy text box so the that the next next char entered triggers onMatchCharInput   
         else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
             !(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) &&
             (document.activeElement === $dummyTextBox[0] || mod_contentHelper.elementAllowsSingleKeyShortcut(target))) {
@@ -209,40 +209,105 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         var input = $dummyTextBox.val();
         input = input[input.length - 1]; // consider only the last char typed in case there is more than one
         var char_lowerCase = input.trim().toLowerCase(); // for case insensitive matching
-        char_lowerCase && onLinkCharInput(char_lowerCase);
+        char_lowerCase && onMatchCharInput(char_lowerCase);
         $dummyTextBox.val('').blur();   
     }
 
-    // Handler for when a "link-char" is input by the user
-    // A link-char refers to a character typed to match
+    // This map allows us to determine the char that would be typed had
+    // shift been pressed along with a key. This only works for the
+    // standard US keyboard, but since it's required only for an optional
+    // feature, it's ok.
+    var stdUSKbdShiftMap = {
+        '`': '~',
+        '1': '!',
+        '2': '@',
+        '3': '#',
+        '4': '$',
+        '5': '%',
+        '6': '^',
+        '7': '&',
+        '8': '*',
+        '9': '(',
+        '0': ')',
+        '-': '_',
+        '=': '+',
+        '[': '{',
+        ']': '}',
+        '\\': '|',
+        ';': ':',
+        '\'': '"',
+        ',': '<',
+        '.': '.',
+        '/': '?'
+    };
+
+    // Handler for when a "match-char" is input by the user
+    // A match-char refers to a character typed to match
     // links starting with it, etc.
-    function onLinkCharInput(linkChar_lowerCase) {
+    function onMatchCharInput(matchChar_lowerCase) {
         removeHints();  // first remove any existing hints
         var $elemsInViewport = getElemsInViewport(),
             $matchingElems;
 
         // space + '.' targets all links without an inner text
-        if (linkChar_lowerCase === '.') {
+        if (matchChar_lowerCase === '.') {
             $matchingElems = $elemsInViewport.filter(function() {
                 return !(getElementText(this).trim());
             });
         }
 
         // space + '/' targets all links
-        else if (linkChar_lowerCase === '/') {
+        else if (matchChar_lowerCase === '/') {
             $matchingElems = $elemsInViewport;
         }
 
-        // space + <key> targets all links starting with <key>
-        // [More specifically, for increased usability, this targets all links
-        // whose first letter, digit or special symbol is <key>.
-        // E.g: a link with the text "+3.5 AAPL" (without the quotes) will be
-        // matched if <key> is either 'a' (case insensitive), or '+', or '3']
-        // TODO: implement the above
+        // space + <char> targets all links starting with <char>
+        // Actually, for increased usability, this targets all links
+        // whose first letter, digit or special symbol is <char>
+        // E.g: a link with the text "-3 AAPL" (without the quotes) will be
+        // matched if <char> is either 'a' (case insensitive), or '-', or '3']
+        // Additionally, if the character corresponds to a key pressed without
+        // shift, we consider the char that would be typed if shift had been
+        // pressed as well (based on `stdUSKbdShiftMap`)
         else {
             $matchingElems = $elemsInViewport.filter(function() {
-                var text_lowerCase = getElementText(this).toLowerCase();
-                return text_lowerCase[0] === linkChar_lowerCase;
+                var text_lowerCase = getElementText(this).toLowerCase(),
+                linkChars = [];
+
+                /* TODO: need to support unicode letters, digits, symbols. JS regex
+                   does not have unicode support built in. Useful resources at
+                   http://stackoverflow.com/questions/280712/javascript-unicode
+                   Close #147 when this is done
+                 */
+                var letter = text_lowerCase.match(/[a-z]/),
+                    digit = text_lowerCase.match(/\d/),
+                    symbol = text_lowerCase.match(/[^\da-z ]/); // not digit, a-z, or space
+
+                letter && linkChars.push(letter[0]); // if there is a match, String.match returns an array
+                digit && linkChars.push(digit[0]);
+                symbol && linkChars.push(symbol[0]);
+
+                // especially since we don't support unicode yet, it's useful to ensure
+                // that the first character of the (trimmed) text is always included
+                // in linkChars. In any case, there is no harm even if it gets included
+                // twice
+                linkChars.push(text_lowerCase[0]);
+
+                var matchChars = [matchChar_lowerCase],
+                    shiftUpChar = stdUSKbdShiftMap[matchChar_lowerCase];
+                
+                shiftUpChar && matchChars.push(shiftUpChar);
+
+                for (var i = 0; i < linkChars.length; i++) {
+                    var char1 = linkChars[i];
+                    for (var j = 0; j < matchChars.length; j++) {
+                        var char2 = matchChars[j];
+                        if (char1 === char2) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             });
         }
 
