@@ -259,18 +259,18 @@ style more specific by using id's of the elements. Fix for #9.
 
 /*********** Zen mode *************/
 
-.UnitsProj-zen-mode-hidden {
-  visibility: hidden !important;
-
-  // Since visibility:hidden does not seem to work for iframes and objects, we set the opacity to 0.
-  iframe:not(.UnitsProj-zen-mode-visible iframe), object:not(.UnitsProj-zen-mode-visible object), embed:not(.UnitsProj-zen-mode-visible embed){
-    opacity: 0 !important;
+.UnitsProj-zen-mode-active {
+  .UnitsProj-zen-mode-hidden {
+    display: none !important;
+    opacity: 0 !important; /* Important to apply opacity: 0 as a backup for elements on which display:none does not work.*/
   }
 }
 
-.UnitsProj-zen-mode-visible {
-  visibility: visible !important;
+.UnitsProj-zen-mode-excluded {
+  display: none !important;
+  opacity: 0 !important;
 }
+
 
 #UnitsProj-zen-mode-indicator {
   position: fixed !important;

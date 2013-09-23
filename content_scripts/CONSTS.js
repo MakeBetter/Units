@@ -15,8 +15,10 @@ _u.CONSTS = (function(mod_commonHelper){
         class_CUSelectedOverlay : "CU-overlay-selected",    // class applied to overlay on a selected CU
         class_CUHoveredOverlay : "CU-overlay-hovered",      // class applied to overlay on a hovered CU
 
-        class_zenModeVisible: "UnitsProj-zen-mode-visible", // class added to all elements hidden in the 'zen mode'
         class_zenModeHidden: "UnitsProj-zen-mode-hidden", // class added to all elements made visible in the zen mode
+        class_zenModeExcluded: "UnitsProj-zen-mode-excluded", // class added to all elements explicitly excluded in the zen mode
+        class_zenModeVisible: "UnitsProj-zen-mode-visible", // class added to all elements hidden in the 'zen mode'
+        class_zenModeActive: "UnitsProj-zen-mode-active", // class added to the body when zen mode is active
 
         // A selector for all elements that can receive the keyboard focus. Based on http://stackoverflow.com/a/7668761,
         // With the addition that a :visible has been added in each selector, instead of using a .filter(':visible')

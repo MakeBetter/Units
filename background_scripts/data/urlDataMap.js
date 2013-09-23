@@ -197,22 +197,15 @@ defaultSettings.urlDataMap = {
                 }
             },
 
-           /*  This property is used to indicate the 'main content' on the page. It is currently being used to enable zen
-            mode.
+           /* Specifies the main content on a page. Currently being used for zen mode.
 
-            The 'selector' property specifies the main elements. 'exclude' property is then used to remove elements from
-            the included elements. 
-
-            NOTE:
-            1) If the 'selector' property is not specified, then 'exclude' is applied to the entire page.
-
-            2) To  specify only the 'include' elements, the shorthand notation page_mainContent: "#article-container"
-            can be used.
+            NOTE: The shorthand notation page_mainContent: "#article-container" can be used to directly specify the
+            "selector" property.
             */
 
             page_mainContent: {
-                selector: "#article-container",
-                exclude: ".advert"
+                selector: "#article-container", // selector the main content
+                exclude: ".advert" // explicitly specified
             }
         },
 
@@ -238,7 +231,10 @@ defaultSettings.urlDataMap = {
     "indiatimes.com": [
         {
             urlPatterns: ["timesofindia.indiatimes.com/*"],
-            page_mainContent: "left_bdr  h1, .left_bdr #storydiv"
+            page_mainContent: {
+                selector: ".left_bdr",
+                exclude: "#adhomepage"
+            }
         }
     ],
 
@@ -794,7 +790,10 @@ defaultSettings.urlDataMap = {
     "washingtonpost.com": [
         {
             urlPatterns: ["www.washingtonpost.com/**"],
-            page_mainContent: "#content[role=main], #article-leaf-page>.main-content"
+            page_mainContent: {
+                selector: "#content[role=main], #article-leaf-page>.main-content",
+                exclude: "#header-v3"
+            }
         }
     ],
 

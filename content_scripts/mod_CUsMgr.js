@@ -1137,8 +1137,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function updateCUsAndRelatedState() {
         var disabledByMe = mod_mutationObserver.disable();
+
+        // remove zen mode class before calculating CUs because zen mode might hide
+        // elements that would be CUs (this can especially happen just after the page loads)
+        mod_globals.zenModeOn && $body.removeClass(CONSTS.class_zenModeActive);
         _updateCUsAndRelatedState();
         onUpdatingCUs();
+        mod_globals.zenModeOn && $body.addClass(CONSTS.class_zenModeActive);
+        mod_globals.zenModeOn && updateCUOverlays();
+
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -1157,12 +1164,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // as it comes back when the user moves the mouse to over to a new element)
         dehoverCU();
 
-        var oldCount_CUs_all = CUs_all.length;
         CUs_filtered = CUs_all = getValidCUs();
         thisModule.trigger("CUs-all-change");
-        if (CUs_all.length !== oldCount_CUs_all) {
-            thisModule.trigger("CUs-all-count-change");
-        }
 
         if (mod_filterCUs.isActive()) {
             CUs_filtered = mod_filterCUs.applyFiltering(CUs_all, false);
@@ -1216,13 +1219,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function getValidCUs() {
         var CUsArr = _getAllCUs();
 
-        var class_zenModeHidden = CONSTS.class_zenModeHidden,
-            bodyInvisibleDueToZenMode = body.classList.contains(class_zenModeHidden);
-        // Zen mode sets visibility: hidden to the body using class_zenModeHidden. This interferes with processing of CUs
-        // (since we disregard invisible CUs). So, remove the class before processing CUs and then add it back afterward.
-        bodyInvisibleDueToZenMode && body.classList.remove(class_zenModeHidden);
         processCUs(CUsArr);
-        bodyInvisibleDueToZenMode && body.classList.add(class_zenModeHidden);
 
         return CUsArr;
     }
