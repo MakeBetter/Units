@@ -715,6 +715,18 @@ defaultSettings.urlDataMap = {
     "askubuntu.com": "stackexchange.com",
     "mathoverflow.net" : "stackexchange.com",
 
+    "techcrunch.com": {
+        urlPatterns: ["techcrunch.com"],
+        CUs_specifier: {
+            selector: ".top-featured-posts, .post",
+        },
+        CUs_style: {
+            overlayPadding: "0 10px"
+        },
+        CUs_SUs: {
+            std_mainEl: "h2.headline>a"
+        }
+    },
 
     "thehindu.com": [
         {
