@@ -1847,10 +1847,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         bindTabKey();
 
         // To update CUs shortly after a 'click' (activation) event, to handle any possible dom changes etc.
-        // NOTE: The 'click' event is triggered whenever in response to invoking 'enter' or 'space' on a
+        // This includes cases where we programmatically click a link (or action unit).
+        // NOTE: Additionally, the 'click' event is triggered in response to invoking 'enter' or 'space' on a
         // an "activatable" element as well. (The event 'DOMActivate' which was used for this purpose
         // is now deprecated) [http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-activation]
-        mod_domEvents.addEventListener(document, 'click', function () {setTimeout(updateCUsAndRelatedState, 200);}, true);
+        mod_domEvents.addEventListener(document, 'click', function () {setTimeout(updateCUsAndRelatedState, 300);}, true);
         
         mod_domEvents.addEventListener(document, 'mousedown', onMouseDown, true);
         mod_domEvents.addEventListener(document, 'mouseup', onMouseUp, true);
