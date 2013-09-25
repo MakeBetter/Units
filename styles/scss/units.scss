@@ -288,6 +288,6 @@ style more specific by using id's of the elements. Fix for #9.
   opacity: 0.7;
 }
 
-.UnitsProj-zen-mode-visible #UnitsProj-zen-mode-indicator {
+.UnitsProj-zen-mode-active #UnitsProj-zen-mode-indicator {
   background-color: lighten(#e6fad8,2) !important;
 }

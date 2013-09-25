@@ -14,14 +14,14 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     });
 
     var _isStarted, // true when zen mode is active/ started on a page
-        _isStoppedByUser = false, // true if mode is explicitly stopped by user
-        _isSupportedOnCurrentPage = false ,// Is evaluated by checking the currently present DOM elements on page. Value is
+        _isStoppedByUser, // true if mode is explicitly stopped by user
+        _isSupportedOnCurrentPage,// Is evaluated by checking the currently present DOM elements on page. Value is
         // updated on DOM change.
 
         class_visible = CONSTS.class_zenModeVisible,
         class_hidden = CONSTS.class_zenModeHidden,
-        class_excluded = CONSTS.class_zenModeExcluded,
-        class_zenModeActive = CONSTS.class_zenModeActive,
+        class_excluded = CONSTS.class_zenModeExcluded, // class for explicitly excluded elements inside whitelisted elements
+        class_zenModeActive = CONSTS.class_zenModeActive, // class applied to body to indicate that zen mode is started
         class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
 
         expandedUrlData,
@@ -29,22 +29,20 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         zenModeAutoOn,
         mainContentSelector,
         mainContentSelector_exclude,
-        $visibles,
-        $style_paddingTop,
+        $visibles, // jquery object containing list of elements that are made visible in zen mode
+        $style_paddingTop, // style inserted into the page during zen mode to give a small padding-top in the body
 
         $document,
         $body;
 
-    var $zenModeIndicator,
+    var $zenModeIndicator,// UI that indicates whether zen mode is available on a page, and if it is started
         id_zenModeIndicator = 'UnitsProj-zen-mode-indicator',
-        $topLevelContainer = _u.$topLevelContainer;
-
-
-    var timeout_updateZenMode = false;
+        $topLevelContainer = _u.$topLevelContainer,
+        timeout_updateZenMode;
 
     /*-- Module implementation --*/
     function reset() {
-        stop();
+        stop(); // Resets some global variables and removes any zen mode classes applied to page elements
         $zenModeIndicator && $zenModeIndicator.remove();
         thisModule.stopListening();
 
@@ -67,11 +65,11 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
 
         if (!(CUs_specifier || mainContentSpecifier)) {
-            return;     // don't setup this module if no elements are specified to be shown in this mode.
+            return;     // don't setup this module if no zen mode aware elements are specified.
         }
 
         // Cached global variables
-        $body = $("body");
+        $body = $('body');
         $document = $(document);
         zenModeAutoOn = settings.miscSettings && settings.miscSettings.zenModeAutoOn;
 
@@ -96,7 +94,8 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     }
 
     /**
-     * Set up UI for indicating that zen mode is supported on a particular page.
+     * Set up UI for indicating that zen mode is supported on a particular page. This UI also acts a button for toggling
+     * zen mode.
      */
     function setupIndicatorUI() {
 
@@ -108,6 +107,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             .appendTo($topLevelContainer)
             .hide();
 
+        // Handler for toggling zen mode on click
         $zenModeIndicator.click(toggle);
     }
 
@@ -131,11 +131,29 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         _isStarted = mod_globals.zenModeOn = false;
         _isStoppedByUser = isStoppedByUser;
 
-        $body && $body.removeClass(class_zenModeActive);
-        $("." + class_visible).removeClass(class_visible);
-        $("." + class_hidden).removeClass(class_hidden);
-        $("." + class_excluded).removeClass(class_excluded);
-        $style_paddingTop && $style_paddingTop.remove();
+        // This check exists because stop() gets called by reset() at setup when $body is not initialized yet.
+        if ($body) {
+            var disabledByMe = mod_mutationObserver.disable();
+
+            var savedScrollPos = document.body.scrollTop; // We lose the scroll position since we hide the body
+
+            $body.hide(); // Hide the body before making a set of CSS changes together. It's much more efficient.
+
+            // Make required CSS changes to stop zen mode.
+            $body.removeClass(class_zenModeActive);
+            $style_paddingTop && $style_paddingTop.remove();
+
+            // NOTE: The following classes can be removed asynchronously if required for optimization (say with a timeout of 0).
+            // Removing class_zenModeActive from body is enough to stop the zen mode visually (as perceived by the user).
+            $("." + class_visible).removeClass(class_visible);
+            $("." + class_hidden).removeClass(class_hidden);
+            $("." + class_excluded).removeClass(class_excluded);
+
+            $body.show();
+            document.body.scrollTop = savedScrollPos;
+
+            disabledByMe && mod_mutationObserver.enable();
+        }
     }
 
     // public function
@@ -182,8 +200,12 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
     }
 
     function onDomMutations(mutations) {
-        var hasNodesAdded = function (element) {
-            return element.addedNodes.length;
+        var groupingPeriod = _isStarted ? 500 : 2500; // Mutations grouping period varies depending on whether zen mode
+        // is started or not.
+
+        // If no new nodes were added to the page in these mutations, do nothing and return.
+        var hasNodesAdded = function (mutation) {
+            return mutation.addedNodes.length;
         };
         var filteredMutations = mutations.filter(hasNodesAdded);
 
@@ -191,9 +213,9 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             return;
         }
 
-//        compare explicitly with false, which is how we reset it
+        // compare explicitly with false, which is how we reset it
         if (timeout_updateZenMode === false) {
-            timeout_updateZenMode = setTimeout(_onDomMutations, 500);
+            timeout_updateZenMode = setTimeout(_onDomMutations, groupingPeriod);
         }
     }
 
@@ -202,6 +224,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             clearTimeout(timeout_updateZenMode);
             timeout_updateZenMode = false;    // reset
         }
+
         onDomMutations_updateZenModeStatus();
 
         if (_isStarted) {
@@ -225,6 +248,12 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
      * these elements.
      * 2) For all the siblings of all $visiblesAndAncestors, hide the sibling by applying class_hidden if they do not
      * have class_hidden set. Optimize this process.
+     *
+     * NOTE: TODO: Need to look into optimizing this method by selectively applying zen mode only on elements that were added
+     * in the page. At the moment, we update the entire page for zen mode every time there is a mutation. We respond
+     * to only those mutations where an element was added to the page, and these mutations are grouped by a certain time
+     * interval (500 ms at the moment).
+     *
      * @private
      */
     function _applyZenMode() {
@@ -245,7 +274,6 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
         $visiblesAndAncestors = $visibles.parents().andSelf();
         $visiblesAndAncestors.removeClass(class_hidden).addClass(class_visible);
-
 
         $.each($visiblesAndAncestors, function(index, parent) {
             var $parent = $(parent);
@@ -272,6 +300,10 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
     }
 
+    /**
+     * Gives a small padding (for better readability) at the top of the page in zen mode.
+     * Checks the offset top of the first element from the body and applies a padding-top to body appropriately.
+     */
     function applyPaddingTopIfRequired() {
         var firstVisibleElement = $visibles[0], // assuming that the first element in document order is visually the
         // top-most element. For most pages, the assumption should hold.
