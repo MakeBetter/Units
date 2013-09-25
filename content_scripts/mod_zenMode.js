@@ -309,22 +309,23 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         // top-most element. For most pages, the assumption should hold.
             topPositionOfFirstElement = mod_commonHelper.getOffsetPosition(firstVisibleElement).top,
             requiredDistanceFromTop = 40,
-            paddingTop = (topPositionOfFirstElement < requiredDistanceFromTop) &&  requiredDistanceFromTop - topPositionOfFirstElement, // padding
-            // applied is the difference of
+            paddingTop = requiredDistanceFromTop - topPositionOfFirstElement;
 
-            class_paddingTop = 'UnitsProj-zen-mode-padding-top',
-            paddingStyle = "." + class_paddingTop + "{padding-top:" +  paddingTop + "px !important;}";
+        if (paddingTop > 0) {
+            var class_paddingTop = 'UnitsProj-zen-mode-padding-top',
+                paddingStyle = "." + class_paddingTop + "{padding-top:" +  paddingTop + "px !important;}";
 
-        // Insert style for class_paddingTop into the page.
-        $style_paddingTop = $('<style>' + paddingStyle + '</style>');
-        $('html > head').append($style_paddingTop);
+            // Insert style for class_paddingTop into the page.
+            $style_paddingTop = $('<style>' + paddingStyle + '</style>');
+            $('html > head').append($style_paddingTop);
 
-        $body.addClass(class_paddingTop); // NOTE: We can apply styles to an element in the page only using classes and
-        // not inline. This is because applying the style inline would overwrite an existing inline style on the element
-        // (and we wouldn't be able to restore the original style).
-        // We need to make sure that we don't tamper with the original HTML/CSS of the page.
+            $body.addClass(class_paddingTop); // NOTE: We only apply styles using classes (and not inline). This is because
+            // applying the style inline would overwrite the existing inline style on the element (and we wouldn't then be
+            // able to restore the original style easily).
+        }
     }
 
     return thisModule;
 
-})(jQuery, _u.mod_CUsMgr, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_globals, _u.CONSTS);    // pass as input external modules that this modules depends on
+})(jQuery, _u.mod_CUsMgr, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_contentHelper, _u.mod_commonHelper,
+        _u.mod_globals, _u.CONSTS);
