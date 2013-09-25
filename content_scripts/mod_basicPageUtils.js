@@ -351,14 +351,16 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
     }
 
     function removeActiveElementStyle(element) {
-        var disabledHere = mod_mutationObserver.disable();
+        // *Note* The calls below for the disabling and enabling of the mutation
+        // observer have been commented out as a fix for #151!
+//        var disabledHere = mod_mutationObserver.disable();
         var el = element || document.activeElement;
         $(el)
             .removeClass(class_focusedElement)
             .removeClass(class_focusedImage)
             .removeClass(class_focusedLinkOrButton)
             .removeClass(class_inlineBlock);
-        disabledHere && mod_mutationObserver.enable();
+//        disabledHere && mod_mutationObserver.enable();
     }
 
     return thisModule;
