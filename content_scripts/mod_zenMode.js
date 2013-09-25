@@ -42,7 +42,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
     /*-- Module implementation --*/
     function reset() {
-        stop(); // Resets some global variables and removes any zen mode classes applied to page elements
+        _isStarted && stop(); // Resets some global variables and removes any zen mode classes applied to page elements
         $zenModeIndicator && $zenModeIndicator.remove();
         thisModule.stopListening();
 
@@ -124,6 +124,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
             applyZenMode();
             applyPaddingTopIfRequired();
+
         }
     }
 
@@ -153,7 +154,10 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             document.body.scrollTop = savedScrollPos;
 
             disabledByMe && mod_mutationObserver.enable();
+
+            mod_CUsMgr.updateCUOverlays();
         }
+
     }
 
     // public function

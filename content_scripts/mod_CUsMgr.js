@@ -17,7 +17,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         selectPrev: selectPrev,
         selectFirst: selectFirst,
         selectLast: selectLast,
-        getAllCUs: getAllCUs
+        getAllCUs: getAllCUs,
+        updateCUOverlays: updateCUOverlays
     });
 
     /*-- Module implementation --*/
