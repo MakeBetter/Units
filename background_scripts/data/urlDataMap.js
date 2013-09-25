@@ -716,15 +716,19 @@ defaultSettings.urlDataMap = {
     "mathoverflow.net" : "stackexchange.com",
 
     "techcrunch.com": {
-        urlPatterns: ["techcrunch.com"],
+        urlPatterns: ["techcrunch.com/*"],
         CUs_specifier: {
-            selector: ".top-featured-posts, .post",
+            selector: ".top-featured-posts, .post, #paging-below .page-next>a, #paging-below .page-prev>a",
         },
         CUs_style: {
             overlayPadding: "0 10px"
         },
         CUs_SUs: {
-            std_mainEl: "h2.headline>a"
+            std_mainEl: "h2.headline>a, .featued-post-description .featured-post-link",
+        },
+        page_SUs: {
+            std_header: '#module-header>.top-container',
+            std_nextOrMore: ".page-next>a"
         }
     },
 
