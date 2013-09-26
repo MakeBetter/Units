@@ -461,12 +461,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             }
         }
 
+        $overlay.
+            appendTo($topLevelContainer).
+            hide();
+
         var overlayPadding;
         $overlay.data('$CU', $CU);
         $CU.data('$overlay', $overlay);
 
-        // position the overlay above the CU, and ensure that its visible
-        $overlay.css(getBoundingRectangle($CU)).show();
+        // position the overlay above the CU
+        $overlay.css(getBoundingRectangle($CU));
 
         if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
             /*
@@ -492,8 +496,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $overlay.css("left", parseFloat($overlay.css("left")) -
                 parseFloat($overlay.css("padding-left")));
 
-            var overlayFinalHeight = $overlay[0].clientHeight,
-                overlayFinalWidth = $overlay[0].clientWidth;
+            // clientHeight/clientWidth seems to not work consistently unless the
+            // element is in the DOM and visible (i.e NOT 'display: none')
+            var overlayFinalHeight = $overlay.innerHeight(), //$overlay[0].clientHeight,
+                overlayFinalWidth = $overlay.innerWidth(); //$overlay[0].clientWidth;
 
             $overlay.css("padding", 0);
             $overlay.height(overlayFinalHeight);
@@ -509,8 +515,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $overlay.addClass(class_CUHoveredOverlay);
 //        $overlay.css('box-shadow', '1px 1px 10px 0px #bbb');
         }
-        $overlay.appendTo($topLevelContainer);
-        return $overlay;
+        return $overlay.show();
     }
 
     /**
