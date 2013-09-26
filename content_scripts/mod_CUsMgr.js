@@ -135,7 +135,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         timeout_applyHoveredOverlay,
         // these are used to check against inadvertent mouse over events that fire simply due to the page scroll
         last_mouseScreenX,
-        last_mouseScreenY;
+        last_mouseScreenY,
+
+        // holds the bounding rect calculated for the last selected CU using getBoundingRectangle()
+        // (does not include padding etc applied to the actual overlay drawn on the CU)
+        lastSelectedCUBoundingRect;
 
     function reset() {
         dehoverCU();
@@ -147,6 +151,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lit_updateCUsEtc = lit_selectCU = lit_CUSelectOrDeselect = 0;
         timeout_updateCUs = false;
         CUsFoundOnce = false;
+        lastSelectedCUBoundingRect = null;
         thisModule.stopListening();
     }
 
@@ -201,6 +206,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // NOTE: *Important* Keep in mind that the first mutation handler to execute that calls mod_mutationObserver.disable()
         // will prevent any queued mutation observer event in any other mutation observer from triggering.
+        //TODO: check the order in which the various mutation events are
+        // fired. Specifically, if the the 'fallback' event is fired
+        // before or after the other events.
+
         thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onMutations_fallback);
         
         // this event signifies mutations ONLY on the "top level" CU element(s). Since these aren't going
@@ -433,6 +442,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             console.warn('UnitsProj: no $overlay found');
         }
+        if (type === 'selected') {
+            lastSelectedCUBoundingRect = null;
+        }
     }
 
     /**
@@ -443,14 +455,35 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * @return {*} the jQuery wrapper of the overlay element
      */
     function showOverlay($CU, type) {
+
+        var boundingRect = getBoundingRectangle($CU);
+
+        // this code block helps performance since _showOverlay() takes
+        // orders of magnitude more time that getBoundingRectangle()
+        if (type === 'selected') {
+            if (lastSelectedCUBoundingRect &&
+                boundingRect.top === lastSelectedCUBoundingRect.top &&
+                boundingRect.left === lastSelectedCUBoundingRect.left &&
+                boundingRect.width === lastSelectedCUBoundingRect.width &&
+                boundingRect.height === lastSelectedCUBoundingRect.height) {
+
+//                console.log('call to _showOverlay() not needed');
+                return; // call to _showOverlay() not needed
+            }
+            else {
+                lastSelectedCUBoundingRect = boundingRect;
+            }
+        }
+
+        // if not returned yet...
         var disabledByMe = mod_mutationObserver.disable();
-        var $overlay = _showOverlay($CU, type);
+        var $overlay = _showOverlay($CU, type, boundingRect);
         disabledByMe && mod_mutationObserver.enable();
         return $overlay;
     }
 
     // meant to be called only by showOverlay()
-    function _showOverlay($CU, type) {
+    function _showOverlay($CU, type, boundingRect) {
         var $overlay = $CU.data('$overlay');
         if (!$overlay || !$overlay.length) {
             if ($unusedOverlaysArray.length) {
@@ -462,15 +495,14 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         $overlay.
-            appendTo($topLevelContainer).
-            hide();
+            hide().
+            appendTo($topLevelContainer)
+            .css(boundingRect)  // position the overlay above the CU
+            .data('$CU', $CU);
 
-        var overlayPadding;
-        $overlay.data('$CU', $CU);
         $CU.data('$overlay', $overlay);
 
-        // position the overlay above the CU
-        $overlay.css(getBoundingRectangle($CU));
+        var overlayPadding;
 
         if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
             /*
@@ -912,7 +944,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 // that the rectangle object can be directly passed to jQuery's css() function).
 // NOTE: the values for top and left are relative to the document
     function getBoundingRectangle($CU) {
-
         var elements = [];
 
         if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize) {
@@ -1096,20 +1127,22 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    // updates the overlays of selected and hovered overlays
+    // updates the overlays of selected overlay and removes the hovered overlay
+    // (it's nicer to remove the hovered overlay in response to dom mutations etc,
+    // than updating it, since we only really need it to be visible when the user
+    // moves the mouse over to a new element, in which case it will automatically
+    // get shown again. and it's okay if it gets hidden soon after again)
     function updateCUOverlays() {
-        var disabledByMe = mod_mutationObserver.disable();
-        _updateCUOverlays();
-        disabledByMe && mod_mutationObserver.enable();
-    }
+        var disabledByMe = mod_mutationObserver.disable(),
+            $CU = CUs_filtered[selectedCUIndex];
 
-    // (meant to be called only be updateCUOverlays)
-    function _updateCUOverlays() {
-        var $CU = CUs_filtered[selectedCUIndex];
         $CU &&  showOverlay($CU, "selected");
+        // NOTE: if there is no selected overlay, we would already have removed its overlay
+        // by calling deselectCU() (and want to call deselectCU() only when actual
+        // deselections of CU take place)
 
-        $CU = CUs_filtered[hoveredCUIndex];
-        $CU &&  showOverlay($CU, "hovered");
+        dehoverCU();
+        disabledByMe && mod_mutationObserver.enable();
     }
 
     function onFilterTextChange() {
@@ -1779,7 +1812,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var CUIndex = getEnclosingCUIndex(e.target);
 
         if (CUIndex >= 0) {
-
             hoverCU(CUIndex);
         }
     }
