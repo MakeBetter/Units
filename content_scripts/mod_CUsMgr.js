@@ -72,16 +72,35 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         class_CUSelectedOverlay = CONSTS.class_CUSelectedOverlay,    // class applied to overlay on a selected CU
         class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered CU
 
-    // to enable reusing existing unused overlays. this is used only to prevent leaking memory by creating new overlays
-    // without properly discarding the ones no longer in use. TODO: dispose of unused ones properly, so that this is not needed
-        $unusedOverlaysArray = [],
+        // overlay for the selected CU
+        $selectedCUOverlay = $('<div></div>').
+            addClass(class_CUOverlay).
+            addClass(class_CUSelectedOverlay).     // add the *selected* overlay class
+            addClass(class_addedByUnitsProj).
+            hide().
+            appendTo($topLevelContainer),
 
-    // boolean, holds a value indicating where the css specifies a transition style for overlays
-        overlayCssHasTransition,
+        // overlay for the hovered-over CU.
+        // **Note on the hovered-over CU overlay**:
+        // This overlay is nice to have to help users select a CU using the mouse. However,
+        // having this overlay visible at the same time as the selected CU overlay (even
+        // though this one looks a bit different) can be slightly confusing or distracting.
+        // For this reason, we make this overlay disappear after a short timeout. And that seems
+        // quite alright, since the overlay comes up again when the user moves the mouse over
+        // an element, which is exactly the point of this overlay - it should be visible only
+        // when the user needs it see it as a visual aid to select an CU using the mouse.a
+        $hoveredCUOverlay = $('<div></div>').
+            addClass(class_CUOverlay).
+            addClass(class_CUHoveredOverlay).   // add the *hovered-over* overlay class
+            addClass(class_addedByUnitsProj).
+            hide().
+            appendTo($topLevelContainer),
 
-        $document = $(document),    // cached jQuery object
-        body,
-        $body,                      // cached jQuery object
+        body,   // will hold reference to document.body (once that is available within setup())
+
+        // cached jQuery objects
+        $body, // will refer to $(body)
+        $document = $(document),
 
         rtMouseBtnDown,         // boolean holding the state of the right mouse button
 //        ltMouseBtnDown,         // boolean holding the state of the left mouse button
@@ -160,7 +179,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             return;     // this module is not setup if there is no CUs_specifier in the urlData
         }
 
-        // we need the body to exist before we can set overlayCssHasTransition
+        // wait for document.body to exist before proceeding further
         if (!document.body) {
             setTimeout(setup.bind(null, settings), 100);
             return;
@@ -168,12 +187,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         reset();
 
-        // This is required before we call setupEvents();
-        overlayCssHasTransition = checkOverlayCssHasTransition();
         body = document.body;
         $body = $(body);
-
-        mainContainer = document.body;  // assume this to be the body for now
+        mainContainer = document.body;  // assume this to be the body for
 
         var tmp;
         // assign from `settings` to global variables
@@ -194,10 +210,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             thisModule.listenTo(mod_filterCUs, 'filter-UI-close', onFilterUIClose);
         }
         
-        // Before dom-ready there are continuous dom-changes. If we updateCUs in response to each
-        // of them, there is a flickering in the selected overlay. So we use a spaced polling
-        // to update CUs initally, setting up handlers for dom mutations only once dom is ready.
-        // selected overlay if we process all those dom changes, which in turn  
+        // Before dom-ready there will be several dom-changes. If we updateCUs in response to
+        // each of them, there is a flickering in the selected overlay. So we space calls to
+        // update CUs initially, setting up handlers for dom mutations only once dom is ready.
         interval_updateCUsTillDomReady = setInterval(updateCUsAndRelatedState, 100);
         $(onDomReady);
     }
@@ -301,12 +316,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         deselectCU(); // before proceeding, deselect currently selected CU, if any
         selectedCUIndex = indexOf$CU;
         mod_globals.isCUSelected = true;
-        var $overlaySelected = showOverlay($CU, 'selected');
-        dehoverCU(); // since the hover overlay is only an aid to select CUs, it can be removed now
-
-        if (!$overlaySelected) {
-            console.warn('UnitsProj: no $overlay returned by showOverlay');
-        }
+        showOverlay($CU, 'selected');
+        dehoverCU(); // in keeping with the Note titled **Note on the hovered-over CU overlay**
 
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
@@ -314,7 +325,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lit_CUSelectOrDeselect = Date.now();
 
         if (adjustScrolling) {
-            scrollCUIntoView($overlaySelected);
+            scrollCUIntoView($selectedCUOverlay);
         }
 
         if (setFocus) {
@@ -339,34 +350,35 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * @param [$CU]
      */
     function deselectCU($CU) {
-        var disabledByMe = mod_mutationObserver.disable();
+        var disabledHere = mod_mutationObserver.disable();
         _deselectCU($CU);
-        disabledByMe && mod_mutationObserver.enable();
+        disabledHere && mod_mutationObserver.enable();
     }
 
     // only meant to be called from within deselectCU()
     function _deselectCU(_$CU) {
-
         var $CU = _$CU || CUs_filtered[selectedCUIndex];
-        if ($CU) {
-
-            // console.log('deselecting CU...');
-            removeOverlay($CU, 'selected');
-
-            lit_CUSelectOrDeselect = Date.now();
-
-            if ($CU.data('fontIncreasedOnSelection')) {
-                decreaseFont($CU);
-                $CU.data('fontIncreasedOnSelection', false);
-            }
-
-            var fn_onCUDeselection, temp;
-            if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUDeselection) && (fn_onCUDeselection = temp.fn)) {
-                fn_onCUDeselection($CU, document, $.extend(true, {}, expandedUrlData));
-            }
+        if (!$CU) {  // will be true the first time this is called from reset()
+            return;
         }
+
+        // console.log('deselecting CU...');
+
+        $selectedCUOverlay.hide();
+        lastSelectedCUBoundingRect = null;
+        lit_CUSelectOrDeselect = Date.now();
         selectedCUIndex = -1;
         mod_globals.isCUSelected = false;
+
+        if ($CU.data('fontIncreasedOnSelection')) {
+            decreaseFont($CU);
+            $CU.data('fontIncreasedOnSelection', false);
+        }
+
+        var fn_onCUDeselection, temp;
+        if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUDeselection) && (fn_onCUDeselection = temp.fn)) {
+            fn_onCUDeselection($CU, document, $.extend(true, {}, expandedUrlData));
+        }
     }
 
     // returns a jQuery set composed of all focusable DOM elements contained in the
@@ -416,43 +428,41 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
+//    /**
+//     * Removes the 'selected' or 'hovered' css class from the CU's overlay, as specified by 'type'. If both classes
+//     * have been removed, recycles the overlay.
+//     * @param $CU
+//     * @param {string} type Can be 'selected' or 'hovered'
+//     */
+//    function removeOverlay($CU, type) {
+//        var disabledByMe = mod_mutationObserver.disable();
+//        _removeOverlay($CU, type);
+//        disabledByMe && mod_mutationObserver.enable();
+//    }
+//
+//    // meant to be called only by removeOverlay()
+//    function _removeOverlay ($CU, type) {
+//        var $overlay = $CU.data('$overlay');
+//
+//        if ($overlay) {
+//            $overlay.removeClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay);
+//
+//            if (!overlayCssHasTransition) { // else it is handled in onTransitionEnd()
+//                tryRecycleOverlay($overlay);
+//            }
+//        }
+//        else {
+//            console.warn('UnitsProj: no $overlay found');
+//        }
+//        if (type === 'selected') {
+//            lastSelectedCUBoundingRect = null;
+//        }
+//    }
+
     /**
-     * Removes the 'selected' or 'hovered' css class from the CU's overlay, as specified by 'type'. If both classes
-     * have been removed, recycles the overlay.
+     * Displays the specified type of overlay (selected/hovered) for the CU specified
      * @param $CU
      * @param {string} type Can be 'selected' or 'hovered'
-     */
-    function removeOverlay($CU, type) {
-        var disabledByMe = mod_mutationObserver.disable();
-        _removeOverlay($CU, type);
-        disabledByMe && mod_mutationObserver.enable();
-    }
-
-    // meant to be called only by removeOverlay()
-    function _removeOverlay ($CU, type) {
-        var $overlay = $CU.data('$overlay');
-
-        if ($overlay) {
-            $overlay.removeClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay);
-
-            if (!overlayCssHasTransition) { // else it is handled in onTransitionEnd()
-                tryRecycleOverlay($overlay);
-            }
-        }
-        else {
-            console.warn('UnitsProj: no $overlay found');
-        }
-        if (type === 'selected') {
-            lastSelectedCUBoundingRect = null;
-        }
-    }
-
-    /**
-     * Displays the specified type of overlay (selected/hovered) for the CU specified and returns it (as a jQuery
-     * wrapped object)
-     * @param $CU
-     * @param {string} type Can be 'selected' or 'hovered'
-     * @return {*} the jQuery wrapper of the overlay element
      */
     function showOverlay($CU, type) {
 
@@ -477,30 +487,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // if not returned yet...
         var disabledByMe = mod_mutationObserver.disable();
-        var $overlay = _showOverlay($CU, type, boundingRect);
+        _showOverlay(boundingRect, type);
         disabledByMe && mod_mutationObserver.enable();
-        return $overlay;
     }
 
     // meant to be called only by showOverlay()
-    function _showOverlay($CU, type, boundingRect) {
-        var $overlay = $CU.data('$overlay');
-        if (!$overlay || !$overlay.length) {
-            if ($unusedOverlaysArray.length) {
-                $overlay = $unusedOverlaysArray.shift();
-            }
-            else {
-                $overlay = $('<div></div>').addClass(class_CUOverlay).addClass(class_addedByUnitsProj);
-            }
-        }
+    function _showOverlay(boundingRect, type) {
+        var $overlay = type === 'selected'? $selectedCUOverlay: $hoveredCUOverlay;
 
         $overlay.
             hide().
-            appendTo($topLevelContainer)
-            .css(boundingRect)  // position the overlay above the CU
-            .data('$CU', $CU);
-
-        $CU.data('$overlay', $overlay);
+            css(boundingRect);  // position the overlay above the CU
 
         var overlayPadding;
 
@@ -538,16 +535,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $overlay.width(overlayFinalWidth);
         }
 
-        if (type === 'selected') {
-            $overlay.addClass(class_CUSelectedOverlay);
-//        $overlay.css('box-shadow', '2px 2px 20px 0px #999');
-
-        }
-        else { // 'hovered'
-            $overlay.addClass(class_CUHoveredOverlay);
-//        $overlay.css('box-shadow', '1px 1px 10px 0px #bbb');
-        }
-        return $overlay.show();
+        $overlay.show();
     }
 
     /**
@@ -573,7 +561,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             return;
         }
 
-        dehoverCU(); // before proceeding, dehover currently hovered-over CU, if any
+        dehoverCU(); // first dehover currently hovered-over CU, if any
         hoveredCUIndex = indexOf$CU;
         showOverlay($CU, 'hovered');
     }
@@ -582,10 +570,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * Dehovers the currently hovered (over) CU, if there is one
      */
     function dehoverCU() {
-        var $CU = CUs_filtered[hoveredCUIndex];
-        if ($CU) {
-            removeOverlay($CU, 'hovered');
-        }
+        var disabledHere = mod_mutationObserver.disable();
+        $hoveredCUOverlay.hide();
+        disabledHere && mod_mutationObserver.enable();
+
         hoveredCUIndex = -1;
     }
 
@@ -677,7 +665,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     }
                 }
                 else if (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) {
-                    scrollCUIntoView($selectedCU.data('$overlay'));
+                    scrollCUIntoView($selectedCUOverlay);
                 }
                 else {
                     selectFirstCUInViewport(true, true);
@@ -734,7 +722,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     }
                 }
                 else if (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) {
-                    scrollCUIntoView($selectedCU.data('$overlay'));
+                    scrollCUIntoView($selectedCUOverlay);
                 }
                 else {
                     selectFirstCUInViewport(true, true);
@@ -1057,10 +1045,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function scrollCUIntoView($CUOverlay) {
 
-        if (!$CUOverlay || !$CUOverlay.length) {
-            return;
-        }
-
         var // for the window:
             winTop = body.scrollTop,
         // winHeight = $(window).height(), // this doesn't seem to work correctly on news.ycombinator.com
@@ -1127,21 +1111,22 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    // updates the overlays of selected overlay and removes the hovered overlay
-    // (it's nicer to remove the hovered overlay in response to dom mutations etc,
-    // than updating it, since we only really need it to be visible when the user
-    // moves the mouse over to a new element, in which case it will automatically
-    // get shown again. and it's okay if it gets hidden soon after again)
+    // updates the overlay for the selected CU and removes the hovered-over overlay
+    // (in keeping with the Note titled **Note on the hovered-over CU overlay**)
     function updateCUOverlays() {
         var disabledByMe = mod_mutationObserver.disable(),
-            $CU = CUs_filtered[selectedCUIndex];
+            $selectedCU = CUs_filtered[selectedCUIndex];
 
-        $CU &&  showOverlay($CU, "selected");
-        // NOTE: if there is no selected overlay, we would already have removed its overlay
-        // by calling deselectCU() (and want to call deselectCU() only when actual
-        // deselections of CU take place)
+        if ($selectedCU) {
+            showOverlay($selectedCU, "selected");
+        }
+//        else {
+//            // do nothing. if there is no selected CU, we would already have removed the
+//            // overlay on it by calling deselectCU() (and we want to reserve the calling
+//            // of deselectCU() only for whe actual de-selections of CU take place)
+//        }
 
-        dehoverCU();
+        dehoverCU(); // in keeping with the Note titled **Note on the hovered-over CU overlay**
         disabledByMe && mod_mutationObserver.enable();
     }
 
@@ -1182,8 +1167,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_globals.zenModeOn && $body.removeClass(CONSTS.class_zenModeActive);
         _updateCUsAndRelatedState();
         onUpdatingCUs();
-        mod_globals.zenModeOn && $body.addClass(CONSTS.class_zenModeActive);
-        mod_globals.zenModeOn && updateCUOverlays();
+        if (mod_globals.zenModeOn) {
+            $body.addClass(CONSTS.class_zenModeActive);
+            updateCUOverlays();
+        }
 
         disabledByMe && mod_mutationObserver.enable();
     }
@@ -1199,8 +1186,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // of calling it every time DOM changes. 
         selectedCUIndex = -1;
 
-        // useful to prevent a "ghost" hover overlay (plus it is okay if hovered overlay goes away occasionally as long 
-        // as it comes back when the user moves the mouse to over to a new element)
+        // useful to prevent a "ghost" hover overlay (plus, this is in keeping with the Note
+        // titled **Note on the hovered-over CU overlay**)
         dehoverCU();
 
         CUs_filtered = CUs_all = getValidCUs();
@@ -1224,7 +1211,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // on updating the CUs after a dom-change:
         // if a CU was previously selected
-        //  - if it still exists the CUs_filtered, it should remain selected
+        //  - if it still exists in CUs_filtered, it should remain selected
         //  - if it no longer exists in CUs_filtered
         //      - deselect it
         //      - if the option `selectCUOnLoad` is true, select a sensible CU,
@@ -1729,16 +1716,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // closing the filtering UI using a mouse click.
         if (!mod_contentHelper.isUnitsProjNode(e.target)) {
             var point = {x: e.pageX, y: e.pageY},
-                $selectedCU = CUs_filtered[selectedCUIndex],
-                $overlaySelected = $selectedCU && $selectedCU.data('$overlay'),
-                $hoveredCU = CUs_filtered[hoveredCUIndex],
-                $overlayHovered = $hoveredCU && $hoveredCU.data('$overlay'),
                 indexToSelect;
 
-            if ($overlaySelected && mod_contentHelper.elementContainsPoint($overlaySelected, point)) {
+            if (selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, point)) {
                 return;  // do nothing
             }
-            else  if ($overlayHovered && mod_contentHelper.elementContainsPoint($overlayHovered, point)) {
+            else  if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, point)) {
                 indexToSelect = hoveredCUIndex;
             }
             else {
@@ -1801,16 +1784,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         var point = {x: e.pageX, y: e.pageY};
 
-        var $overlayHovered;
-        if (CUs_filtered[hoveredCUIndex] &&
-            ($overlayHovered = CUs_filtered[hoveredCUIndex].data('$overlay')) &&
-            (mod_contentHelper.elementContainsPoint($overlayHovered, point))) {
-
+        if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, point)) {
             return ; // CU already has hovered overlay; don't need to do anything
         }
 
         var CUIndex = getEnclosingCUIndex(e.target);
-
         if (CUIndex >= 0) {
             hoverCU(CUIndex);
         }
@@ -1830,41 +1808,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
         // contained within it, dehover it (set it as dehovered).
-        var $overlayHovered;
-        if (CUs_filtered[hoveredCUIndex] &&
-            ($overlayHovered = CUs_filtered[hoveredCUIndex].data('$overlay')) &&
-            (!mod_contentHelper.elementContainsPoint($overlayHovered, {x: e.pageX, y: e.pageY}))) {
+        if (hoveredCUIndex >= 0 &&
+            !mod_contentHelper.elementContainsPoint($hoveredCUOverlay, {x: e.pageX, y: e.pageY})) {
 
             dehoverCU();
-        }
-    }
-
-    function onTransitionEnd (e) {
-        var $overlay = $(e.target);
-        tryRecycleOverlay($overlay);
-    }
-
-    /**
-     * Checks if the overlay element specified (as jQuery wrapper) is no longer in
-     * use, and if so, marks it as available for future reuse.
-     * @param $overlay
-     */
-    function tryRecycleOverlay($overlay) {
-
-        // check if the overlay is both in deselected and dehovered states
-        if (!$overlay.hasClass(class_CUHoveredOverlay) && !$overlay.hasClass(class_CUSelectedOverlay)) {
-
-            $overlay.hide();
-            var $CU = $overlay.data('$CU');
-
-            if ($CU) {
-                $CU.data('$overlay', null);
-            }
-            else {
-                console.warn("UnitsProj: Unexpected - overlay's associated CU NOT found!");
-            }
-            $overlay.data('$CU', null);
-            $unusedOverlaysArray.push($overlay);
         }
     }
 
@@ -1910,11 +1857,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
         // However, 'focusin' behaves as expected in either case.
         $document.on('focusin', CONSTS.focusablesSelector, onFocus);
-
-        if (overlayCssHasTransition) {
-            $document.on('transitionend transitionEnd webkittransitionend webkitTransitionEnd otransitionend oTransitionEnd',
-                '.' + class_CUOverlay, onTransitionEnd);
-        }
 
         setupShortcuts();
     }
@@ -1967,36 +1909,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             winBottom = winTop + window.innerHeight;
 
         return CUTop > winTop && CUBottom < winBottom;
-    }
-
-    function checkOverlayCssHasTransition() {
-
-        // create a short-lived element which is inserted into the DOM to allow determination of CSS transition property
-        // on overlay elements, and then quickly removed.
-        var $tempOverlay = $('<div></div>')
-            .addClass(class_addedByUnitsProj)
-            .addClass(class_CUOverlay)
-            .hide()
-            .appendTo(document.body);
-        var properties = ['transition-duration', '-webkit-transition-duration', '-moz-transition-duration',
-            '-o-transition-duration'];
-
-        var transitionDuration;
-        for (var i = 0; i < properties.length; i++) {
-            var property = properties[i];
-            transitionDuration = $tempOverlay.css(property);
-            if (transitionDuration !== null) {
-                break;
-            }
-        }
-
-        $tempOverlay.remove();
-
-        transitionDuration = parseFloat(transitionDuration); // to get 0.3 from 0.3s etc
-
-        // check if transitionDuration exists and has a non-zero value, while tolerating
-        // precision errors with float (which should not occur for 0, but just in case)
-        return (transitionDuration && transitionDuration > 0.00000001)? true: false;
     }
 
     function changeFontSize($jQuerySet, isBeingIncreased) {
