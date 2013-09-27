@@ -295,8 +295,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     // only meant to be called from within selectCU()
     function _selectCU(CUOrItsIndex, setFocus, adjustScrolling) {
-
-//        console.log('selectCU() called. CUOrItsIndex: ', CUOrItsIndex);
         var $CU,
             indexOf$CU; // index in CUs_filtered
 
@@ -309,15 +307,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf$CU = findCUInArray($CU, CUs_filtered);
         }
 
-        if (!$CU) {
-            return;
-        }
-
         deselectCU(); // before proceeding, deselect currently selected CU, if any
+        dehoverCU(); // in keeping with the Note titled **Note on the hovered-over CU overlay**
         selectedCUIndex = indexOf$CU;
         mod_globals.isCUSelected = true;
         showOverlay($CU, 'selected');
-        dehoverCU(); // in keeping with the Note titled **Note on the hovered-over CU overlay**
 
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
@@ -428,37 +422,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-//    /**
-//     * Removes the 'selected' or 'hovered' css class from the CU's overlay, as specified by 'type'. If both classes
-//     * have been removed, recycles the overlay.
-//     * @param $CU
-//     * @param {string} type Can be 'selected' or 'hovered'
-//     */
-//    function removeOverlay($CU, type) {
-//        var disabledByMe = mod_mutationObserver.disable();
-//        _removeOverlay($CU, type);
-//        disabledByMe && mod_mutationObserver.enable();
-//    }
-//
-//    // meant to be called only by removeOverlay()
-//    function _removeOverlay ($CU, type) {
-//        var $overlay = $CU.data('$overlay');
-//
-//        if ($overlay) {
-//            $overlay.removeClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay);
-//
-//            if (!overlayCssHasTransition) { // else it is handled in onTransitionEnd()
-//                tryRecycleOverlay($overlay);
-//            }
-//        }
-//        else {
-//            console.warn('UnitsProj: no $overlay found');
-//        }
-//        if (type === 'selected') {
-//            lastSelectedCUBoundingRect = null;
-//        }
-//    }
-
     /**
      * Displays the specified type of overlay (selected/hovered) for the CU specified
      * @param $CU
@@ -499,6 +462,14 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             hide().
             css(boundingRect);  // position the overlay above the CU
 
+        applyPaddingToCUOverlay($overlay);
+
+        $overlay.show();
+    }
+
+    // Applies padding to the selected/hovered overlay based on CUs_style.overlayPadding,
+    // it specified in urlData
+    function applyPaddingToCUOverlay($overlay) {
         var overlayPadding;
 
         if (CUStyleData && (overlayPadding = CUStyleData.overlayPadding)) {
@@ -509,7 +480,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
              * 3. Get the dimensions of the element including the padding. Lets call these values totalHeight and totalWidth.
              * 4. Set the padding of the overlay to 0.
              * 5. Set the height and width of the overlay to totalHeight and totalWidth.
-            */
+             */
 
             /* Reason for this strangeness:
              * 1. We want to let users specify the overlay padding as is normally done in CSS.
@@ -534,35 +505,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $overlay.height(overlayFinalHeight);
             $overlay.width(overlayFinalWidth);
         }
-
-        $overlay.show();
     }
 
     /**
      * Shows as hovered the CU specified.
-     * @param {number|jQuery} CUOrItsIndex Specifies the CU.
-     * Can be an integer that specifies the index in CUs_filtered or a jQuery object representing the CU.
-     * (While performance isn't a major concern,) passing the index is preferable if it is already known.
+     * @param {number} CUIndex Specifies the index of the CU in the array CUs_filtered
      */
-    function hoverCU(CUOrItsIndex) {
-        var $CU,
-            indexOf$CU; // index in CUs_filtered
-
-        if (typeof CUOrItsIndex === "number") {
-            indexOf$CU = CUOrItsIndex;
-            $CU = CUs_filtered[indexOf$CU];
-        }
-        else {
-            $CU = $(CUOrItsIndex);
-            indexOf$CU = findCUInArray($CU, CUs_filtered);
-        }
-
-        if (!$CU) {
-            return;
-        }
+    function hoverCU(CUIndex) {
+        var $CU = CUs_filtered[CUIndex];
 
         dehoverCU(); // first dehover currently hovered-over CU, if any
-        hoveredCUIndex = indexOf$CU;
+        hoveredCUIndex = CUIndex;
         showOverlay($CU, 'hovered');
     }
 
@@ -793,8 +746,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function selectFirstCUInViewport (setFocus, adjustScrolling) {
 
         if (CUs_filtered && CUs_filtered.length) {
-            var winTop = body.scrollTop,
-                CUsArrLen = CUs_filtered.length;
+            var CUsArrLen = CUs_filtered.length;
 
             for (var i = 0; i < CUsArrLen; ++i) {
                 if (isAnyPartOfCUinViewport(CUs_filtered[i])) {
@@ -1784,8 +1736,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         var point = {x: e.pageX, y: e.pageY};
 
-        if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, point)) {
-            return ; // CU already has hovered overlay; don't need to do anything
+        // Don't need to do anything if CU under the mouse already already has the hovered-over overlay
+        // (OR if it has the selected overlay, in keeping with the Note titled **Note on the hovered-over
+        // CU overlay**)
+        if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, point) ||
+            selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, point)) {
+            return ;
         }
 
         var CUIndex = getEnclosingCUIndex(e.target);
