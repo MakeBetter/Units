@@ -1,6 +1,8 @@
 @import "base";
 @import "modal";
 
+$helpUI_orange: coral;
+
 .modal-body {
   position: relative;
   padding: 10px 12px 20px 12px;
@@ -160,7 +162,7 @@ $menu-padding: 5px;
 
     &#getting-started {
       margin-top: 100px;
-      border: 1px solid $td-border-bottom-color;
+      //border: 1px solid $td-border-bottom-color;
     }
 
   }
@@ -189,50 +191,46 @@ $menu-padding: 5px;
   padding-top: 5px;
 }
 
-#getting-started-content {
+#getting-started-content, #faq-content {
   display: none;
-  padding: $td-padding; margin-left: 10px;
-  font-size: 12px;
+  padding: $td-padding;
   color: $text-color;
   font-family: $sans-serif-font-family;
   margin: 0 auto;
+  width: 600px;
+  font-size: 13px;
 
-  .text {
-    width: 600px;
-    //float: left;
-    margin: auto;
-
+  p, h3 {
+    margin: 5px 0;
   }
 
-  .section-title {
-    font-weight: bold;
-    font-size: 12px;
-    margin-top: 20px; margin-bottom: 5px;
-  }
+  section {
+    margin-top: 15px;
 
-  ul {
-    padding: 0;
-    margin: 0 0 0 15px;
-    list-style-type: circle;
-    list-style-position: inside;
+    &:not(:first-of-type) {
+      margin-top: 15px;
+    }
+
+    >.section-content {
+      border-radius: 4px;
+      border: 1px solid #f5f5f5;
+      background-color: #fafafa;
+      padding: 5px;
+    }
+
+    .section-title {
+      display: inline-block;
+      font-weight: 500;
+      font-size: 14px;
+    }
   }
+}
+
+#getting-started-content {
+  font-size: 15px;
 
   li {
-    margin: 0 0 12px 0;
-    line-height: 20px;
+    margin-bottom: 15px;
+    line-height: 25px;
   }
-
-}
-
-#CUs-image, #main-element-image {
-  border: 1px solid #eaeaea;
-  margin: 20px 0;
-}
-
-#CUs-image {
-  width: 500px;
-}
-
-#main-element-image {
-  width: 300px;
 }

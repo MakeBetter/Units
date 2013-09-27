@@ -20,6 +20,7 @@
                              <li id="cu-based"> CU based </li>
                              <!--<li id="cool-features"> Cool Features</li>-->
                              <li id="getting-started"> Getting Started</li>
+                             <li id="faq"> FAQs</li>
 
                          </ul>
                      </div>
@@ -50,69 +51,116 @@
                              Else, these are used to go to previous/next CU. </p>
                      </div>
                      <div id="getting-started-content" style="display: none">
-                         <div class="text">
-                             <p>Units aims to improve your browsing experience by
-                                 helping you access the most important parts of a website quickly and easily. Here are a few
-                                 important concepts to help you get started.. </p>
-                             <section>
-                                 <p class="section-title"> Content Units (CUs)</p>
-                                 <p>Search results pages, social network feeds, Q&A sites, news sites and blogs: all commonly
-                                     present the primary content on the page as distinct 'units' or blocks. We call these blocks "Content Units".
-                                 </p>
-                                 <ul>
-                                     <li> To see an example, visit one of:
-                                         <a href="https://www.google.com/search?q=lolcats">Google Search</a>,
-                                         <a href="http://www.facebook.com/">Facebook</a>,
-                                         <a href="https://twitter.com/search?q=%23nowplaying">Twitter</a> or
-                                         <a href="http://stackoverflow.com/questions/5874652/prop-vs-attr">Stack Overflow</a>.</li>
-                                     <li>
-                                         Notice that the first CU on the page is already selected. Press <span class="key-text">j</span> to select the next CU.
-                                     </li>
-                                     <li>
-                                         <image id="CUs-image" src="../../images/CUs.png"></image>
-                                     </li>
-                                     <li>
-                                         Similarly, you can press <span class="key-text">k</span> to select the previous CU.
-                                     </li>
-                                     <li>
-                                         When you select a CU, the "main element" in it is focused. You can
-                                         open this element in a new tab using  <span class="key-text">o</span> or in the same tab
-                                         using <span class="key-text">enter</span>. Pressing the <span class="key-text">tab</span>
-                                         key moves the focus forward to the next element.
-                                         <image id="main-element-image" src="../../images/MainElement.png"></image>
-                                     </li>
-                                 </ul>
-                                 <p>
-                                     Now that we have found these CUs on our favorite sites, there is a lot of fun features
-                                     we can enable using them. Interested? Explore more "CU based" shortcuts!
-                                 </p>
-                             </section>
+                        <p>Browse the web like a boss! Here's a few tips to get you started... </p>
 
-                             <section id="getting-started-general-utilities">
-                                 <p class="section-title"> General Utilities</p>
-                                 To enable a seamless unit-y experience across all websites, this extensions gives you a few
-                                 awesome general utilities.
-                                 <ul>
-                                     <li>
-                                         On pages that don't have any CUs, <span class="key-text">j</span>
-                                         and <span class="key-text">k</span> scroll the page down and up. Check out how smooth it is :)
-                                     </li>
-                                     <li>
-                                         Quickly access any link on the page. Press <span class="key-text">space</span> and
-                                         <span class="key-text">letter</span> to reach a link starting with that letter.
-                                     </li>
-                                     <li>
-                                         Other shortcuts included for navigating quickly to different parts and elements of a page,
-                                         between tabs, closing tab, and more.
-                                     </li>
-                                 </ul>
-                             </section>
-                         </div>
-                         <!--<div class="images">-->
-                             <!--<image id="CUs-image" src="../../images/CUs.png"></image>-->
-                             <!--<image id="main-element-image" src="../../images/MainElement.png"></image>-->
-                         <!--</div>-->
+                        <section>
+                            <h3 class="section-title">Pages with 'CUs':</h3>
+                            <div class="section-content">
+                                <ol>
+                                    <li>
+                                        Visit one of:
+                                        <a href="https://www.google.com/search?q=lolcats">Google Search</a>,
+                                        <a href="http://www.facebook.com/">Facebook</a>,
+                                        <a href="https://twitter.com/search?q=%23nowplaying">Twitter</a> or
+                                        <a href="http://stackoverflow.com/questions/5874652/prop-vs-attr">Stack Overflow</a>.
+                                    </li>
+                                    <li>
+                                        Notice that the first <em> content unit </em> (CU) on the page is selected. Press
+                                        <span class="key-text" id="next-cu">j</span> and
+                                        <span class="key-text" id="previous-cu">k</span> to move between CUs.
+                                    </li>
+                                    <li>
+                                        In most cases, the most important link in the unit is already selected for you. Press <span class="key-text">o</span>
+                                        to open it in a new tab or <span class="key-text">enter</span> to open in the the same tab.
+                                    </li>
+                                    <li>
+                                        Use <span class="key-text">tab</span> to move focus to the next link in the page.
+                                    </li>
+                                </ol>
+                            </div>
+                        </section>
 
+                        <section>
+                            <h3 class="section-title">All pages:</h3>
+
+                            <div class="section-content">
+                                <p class="section-description"> Give these general utilities a spin. We think these are
+                                    essential for a seamless 'unit-y' experience.
+                                </p>
+                                <ol>
+                                    <li> On pages with no CUs, use <span class="key-text">j</span> and <span class="key-text"> k</span> to scroll the page.
+                                        (Marvel at how smooth it is :)
+                                    </li>
+
+                                    <li>
+                                        Protip: Use <span class="key-text" id="next-tab"></span> and
+                                        <span class="key-text" id="prev-tab"></span> to move between tabs.
+                                    </li>
+                                    <li>
+                                        Quickly access any link on the page. Press <span class="key-text">space</span> and
+                                        <span class="key-text">letter</span> to reach a link starting with that letter.
+                                    </li>
+                                    <li>
+                                        Press <span class="key-text">z</span> to try out the Zen Mode (on pages that
+                                        support it).
+                                    </li>
+                                </ol>
+                            </div>
+                        </section>
+                         <section id="ending-note">
+                             <p> This is a good start. But there's lots more. Do explore the shortcuts in detail and our website if you
+                             like it thus far. </p>
+                             <p> Also note Units is highly configurable. Check out the <a id="options" target="_blank" href="../../background_scripts/options_page/options_page.html">Options</a>
+                                 page for more. </p>
+                         </section>
+
+
+                     </div>
+                     <div id="faq-content" style="display: none">
+                        <section>
+                            <h3 class="section-title"> What is a Content Unit? </h3>
+                            <div class="section-content">
+                                A Content Unit represents a logical unit of content on a webpage. :P
+                                Search results pages, social network feeds, Q&A sites, news sites and blogs: all commonly
+                                present the primary content on the page as distinct 'units' or blocks. We call these blocks 'Content Units'.
+                            </div>
+                        </section>
+                        <section>
+                            <h3 class="section-title"> What is a CU based shortcut?</h3>
+                            <div class="section-content">
+
+                            </div>
+                        </section>
+                        <section>
+                            <h3 class="section-title"> What is a website/page specific shortcut? </h3>
+                            <div class="section-content">
+
+                            </div>
+                        </section>
+                         <section>
+                             <h3 class="section-title"> Can I still use the shortcuts defined by a website? </h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+                         <section>
+                             <h3 class="section-title"> How can I disable Units? </h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+                         <section>
+                             <h3 class="section-title"> I want to define Units CUs for my website. How can I do that?</h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+                         <section>
+                             <h3 class="section-title"> Tell me more about the Zen Mode.</h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
 
 
                      </div>

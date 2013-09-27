@@ -24,6 +24,7 @@
         $filterMenu = $("#filter-by"),
         $footerMessage = $("#footer-message"),
         $gettingStarted = $("#getting-started-content"),
+        $faq = $('#faq-content'),
         $filterMessage = $("#filter-message"),
         $modalTitle = $(".modal-title");
 
@@ -34,7 +35,8 @@
             "most-important": showMostImportantShortcuts,
             "cu-based": showCUBasedShortcuts,
             "specific-to-page": showPageSpecificShortcuts,
-            "getting-started": showGettingStartedSection
+            "getting-started": showGettingStartedSection,
+            "faq": showFAQSection
         },
 
         class_pageSpecificShortcuts = "page-specific",
@@ -94,6 +96,8 @@
         renderCUShortcuts(settings);
         renderMiscShortcuts(settings);
         renderPageNavigationShortcuts(settings);
+
+        renderGettingStarted(settings);
     }
 
     function renderCUShortcuts(settings) {
@@ -150,6 +154,27 @@
         addShortcutsSubsectionToParentTable(settings.elementNavigationShortcuts, $shortcutsTable, "Navigate Page Elements");
 
         appendSpecialCases(settings, $navigatePageSection);
+    }
+
+    /**
+     * Set up the Getting Started UI
+     * @param settings
+     */
+    function renderGettingStarted(settings) {
+        var nextTabShortcut, prevTabShortcut;
+
+        for (var i = 0; i < settings.globalChromeCommands.length; i++) {
+            var setting = settings.globalChromeCommands[i];
+            if (setting.name === 'nextTab') {
+                nextTabShortcut = setting.shortcut && setting.shortcut.toLowerCase();
+            }
+            else if (setting.name === 'prevTab') {
+                prevTabShortcut = setting.shortcut && setting.shortcut.toLowerCase();
+            }
+        }
+
+        $gettingStarted.find("#next-tab").text(nextTabShortcut);
+        $gettingStarted.find("#prev-tab").text(prevTabShortcut);
     }
 
     /***
@@ -306,6 +331,9 @@
         });
     }
 
+    // The following functions starting with 'show' respond to navigation menu clicks. They are responsible for showing 
+    // different Help UI views. 
+    
     function showAllShortcuts() {
         resetUI();
 
@@ -325,7 +353,6 @@
         showFilterMessage("Here's a list of the main shortcuts to help you get started. Remember: j, k, o and enter are your best friends.");
 
         $footerMessage.show();
-
     }
 
     function showCUBasedShortcuts() {
@@ -350,26 +377,42 @@
         $footerMessage.hide();
     }
 
+    /**
+     * Show message describing the filter applied to shortcuts.
+     * @param message
+     */
     function showFilterMessage(message) {
         $filterMessage
             .show()
             .find("span").html(message);
     }
 
+    /**
+     * Show the Getting Started UI (called when corresponding navigation tab clicked).
+     */
     function showGettingStartedSection() {
         $shortcutsContainer.hide();
         $filterMessage.hide();
-        $gettingStarted.show();
+        $faq.hide();
         $modalTitle.text("Units: Getting Started");
+        $gettingStarted.show();
+    }
+
+    function showFAQSection() {
+        $shortcutsContainer.hide();
+        $filterMessage.hide();
+        $gettingStarted.hide();
+        $faq.show();
+        $modalTitle.text("Units: FAQs");
     }
 
     function resetUI() {
         $modalTitle.text("Units Shortcuts");
 
         $gettingStarted.hide();
+        $faq.hide();
         $shortcutsContainer.show();
     }
-
 
     function close() {
         parent.postMessage({message: "hideHelpUI"}, "*");
