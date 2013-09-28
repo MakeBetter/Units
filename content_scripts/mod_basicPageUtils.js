@@ -2,7 +2,8 @@
  * This module implements the basic utility features this extension provides by to a page, like scrolling, 
  * going back/forward, etc
  */
-_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll, mod_mutationObserver) {
+_u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothScroll, mod_mutationObserver,
+                                  mod_contentHelper) {
     "use strict";
 
     /*-- Public interface --*/
@@ -190,14 +191,18 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         lastInteractedElement = event.target;
     }
 
+    // gets visible text-input elements on the page (*excluding* ones
+    // added by UnitsProj)
     function $getVisibleTextInputElements() {
-        var $textInput = $document.find('input[type=text], input:not([type]), textarea, [contenteditable=true]').filter(function() {
-            var $this = $(this);
-            if ($this.is(':visible') || $this.css('visiblity') === 'visible') {
-                return true;
-            }
-        });
+        var $textInput = $document.find('input[type=text], input:not([type]), textarea, [contenteditable=true]').
+            filter(function() {
+                var $this = $(this);
+                if ( ($this.is(':visible') || $this.css('visiblity') === 'visible') &&
+                    !mod_contentHelper.isUnitsProjNode(this) ) {
 
+                    return true;
+                }
+            });
         return $textInput;
     }
 
@@ -364,4 +369,5 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
     }
 
     return thisModule;
-})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll, _u.mod_mutationObserver);
+})(jQuery, _u.mod_domEvents,  _u.mod_keyboardLib, _u.mod_smoothScroll, _u.mod_mutationObserver,
+        _u.mod_contentHelper);
