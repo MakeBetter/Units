@@ -73,12 +73,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered CU
 
         // overlay for the selected CU
-        $selectedCUOverlay = $('<div></div>').
-            addClass(class_CUOverlay).
-            addClass(class_CUSelectedOverlay).     // add the *selected* overlay class
-            addClass(class_addedByUnitsProj).
-            hide().
-            appendTo($topLevelContainer),
+        $selectedCUOverlay = $createCUOverlay('selected'),
 
         // overlay for the hovered-over CU.
         // **Note on the hovered-over CU overlay**:
@@ -89,12 +84,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // quite alright, since the overlay comes up again when the user moves the mouse over
         // an element, which is exactly the point of this overlay - it should be visible only
         // when the user needs it see it as a visual aid to select an CU using the mouse.a
-        $hoveredCUOverlay = $('<div></div>').
-            addClass(class_CUOverlay).
-            addClass(class_CUHoveredOverlay).   // add the *hovered-over* overlay class
-            addClass(class_addedByUnitsProj).
-            hide().
-            appendTo($topLevelContainer),
+        $hoveredCUOverlay = $createCUOverlay('hovered'),
 
         body,   // will hold reference to document.body (once that is available within setup())
 
@@ -246,6 +236,18 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         clearInterval(interval_updateCUsTillDomReady);
         bindMutationEvents();
         mainContainer  = getMainContainer();
+    }
+
+    // meant to be called during module initialization, to initialize global variables
+    // `$selectedCUOverlay` and `$hoveredCUOverlay`
+    // type should be either 'selected' or 'hovered'
+    function $createCUOverlay(type) {
+        return $('<div></div>').
+            addClass(class_CUOverlay).
+            addClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay).
+            addClass(class_addedByUnitsProj).
+            hide().
+            appendTo($topLevelContainer);
     }
 
     function getMainContainer() {
