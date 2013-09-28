@@ -311,7 +311,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         dehoverCU(); // in keeping with the Note titled **Note on the hovered-over CU overlay**
         selectedCUIndex = indexOf$CU;
         mod_globals.isCUSelected = true;
-        showOverlay($CU, 'selected');
+
+        showSelectedOverlay($CU);
 
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
@@ -355,8 +356,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (!$CU) {  // will be true the first time this is called from reset()
             return;
         }
-
-        // console.log('deselecting CU...');
 
         $selectedCUOverlay.hide();
         lastSelectedCUBoundingRect = null;
@@ -422,53 +421,56 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    /**
-     * Displays the specified type of overlay (selected/hovered) for the CU specified
-     * @param $CU
-     * @param {string} type Can be 'selected' or 'hovered'
-     */
-    function showOverlay($CU, type) {
-
+    function showSelectedOverlay($CU) {
         var boundingRect = getBoundingRectangle($CU);
 
-        // this code block helps performance since _showOverlay() takes
+        // this check helps performance since _showOverlay() takes
         // orders of magnitude more time that getBoundingRectangle()
-        if (type === 'selected') {
-            if (lastSelectedCUBoundingRect &&
-                boundingRect.top === lastSelectedCUBoundingRect.top &&
-                boundingRect.left === lastSelectedCUBoundingRect.left &&
-                boundingRect.width === lastSelectedCUBoundingRect.width &&
-                boundingRect.height === lastSelectedCUBoundingRect.height) {
+        // (this check isn't required for the hovered overlay because the
+        // repeated redrawing on the same overlay is a  concern only due
+        // to selectCU() getting repeatedly called on dom mutations,
+        // while the same CU is selected)
+        if (! (lastSelectedCUBoundingRect &&
+            boundingRect.top === lastSelectedCUBoundingRect.top &&
+            boundingRect.left === lastSelectedCUBoundingRect.left &&
+            boundingRect.width === lastSelectedCUBoundingRect.width &&
+            boundingRect.height === lastSelectedCUBoundingRect.height) ) {
 
-//                console.log('call to _showOverlay() not needed');
-                return; // call to _showOverlay() not needed
-            }
-            else {
-                lastSelectedCUBoundingRect = boundingRect;
-            }
+            lastSelectedCUBoundingRect = boundingRect;
+            _showOverlay('selected', boundingRect);
         }
-
-        // if not returned yet...
-        var disabledByMe = mod_mutationObserver.disable();
-        _showOverlay(boundingRect, type);
-        disabledByMe && mod_mutationObserver.enable();
+//        else {
+//            console.log('call to _showOverlay() not needed');
+//        }
     }
 
-    // meant to be called only by showOverlay()
-    function _showOverlay(boundingRect, type) {
-        var $overlay = type === 'selected'? $selectedCUOverlay: $hoveredCUOverlay;
+    function showHoveredOverlay($CU) {
+        _showOverlay('hovered', getBoundingRectangle($CU));
+    }
 
+    /**
+     * Code for showing selected/hovered overlays. Only meant to be
+     * called from within showSelectedOverlay() or showHoveredOverlay()
+     * @param type - 'selected' or 'hovered'
+     * @param boundingRect bounding rectangle for the CU (not including padding/
+     * style based on the urlData for the current page)
+     * @private
+     */
+    function _showOverlay(type, boundingRect) {
+        var $overlay = (type === 'selected'? $selectedCUOverlay: $hoveredCUOverlay);
+
+        var disabledHere = mod_mutationObserver.disable();
         $overlay.
             hide().
             css(boundingRect);  // position the overlay above the CU
 
         applyPaddingToCUOverlay($overlay);
-
         $overlay.show();
+        disabledHere && mod_mutationObserver.enable();
     }
 
     // Applies padding to the selected/hovered overlay based on CUs_style.overlayPadding,
-    // it specified in urlData
+    // if it is specified in the urlData for the current page
     function applyPaddingToCUOverlay($overlay) {
         var overlayPadding;
 
@@ -508,7 +510,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Shows as hovered the CU specified.
+     * Shows as hovered the CU specified using CUIndex
      * @param {number} CUIndex Specifies the index of the CU in the array CUs_filtered
      */
     function hoverCU(CUIndex) {
@@ -516,7 +518,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         dehoverCU(); // first dehover currently hovered-over CU, if any
         hoveredCUIndex = CUIndex;
-        showOverlay($CU, 'hovered');
+        showHoveredOverlay($CU);
     }
 
     /**
@@ -1070,7 +1072,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $selectedCU = CUs_filtered[selectedCUIndex];
 
         if ($selectedCU) {
-            showOverlay($selectedCU, "selected");
+            showSelectedOverlay($selectedCU);
         }
 //        else {
 //            // do nothing. if there is no selected CU, we would already have removed the
@@ -1177,7 +1179,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                         // instead of calling it on (almost) every DOM change.
                         CUs_filtered[newSelectedCUIndex] = $prevSelectedCU;
                         selectedCUIndex = newSelectedCUIndex;
-                        showOverlay($prevSelectedCU, "selected");    // to update the overlay in case of resize etc
+                        showSelectedOverlay($prevSelectedCU);    // to update the overlay in case of resize etc
                     }
                     else {
                         deselectCU($prevSelectedCU);
