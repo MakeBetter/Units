@@ -66,7 +66,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $topLevelContainer = _u.$topLevelContainer,
 
         // This class should be applied to all elements added by this extension.
-        class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_unitsProjElem = CONSTS.class_unitsProjElem,
 
         class_CUOverlay = CONSTS.class_CUOverlay,                     // class applied to all CU overlays
         class_CUSelectedOverlay = CONSTS.class_CUSelectedOverlay,    // class applied to overlay on a selected CU
@@ -245,7 +245,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return $('<div></div>').
             addClass(class_CUOverlay).
             addClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay).
-            addClass(class_addedByUnitsProj).
+            addClass(class_unitsProjElem).
             hide().
             appendTo($topLevelContainer);
     }

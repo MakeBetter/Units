@@ -18,7 +18,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
     /*-- Module implementation --*/
 
     var $helpContainer,
-        class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_unitsProjElem = CONSTS.class_unitsProjElem,
         class_visibilityHidden = 'UnitsProj-hidden',
         class_visibilityVisible = 'UnitsProj-visible',
         id_iframeHelp = 'UnitsProj-iframe-help',
@@ -58,7 +58,7 @@ _u.mod_help = (function($, mod_contentHelper, mod_keyboardLib, mod_domEvents, CO
 
         $helpContainer
             .append($iframe, $modalBackdrop)
-            .addClass(class_addedByUnitsProj)
+            .addClass(class_unitsProjElem)
             .addClass(class_visibilityHidden) //Setting visibility:hidden instead of display:none since we need to get the height of the
             // contents of the iframe. When we hide the iframe using display:none, we don't seem to get the correct height of its contents.
             .appendTo($topLevelContainer);

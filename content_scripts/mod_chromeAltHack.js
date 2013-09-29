@@ -46,7 +46,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
 
             class_dummyAccessKey = 'UnitsProj-dummyAccessKey',
             $topLevelContainer = _u.$topLevelContainer,
-            class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+            class_unitsProjElem = CONSTS.class_unitsProjElem,
 
             // options for mutObs
             groupedMutations,
@@ -109,7 +109,7 @@ if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 &&
                             $('<div></div>')
                                 .attr('accesskey', keyAfterAlt)
                                 .addClass(class_dummyAccessKey)
-                                .addClass(class_addedByUnitsProj)
+                                .addClass(class_unitsProjElem)
                         );
                     }
                 }

@@ -9,7 +9,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
 
 
     var $document = $(document),
-        class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_unitsProjElem = CONSTS.class_unitsProjElem,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible,
         hintsEnabled,
@@ -34,14 +34,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     // This is used to group the all the hint label spans within a common parent
     var $hintsContainer = $("<div></div>")
         .addClass('UnitsProj-hintsContainer')
-        .addClass(class_addedByUnitsProj)
+        .addClass(class_unitsProjElem)
         .hide()
         .appendTo(_u.$topLevelContainer);
 
     // "dummy" text box (based on css styling) used to get "match-char" input (input on this triggers onMatchCharInput(),
     // see it's documentation)
     var $dummyTextBox = $('<input type = "text">').
-        addClass(class_addedByUnitsProj).
+        addClass(class_unitsProjElem).
         addClass('UnitsProj-dummyInput').
         appendTo(_u.$topLevelContainer);
 

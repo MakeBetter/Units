@@ -14,7 +14,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     var $UIContainer,
         $searchBox,
-        class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_unitsProjElem = CONSTS.class_unitsProjElem,
         timeout_typing,
         suppressEvent = mod_contentHelper.suppressEvent,
         $document = $(document),
@@ -37,16 +37,16 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         reset();
         $searchBox = $('<input id = "UnitsProj-filterUI-searchBox" type = "text">')
             .addClass("UnitsProj-reset-text-input")
-            .addClass(class_addedByUnitsProj);
+            .addClass(class_unitsProjElem);
 
         var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
             .addClass("UnitsProj-close-button")
-            .addClass(class_addedByUnitsProj);
+            .addClass(class_unitsProjElem);
 
         var $message = $("<span id=filter-message>Press 'tab' to go to filtered units</span>");
 
         $UIContainer = $('<div id = "UnitsProj-filterUI-container">')
-            .addClass(class_addedByUnitsProj)
+            .addClass(class_unitsProjElem)
             .append($searchBox)
             .append($closeButton)
             .append($message)

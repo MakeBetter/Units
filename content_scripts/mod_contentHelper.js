@@ -212,8 +212,8 @@ _u.mod_contentHelper = (function(CONSTS) {
         var element = getNearestElement(node);
         if (!element) return false;
 
-        if (_u.$topLevelContainer[0].contains(element) || element.classList.contains(CONSTS.class_addedByUnitsProj) ||
-            $(element).parents().hasClass(CONSTS.class_addedByUnitsProj)) {
+        if (_u.$topLevelContainer[0].contains(element) || element.classList.contains(CONSTS.class_unitsProjElem) ||
+            $(element).parents().hasClass(CONSTS.class_unitsProjElem)) {
             return true;
         }
         return false;

@@ -22,7 +22,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         class_hidden = CONSTS.class_zenModeHidden,
         class_excluded = CONSTS.class_zenModeExcluded, // class for explicitly excluded elements inside whitelisted elements
         class_zenModeActive = CONSTS.class_zenModeActive, // class applied to body to indicate that zen mode is started
-        class_addedByUnitsProj = CONSTS.class_addedByUnitsProj,
+        class_unitsProjElem = CONSTS.class_unitsProjElem,
 
         expandedUrlData,
 
@@ -103,7 +103,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
 
         $zenModeIndicator
             .attr('id', id_zenModeIndicator)
-            .addClass(class_addedByUnitsProj)
+            .addClass(class_unitsProjElem)
             .appendTo($topLevelContainer)
             .hide();
 

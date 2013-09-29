@@ -4,11 +4,9 @@ _u.CONSTS = (function(mod_commonHelper){
     var CONSTS = {
 
         /* -- Used by multiple modules -- */
-        /* This class should be applied to all elements added by this extension. Apart from generally being a sensible/
-         responsible thing to do, we need to do this to distinguish DOM changes due to these elements (which we don't
-         usually care about) from the other DOM changes on the page.
-         */
-        class_addedByUnitsProj: 'added-by-UnitsProj',
+        // This class should be applied to all elements added by this extension. This helps
+        // distinguish elements added by UnitsProj from the other elements on the page.
+        class_unitsProjElem: 'UnitsProj-elem',
 
         /* -- Used by mod_CUsMgr -- */
         class_CUOverlay : "CU-overlay",                     // class applied to all CU overlays
