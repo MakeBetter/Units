@@ -429,11 +429,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             ((left + width) > window.scrollX);                      // elRight > winLeft
     }
 
+    // note: this function will result in onDummyTextBoxBlur() getting called as well
     function blurDummyTextBox() {
-        // proceed only if the dummy textbox has focus, so that we don't change the page focus
-        // in case the dummy text box has already lost focus
+        $dummyTextBox[0].blur();
+        // in case the above doesn't work (on old browsers?)
         if (document.activeElement === $dummyTextBox[0]) {
-            document.body.focus(); // will call onDummyTextBoxBlur() as well
+            document.body.focus();
         }
     }
 
