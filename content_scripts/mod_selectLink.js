@@ -1,8 +1,6 @@
 
 _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardLib, mod_globals, CONSTS) {
-
     "use strict";
-
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
@@ -40,7 +38,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         .hide()
         .appendTo(_u.$topLevelContainer);
 
-    // "dummy" text box (based on css styling) used to get "match-char" input (input on this triggers onMatchCharInput)
+    // "dummy" text box (based on css styling) used to get "match-char" input (input on this triggers onMatchCharInput(),
+    // see it's documentation)
     var $dummyTextBox = $('<input type = "text">').
         addClass(class_addedByUnitsProj).
         addClass('UnitsProj-dummyInput').
@@ -54,6 +53,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         reset();
         mod_domEvents.addEventListener(document, 'keydown', onKeyDown, true);
         mod_domEvents.addEventListener(document, 'keyup', onKeyUp_space, true);
+        mod_domEvents.addEventListener($dummyTextBox[0], 'blur', onDummyTextBoxBlur, true);
 
         $dummyTextBox.on('input', onDummyTextBoxInput );
     }
@@ -166,7 +166,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             focusDummyTextBoxAndRemoveHints();
             clearTimeout(timeout_blurDummyTextbox);
             timeout_blurDummyTextbox = setTimeout(function() {
-                $dummyTextBox.val('').blur();
+                blurDummyTextBox();
             }, timeoutPeriod);
         }
         else if (hintsEnabled) {
@@ -203,14 +203,14 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     }
 
     // We read input off of this dummy element to determine the actual character
-    // entered by the user rather than the key even while bind to the 'keydown'
-    // event for input rather than 'keypress' (refer: #144)
+    // entered by the user (as opposed to the key pressed down) even while binding
+    // to the 'keydown' event for input rather than 'keypress' (refer: #144)
     function onDummyTextBoxInput () {
         var input = $dummyTextBox.val();
         input = input[input.length - 1]; // consider only the last char typed in case there is more than one
         var char_lowerCase = input.trim().toLowerCase(); // for case insensitive matching
         char_lowerCase && onMatchCharInput(char_lowerCase);
-        $dummyTextBox.val('').blur();   
+        blurDummyTextBox();
     }
 
     // This map allows us to determine the char that would be typed had
@@ -427,6 +427,19 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             ((top + height) > window.scrollY) &&                    // elBottom > winTop
             (left < (window.scrollX + window.innerWidth)) &&        // elLeft < winRight
             ((left + width) > window.scrollX);                      // elRight > winLeft
+    }
+
+    function blurDummyTextBox() {
+        // proceed only if the dummy textbox has focus, so that we don't change the page focus
+        // in case the dummy text box has already lost focus
+        if (document.activeElement === $dummyTextBox[0]) {
+            document.body.focus(); // will call onDummyTextBoxBlur() as well
+        }
+    }
+
+    function onDummyTextBoxBlur() {
+        $dummyTextBox[0].value = '';
+        clearTimeout(timeout_blurDummyTextbox);
     }
 
     return thisModule;
