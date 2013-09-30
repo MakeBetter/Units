@@ -701,7 +701,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //                return;
 //            }
 //        }
-        selectCU(0, setFocus, adjustScrolling);
+        CUs_filtered.length && selectCU(0, setFocus, adjustScrolling);
     }
     function selectLast(setFocus, adjustScrolling) {
 //        for (var i = CUs_filtered.length - 1; i >= 0; i--) {
@@ -710,7 +710,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 //                return;
 //            }
 //        }
-        selectCU(CUs_filtered.length - 1, setFocus, adjustScrolling);
+        CUs_filtered.length && selectCU(CUs_filtered.length - 1, setFocus, adjustScrolling);
     }
 
     /**
