@@ -7,7 +7,7 @@
  * cohesive module with a particular role.
  */
 
-_u.mod_contentHelper = (function(CONSTS) {
+_u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -27,30 +27,20 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     /*-- Module implementation --*/
 
-    /**
-     *
-     * @param {HtmlElement|jQuery} element
-     * @param {object} point Should have the properties x and y.
-     * @return {Boolean}
-     */
-    function elementContainsPoint(element, point) {
+    // returns true/false depending on whether the HTML element `element` contains the specified point
+    function elementContainsPoint(element, x, y) {
+        var $element = $(element),
+            offset = $element.offset();
 
-        var $element = $(element);
-        if (!$element || !$element.length) {
-            return false;
-        }
-
-        var x = point.x, y = point.y;
-
-        var offset = $element.offset();
         var x1 = offset.left,
-            x2 = x1 + $element.width(),
+            x2 = x1 + $element.outerWidth(),
             y1 = offset.top,
-            y2 = y1 + $element.height();
+            y2 = y1 + $element.outerHeight();
 
         return x >= x1 && x <= x2 && y >= y1 && y <= y2;
     }
 
+    // returns true/false depending on whether `rect` (having keys top, left, width, height) contains the specified point
     function rectContainsPoint(rect, x, y) {
         var x1 = rect.left,
             x2 = x1 + rect.width,
@@ -302,4 +292,4 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     return thisModule;
 
-})(_u.CONSTS);
+})(_u.mod_commonHelper, _u.CONSTS);

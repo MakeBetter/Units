@@ -1697,13 +1697,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // This check is especially required to ensure selected CU does not get deselected when
         // closing the filtering UI using a mouse click.
         if (!mod_contentHelper.isUnitsProjNode(e.target)) {
-            var point = {x: e.pageX, y: e.pageY},
-                indexToSelect;
+            var indexToSelect;
 
-            if (selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, point)) {
+            if (selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, e.pageX, e.pageY)) {
                 return;  // do nothing
             }
-            else  if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, point)) {
+            else  if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
                 indexToSelect = hoveredCUIndex;
             }
             else {
@@ -1764,13 +1763,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // function to be called once the user pauses mouse movement, and
     // hence likely actually *intends* to hover over an element
     function onMouseMovePause() {
-        var point = {x: mouseX, y: mouseY};
-
         // Don't need to do anything if CU under the mouse already already has the hovered-over overlay
         // (OR if it has the selected overlay, in keeping with the Note titled **Note on the hovered-over
         // CU overlay**)
-        if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, point) ||
-            selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, point)) {
+        if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, mouseX, mouseY) ||
+            selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, mouseX, mouseY)) {
             return ;
         }
 
@@ -1800,7 +1797,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
         // contained within it, dehover it (set it as dehovered).
         if (hoveredCUIndex >= 0 &&
-            !mod_contentHelper.elementContainsPoint($hoveredCUOverlay, {x: e.pageX, y: e.pageY})) {
+            !mod_contentHelper.elementContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
 
             dehoverCU();
         }
