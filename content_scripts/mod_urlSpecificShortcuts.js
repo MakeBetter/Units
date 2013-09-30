@@ -110,13 +110,28 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
                 if (selectorsArr.length) {
                     mod_commonHelper.executeWhenConditionMet(
                         function() {
-                            // for some reason DOM API's click() works well, but jQuery's doesn't seem to always
-                            $scope.find(selectorsArr[0])[0].click();
+
+                            var el = $scope.find(selectorsArr[0]+':visible')[0]; // The ':visible' selector appended
+                            // because of an issue on Quora. There were some invisible elements present in a CU which had
+                            // the same class as the valid SU.
+
+                            // We first mouseover on the element and then click. This is a fix for #25: On Quora, shortcuts
+                            // to click on links was not working for some links. If we give the mouseover event before
+                            // the click, it works better.
+
+                            // Dispatch mouseover event. Code src: http://stackoverflow.com/a/919111/1328825
+                            var evObj = document.createEvent('MouseEvents');
+                            evObj.initEvent('mouseover',true,false);
+                            el.dispatchEvent(evObj);
+
+                            // Click
+                            el.click();
+
                             selectorsArr.splice(0, 1);
                             invokeSequentialClicks(selectorsArr);
                         },
                         function() {
-                            return $scope.find(selectorsArr[0]).length;
+                            return $scope.find(selectorsArr[0]+':visible').length;
                         },
                         2000
                     );
