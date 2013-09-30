@@ -162,6 +162,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsFoundOnce = false;
         lastSelectedCUBoundingRect = null;
         thisModule.stopListening();
+        clearInterval(interval_updateCUsTillDomReady);
     }
 
     function setup(settings) {
