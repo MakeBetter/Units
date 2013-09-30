@@ -12,6 +12,7 @@ _u.mod_contentHelper = (function(CONSTS) {
 
     /*-- Public interface --*/
     var thisModule = {
+        rectContainsPoint: rectContainsPoint,
         elementContainsPoint: elementContainsPoint,
         elementAllowsSingleKeyShortcut: elementAllowsSingleKeyShortcut,
         elementAllowsTyping: elementAllowsTyping,
@@ -46,6 +47,15 @@ _u.mod_contentHelper = (function(CONSTS) {
             x2 = x1 + $element.width(),
             y1 = offset.top,
             y2 = y1 + $element.height();
+
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    }
+
+    function rectContainsPoint(rect, x, y) {
+        var x1 = rect.left,
+            x2 = x1 + rect.width,
+            y1 = rect.top,
+            y2 = y1 + rect.height;
 
         return x >= x1 && x <= x2 && y >= y1 && y <= y2;
     }
