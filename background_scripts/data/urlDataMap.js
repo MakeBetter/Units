@@ -471,7 +471,6 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.quora.com/search?*"],
             CUs_specifier: ".query_result, .results_page_add_question",
             CUs_SUs: {
-                "std_seeMore": ".more_link"
             },
             CUs_style: {
                 overlayPadding: "0 0 0 5px"
@@ -491,48 +490,10 @@ defaultSettings.urlDataMap = {
             },
             CUs_SUs: {
                 std_mainEl: ".answer_user>span>a.user, .topic_name",
-                std_header: ".header",
-                "std_upvote": ".rate_up",
-                "std_viewComments": ".view_comments",
-                "std_downvote": ".rate_down",
-                "std_share": ".share_link",
-                "follow": {
-                    selector: ".follow_question",
-                    kbdShortcuts:["shift+f"],
-                    descr: "Follow"
-                }
-            },
-            page_SUs: {
-                std_header: "#layout_header"
             }
         },
         {
-            // For a "topic" page such as http://www.quora.com/Front-End-Web-Development or a "question" page such as
-            // http://www.quora.com/What-is-the-most-amazing-photo-you-have-ever-taken
-
-            // NOTE: For now, we have pretty much combined the selectors of the feed/ topic page and the question page.
-            // TODO: This needs to be cleaned up when the "shared" urlData object (across all URL patterns) will be implemented.
-            urlPatterns: ["www.quora.com/@"],
-            CUs_specifier: ".question.row, .main_col>div>.row .row, .invite_to_answer, .wiki_section, .e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
-            CUs_SUs: {
-                std_mainEl: ".answer_user>span>a.user, a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
-                std_header: ".header",
-                "std_upvote": ".rate_up",
-                "std_viewComments": ".view_comments",
-                "std_downvote": ".rate_down",
-                "std_share": ".share_link",
-                "follow": {
-                    selector: ".follow_question",
-                    kbdShortcuts:["shift+f"],
-                    descr: "Follow"
-                }
-            },
-            page_SUs: {
-                std_header: "#layout_header"
-            }
-        },
-        {
-            urlPatterns: ["www.quora.com", "www.quora.com/?share=1", "www.quora.com/*"], // The first two patterns match
+            urlPatterns: ["www.quora.com", "www.quora.com/?share=1"], // The first two patterns match
             // with the main quora feed page.
             CUs_specifier: /*".feed_item, .announcement, .pager_next.action_button"*/  ".e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
             // the first selector for quora main page (and a few others), the second one for a page like this one:
@@ -542,32 +503,58 @@ defaultSettings.urlDataMap = {
                 // it is important to have the main element data be very specific. otherwise, incorrect/ unexpected
                 // main elements will get selected.
                 std_mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
-                "std_upvote": ".add_upvote, .remove_upvote",
-                "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".view_comments"},
-                "std_downvote": ".add_downvote, .remove_downvote",
-                "std_share": ".share_link",
-                "follow": {
-                    selector: ".follow_question",
-                    kbdShortcuts:["shift+f"],
-                    descr: "Follow"
-                },
-                "std_seeMore": ".more_link"
+
             },
             CUs_style: {
                 overlayPadding: "0 0 0 5px"
             }
         },
         {
+            // For a "topic" page such as http://www.quora.com/Front-End-Web-Development or a "question" page such as
+            // http://www.quora.com/What-is-the-most-amazing-photo-you-have-ever-taken
+
+            // NOTE: For now, we have pretty much combined the selectors of the feed/ topic page and the question page.
+            urlPatterns: ["www.quora.com/@"],
+            CUs_specifier: ".question.row, .main_col>div>.row .row, .invite_to_answer, .wiki_section, .e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
+            CUs_SUs: {
+                std_mainEl: ".answer_user>span>a.user, a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
+            }
+        },
+        // Same as the URL pattern for the main feed page
+        // TODO: check if this data is needed.
+        {
+            urlPatterns: ["www.quora.com/*"], //
+            CUs_specifier: ".e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
+            CUs_SUs: {
+                std_mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
+            },
+            CUs_style: {
+                overlayPadding: "0 0 0 5px"
+            }
+        },
+        // Data shared by all pages
+        {
             shared: "true",
             page_SUs: {
-                std_logout: ".logout a:contains('Logout')"
+                std_logout: ".logout a:contains('Logout')",
+                std_header: ".fixed_header.header"
             },
             CUs_SUs: {
-//                std_seeMore: ".more_link" TODO: Look into this. This shortcut does not work. Github #25.
-            }
-
-
-        },
+                std_seeMore: ".more_link",
+                "std_share": ".share_link",
+                "follow": {
+                    selector: ".follow_question",
+                    kbdShortcuts:["shift+f"],
+                    descr: "Follow"
+                },
+                "std_viewComments": {
+                    kbdShortcuts: ["c", "v c"],
+                    selector: ".view_comments"
+                },
+                "std_upvote": ".add_upvote, .remove_upvote, .rate_up",
+                "std_downvote": ".add_downvote, .remove_downvote, .rate_down",
+            },
+        }
     ],
 
     // only support on the main page
