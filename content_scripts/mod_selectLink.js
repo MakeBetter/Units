@@ -160,7 +160,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         // 'f' pressed. focus dummy text box so the that the next next char entered triggers onMatchCharInput   
         else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
             !(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) &&
-            (document.activeElement === $dummyTextBox[0] || mod_contentHelper.elementAllowsSingleKeyShortcut(target))) {
+            (document.activeElement === $dummyTextBox[0] || mod_contentHelper.elemAllowsSingleKeyShortcut(target))) {
 
             mod_contentHelper.suppressEvent(e);
             focusDummyTextBoxAndRemoveHints();
@@ -199,7 +199,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     // This allows us to target links using space+<key>
     // However, this will prevent user from scrolling the page down using the space key.
     function canIgnoreSpaceOnElement(elem) {
-        return elem.tagName.toLowerCase() !== "input" && !mod_contentHelper.elementAllowsTyping(elem);
+        return elem.tagName.toLowerCase() !== "input" && !mod_contentHelper.elemAllowsTyping(elem);
     }
 
     // We read input off of this dummy element to determine the actual character

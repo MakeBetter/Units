@@ -1699,10 +1699,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (!mod_contentHelper.isUnitsProjNode(e.target)) {
             var indexToSelect;
 
-            if (selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, e.pageX, e.pageY)) {
+            if (selectedCUIndex >= 0 && mod_contentHelper.elemContainsPoint($selectedCUOverlay, e.pageX, e.pageY)) {
                 return;  // do nothing
             }
-            else  if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
+            else  if (hoveredCUIndex >= 0 && mod_contentHelper.elemContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
                 indexToSelect = hoveredCUIndex;
             }
             else {
@@ -1766,8 +1766,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // Don't need to do anything if CU under the mouse already already has the hovered-over overlay
         // (OR if it has the selected overlay, in keeping with the Note titled **Note on the hovered-over
         // CU overlay**)
-        if (hoveredCUIndex >= 0 && mod_contentHelper.elementContainsPoint($hoveredCUOverlay, mouseX, mouseY) ||
-            selectedCUIndex >= 0 && mod_contentHelper.elementContainsPoint($selectedCUOverlay, mouseX, mouseY)) {
+        if (hoveredCUIndex >= 0 && mod_contentHelper.elemContainsPoint($hoveredCUOverlay, mouseX, mouseY) ||
+            selectedCUIndex >= 0 && mod_contentHelper.elemContainsPoint($selectedCUOverlay, mouseX, mouseY)) {
             return ;
         }
 
@@ -1797,7 +1797,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
         // contained within it, dehover it (set it as dehovered).
         if (hoveredCUIndex >= 0 &&
-            !mod_contentHelper.elementContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
+            !mod_contentHelper.elemContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
 
             dehoverCU();
         }

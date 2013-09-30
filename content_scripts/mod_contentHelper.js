@@ -13,9 +13,9 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
     /*-- Public interface --*/
     var thisModule = {
         rectContainsPoint: rectContainsPoint,
-        elementContainsPoint: elementContainsPoint,
-        elementAllowsSingleKeyShortcut: elementAllowsSingleKeyShortcut,
-        elementAllowsTyping: elementAllowsTyping,
+        elemContainsPoint: elemContainsPoint,
+        elemAllowsSingleKeyShortcut: elemAllowsSingleKeyShortcut,
+        elemAllowsTyping: elemAllowsTyping,
         suppressEvent: suppressEvent,
         ancestorElements: ancestorElements,
         closestCommonAncestor: closestCommonAncestor,
@@ -28,7 +28,7 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
     /*-- Module implementation --*/
 
     // returns true/false depending on whether the HTML element `element` contains the specified point
-    function elementContainsPoint(element, x, y) {
+    function elemContainsPoint(element, x, y) {
         var $element = $(element),
             offset = $element.offset();
 
@@ -58,8 +58,8 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
      * @param {HTMLElement} element
      * @returns {boolean}
      */
-    function elementAllowsSingleKeyShortcut(element) {
-        if (elementAllowsTyping(element) || element.tagName.toLowerCase() === "select" || isEmbeddedElement(element)) {
+    function elemAllowsSingleKeyShortcut(element) {
+        if (elemAllowsTyping(element) || element.tagName.toLowerCase() === "select" || isEmbeddedElement(element)) {
             return false;
         }
         return true;
@@ -70,7 +70,7 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
      * @param element
      * @returns {boolean}
      */
-    function elementAllowsTyping(element) {
+    function elemAllowsTyping(element) {
         var tagName_lowerCase = element.tagName.toLowerCase(),
             typeProp_lowerCase = element.type && element.type.toLowerCase(),
 

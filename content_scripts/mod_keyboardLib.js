@@ -120,7 +120,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
     }
 
     function allowSpaceAsModifier(e) {
-        return (mod_contentHelper.elementAllowsSingleKeyShortcut(e.target) || (e.altKey || e.ctrlKey || e.metaKey));
+        return (mod_contentHelper.elemAllowsSingleKeyShortcut(e.target) || (e.altKey || e.ctrlKey || e.metaKey));
     }
 
     /**
@@ -266,7 +266,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
             }
         }
 
-        return mod_contentHelper.elementAllowsSingleKeyShortcut(targetElement);
+        return mod_contentHelper.elemAllowsSingleKeyShortcut(targetElement);
     }
 
     // Override this with a no-op; we use custom logic which allows more shortcuts to be used than Mousetrap.stopCallback's
