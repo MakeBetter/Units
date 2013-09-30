@@ -1530,7 +1530,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             for (var i = 0; i < headersLen; ++i) {
                 var $header = $headers.eq(i),
                     headerTop = $header.offset().top,
-                    headerBottom = headerTop + $header.height();
+                    headerBottom = headerTop + $header[0].offsetHeight; // get header height including vertical padding,
+                    // borders and horizontal scrollbar height.
 
                 if (headerBottom > maxHeaderBottom) {
                     maxHeaderBottom = headerBottom;
