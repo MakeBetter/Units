@@ -477,19 +477,31 @@ defaultSettings.urlDataMap = {
             }
         },
         {
-            // URL pattern for a question page. URLs should match the pattern www.quora.com/*/* but not end with 'home',
-            // 'about', 'questions', 'new'. These are special pages in Quora, pertaining to a topic generally. These should be
+            // URL pattern for a question page.
+
+            // Matches patterns of type www.quora.com/*/* (where * is any character including a '/')
+            // Does NOT match patterns of type www.quora.com/a/b where a is any word and be is one of 'home', 'about',
+            // 'questions', 'new'. These are special pages in Quora, pertaining to a topic generally. These should be
             // handled by the CU selector for www.quora.com/* pattern (specified later).
             urlRegexps: [/^www\.quora\.com\/.+\/(?!about$|questions$|new$|home$).+/],
             CUs_specifier: {
-                // includes selectors for the question, answer, and "invite to answer" block
-                selector: ".question.row, .main_col>div>.row .row, .invite_to_answer, .wiki_section" /*seems to be working well, as on May 13, 2013! */
+                // .question.row: question
+                // .main_col>div>.row .row: answer (on a regular question Quora page)
+                // .answer_standalone>.row:first-child: answer (on a Quora question page that links to only one answer
+                // (let's call such pages one-answer-shared-page), such as:
+                // http://www.quora.com/Arvind-Kejriwal/Why-should-someone-vote-for-Arvind-Kejriwal/answer/Abhishek-Shrivastava)
+                // .invite_to_answer: As evident, is the 'invite to answer' block
+                selector: ".question.row, .main_col>div>.row .row, .invite_to_answer, .wiki_section, .answer_standalone>.row:first-child" /* Working well since May 2013*/
             },
             CUs_style: {
                 overlayPadding: "2px 0 0 0"
             },
             CUs_SUs: {
-                std_mainEl: ".answer_user>span>a.user, .topic_name",
+                // .answer_wrapper .answer_user a.user: link to the user that has answered a question (inside an answer
+                // unit). Specifying the .answer_wrapper is required to make sure that user links only inside answer units are
+                // selected (and not those inside question units).
+                // .question_link: link to the question. Used in the one-answer-shared-page.
+                std_mainEl: ".question_link, .answer_wrapper .answer_user a.user, .topic_name",
             }
         },
         {
