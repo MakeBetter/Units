@@ -399,8 +399,10 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     }
 
     function getElementText(el, ignorePlaceholderText) {
+        var innerText = mod_contentHelper.getVisibleInnerText(el);
+
         return (
-            el.innerText? el.innerText: (
+            innerText? innerText: (
                 el.value? el.value:
                     (!ignorePlaceholderText && el.placeholder? el.placeholder: "")
                 )

@@ -259,28 +259,49 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
         return false;
     }
 
-    /***
-     * Get the inner text of an element after removing any descendants that are not visible.
-     * @param element Parent element to get the inner text of
-     * @returns {string} text
+
+    /**
+     * Compute the visible inner text of an element.
+     * Ignores invisible descendants (those with offsetHeight or offsetWidth = 0) when computing inner text of the element.
+     *
+     * While the innerText property (supported by IE/ Webkit, not supported by Firefox) takes into account hidden
+     * descendants, it misses some cases where the descendants are hidden using hacks such as "line-height = 0" or
+     * "font-size = 0" (example, links shared inside tweets on Twitter: See #143). To handle such cases, we check for
+     * elements that have an offsetHeight or offsetWidth of 0 and ignore them.
+     *
+     * @param element
+     * @returns {string} innerText
      */
     function getVisibleInnerText(element) {
-        var $element = $(element),
-            class_invisibleElements = "UnitsProj-invisible-text";
 
-        $element.find(":not(:visible)").addClass(class_invisibleElements); // add class to all invisible descendants
-
-        var $elementClone = $element.clone();
-        $elementClone.find("." + class_invisibleElements).remove();
-
-        $element.find(class_invisibleElements).removeClass(class_invisibleElements); // revert any changes made to the page's DOM
-
-        var text = $elementClone.text();
-        if (!text && $element.is('input[type = "button"]')) {
-            text = element.value;
+        if (!element.offsetHeight || !element.offsetWidth) {
+            return "";
         }
 
-        return text;
+        var childNodes = element.childNodes;
+        if (!childNodes.length) {
+            return "";
+        }
+
+        var innerText = "",
+            childNode, nodeType;
+
+        for (var i = 0; i < childNodes.length; i++) {
+            childNode = childNodes[i];
+            nodeType = childNode.nodeType;
+
+            // Text node
+            if (nodeType === 3) {
+                innerText += childNode.nodeValue;
+            }
+
+            // Element node
+            else if (nodeType === 1) {
+                innerText += getVisibleInnerText(childNode);
+            }
+        }
+
+        return innerText;
     }
 
     /**
