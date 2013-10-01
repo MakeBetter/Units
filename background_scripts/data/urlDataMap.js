@@ -318,10 +318,11 @@ defaultSettings.urlDataMap = {
             }
         },
         {
-            urlPatterns: ["github.com/search?*"],
-            CUs_specifier: ".source, .next_page",
+            // Search in all repositories, Search in current repository:
+            urlPatterns: ["github.com/search?*", "github.com/*/search?*"],
+            CUs_specifier: ".source, .user-list-item, .code-list-item, .issue-list-item, .next_page",
             CUs_SUs: {
-                std_mainEl: "h3 a"
+                std_mainEl: "h3 a, .user-list-info>a"
             },
             CUs_style: {
                 overlayPadding: "5px"
