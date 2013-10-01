@@ -4,7 +4,7 @@
 
 
 // A template for modules in this project
-var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelper) {
+var mod_advancedOptions = (function($, mod_commonHelper, mod_settings, mod_optionsHelper) {
     "use strict";
 
     /*-- Public interface --*/
@@ -197,7 +197,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     function positionNavMenu() {
         var mainContainer = document.getElementById("advanced-options-main-container"),
             navElement = document.getElementById("advanced-options-sections-navigation"),
-            mainContentLeftPos = mod_commonHelper.getOffsetPosition(mainContainer).left,
+            mainContentLeftPos = $(mainContainer).offset().left,
             posLeft = mainContentLeftPos - (navElement.offsetWidth + 10);
 
         navElement.style.left = posLeft;
@@ -206,7 +206,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
     function navigateToSection(menuItem) {
         var sectionId = menuItem.dataset.target,
             section = document.getElementById(sectionId),
-            pos = section && mod_commonHelper.getOffsetPosition(section);
+            pos = section && $(section).offset();
 
         // Scroll to section
         window.scroll(pos.left, pos.top - headerHeight);
@@ -238,7 +238,7 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
             for (var i = 0; i < sections.length; i++) {
             var section = sections[i],
-                sectionPositionTop = mod_commonHelper.getOffsetPosition(section).top - body.scrollTop; // get position
+                sectionPositionTop = $(section).offset().top - body.scrollTop; // get position
             // relative to the viewport
 
             if (sectionPositionTop > headerHeight && sectionPositionTop < 300) {
@@ -303,4 +303,4 @@ var mod_advancedOptions = (function(mod_commonHelper, mod_settings, mod_optionsH
 
     return thisModule;
 
-})(_u.mod_commonHelper, _u.mod_settings, mod_optionsHelper);
+})(jQuery, _u.mod_commonHelper, _u.mod_settings, mod_optionsHelper);

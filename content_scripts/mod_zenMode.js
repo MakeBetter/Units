@@ -309,9 +309,9 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
      * Checks the offset top of the first element from the body and applies a padding-top to body appropriately.
      */
     function applyPaddingTopIfRequired() {
-        var firstVisibleElement = $visibles[0], // assuming that the first element in document order is visually the
+        var $firstVisibleElement = $visibles.eq(0), // assuming that the first element in document order is visually the
         // top-most element. For most pages, the assumption should hold.
-            topPositionOfFirstElement = mod_commonHelper.getOffsetPosition(firstVisibleElement).top,
+            topPositionOfFirstElement = $firstVisibleElement.offset().top,
             requiredDistanceFromTop = 40,
             paddingTop = requiredDistanceFromTop - topPositionOfFirstElement;
 
