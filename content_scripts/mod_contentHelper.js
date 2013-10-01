@@ -10,7 +10,7 @@
  * cohesive module with a particular role.
  */
 
-_u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
+_u.mod_contentHelper = (function($, mod_commonHelper, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
@@ -334,4 +334,4 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
 
     return thisModule;
 
-})(_u.mod_commonHelper, _u.CONSTS);
+})(jQuery, _u.mod_commonHelper, _u.CONSTS);
