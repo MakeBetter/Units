@@ -262,12 +262,12 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
 
     /**
      * Compute the visible inner text of an element.
-     * Ignores invisible descendants (those with offsetHeight or offsetWidth = 0) when computing inner text of the element.
+     * Ignores element or its descendants if invisible (those with offsetHeight or offsetWidth = 0) when computing inner
+     * text of the element.
      *
-     * While the innerText property (supported by IE/ Webkit, not supported by Firefox) takes into account hidden
-     * descendants, it misses some cases where the descendants are hidden using hacks such as "line-height = 0" or
-     * "font-size = 0" (example, links shared inside tweets on Twitter: See #143). To handle such cases, we check for
-     * elements that have an offsetHeight or offsetWidth of 0 and ignore them.
+     * While the innerText property (supported by IE/ Webkit, not supported by Firefox) does take into account hidden
+     * descendants, it misses cases where the elements are hidden using hacks such as "line-height = 0" or
+     * "font-size = 0" (See #143. Links shared inside tweets on Twitter are using such hacks). Hence the need for this method.
      *
      * @param element
      * @returns {string} innerText
