@@ -249,10 +249,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         var $elemsInViewport = getElemsInViewport(),
             $matchingElems;
 
-        // space + '.' targets all links without an inner text
+        // space + '.' targets all links without any alphabetic text, considering only the innerText
+        // and the element's 'value' (but ignoring the placeholder text, so that an element with nothing
+        // but placeholder text *will* also get matched, for better usability]
         if (matchChar_lowerCase === '.') {
             $matchingElems = $elemsInViewport.filter(function() {
-                return !(getElementText(this).trim());
+                var elemText = getElementText(this, true);  // true - placeholder text be ignored
+                return !(elemText && elemText.match(/[a-zA-Z]/));
             });
         }
 
@@ -266,9 +269,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         // whose first letter, digit or special symbol is <char>
         // E.g: a link with the text "-3 AAPL" (without the quotes) will be
         // matched if <char> is either 'a' (case insensitive), or '-', or '3']
-        // Additionally, if the character corresponds to a key pressed without
-        // shift, we consider the char that would be typed if shift had been
-        // pressed as well (based on `stdUSKbdShiftMap`)
+        // Additionally, if the "match-char" corresponds to a key pressed without
+        // shift, we also use for matching the char that would be typed if
+        // shift had been pressed as well (based on `stdUSKbdShiftMap`)
         else {
             $matchingElems = $elemsInViewport.filter(function() {
                 var text_lowerCase = getElementText(this).toLowerCase(),
@@ -287,10 +290,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
                 digit && linkChars.push(digit[0]);
                 symbol && linkChars.push(symbol[0]);
 
-                // especially since we don't support unicode yet, it's useful to ensure
-                // that the first character of the (trimmed) text is always included
-                // in linkChars. In any case, there is no harm even if it gets included
-                // twice
+                // especially since we don't support unicode yet, it's useful to ensure that
+                // the first character of the (trimmed) text is always included in linChars.
+                // In any case, there is no harm even if it gets included twice.
                 linkChars.push(text_lowerCase[0]);
 
                 var matchChars = [matchChar_lowerCase],
@@ -395,11 +397,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         return $scope.find(CONSTS.focusablesSelector);
     }
 
-    function getElementText(el) {
+    function getElementText(el, ignorePlaceholderText) {
         return (
             el.innerText? el.innerText: (
                 el.value? el.value:
-                    (el.placeholder? el.placeholder: "")
+                    (!ignorePlaceholderText && el.placeholder? el.placeholder: "")
                 )
             ).trim();
     }
