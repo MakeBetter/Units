@@ -2,7 +2,7 @@
  * This module sets up shortcuts that are based on the urlData (specified in urlDataMap.js) -- both for CUs and the
  * overall page
  */
-_u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_commonHelper){
+_u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_commonHelper, mod_contentHelper){
     "use strict";
 
     var thisModule = {
@@ -115,16 +115,11 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
                             // because of an issue on Quora. There were some invisible elements present in a CU which had
                             // the same class as the valid SU.
 
-                            // We first mouseover on the element and then click. This is a fix for #25: On Quora, shortcuts
-                            // to click on links was not working for some links. If we give the mouseover event before
-                            // the click, it works better.
+                            // We first mouseover on the element and then click.
+                            // This is a fix for #25: On Quora, keyboard shortcuts are not working properly for some
+                            // links. It works better if we give the mouseover event to the element before clicking it.
 
-                            // Dispatch mouseover event. Code src: http://stackoverflow.com/a/919111/1328825
-                            var evObj = document.createEvent('MouseEvents');
-                            evObj.initEvent('mouseover',true,false);
-                            el.dispatchEvent(evObj);
-
-                            // Click
+                            mod_contentHelper.dispatchMouseOver(el);
                             el.click();
 
                             selectorsArr.splice(0, 1);
@@ -142,4 +137,4 @@ _u.mod_urlSpecificShortcuts = (function($, mod_keyboardLib, mod_CUsMgr, mod_comm
 
     return thisModule;
 
-})(jQuery, _u.mod_keyboardLib, _u.mod_CUsMgr, _u.mod_commonHelper);
+})(jQuery, _u.mod_keyboardLib, _u.mod_CUsMgr, _u.mod_commonHelper, _u.mod_contentHelper);

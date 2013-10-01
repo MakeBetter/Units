@@ -1,3 +1,6 @@
+// JSHint Config
+/* global CustomEvent */
+
 /**
  * Content Script helper: This module contains helper functions are related to the content scripts i.e. generally ones
  * that depend on the DOM of the page. (Generic helper functions, which are not content script specific, are defined
@@ -22,7 +25,8 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
         isUnitsProjNode: isUnitsProjNode,
         isRtMouseButton: isRtMouseButton,
         filterOutUnneededMutations: filterOutUnneededMutations,
-        getVisibleInnerText: getVisibleInnerText
+        getVisibleInnerText: getVisibleInnerText,
+        dispatchMouseOver: dispatchMouseOver
     };
 
     /*-- Module implementation --*/
@@ -278,6 +282,25 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
 
         return text;
     }
+
+    /**
+     * Dispatch mouseover event on an element
+     * @param el
+     */
+    function dispatchMouseOver(el) {
+        var event;
+        if (CustomEvent) {
+            event = new CustomEvent('mouseover', true, false);
+        }
+        else {
+            // This is now deprecated, but the CustomEvent constructor is not implemented by all browsers yet.
+            event = document.createEvent('MouseEvents');
+            event.initEvent('mouseover', true, false);
+        }
+
+        el.dispatchEvent(event);
+    }
+
 //    function canIgnoreAllChildlistNodes(nodes) {
 //        if (nodes && nodes.length) {
 //            for (var i = 0; i < nodes.length; ++i) {
