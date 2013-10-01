@@ -155,7 +155,7 @@ _u.mod_commonHelper = (function($) {
                 return;
             }
 
-            for (var i = 0, key; key = regexKeys[i]; i++) {
+            for (var i = 0, key; (key = regexKeys[i]); i++) {
                 if (!urlRegexpsParent[key]) {
                     continue;
                 }
@@ -164,9 +164,11 @@ _u.mod_commonHelper = (function($) {
 
                 if (Array.isArray(urlRegexps)) {
                     for (var index in urlRegexps) {
-                        regexStr = getStringifiedRegexp(urlRegexps[index]);
-                        if (regexStr) {
-                            urlRegexps[index] = regexStr;
+                        if (urlRegexps.hasOwnProperty(index)) {
+                            regexStr = getStringifiedRegexp(urlRegexps[index]);
+                            if (regexStr) {
+                                urlRegexps[index] = regexStr;
+                            }
                         }
                     }
                 }
@@ -188,16 +190,19 @@ _u.mod_commonHelper = (function($) {
             urlData;
 
         for (var key in urlDataMap) {
-            urlData = urlDataMap[key];
+            if (urlDataMap.hasOwnProperty(key)) {
+                urlData = urlDataMap[key];
 
-            if (Array.isArray(urlData)) {
-                for (var index in urlData) {
-                    stringifyRegexp_inUrlRegexpsParentObj(urlData[index]);
+                if (Array.isArray(urlData)) {
+                    for (var index in urlData) {
+                        if (urlData.hasOwnProperty(index)) {
+                            stringifyRegexp_inUrlRegexpsParentObj(urlData[index]);
+                        }
+                    }
                 }
-
-            }
-            else {
-                stringifyRegexp_inUrlRegexpsParentObj(urlData);
+                else {
+                    stringifyRegexp_inUrlRegexpsParentObj(urlData);
+                }
             }
         }
 
@@ -223,7 +228,7 @@ _u.mod_commonHelper = (function($) {
                 return ;
             }
 
-            for (var i = 0, key; key = regexKeys[i]; i++) {
+            for (var i = 0, key; (key = regexKeys[i]); i++) {
                 if (!urlRegexpsParent[key]) {
                     continue;
                 }
@@ -232,9 +237,11 @@ _u.mod_commonHelper = (function($) {
 
                 if (Array.isArray(urlRegexps)) {
                     for (var index in urlRegexps) {
-                        regexp = getDestringifiedRegexp(urlRegexps[index]);
-                        if (regexp) {
-                            urlRegexps[index] = regexp;
+                        if (urlRegexps.hasOwnProperty(index)) {
+                            regexp = getDestringifiedRegexp(urlRegexps[index]);
+                            if (regexp) {
+                                urlRegexps[index] = regexp;
+                            }
                         }
                     }
                 }
@@ -256,15 +263,18 @@ _u.mod_commonHelper = (function($) {
 
         if (urlDataMap) {
             for (var key in urlDataMap) {
-                urlData = urlDataMap[key];
-                if (Array.isArray(urlData)) {
-                    for (var index in urlData) {
-                        destringifyRegexp_inUrlRegexpsParentObj(urlData[index]);
+                if (urlDataMap.hasOwnProperty(key)) {
+                    urlData = urlDataMap[key];
+                    if (Array.isArray(urlData)) {
+                        for (var index in urlData) {
+                            if (urlData.hasOwnProperty(index)) {
+                                destringifyRegexp_inUrlRegexpsParentObj(urlData[index]);
+                            }
+                        }
                     }
-
-                }
-                else {
-                    destringifyRegexp_inUrlRegexpsParentObj(urlData);
+                    else {
+                        destringifyRegexp_inUrlRegexpsParentObj(urlData);
+                    }
                 }
             }
         }
