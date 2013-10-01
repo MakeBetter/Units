@@ -37,7 +37,8 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         reset();
         $searchBox = $('<input id = "UnitsProj-filterUI-searchBox" type = "text">')
             .addClass("UnitsProj-reset-text-input")
-            .addClass(class_unitsProjElem);
+            .addClass(class_unitsProjElem)
+            .attr('tabindex', -1);
 
         var $closeButton = $('<span>&times;</span>') // &times; is the multiplication symbol
             .addClass("UnitsProj-close-button")

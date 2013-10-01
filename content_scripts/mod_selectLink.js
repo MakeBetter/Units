@@ -40,10 +40,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
 
     // "dummy" text box (based on css styling) used to get "match-char" input (input on this triggers onMatchCharInput(),
     // see it's documentation)
-    var $dummyTextBox = $('<input type = "text">').
-        addClass(class_unitsProjElem).
-        addClass('UnitsProj-dummyInput').
-        appendTo(_u.$topLevelContainer);
+    var $dummyTextBox = $('<input type = "text">')
+        .addClass(class_unitsProjElem)
+        .addClass('UnitsProj-dummyInput')
+        .attr('tabindex', -1)
+        .appendTo(_u.$topLevelContainer);
 
     function reset() {
         removeHints();
