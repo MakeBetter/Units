@@ -65,7 +65,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         class_unitsProjElem = CONSTS.class_unitsProjElem,  //class applied to all elements created by UnitsProj
         class_CUOverlay = CONSTS.class_CUOverlay,                    // class applied to all CU overlays
         class_CUSelectedOverlay = CONSTS.class_CUSelectedOverlay,    // class applied to overlay on a selected CU
-        class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered CU
+        class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered-over CU
 
         selectedCUIndex  = -1, // Index of the selected CU in CUs_filtered
         hoveredCUIndex  = -1, // Index of the hovered CU in CUs_filtered
@@ -1793,10 +1793,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function onMouseOut(e) {
-        clearTimeout(timeout_onMouseMovePause);
-
         // upon any mouseout event, if a hovered overlay exists and the mouse pointer is found not be
-        // contained within it, dehover it (set it as dehovered).
+        // contained within it, call dehover()
+        // (NOTE: since the hovered overlay has pointer-events: none, we are unable to receive a
+        // mouseout event on the hovered overlay itself. TODO: "pointer-events: stroke"; didn't
+        // seem to allow doing that either -- documentation says SVG only, what does that mean?)
         if (hoveredCUIndex >= 0 &&
             !mod_contentHelper.elemContainsPoint($hoveredCUOverlay, e.pageX, e.pageY)) {
 
