@@ -289,14 +289,12 @@ _u.mod_contentHelper = (function(mod_commonHelper, CONSTS) {
      */
     function dispatchMouseOver(el) {
         var event;
-        if (CustomEvent) {
-            event = new CustomEvent('mouseover', true, false);
-        }
-        else {
-            // This is now deprecated, but the CustomEvent constructor is not implemented by all browsers yet.
-            event = document.createEvent('MouseEvents');
-            event.initEvent('mouseover', true, false);
-        }
+
+        // Although createEvent and initEvent are deprecated, we are continuing to use them because:
+        // 1) Not all browsers yet support the alternative, CustomEvent constructor
+        // 2) The mouseover issue on Quora (#25) seems to work better with this code than CustomEvent. :O (No idea why).
+        event = document.createEvent('MouseEvents');
+        event.initEvent('mouseover', true, false);
 
         el.dispatchEvent(event);
     }
