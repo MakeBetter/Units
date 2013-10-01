@@ -145,7 +145,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mouseX, mouseY,             // relative to the *page*
         mouseScreenX, mouseScreenY, // relative to the *screen*
 
-        // holds the bounding rect calculated for the last selected CU using getBoundingRectangle()
+        // holds the bounding rect calculated for the last selected CU using getBoundingRect()
         // (does not include padding etc applied to the actual overlay drawn on the CU)
         lastSelectedCUBoundingRect;
 
@@ -423,10 +423,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function showSelectedOverlay($CU) {
-        var boundingRect = getBoundingRectangle($CU);
+        var boundingRect = getBoundingRect($CU);
 
         // This check helps performance since _showOverlay() takes orders
-        // of magnitude more time that getBoundingRectangle().
+        // of magnitude more time that getBoundingRect().
         // (This check isn't required for showHoveredOverlay()  because the
         // needless redrawing of the same selected overlay happens only due
         // to showSelectedOverlay() getting repeatedly called on dom mutations.
@@ -450,7 +450,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // (`boundingRect` is optional; is passed by those functions where it has already
     // been determined there)
     function showHoveredOverlay($CU, boundingRect) {
-        _showOverlay('hovered', boundingRect || getBoundingRectangle($CU));
+        _showOverlay('hovered', boundingRect || getBoundingRect($CU));
     }
 
     /**
@@ -550,7 +550,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             winTop = body.scrollTop,
             winBottom,
         // for the CU
-            boundingRect = getBoundingRectangle($CU),
+            boundingRect = getBoundingRect($CU),
             CUTop = boundingRect.top,
             CUBottom;
 
@@ -889,7 +889,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
 // NOTE: the values for top and left are relative to the document
-    function getBoundingRectangle($CU) {
+    function getBoundingRect($CU) {
         var elements = [];
         if (CUStyleData && CUStyleData.useInnerElementsToGetOverlaySize) {
             var allDescendants = $CU.find('*');
@@ -909,7 +909,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else {
             elements = $CU.get();
         }
-        return getBoundingRectangleForElements(elements);
+        return getBoundingRectForElements(elements);
     }
 
     function isElementVisible(el) {
@@ -923,7 +923,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 // returns a bounding rectangle for the set (array) of DOM elements specified
 // the returned rectangle object has the keys: top, left, width, height, (such
 // that the rectangle object can be directly passed to jQuery's css() function).
-    function getBoundingRectangleForElements(elements) {
+    function getBoundingRectForElements(elements) {
         if (!elements || !elements.length)
             return;
 
@@ -1084,7 +1084,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function updateHoveredOverlay() {
         var $hoveredCU = CUs_filtered[hoveredCUIndex];
         if ($hoveredCU) {
-            var boundingRect = getBoundingRectangle($hoveredCU);
+            var boundingRect = getBoundingRect($hoveredCU);
             if (mod_contentHelper.rectContainsPoint(boundingRect, mouseX, mouseY)) {
                 showHoveredOverlay($hoveredCU, boundingRect); // update the overlay
             }
@@ -1206,7 +1206,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         if ($prevHoveredCU) {
             var newHoveredCUIndex,
-                boundingRect = getBoundingRectangle($prevHoveredCU);
+                boundingRect = getBoundingRect($prevHoveredCU);
 
             // if the previously hovered CU is still present in CUs_filtered AND the mouse pointer
             // is still contained within its bounding rect
@@ -1875,7 +1875,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function isAnyPartOfCUinViewport($CU) {
 
         // for the CU
-        var boundingRect = getBoundingRectangle($CU),
+        var boundingRect = getBoundingRect($CU),
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height;
 
@@ -1890,7 +1890,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function isCUFullyInViewport($CU) {
 
         // for the CU
-        var boundingRect = getBoundingRectangle($CU),
+        var boundingRect = getBoundingRect($CU),
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height;
 
