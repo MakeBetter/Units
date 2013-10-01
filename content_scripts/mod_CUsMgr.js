@@ -853,16 +853,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * @return {Boolean}
      */
     function areCUsSame($1, $2) {
+        if ( ($1 === $2) ||
+            // if both are empty or nonexistent, their "contents" are "same".
+            (!$1 && (!$2 || !$2.length)) ||
+            (!$2 && (!$1 || !$1.length)) ) {
 
-        // if each jQuery set is either empty or nonexistent, their "contents" are "same".
-        if (!$1 && (!$2 || !$2.length)) {
             return true;
         }
-        if (!$2 && (!$1 || !$1.length)) {
-            return true;
-        }
 
-        // we reach here if atleast one of them exists and is non-empty, so...
+        // we reach here if at least one of them exists and is non-empty, so...
         if ($1 && $1.length && $2 && $2.length ) {
             var length1 = $1.length,
                 length2 = $2.length;
