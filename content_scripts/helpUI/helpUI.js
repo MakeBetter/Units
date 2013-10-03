@@ -107,13 +107,6 @@
             CUs_actions = expandedUrlData && expandedUrlData.CUs_actions,
             CUsShortcuts_URLBased = $.extend({}, CUs_SUs, CUs_actions);
 
-        // Additional shortcut to be displayed
-        CUsShortcuts_Default.selectAnyLink= {
-            descr: "Select link(s) starting with that letter",
-            kbdShortcuts: ["Space + letter"],
-        };
-        CUsShortcuts_Default.selectAnyLink[property_importanceHigh] = true;
-
         var $shortcutsTable = $CUShortcutsSection.find("table");
 
         addShortcutsSubsectionToParentTable(CUsShortcuts_Default, $shortcutsTable, "Content Unit (CU) based");
@@ -124,6 +117,18 @@
         var miscShortcuts = settings.miscShortcuts,
             expandedUrlData = settings.expandedUrlData,
             globalShortcuts = settings.globalChromeCommands;
+
+        // This is a special shortcut and is not part of defaultSettings.
+        var selectAnyLinkShortcut = {
+            selectAnyLink: {
+                descr: "Select link(s) starting with that letter",
+                kbdShortcuts: ["Space + letter"],
+                importanceHigh: true
+            }
+        };
+
+        // Using extend because we want selectAnyLink to be the first property in miscShortcuts.
+        miscShortcuts = $.extend(selectAnyLinkShortcut, miscShortcuts);
 
         var page_SUs = expandedUrlData && expandedUrlData.page_SUs,
             page_actions = expandedUrlData && expandedUrlData.page_actions,

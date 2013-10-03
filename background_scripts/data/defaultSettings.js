@@ -132,11 +132,6 @@ var defaultSettings = {
     All other general page-level shortcuts that don't fall under pageNavigationShortcuts or elementNavigationShortcuts
      */
     miscShortcuts: {
-        showSelectLinkUI: {
-            descr: "Select any link",
-            kbdShortcuts: ['f l', 'f f'],
-            importanceHigh: true
-        },
         toggleZenMode: {
             descr: "Toggle zen mode",
             kbdShortcuts: ['z'],
