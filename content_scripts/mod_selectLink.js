@@ -44,6 +44,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         .addClass(class_unitsProjElem)
         .addClass('UnitsProj-dummyInput')
         .attr('tabindex', -1)
+        .hide()
         .appendTo(_u.$topLevelContainer);
 
     function reset() {
@@ -192,7 +193,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     }
 
     function focusDummyTextBoxAndRemoveHints() {
-        $dummyTextBox.val('').focus();
+        $dummyTextBox.val('').show().focus();
         removeHints();
     }
 
