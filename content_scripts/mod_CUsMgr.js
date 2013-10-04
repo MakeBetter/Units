@@ -124,6 +124,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // the following are set during setup(); most are sub-objects of expandedUrlData but we store global references
         // to avoid having to read them each time there a DOM change and things need to be redrawn etc.
+        // NOTE: Make sure to reset these during reset()
         miscSettings,
         expandedUrlData,
         CUsSpecifier,
@@ -152,6 +153,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function reset() {
         dehoverCU();
         deselectCU();
+
+        // reset these references that are initialized during setup()
+        miscSettings = expandedUrlData = CUsSpecifier = CUsSelector = mainElementSelector = headerSelector =
+            CUStyleData = CUsShortcuts = null;
+
         CUs_filtered = CUs_all = [];   // these can point to the same array at this point
         mod_globals.isCUSelected = false;
         mod_globals.numCUs_all = mod_globals.numCUs_filtered = 0;
