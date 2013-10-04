@@ -40,6 +40,7 @@
                 "vendor/mousetrap-modified.js",
 
                 "content_scripts/initializeNamespace.js",
+                "content_scripts/mod_pubSub.js",
                 "content_scripts/mod_globals.js",
                 "content_scripts/mod_domEvents.js",
                 "common/mod_commonHelper.js",
@@ -48,7 +49,7 @@
 
                 "content_scripts/mod_smoothScroll.js",
                 "content_scripts/mod_contentHelper.js",
-                "content_scripts/mod_pubSub.js",
+                "content_scripts/mod_directionalNav.js",
                 "content_scripts/mod_mutationObserver.js",
                 "content_scripts/mod_chromeAltHack.js",
                 "content_scripts/mod_keyboardLib.js",
