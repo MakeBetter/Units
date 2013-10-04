@@ -343,6 +343,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUSelection) && (fn_onCUSelection = temp.fn)) {
             fn_onCUSelection($CU, document, $.extend(true, {}, expandedUrlData));
         }
+
+        mouseoverInSelectedCU_ifRequired($CU);
     }
 
     /**
@@ -1691,6 +1693,28 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             var savedScrollPos = body.scrollTop;
             focusMainElement(CUs_filtered[selectedCUIndex]);
             body.scrollTop = savedScrollPos;
+        }
+    }
+
+    /**
+     * Dispatch mouseover (if specified in urlData) on particular element in the selected CU. The element selector (to
+     * mouseover on) is specified in urlData.
+     * @param $CU
+     */
+    function mouseoverInSelectedCU_ifRequired($CU) {
+        var mouseoverOnCUSelection, mouseoverEl;
+        if (CUsSpecifier && (mouseoverOnCUSelection = CUsSpecifier.mouseoverOnCUSelection)) {
+
+            // If mouseoverOnCUSelection is explicitly set to true, then mouseover on $CU[0]
+            if (mouseoverOnCUSelection === true) {
+                mouseoverEl = $CU[0];
+            }
+            // Else, use mouseoverOnCUSelection as selector for the element (inside CU) to mouseover on
+            else {
+                mouseoverEl = $CU.find(mouseoverOnCUSelection)[0];
+            }
+
+            mouseoverEl && mod_contentHelper.dispatchMouseOver(mouseoverEl);
         }
     }
 

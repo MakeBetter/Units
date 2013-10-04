@@ -157,9 +157,11 @@ defaultSettings.urlDataMap = {
                 }
             },
             CUs_actions: {
-
+                mouseoverOnCUSelection: true // Specifies if a mouseover event should be invoked on particular element on CU selection.
+                // Can have 2 types of values: 1) true 2) ".selector"
+                // If mouseoverOnSelection = true, mouseover is invoked on the CU itself (more specifically, $CU[0])
+                // If mouseoverOnSelection = ".selector", we find element specified by ".selector" in the CU and invoke mouseover on it.
             },
-
 
             // the structure of this item matches that of CUs_SUs
             page_SUs: {
@@ -320,7 +322,10 @@ defaultSettings.urlDataMap = {
         },
         {
             urlPatterns: ["github.com/*/issues/*", "github.com/*/issues?*"],
-            CUs_specifier: ".js-navigation-item",
+            CUs_specifier: {
+                selector: ".js-navigation-item",
+                mouseoverOnCUSelection: true
+            },
             CUs_SUs: {
                 std_mainEl: ".js-navigation-open",
                 std_toggleSelection: ".select-toggle-check",
