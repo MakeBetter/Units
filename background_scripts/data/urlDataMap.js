@@ -235,6 +235,15 @@ defaultSettings.urlDataMap = {
                 selector: ".left_bdr",
                 exclude: "#adhomepage"
             }
+        },
+        {
+            // Example page: http://articles.timesofindia.indiatimes.com/2010-11-22/edit-page/28261930_1_cities-ndmc-lieutenant-governor
+            urlPatterns: ["articles.timesofindia.indiatimes.com/*"],
+            page_mainContent: {
+                selector: "#area-center-w-left, #area-bottom",
+                exclude: "#mod-ctr-lt-in-top, .mod-adcpc, #area-article-side"
+            }
+
         }
     ],
 
