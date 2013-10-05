@@ -8,27 +8,23 @@
 
  A summary of the changes made:
 
- 1. Changes to allow using 'space' key as a modifier. (These changes depend on the code in
- mod_keyboardLib.js):
-
- 2. Change to add event handlers in capturing phase. For this, the call to addEventListener has been
+ 1. Change to add event handlers in capturing phase. For this, the call to addEventListener has been
  modified to set the 3rd param to true.
 
- 3. Changed Mousetrap to allow multiple callbacks to be bound for the same hotkey/sequence. However,
+ 2. Changed Mousetrap to allow multiple callbacks to be bound for the same hotkey/sequence. However,
  only one *actual* callback is allowed to execute, depending on the context etc. ("actual" here means
  as seen from the public interface for binding shortcuts provided by mod_keyboardLib.js (refer to it
  for details). For this, Mousetrap's callback triggering loops are modified to end upon encountering the first event
  with a the property `__handledByUnitsProj` set to true (this property is set by mod_keyboardLib.js)
 
-4. (Related to the previous point) Made changes to Mousetrap to ensure that callbacks bound using it
+ 3. (Related to the previous point) Made changes to Mousetrap to ensure that callbacks bound using it
 to the same keyboard shortcut execute in the order in which they were bound (This required specific
 changes for "sequence" type shortcuts)
 
-5. Removed all instances of `_directMap`, `unbind`, `trigger` which are not needed and will no longer
+ 4. Removed all instances of `_directMap`, `unbind`, `trigger` which are not needed and will no longer
 work as expected
 
-6. Added methods _characterFromEvent and _eventModifiers to the public interface of the module. These are being used by
-mod_basicOptions.
+ 5. Added methods _characterFromEvent and _eventModifiers to the public interface of the module. These are being used by mod_basicOptions.
  ----------------------------------------------------------------------------------
  */
 
@@ -185,7 +181,7 @@ mod_basicOptions.
          * @type {Object}
          */
         // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
+        // (Part of the implementation of point 4 in the summary of changes at the top, whereby all instances
         // of `_directMap`, `unbind`, `trigger` are to be removed)
         //_directMap = {},
 
@@ -390,7 +386,7 @@ mod_basicOptions.
                 continue;
             }
 
-            // if this is a keypress event and the meta/control/space keys
+            // if this is a keypress event and the meta key and control key
             // are not pressed that means that we need to only look at the
             // character, otherwise check the modifiers as well
             //
@@ -398,14 +394,7 @@ mod_basicOptions.
             // safari will fire a keypress if meta or meta+shift is down
             // firefox will fire a keypress if meta or control is down
 
-            //[Modification for UnitsProj]
-            // "&& !Mousetrap.isSpaceDown" added to the condition below
-            // NOTE to self (from Himanshu): if replacing mousetrap with a library of your own,
-            // we won't need these special cases for 'keypress' etc, if we only enable shortcuts
-            // to be specified as <modifiers> + <key> (using only keydown), which is what we are
-            // doing at the moment (13 Sep 2013), both in code and the UI for specifying shortcuts.
-            if ((action == 'keypress' && !e.metaKey && !e.ctrlKey && !Mousetrap.isSpaceDown) ||
-
+            if ((action == 'keypress' && !e.metaKey && !e.ctrlKey) ||
                 _modifiersMatch(modifiers, callback.modifiers)) {
 
                 // remove is used so if you change your mind and call bind a
@@ -444,12 +433,6 @@ mod_basicOptions.
 
         if (e.metaKey) {
             modifiers.push('meta');
-        }
-
-        // [Modification for UnitsProj]
-        // Added the following if block
-        if (Mousetrap.isSpaceDown) {
-            modifiers.push('space');
         }
 
         return modifiers;
@@ -607,9 +590,7 @@ mod_basicOptions.
      * @returns {boolean}
      */
     function _isModifier(key) {
-        // [Modification for UnitsProj]
-        // Added ` || key == 'space'` at the end of the following line
-        return key == 'shift' || key == 'ctrl' || key == 'alt' || key == 'meta' || key == 'space';
+        return key == 'shift' || key == 'ctrl' || key == 'alt' || key == 'meta';
     }
 
     /**
@@ -778,7 +759,7 @@ mod_basicOptions.
 
         // store a direct mapped reference for use with Mousetrap.trigger
         // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
+        // (Part of the implementation of point 4 in the summary of changes at the top, whereby all instances
         // of `_directMap`, `unbind`, `trigger` are to be removed)
         //_directMap[combination + ':' + action] = callback;
 
@@ -942,7 +923,7 @@ mod_basicOptions.
          * @returns void
          */
         // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
+        // (Part of the implementation of point 4 in the summary of changes at the top, whereby all instances
         // of `_directMap`, `unbind`, `trigger` are to be removed)
 //        unbind: function(keys, action) {
 //            return Mousetrap.bind(keys, function() {}, action);
@@ -956,7 +937,7 @@ mod_basicOptions.
          * @returns void
          */
         // [Modification for UnitsProj]
-        // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
+        // (Part of the implementation of point 4 in the summary of changes at the top, whereby all instances
         // of `_directMap`, `unbind`, `trigger` are to be removed)
 //        trigger: function(keys, action) {
 //            if (_directMap[keys + ':' + action]) {
@@ -979,7 +960,7 @@ mod_basicOptions.
             _sequenceCounts = {};
 
             // [Modification for UnitsProj]
-            // (Part of the implementation of point 5 in the summary of changes at the top, whereby all instances
+            // (Part of the implementation of point 4 in the summary of changes at the top, whereby all instances
             // of `_directMap`, `unbind`, `trigger` are to be removed)
             //_directMap = {};
             return this;
