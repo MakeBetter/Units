@@ -143,24 +143,24 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
             
             switch(scrollType) {
                 case "down":
-                    smoothScroll(elToScroll, elToScroll.scrollTop + miscSettings.pageScrollDelta, scrollAnimationDuration);
+                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop + miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "up":
-                    smoothScroll(elToScroll, elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
+                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "pageDown":
-                    smoothScroll(elToScroll, elToScroll.scrollTop +
+                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop +
                         (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
                     break;
                 case "pageUp":
-                    smoothScroll(elToScroll, elToScroll.scrollTop -
+                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop -
                         (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
                     break;
                 case "top":
-                    smoothScroll(elToScroll, 0, scrollAnimationDuration);
+                    smoothScroll(elToScroll, 'scrollTop',  0, scrollAnimationDuration);
                     break;
                 case "bottom":
-                    smoothScroll(elToScroll, elToScroll.scrollHeight, scrollAnimationDuration);
+                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollHeight, scrollAnimationDuration);
                     break;
             }
         }

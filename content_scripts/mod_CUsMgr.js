@@ -1046,7 +1046,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             var animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
                 Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
 
-            smoothScroll(body, newWinTop, animationDuration);
+            smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
         }
         else {
             body.scrollTop = newWinTop;
