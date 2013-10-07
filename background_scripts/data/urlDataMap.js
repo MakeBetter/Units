@@ -822,7 +822,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.washingtonpost.com/**"],
             page_mainContent: {
                 selector: "#content[role=main], #article-leaf-page>.main-content",
-                exclude: "#header-v3"
+                exclude: "#header-v3, #wpni_adi_inline_bb, #article-side-rail, #article-leaf-page-footer-taboola, #echo_container_a"
             }
         }
     ],
