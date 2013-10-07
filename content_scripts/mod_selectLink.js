@@ -20,16 +20,13 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         hintSpans_doubleDigit = [],
         timeout_removeHints,
         timeout_blurDummyTextbox,
-        timeoutPeriod = 4000,
-
-        // we don't use on mod_keyboardLib.isSpaceDown() because that might be removed soon (ref: #144, #145)
-        isSpaceDownOnNonInputElement;
+        timeoutPeriod = 4000;
 
     // vars related to hint chars 
     var reducedSet = "jkdhglsurieytnvmbc",// easiest to press keys (roughly in order), exluding 'f'
         remainingSet = "axzwoqp",
         // hint chars: set of letters used for hints. easiest to reach letters should come first
-        hintCharsStr = (reducedSet + remainingSet).toUpperCase(); //
+        hintCharsStr = (reducedSet + remainingSet).toUpperCase();
 
     // This is used to group the all the hint label spans within a common parent
     var $hintsContainer = $("<div></div>")
@@ -54,7 +51,6 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     function setup() {
         reset();
         mod_domEvents.addEventListener(document, 'keydown', onKeyDown, true);
-        mod_domEvents.addEventListener(document, 'keyup', onKeyUp_space, true);
         mod_domEvents.addEventListener($dummyTextBox[0], 'blur', onDummyTextBoxBlur, true);
 
         $dummyTextBox.on('input', onDummyTextBoxInput );
@@ -136,13 +132,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         var keyCode = e.which || e.keyCode || e.charCode;
         var target = e.target;
 
-        // space keydown on non-input type element
-        if (keyCode === 32 && canIgnoreSpaceOnElement(target)) {
-            isSpaceDownOnNonInputElement = true;
-            mod_contentHelper.suppressEvent(e); // prevents default action of space like scrolling etc
-        }
-        // space (already pressed) + some other key's keydown (+ non-input type element focused)
-        else if (isSpaceDownOnNonInputElement && canIgnoreSpaceOnElement(target)) {
+        // some (other) key pressed while [space] was already pressed down with the focus being
+        // on a non-input type element
+        if (mod_keyboardLib.canUseSpaceAsModfier()) {
             // Focus the dummy text box. And stop the event from propagating, but don't
             // prevent it's default action, so that it enters text into the text box.
             // This lets us give focus to the dummy text box just-in-time (i.e. when the
@@ -159,7 +151,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             e.stopImmediatePropagation();
 
         }
-        // 'f' pressed. focus dummy text box so the that the next next char entered triggers onMatchCharInput   
+        // 'f' pressed. focus dummy text box so that the next char entered triggers onMatchCharInput
         else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
             !(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) &&
             (document.activeElement === $dummyTextBox[0] || mod_contentHelper.elemAllowsSingleKeyShortcut(target))) {
@@ -185,23 +177,9 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         }
     }
 
-    function onKeyUp_space(e) {
-        var keyCode = e.which || e.keyCode || e.charCode;
-        if (keyCode === 32) { // space
-            isSpaceDownOnNonInputElement = false;
-        }
-    }
-
     function focusDummyTextBoxAndRemoveHints() {
         $dummyTextBox.val('').show().focus();
         removeHints();
-    }
-
-    // We deem space key ignorable it the target is not an input type or allows typing.
-    // This allows us to target links using space+<key>
-    // However, this will prevent user from scrolling the page down using the space key.
-    function canIgnoreSpaceOnElement(elem) {
-        return elem.tagName.toLowerCase() !== "input" && !mod_contentHelper.elemAllowsTyping(elem);
     }
 
     // We read input off of this dummy element to determine the actual character

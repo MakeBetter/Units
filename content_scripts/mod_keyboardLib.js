@@ -11,7 +11,7 @@
  The following extensions are made to the original Mousetrap library:
  1) Enable the use of 'space' key as a *special* modifier (used by mod_selectLink etc)
  2) Override Mousetrap.stopCallback according to our specific logic, which:
- i) allows shortcuts to be invoked even when on an text input element, as long as one of these keys is part of the
+ i) allows shortcuts to be invoked even when on a text input element, as long as one of these keys is part of the
  shortcut: ctrl, alt, option, meta, and command
  ii) prevents shortcuts without one of the keys listed above from getting invoked ONLY within an text editable
  input element (see code for details), and NOT all input elements (which is mousetrap's default behavior)
@@ -28,14 +28,19 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
         setup: setup,
         bind: bind,
         shouldHandleShortcut: shouldHandleShortcut, // exposed publicly for Mousetrap library (mousetrap-modified.js)
+        canUseSpaceAsModfier: canUseSpaceAsModfier,
+        wasSpaceUsedAsModifier: wasSpaceUsedAsModifier,
+        canIgnoreSpaceOnElement: canIgnoreSpaceOnElement
     });
 
-    var protectedWebpageShortcuts;
-//    var protectedWebpageShortcuts_lowerCase;
+    var protectedWebpageShortcuts,
+        //    var protectedWebpageShortcuts_lowerCase,
+        _canUseSpaceAsModifier,
+        _wasSpaceUsedAsModifier = false;
 
     function setup(settings) {
-//        mod_domEvents.addEventListener(document, 'keydown', handlerToEnableSpaceAsModifier, true);
-//        mod_domEvents.addEventListener(document, 'keyup', handlerToEnableSpaceAsModifier, true);
+        mod_domEvents.addEventListener(document, 'keydown', handlerToEnableSpaceAsModifier, true);
+        mod_domEvents.addEventListener(document, 'keyup', handlerToEnableSpaceAsModifier, true);
 
         protectedWebpageShortcuts = settings.expandedUrlData && settings.expandedUrlData.protectedWebpageShortcuts;
 //        protectedWebpageShortcuts_lowerCase = [];
@@ -110,57 +115,55 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
         Mousetrap.reset();
     }
 
-//    function allowSpaceAsModifier(e) {
-//        return (mod_contentHelper.elemAllowsSingleKeyShortcut(e.target) || (e.altKey || e.ctrlKey || e.metaKey));
-//    }
+    // Returns true if the [space] key was pressed down with the focus being on an element on which
+    // the [space] key can be ignored (refer: canIgnoreSpaceOnElement()), and the [space] key hasn't
+    // been released since.
+    function canUseSpaceAsModfier() {
+        return _canUseSpaceAsModifier;
+    }
 
-    /**
-     * This function handles the <space> keydown and keyup events to allow <space> to be used as a modifier. Importantly,
-     * 1) It maintains the state of the two global variables 'isSpaceDown' and 'spaceUsedAsModifier'. The modified
-     * mousetrap library code uses 'isSpaceDown'. 'spaceUsedAsModifier' is used to enable the following point.
-     * 2) On space keyup, if space was not used as modifier (i.e. no other key was pressed during space keydown), this
-     * function invokes on the target element the effect that pressing space normally would have on it (i.e. if space was
-     * not being used as a modifier). This ensures space can still be used to do things like toggling a checkbox, if not
-     * used in conjunction with another key.
-     *
-     * @param e Event
-     */
-//    function handlerToEnableSpaceAsModifier(e) {
-//
-//        var keycode = e.which || e.keycode;
-//
-//        if (keycode === 32) { // space
-//
-//            if (e.type === 'keydown') {
-//                Mousetrap.isSpaceDown = true;
-//
-//                // Ensure that we don't consider <space> a (potential) modifier if:
-//                // the target element is a type-able element etc AND there is no other non-shift modifier key
-////                if(!allowSpaceAsModifier(e)) {
-////                    return;
-////                }
-//
-//                // else...
-//                Mousetrap.spaceUsedAsModifier = false; // reset
-////                mod_contentHelper.suppressEvent(e); // commented out for now. Refer #144, #145
-//
-//            }
-//            else { // 'keyup'
-//                Mousetrap.isSpaceDown = false;
-//                if (!Mousetrap.spaceUsedAsModifier) {
-////                    invokeSpaceOnElement(e.target);
-//                }
-//                Mousetrap.spaceUsedAsModifier = false; // reset
-//            }
-//
-//        }
-//        // any other key than space
-//        else {
-//            if (e.type === 'keydown' && Mousetrap.isSpaceDown && allowSpaceAsModifier(e)) {
-//                Mousetrap.spaceUsedAsModifier = true;
-//            }
-//        }
-//    }
+    // On each space *keyup* event, the value returned by this can be probed to check whether
+    // space was used as a modifier or as a regular key. More specifically, this returns true if
+    // some other key was pressed while space was pressed down, false otherwise.
+    // <technical-detail>
+    // Also, for true to be returned, space keydown must have happened on an element where it can be
+    // "ignored"; refer: canIgnoreSpaceOnElement()
+    // </technical-detail>
+    function wasSpaceUsedAsModifier() {
+        return _wasSpaceUsedAsModifier;
+    }
+
+    function handlerToEnableSpaceAsModifier(e) {
+        var keycode = e.which || e.keycode;
+        // 32 - space
+        if (keycode === 32) {
+            if (e.type === 'keydown') {
+                _wasSpaceUsedAsModifier = false; // reset the value on space keydown
+                if (canIgnoreSpaceOnElement(e.target)) {
+                    _canUseSpaceAsModifier = true;
+                }
+            }
+            else { // 'keyup'
+                _canUseSpaceAsModifier = false;
+            }
+        }
+        // any other key than space
+        else {
+            if (e.type === 'keydown' && _canUseSpaceAsModifier) {
+                _wasSpaceUsedAsModifier = true;
+            }
+        }
+    }
+
+    // We deem space key ignorable if the target is not an input type or an element
+    // that allows typing (included <select>)
+    // This allows other modules (mainly mod_selectLink) to use space as a special
+    // modifier key.
+    function canIgnoreSpaceOnElement(elem) {
+        // (`elemAllowsTyping()` includes check for `select` element)
+        return elem.tagName.toLowerCase() !== "input" && !mod_contentHelper.elemAllowsTyping(elem);
+    }
+
 
     /**
      * Determines whether the invoked key/key combination (`shortcut`) should be handled as a shortcut
@@ -175,9 +178,15 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
 
      */
     function shouldHandleShortcut(shortcut, targetElement, context, dependsOnlyOnContext) {
-        if (mod_globals.hintsEnabled) {
+
+        // don't treat the current key as shortcut if
+        // 1) hints are enabled
+        // 2) space is pressed down
+        if (mod_globals.hintsEnabled || _canUseSpaceAsModifier) {
             return false;
         }
+
+        // check `canTreatAsShortcut()` only if `dependsOnlyOnContext` is false/unspecified
         if (!dependsOnlyOnContext && !canTreatAsShortcut(shortcut, targetElement)) {
             return false;
         }
