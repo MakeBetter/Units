@@ -72,6 +72,14 @@ var defaultSettings = {
             kbdShortcuts: ['shift+k'],
             importanceHigh: true
         },
+        scrollRight: {
+            descr: "Scroll page right",
+            kbdShortcuts: ['shift+l'],
+        },
+        scrollLeft: {
+            descr: "Scroll page left",
+            kbdShortcuts: ['shift+h'],
+        },
         back: {
             descr: "Go back",
             kbdShortcuts: ['alt+h']
@@ -153,28 +161,39 @@ var defaultSettings = {
     CUsShortcuts: {
         // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-        nextCU: {
-            descr: "Select next CU",
+        selectCUDown: {
+            descr: "Select next/down CU",
             kbdShortcuts: ['j'/*, 'down'*/],
             importanceHigh: true
         },
-        prevCU: {
-            descr: "Select previous CU",
+        selectCUUp: {
+            descr: "Select prev/up CU",
             kbdShortcuts: ['k'/*, 'up'*/],
             importanceHigh: true
         },
+
+        selectCURight: {
+            descr: "Select right CU",
+            kbdShortcuts: ['l'/*, 'right'*/],
+        },
+        selectCULeft: {
+            descr: "Select left CU",
+            kbdShortcuts: ['h'/*, 'left'*/],
+        },
+
+        selectFirstCU: {
+            descr: "Select first CU",
+            kbdShortcuts: ['^', 'alt+1']
+        },
+        selectLastCU: {
+            descr: "Select last CU",
+            kbdShortcuts: ['$', 'alt+9']
+        },
+
         filterCUs: {
             descr: "Search and filter CUs ",
             kbdShortcuts: ['alt+f'],
         },
-        firstCU: {
-            descr: "Select first CU",
-            kbdShortcuts: ['^', 'alt+1']
-        },
-        lastCU: {
-            descr: "Select last CU",
-            kbdShortcuts: ['$', 'alt+9']
-        }
     },
 
     /*

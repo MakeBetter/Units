@@ -102,11 +102,21 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         var scrollUp = function() {
             scroll("up");
         };
+        var scrollRight = function() {
+            scroll("right");
+        };
+        var scrollLeft = function() {
+            scroll("left");
+        };
         mod_keyboardLib.bind(pageNavigationShortcuts.scrollDown.kbdShortcuts, scrollDown);
         mod_keyboardLib.bind(pageNavigationShortcuts.scrollUp.kbdShortcuts, scrollUp);
+        mod_keyboardLib.bind(pageNavigationShortcuts.scrollRight.kbdShortcuts, scrollRight);
+        mod_keyboardLib.bind(pageNavigationShortcuts.scrollLeft.kbdShortcuts, scrollLeft);
         // special shortcuts, these will get invoked only when the page has no CUs
-        mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, scrollDown, {pageHasCUs: false});
-        mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, scrollUp, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, scrollDown, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, scrollUp, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, scrollRight, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, scrollLeft, {pageHasCUs: false});
     }
 
     // invokes the browser's 'back' action
@@ -147,6 +157,12 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
                     break;
                 case "up":
                     smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
+                    break;
+                case "right":
+                    smoothScroll(elToScroll, 'scrollLeft',  elToScroll.scrollLeft + miscSettings.pageScrollDelta, scrollAnimationDuration);
+                    break;
+                case "left":
+                    smoothScroll(elToScroll, 'scrollLeft',  elToScroll.scrollLeft - miscSettings.pageScrollDelta, scrollAnimationDuration);
                     break;
                 case "pageDown":
                     smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop +
