@@ -3,7 +3,7 @@
 
 _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib, mod_mutationObserver, mod_filterCUs,
                           mod_help, mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_globals,
-                          mod_smoothScroll, CONSTS) {
+                          mod_directionalNav, mod_smoothScroll, CONSTS) {
 
     "use strict";
 
@@ -13,10 +13,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         setup: setup,
         $getSelectedCU: $getSelectedCU,
         updateCUsAndRelatedState: updateCUsAndRelatedState,
-        selectNext: selectNext,
-        selectPrev: selectPrev,
-        selectFirst: selectFirst,
-        selectLast: selectLast,
         getAllCUs: getAllCUs,
         updateCUOverlays: updateCUOverlays
     });
@@ -545,90 +541,122 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Scrolls more of the specified CU into view if required (i.e. if the CU is too large),
-     * in the direction specified.
-     * @param {jQuery} $CU
-     * @param {string} direction Can be either 'up' or 'down'
-     * @return {Boolean} value indicating whether scroll took place
+     * Scrolls more of the specified CU into view if required (i.e. if the CU doesn't fit in the viewport,
+     * in the direction specified), selects the next CU, based on the direction specified.
+     * @param {jQuery} $selectedCU
+     * @param {string} direction Can be either 'up', 'down', 'left' or 'right'
      */
-    function scrollCUIfRequired ($CU, direction) {
+    function  _showMore_or_selectNextCU($selectedCU, direction) {
+        var boundingRect = getBoundingRect($selectedCU);
 
-        var pageHeaderHeight,
-        // for the window:
-            winTop = body.scrollTop,
-            winBottom,
-        // for the CU
-            boundingRect = getBoundingRect($CU),
-            CUTop = boundingRect.top,
-            CUBottom;
+        if (direction === 'up' || direction === 'down') {
+            var pageHeaderHeight,
+                winTop = body.scrollTop,
+                winBottom,
+                CUTop = boundingRect.top,
+                CUBottom;
 
-        var margin = 50;
-
-        if (direction === 'up') {
-            pageHeaderHeight = getEffectiveHeaderHeight();
-            if (CUTop <= winTop + pageHeaderHeight) {
-                mod_basicPageUtils.scroll('up', body);
-                return true;
-            }
-        }
-        else { // direction === 'down'
-            winBottom = winTop + window.innerHeight;
-            CUBottom = CUTop + boundingRect.height;
-            if (CUBottom >= winBottom - margin) {
-                var $nextCU = CUs_filtered[selectedCUIndex + 1];
-                if ($nextCU && isCUFullyInViewport($nextCU)) {
-                    return false;
+            if (direction === 'down') {
+                winBottom = winTop + window.innerHeight;
+                CUBottom = CUTop + boundingRect.height;
+                var  margin = 30;   // special margin for 'down'
+                if (CUBottom >= winBottom) {
+                    mod_basicPageUtils.scroll(direction, body);
+                }
+                // special check using a specific `margin`; for 'down' only
+                else if (CUBottom >= winBottom - margin) {
+                    // select next CU if fits fully within the `margin`, else scroll 
+                    _selectNextCU_or_scrollPage($selectedCU, direction, true);
                 }
                 else {
-                    mod_basicPageUtils.scroll('down', body);
-                    return true;
+                    _selectNextCU_or_scrollPage($selectedCU, direction);
+                }
+            }
+            else { // direction - 'up'
+                pageHeaderHeight = getEffectiveHeaderHeight();
+                if (CUTop <= winTop + pageHeaderHeight) {
+                    mod_basicPageUtils.scroll(direction, body);
+                }
+                else {
+                    _selectNextCU_or_scrollPage($selectedCU, direction);
                 }
             }
         }
-        return false;
+        // direction - 'right' or 'left'
+        else {
+            var
+                winLeft = body.scrollLeft,
+                winRight,
+                CULeft = boundingRect.left,
+                CURight;
+
+            if (direction === 'right') {
+                winRight = winLeft + window.innerWidth;
+                CURight = CULeft + boundingRect.width;
+                if (CURight >= winRight) {
+                    mod_basicPageUtils.scroll(direction, body);
+                }
+                else {
+                    _selectNextCU_or_scrollPage($selectedCU, direction);
+                }
+            }
+            else { // direction - 'left'
+                if (CULeft <= winLeft) {
+                    mod_basicPageUtils.scroll(direction, body);
+                }
+                else {
+                    _selectNextCU_or_scrollPage($selectedCU, direction);
+                }
+            }
+        }
+    }
+
+    function selectUp() {
+        selectNextCU('up');
+    }
+    function selectDown() {
+        selectNextCU('down');
+    }
+    function selectRight() {
+        selectNextCU('right');
+    }
+
+    function selectLeft() {
+        selectNextCU('left');
     }
 
     /**
-     * Selects the previous CU to the currently selected one.
+     * selects the next CU in the specified direction - 'up', 'down', 'left' or 'right'
      */
-    function selectPrev () {
+    function selectNextCU (direction) {
         var disabledByMe = mod_mutationObserver.disable();
-        _selectPrev();
+        _selectNextCU(direction);
         disabledByMe && mod_mutationObserver.enable();
     }
-    function _selectPrev () {
+    function _selectNextCU (direction) {
         if (!CUs_filtered.length) {
-            mod_basicPageUtils.scroll("up", body);
+            mod_basicPageUtils.scroll(direction, body);
         }
         else if (CUs_filtered.length === 1) {
+            // if the only CU isn't selected, select it
             if (selectedCUIndex === -1) {
                 _selectCU(0, true, true);
             }
+            // if it's already selected, scroll further in the specified direction
             else {
-                mod_basicPageUtils.scroll("up", body);
+                mod_basicPageUtils.scroll(direction, body);
             }
         }
         else { // >= 2 CUs
             var $selectedCU = CUs_filtered[selectedCUIndex];
             if ($selectedCU) {
                 if (isAnyPartOfCUinViewport($selectedCU)) {
-                    if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'up')) {
-                        return;
+                    // NOTE: THIS will be the *usual* flow path
+                    if (miscSettings.sameCUScroll) {
+                        _showMore_or_selectNextCU($selectedCU, direction);
                     }
                     else {
-//                        for (var i = selectedCUIndex-1; i >= 0; i--) {
-//                            if (!isCUInvisible(CUs_filtered[i])) {
-//                                selectCU(i, true, true);
-//                                return;
-//                            }
-//                        }
-                        var newIndex = selectedCUIndex - 1;
-                        if (newIndex >= 0) {
-                            selectCU(newIndex, true, true);
-                        }
-                        else {
-                            mod_basicPageUtils.scroll("up", body);
-                        }
+                        _selectNextCU_or_scrollPage($selectedCU, direction);
                     }
                 }
                 else if (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) {
@@ -644,60 +672,21 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    /**
-     * Selects the next CU to the currently selected one.
-     */
-    function selectNext() {
-        var disabledByMe = mod_mutationObserver.disable();
-        _selectNext();
-        disabledByMe && mod_mutationObserver.enable();
-    }
-    function _selectNext() {
-        if (!CUs_filtered.length) {
-            mod_basicPageUtils.scroll("down", body);
+    // Either selects the next CU the OR scrolls the page (both, in the specified direction)
+    // * For selection of the next CU: next CU must be found AND *if* `selectOnlyIfFullyInView`
+    // is true, it must be fully in the viewport
+    // * Else, the selected CU isn't changed, and the page is simply scrolled in the direction
+    // specified
+    function _selectNextCU_or_scrollPage($selectedCU, direction, selectOnlyIfFullyInView) {
+        var nextIndex = mod_directionalNav.getClosest($selectedCU, CUs_filtered, direction,
+            getBoundingRect, areCUsSame),
+            $nextCU = CUs_filtered[nextIndex];
+
+        if ($nextCU && (selectOnlyIfFullyInView? isCUFullyInViewport($nextCU): true )) {
+            selectCU(nextIndex, true, true);
         }
-        else if (CUs_filtered.length === 1) {
-            if (selectedCUIndex === -1) {
-                _selectCU(0, true, true);
-            }
-            else {
-                mod_basicPageUtils.scroll("down", body);
-            }
-        }
-        else { // >= 2 CUs
-            var $selectedCU = CUs_filtered[selectedCUIndex];
-            if ($selectedCU) {
-                if (isAnyPartOfCUinViewport($selectedCU)) {
-                    if (miscSettings.sameCUScroll && scrollCUIfRequired($selectedCU, 'down')) {
-                        return;
-                    }
-                    else {
-//                        var len = CUs_filtered.length;
-//                        for (var i = selectedCUIndex+1; i < len; i++) {
-//                            if (!isCUInvisible(CUs_filtered[i])) {
-//                                selectCU(i, true, true);
-//                                return;
-//                            }
-//                        }
-                        var newIndex = selectedCUIndex + 1;
-                        if (newIndex < CUs_filtered.length) {
-                            selectCU(newIndex, true, true);
-                        }
-                        else {
-                            mod_basicPageUtils.scroll("down", body);
-                        }
-                    }
-                }
-                else if (Date.now() - lit_CUSelectOrDeselect < selectionTimeoutPeriod) {
-                    scrollCUIntoView($selectedCUOverlay);
-                }
-                else {
-                    selectFirstCUInViewport(true, true);
-                }
-            }
-            else {
-                selectMostSensibleCU(true, true);
-            }
+        else {
+            mod_basicPageUtils.scroll(direction, body);
         }
     }
 
@@ -1026,7 +1015,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (!miscSettings.keepSelectedCUCentered &&
             (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin)) { // CU is fully in viewport
 
-            return false;
+            return;
         }
         else {
             // center the element based on this equation equating the space left in the (visible part of the) viewport above
@@ -1743,7 +1732,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 selectCU(indexToSelect, false, false);
 
                 // delay = 0 to yield execution, so that this executes after the click event is processed.
-                // We need the clicked-on element to get focus first executing this.
+                // We need the clicked-on element to get focus before executing this.
                 setTimeout(focusMainElelementInSelectedCU_ifRequired, 0);
             }
             else {
@@ -1884,14 +1873,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function setupShortcuts() {
         // the "if" condition below is redundant since this check is made when the CUsMgr module is being setup, but
-        // it's being left here since it would be useful this code was moved out of this module
+        // it's being left here since it would be if useful this code was moved out of this module
         if (expandedUrlData && expandedUrlData.CUs_specifier) {
-            mod_keyboardLib.bind(CUsShortcuts.nextCU.kbdShortcuts, selectNext, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.prevCU.kbdShortcuts, selectPrev, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.firstCU.kbdShortcuts, function() {
+            mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, selectDown, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, selectUp, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, selectRight, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, selectLeft, {pageHasCUs: true});
+
+            mod_keyboardLib.bind(CUsShortcuts.selectFirstCU.kbdShortcuts, function() {
                 selectFirst(true, true);
             }, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.lastCU.kbdShortcuts, function() {
+            mod_keyboardLib.bind(CUsShortcuts.selectLastCU.kbdShortcuts, function() {
                 selectLast(true, true);
             }, {pageHasCUs: true});
         }
@@ -1963,7 +1955,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
 })(jQuery, _u.mod_basicPageUtils, _u.mod_domEvents, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_filterCUs,
         _u.mod_help, _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_globals,
-        _u.mod_smoothScroll, _u.CONSTS);
+        _u.mod_directionalNav, _u.mod_smoothScroll, _u.CONSTS);
 
 
 
