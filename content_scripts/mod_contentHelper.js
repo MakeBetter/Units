@@ -55,18 +55,16 @@ _u.mod_contentHelper = (function($, mod_commonHelper, CONSTS) {
     }
 
     /**
-     * Returns true when single key shortcuts can be invoked when the specified element has focus. Exceptions are
-     * 1) elements which allow typing text in them
-     * 2) the <select> element (which allows filtering based on typed input)
-     * 3) embedded elements (since they might have their own shortcuts, like in a game, flash player etc) 
+     * Returns true when single key shortcuts can be invoked when the specified element has focus.
+     * Exceptions are
+     * 1) elements which allow typing text in them (including <select> element which allows
+     * filtering)
+     * 2) embedded elements (since they might have their own shortcuts, like in a game, flash player etc)
      * @param {HTMLElement} element
      * @returns {boolean}
      */
     function elemAllowsSingleKeyShortcut(element) {
-        if (elemAllowsTyping(element) || element.tagName.toLowerCase() === "select" || isEmbeddedElement(element)) {
-            return false;
-        }
-        return true;
+        return !(elemAllowsTyping(element) || isEmbeddedElement(element));
     }
 
     /**
@@ -216,11 +214,8 @@ _u.mod_contentHelper = (function($, mod_commonHelper, CONSTS) {
         var element = getNearestElement(node);
         if (!element) return false;
 
-        if (_u.$topLevelContainer[0].contains(element) || element.classList.contains(CONSTS.class_unitsProjElem) ||
-            $(element).parents().hasClass(CONSTS.class_unitsProjElem)) {
-            return true;
-        }
-        return false;
+        return _u.$topLevelContainer[0].contains(element) || element.classList.contains(CONSTS.class_unitsProjElem) ||
+            $(element).parents().hasClass(CONSTS.class_unitsProjElem);
     }
 
     // checks if the mouse event specified is for the right mouse button
