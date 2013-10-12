@@ -16,9 +16,9 @@ var defaultSettingsHelp = {
 
     increaseFontInSelectedCU: "Increase font size of text in the selected CU. Default is false. This is an experimental feature.",
 
-    // determines if while scrolling a CU should always be centered (whenever possible) or only if it lies
+    // determines if while scrolling a CU should always be vertically centered (whenever possible) or only if it lies
     // outside the view port
-    keepSelectedCUCentered: "Keep selected CU always centered (when possible) while scrolling. If set to false, center CU only" +
+    verticallyCenterSelectedCU: "Keep selected CU (vertically) centered while scrolling. If set to false, center CU only" +
         "if it lies outside the viewport.",
 
     // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view

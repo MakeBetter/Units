@@ -285,19 +285,20 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * focused.
      * @param {boolean} [adjustScrolling] If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
+     * @param {string} [direction] direction we moved, compared to the last selected CU, if relevant
      */
-    function selectCU(CUOrItsIndex, setFocus, adjustScrolling) {
+    function selectCU(CUOrItsIndex, setFocus, adjustScrolling, direction) {
         var now = Date.now();
         if (now - lit_selectCU > minInterval_selectCU) {
             lit_selectCU = now;
             var disabledByMe = mod_mutationObserver.disable();
-            _selectCU(CUOrItsIndex, setFocus, adjustScrolling);
+            _selectCU(CUOrItsIndex, setFocus, adjustScrolling, direction);
             disabledByMe && mod_mutationObserver.enable();
         }
     }
 
     // only meant to be called from within selectCU()
-    function _selectCU(CUOrItsIndex, setFocus, adjustScrolling) {
+    function _selectCU(CUOrItsIndex, setFocus, adjustScrolling, direction) {
         var $CU,
             indexOf$CU; // index in CUs_filtered
 
@@ -323,7 +324,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lit_CUSelectOrDeselect = Date.now();
 
         if (adjustScrolling) {
-            scrollCUIntoView($selectedCUOverlay);
+            scrollCUIntoView($selectedCUOverlay, direction);
         }
 
         if (setFocus) {
@@ -683,7 +684,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             $nextCU = CUs_filtered[nextIndex];
 
         if ($nextCU && (selectOnlyIfFullyInView? isCUFullyInViewport($nextCU): true )) {
-            selectCU(nextIndex, true, true);
+            selectCU(nextIndex, true, true, direction);
         }
         else {
             mod_basicPageUtils.scroll(direction, body);
@@ -993,53 +994,82 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * //TODO3: consider if horizontal scrolling should be adjusted as well (some sites sites, like an image gallery,
      * might have CUs laid out horizontally)
      * @param {jQuery} $CUOverlay
+     * @param {string} [direction] The direction in which we moved in, compared to the last selected CU, if relevant
      */
-    function scrollCUIntoView($CUOverlay) {
+    function scrollCUIntoView($CUOverlay, direction) {
 
         var // for the window:
             winTop = body.scrollTop,
         // winHeight = $(window).height(), // this doesn't seem to work correctly on news.ycombinator.com
             winHeight = window.innerHeight,
             winBottom = winTop + winHeight,
+            winLeft = body.scrollLeft,
+            winWidth = window.innerWidth,
+            winRight = winLeft + winWidth,
 
         // for the element:
-            elTop = $CUOverlay.offset().top,
+            elOffset = $CUOverlay.offset(),
+            elTop = elOffset.top,
             elHeight = $CUOverlay.height(),
-            elBottom = elTop + elHeight;
+            elBottom = elTop + elHeight,
+            elLeft = elOffset.left,
+            elWidth = $CUOverlay.width(),
+            elRight = elLeft + elWidth;
 
-        var newWinTop, // once determined, we will scroll the window top to this value
-            margin = 10;
+        var newWinTop, newWinLeft, // we will scroll the window to these values if required
+            margin = 10,
+            animationDuration;
+
+        // try to center horizontally, if not fully within the viewport *horizontally*
+        if (!(elLeft > winLeft && elRight < winRight)) {
+            newWinLeft = (elLeft + elRight - winWidth)/2;
+            if (elLeft < newWinLeft + margin) {
+                newWinLeft = elLeft - margin;
+            }
+            if (miscSettings.animatedCUScroll) {
+                animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
+                    Math.abs(newWinLeft-winLeft) / miscSettings.animatedCUScroll_Speed);
+
+                // TODO: if the animation for vertical scroll is required (see below), this
+                // animation will be terminated instantly. Instead, ideally, a diagonal, animation
+                // should take place. Low priority, given the rarity of horizontal scroll
+                smoothScroll(body, 'scrollLeft', newWinLeft, animationDuration);
+            }
+            else {
+                body.scrollLeft = newWinLeft;
+            }
+        }
 
         var pageHeaderHeight = getEffectiveHeaderHeight();
 
-        if (!miscSettings.keepSelectedCUCentered &&
-            (elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin)) { // CU is fully in viewport
+        // if `verticallyCenterSelectedCU` is true, and direction isn't explicitly 'left' or 'right
+        if ((miscSettings.verticallyCenterSelectedCU && direction !== 'left' && direction !== 'right') ||
+        // OR if CU isn't fully contained in viewport *vertically*
+            !(elTop > winTop + pageHeaderHeight + margin && elBottom < winBottom - margin)) {
 
-            return;
-        }
-        else {
-            // center the element based on this equation equating the space left in the (visible part of the) viewport above
-            // the element to the space left below it:
+            // *vertically* center the element based on this equation equating the space left in the (visible part of
+            // the) viewport above the element to the space left below it:
             // elTop - (newWinTop + pageHeaderHeight) = newWinBottom - elBottom = newWinTop + winHeight - elBottom
             // (substituting (newWinTop + winHeight) for newWinBottom)
-            newWinTop = (elTop + elBottom - winHeight +  - pageHeaderHeight)/2;
+            newWinTop = (elTop + elBottom - winHeight - pageHeaderHeight)/2;
 
-            newWinTop += 50; // now shift shightly upwwards to make it closer to the top than bottom; looks nicer
+            newWinTop += 50; // now shift slightly upward to make it closer to the top than bottom; looks nicer
 
             if (elTop < newWinTop + pageHeaderHeight + margin ) {
                 newWinTop = elTop - pageHeaderHeight - margin;
             }
+
+            if (miscSettings.animatedCUScroll) {
+                animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
+                    Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
+
+                smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
+            }
+            else {
+                body.scrollTop = newWinTop;
+            }
         }
 
-        if (miscSettings.animatedCUScroll) {
-            var animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
-                Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
-
-            smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
-        }
-        else {
-            body.scrollTop = newWinTop;
-        }
     }
 
     function getJQueryWrapper(x) {
@@ -1249,7 +1279,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         else if ((firstSelector = CUsSpecifier.first) && (lastSelector = CUsSpecifier.last)) {
 
             CUsArr = [];
-            var $firstsArray = $.map($(firstSelector).get(), getJQueryWrapper());
+            var $firstsArray = $.map($(firstSelector).get(), getJQueryWrapper);
 
             // TODO: add a comment somewhere explaining how "first" and "last" work "smartly" (i.e. find the respective
             // ancestors first_ancestor and last_ancestor that are siblings and use those, selecting logically valid

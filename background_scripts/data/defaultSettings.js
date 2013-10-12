@@ -36,9 +36,9 @@ var defaultSettings = {
 
         increaseFontInSelectedCU: false,
 
-        // determines if while scrolling a CU should always be centered (whenever possible) or only if it lies
-        // outside the view port
-        keepSelectedCUCentered: true,
+        // determines if while upward/downward CU selection, the CU should always be (vertically) centered or
+        // only if it lies outside the view port
+        verticallyCenterSelectedCU: true,
 
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
