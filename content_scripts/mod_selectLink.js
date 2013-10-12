@@ -154,7 +154,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         // 'f' pressed. focus dummy text box so that the next char entered triggers onMatchCharInput
         else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
             !(e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) &&
-            (document.activeElement === $dummyTextBox[0] || mod_contentHelper.elemAllowsSingleKeyShortcut(target))) {
+            (mod_contentHelper.elemAllowsSingleKeyShortcut(target))) {
 
             mod_contentHelper.suppressEvent(e);
             focusDummyTextBoxAndRemoveHints();
