@@ -14,7 +14,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
     // Map of miscSettings keys and their friendly descriptions, to be used in the Basic Options UI
     var miscSettingsDescriptions = {
         selectCUOnLoad: "Select first Content Unit (CU) when page loads",
-        keepSelectedCUCentered: "Keep selected CU always centered on page",
+        verticallyCenterSelectedCU: "Keep selected CU always centered on page",
         enhanceActiveElementVisibility: "Give special highlight to the currently selected link", /*enhanceActiveElementVisibility: "Give special highlight to the currently focused link <sup>*</sup>",*/
         pageScrollDelta: "Scrolling speed (pixels per key press)",
         animatedCUScroll: "Animate scrolling",
