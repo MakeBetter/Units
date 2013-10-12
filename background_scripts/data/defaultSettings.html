@@ -1,3 +1,6 @@
+<html>
+<body>
+<!-- Copy within the 'pre' tag below the entire contents of defaultSettings.js verbatim -->
 <pre>
 // JSHint Config
 /* exported defaultSettings */
@@ -39,7 +42,7 @@ var defaultSettings = {
 
         // determines if while scrolling a CU should always be centered (whenever possible) or only if it lies
         // outside the view port
-        keepSelectedCUCentered: true,
+        verticallyCenterSelectedCU: true,
 
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
@@ -64,12 +67,22 @@ var defaultSettings = {
     */
     pageNavigationShortcuts: {
         scrollDown: {
-            descr: "Scroll down",
-            kbdShortcuts: ['shift+j']
+            descr: "Scroll page down",
+            kbdShortcuts: ['shift+j'],
+            importanceHigh: true /* We use this flag in the Help UI to highlight 'important' labels */
         },
         scrollUp: {
-            descr: "Scroll up",
-            kbdShortcuts: ['shift+k']
+            descr: "Scroll page up",
+            kbdShortcuts: ['shift+k'],
+            importanceHigh: true
+        },
+        scrollRight: {
+            descr: "Scroll page right",
+            kbdShortcuts: ['shift+j'],
+        },
+        scrollLeft: {
+            descr: "Scroll page left",
+            kbdShortcuts: ['shift+k'],
         },
         back: {
             descr: "Go back",
@@ -82,7 +95,8 @@ var defaultSettings = {
 
         topOfPage: {
             descr: "Navigate: Top of page",
-            kbdShortcuts: ['n t']
+            kbdShortcuts: ['n t'],
+            importanceHigh: true
         },
         bottomOfPage: {
             descr: "Navigate: Bottom of page",
@@ -103,23 +117,25 @@ var defaultSettings = {
     */
     elementNavigationShortcuts: {
         open: { //TODO: should 'enter' be spcified here
-            descr: "Open/invoke focused item",
-            kbdShortcuts: ['shift+o', 'alt+o']  // alt+o allows invoking only with one hand (at least in windows)
+            descr: "Open/invoke selected item",
+            kbdShortcuts: ['shift+o']
         },
         openInNewTab: {
-            descr: "Open focused item in new tab",
-            kbdShortcuts: ['o']
+            descr: "Open selected link in new tab",
+            kbdShortcuts: ['o'],
+            importanceHigh: true
         },
         focusFirstTextInput: {
-            descr: "Focus first text input element",
-            kbdShortcuts: ['f i', 'alt+i']
+            descr: "Focus first text (input) box",
+            kbdShortcuts: ['n i', 'alt+i'],
+            importanceHigh: true
         },
         focusNextTextInput: {
-            descr: "Focus next text input element",
+            descr: "Focus next text box",
             kbdShortcuts: ['alt+o']
         },
         focusPrevTextInput: {
-            descr: "Focus previous text input element",
+            descr: "Focus previous text box",
             kbdShortcuts: ['alt+shift+o']
         },
     },
@@ -128,45 +144,18 @@ var defaultSettings = {
     All other general page-level shortcuts that don't fall under pageNavigationShortcuts or elementNavigationShortcuts
      */
     miscShortcuts: {
-        showSelectLinkUI: {
-            descr: "Select any link",
-            kbdShortcuts: ['f l', 'f f']
-        },
         toggleZenMode: {
             descr: "Toggle zen mode",
-            kbdShortcuts: ['z']
+            kbdShortcuts: ['z'],
         },
         toggleExtension: {
             descr: "Disable/enable Units on current page",
-            kbdShortcuts: [',']
+            kbdShortcuts: [','],
+            importanceHigh: true
         },
         showHelp: {
             descr: "Show the help page",
-            kbdShortcuts: ['alt+/']
-        }
-    },
-
-    /*
-    Shortcuts related to Select Link module.
-    NOTE: The shortcut to invoke the select link UI is included in miscShortcuts.
-     */
-
-    selectLinkShortcuts: {
-        selectNextMatchedLink: {
-            descr: "Selects the Next matched link",
-            kbdShortcuts: ['tab']
-        },
-        selectPrevMatchedLink: {
-            descr: "Selects the Previous matched link",
-            kbdShortcuts: ['shift+tab']
-        },
-        openSelectedLink: {
-            descr: "Opens the Selected link",
-            kbdShortcuts: ['enter']
-        },
-        openSelectedLinkInNewTab: {
-            descr: "Opens the Selected link in a New Tab",
-            kbdShortcuts: ['command+enter', 'alt+enter', 'shift+enter']
+            kbdShortcuts: ['alt+/'],
         }
     },
 
@@ -176,26 +165,39 @@ var defaultSettings = {
     CUsShortcuts: {
         // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-        nextCU: {
-            descr: "Select next CU",
-            kbdShortcuts: ['j'/*, 'down'*/]
+        selectCUDown: {
+            descr: "Select next/down CU",
+            kbdShortcuts: ['j'/*, 'down'*/],
+            importanceHigh: true
         },
-        prevCU: {
-            descr: "Select previous CU",
-            kbdShortcuts: ['k'/*, 'up'*/]
+        selectCUUp: {
+            descr: "Select prev/up CU",
+            kbdShortcuts: ['k'/*, 'up'*/],
+            importanceHigh: true
         },
-        filterCUs: {
-            descr: "Search and filter CUs ",
-            kbdShortcuts: ['alt+f']
+
+        selectCURight: {
+            descr: "Select right CU",
+            kbdShortcuts: ['l'/*, 'right'*/],
         },
-        firstCU: {
+        selectCULeft: {
+            descr: "Select left CU",
+            kbdShortcuts: ['h'/*, 'left'*/],
+        },
+
+        selectFirstCU: {
             descr: "Select first CU",
             kbdShortcuts: ['^', 'alt+1']
         },
-        lastCU: {
+        selectLastCU: {
             descr: "Select last CU",
             kbdShortcuts: ['$', 'alt+9']
-        }
+        },
+
+        filterCUs: {
+            descr: "Search and filter CUs ",
+            kbdShortcuts: ['alt+f'],
+        },
     },
 
     /*
@@ -280,12 +282,14 @@ var defaultSettings = {
     // as of now, all keys are meant to be lower case only.
     quickSearchSelectedText_data: {
         "g": "https://www.google.com/search?q=<<_serach_str_>>",
-        "w": "http://en.wikipedia.org/w/index.php?search=<<_serach_str_>>",
-            "m": "http://maps.google.com/maps?q=<<_serach_str_>>",
-                "i": "http://www.imdb.com/find?q=<<_serach_str_>>&s=all"
+    "w": "http://en.wikipedia.org/w/index.php?search=<<_serach_str_>>",
+        "m": "http://maps.google.com/maps?q=<<_serach_str_>>",
+            "i": "http://www.imdb.com/find?q=<<_serach_str_>>&s=all"
 
-    }
+                }
 
-};
+                };
 
 </pre>
+</body>
+</html>
