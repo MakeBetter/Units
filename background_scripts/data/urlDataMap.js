@@ -235,7 +235,8 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["timesofindia.indiatimes.com/*"],
             page_mainContent: {
                 selector: ".left_bdr",
-                exclude: "#adhomepage"
+                exclude: "#adhomepage, .ad1, #fr38650, .mTop10_c iframe, #adDiv," +
+                    ".main_social, #populatecomment, #outbrain_widget_0, #height_cal, #main-div, #follow_srch, #slidshdiv, #fnt11ba"
             }
         },
         {
@@ -249,24 +250,38 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-        "facebook.com": [
+    "facebook.com": [
         {
             // Facebook main feed page
             urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*", "www.facebook.com/hashtag/*"],
-            CUs_specifier: ".genericStreamStory.uiUnifiedStory",
+            CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._6kq",
             CUs_SUs: {
                 "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
                 "std_comment": ".comment_link",
                 "std_share": ".share_action_link",
                 "std_viewComments": ".UFIPagerLink, .mls", //.UFIPagerLink for "view more comments" link, .mls for the comment icon
 
+                // We don't want to focus the following:
                 // .highlightSelectorButton is the button on the top right of a post. We don't want it to be selected as
-                // a main element. In some posts (such as the "suggested" posts), it is the "a" first child in the post. Hence, the 'not' selector.
-                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, " +
-                    ".fbQuestionPollForm a, ._4q5), .uiStreamSubstory .pronoun-link, " +
-                    ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5)",
-                // we can afford these to be non-optimized because these will be looked for inside $CU. If these were
-                // meant for the entire page, then they'd be bad!
+                // a main element. In some posts (such as the "suggested" posts), it is the first focusable in the post.
+
+                // .photoRedesignLink is being applied to images that are part of an album. We don't want to select the
+                // first image of albums on FB. See #174.
+                //
+                // .lfloat: Is applied to a left floating image in the shared content that has a supporting link on its right.
+                // In such cases, we want the link to be focused/highlighted instead of the image (because the link is
+                // the main shared content).
+                // .shareRedesignContainer>a: Similar to the .lfloat case, except that here the image is on top, and the
+                // shared link just below the image.
+                // See screenshots in #175
+
+                // NOTE: We can afford for these selectors to be non-optimized because these will be looked for inside $CU.
+                // If these were meant for the entire page, then some of these would be very bad!
+
+                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a, .photoRedesignLink a), "  +
+                            ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a, .photoRedesignLink a), " +
+                            ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText",
+
                 std_seeMore: ".text_exposed_link>a"
             },
             CUs_style: {
@@ -866,7 +881,7 @@ defaultSettings.urlDataMap = {
             urlPatterns:["www.youtube.com/*"],
             CUs_specifier: ".feed-list-item",
             CUs_SUs: {
-                std_mainEl: ".feed-item-content a, .content-item-detail a"
+                std_mainEl: ".feed-item-content a:not(.g-hovercard>a, .g-hovercard), .content-item-detail a, a.yt-uix-tile-link, a.yt-uix-redirect-link"
             },
             CUs_style: {
                 overlayPadding: "" // some negative margin-top would be nice to apply.
