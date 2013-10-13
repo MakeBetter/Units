@@ -3,7 +3,7 @@
 /**
  * main module (mod_main.js) This is the main module which runs the extension by using the other modules
  */
-(function($, mod_domEvents, mod_basicPageUtils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver,
+(function($, mod_domEvents, mod_easyScrollKeys, mod_basicPageUtils, mod_CUsMgr, mod_urlSpecificShortcuts, mod_mutationObserver,
           mod_keyboardLib, mod_selectLink, mod_filterCUs, mod_zenMode, mod_help, mod_quickSearchSelectedText,
           mod_chromeAltHack, mod_contentHelper, mod_commonHelper, mod_globals) {
     "use strict";
@@ -33,7 +33,7 @@
         // opposite order
         modulesToSetup = [mod_domEvents, mod_keyboardLib, mod_globals, mod_chromeAltHack,
             // modules which define keyboard shortcuts are listed next, in order of priority
-            mod_quickSearchSelectedText, mod_help, mod_selectLink, mod_basicPageUtils, mod_filterCUs, mod_zenMode,
+            mod_quickSearchSelectedText, mod_help, mod_selectLink, mod_easyScrollKeys, mod_basicPageUtils, mod_filterCUs, mod_zenMode,
             mod_urlSpecificShortcuts, mod_CUsMgr];
 
     /*-- Module implementation --*/
@@ -246,6 +246,6 @@
 
     //return thisModule; // not required for main module
 
-})(jQuery, _u.mod_domEvents, _u.mod_basicPageUtils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver,
+})(jQuery, _u.mod_domEvents, _u.mod_easyScrollKeys, _u.mod_basicPageUtils, _u.mod_CUsMgr, _u.mod_urlSpecificShortcuts, _u.mod_mutationObserver,
         _u.mod_keyboardLib, _u.mod_selectLink, _u.mod_filterCUs, _u.mod_zenMode, _u.mod_help, _u.mod_quickSearchSelectedText,
         _u.mod_chromeAltHack, _u.mod_contentHelper, _u.mod_commonHelper, _u.mod_globals);

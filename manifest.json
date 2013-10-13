@@ -59,6 +59,7 @@
                 "content_scripts/mod_basicPageUtils.js",
                 "content_scripts/mod_filterCUs.js",
                 "content_scripts/mod_CUsMgr.js",
+                "content_scripts/mod_easyScrollKeys.js",
                 "content_scripts/mod_urlSpecificShortcuts.js",
                 "content_scripts/mod_selectLink.js",
                 "content_scripts/mod_zenMode.js",
