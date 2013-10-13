@@ -179,19 +179,24 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
      * @param finalSettings
      */
     function applyDiffForArrays(diff, finalSettings) {
+        var isElementNotRemoved = function(element) {
+            return (diff[key].indexOf(element) === -1);
+        };
+
         for (var key in diff) {
             var keyName;
             var indexAdded = key.indexOf(suffix_addedToArray);
             if (indexAdded !== -1) {
                 keyName = key.substring(0, indexAdded);
-                finalSettings[keyName] = finalSettings[keyName].concat(diff[key]);
+                finalSettings[keyName] = finalSettings[keyName].concat(diff[key]); // Concat the added shortcuts to the
+                // existing shortcuts
             }
             else {
                 var indexRemoved = key.indexOf(suffix_removedFromArray);
                 if (indexRemoved !== -1) {
                     keyName = key.substring(0, indexRemoved);
-                    finalSettings[keyName] = finalSettings[keyName].filter(
-                        function(element) {return (diff[key].indexOf(element) === -1);});
+                    finalSettings[keyName] = finalSettings[keyName].filter(isElementNotRemoved); // Create a new
+                    // array with the elements that have not been removed.
                 }
             }
         }
