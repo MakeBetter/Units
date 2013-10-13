@@ -62,6 +62,7 @@ _u.mod_smoothScroll = (function() {
         }
         else {
             endAtDestination();
+            return;
         }
 
         inProgress = true;
