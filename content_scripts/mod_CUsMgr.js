@@ -395,23 +395,23 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * @return {HtmlElement} Returns the "main" element, if one was found, else null.
      */
     function getMainElement($CU) {
+        var $mainElement;
+        mainElementSelector && ($mainElement = $CU.find(mainElementSelector));
+        if ($mainElement && $mainElement.length) {
+            return $mainElement[0];
+        }
 
+        // If main element not specified or found, then return the first focusable in the CU.
         var $containedFocusables = $getContainedFocusables($CU);
-
-        if (!$containedFocusables.length) {
-            return null;
-        }
-
-        var $filteredFocusables;
-
-        if (mainElementSelector && ($filteredFocusables = $containedFocusables.filter(mainElementSelector)) &&
-            $filteredFocusables.length) {
-
-            return $filteredFocusables[0];
-        }
-        else {
+        if ($containedFocusables && $containedFocusables.length) {
             return $containedFocusables[0];
         }
+
+        // NOTE: As a fix for #176, we don't explicitly check whether element found by $CU.find(mainElementSelector) is visible or not.
+        // In the case where no mainElement was specified or found, we return the first 'visible' focusable, as returned
+        // by $getContainedFocusables().
+
+        return null;
     }
 
     // Focuses the "main" focusable element in a CU, if one can be found.
