@@ -247,6 +247,10 @@ defaultSettings.urlDataMap = {
                 exclude: "#mod-ctr-lt-in-top, .mod-adcpc, #area-article-side"
             }
 
+        },
+        {
+            urlPatterns: ["blogs.timesofindia.indiatimes.com/*"],
+            page_mainContent: "#profileBlock"
         }
     ],
 
