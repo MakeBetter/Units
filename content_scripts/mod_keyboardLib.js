@@ -142,6 +142,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
                 if (canIgnoreSpaceOnElement(e.target)) {
                     _canUseSpaceAsModifier = true;
                     mod_contentHelper.suppressEvent(e);
+                    thisModule.trigger('space-down-ignored');
                 }
             }
             else { // 'keyup'
@@ -152,6 +153,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
         else {
             if (e.type === 'keydown' && _canUseSpaceAsModifier) {
                 _wasSpaceUsedAsModifier = true;
+                thisModule.trigger('space-used-as-modifier');
             }
         }
     }
