@@ -10,15 +10,15 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
 
     function setup() {
         mod_domEvents.addEventListener(document, 'keyup', function(e) {
-            var keycode = e.which || e.keyCode;
-            if (keycode === 32) { // 32 - space
+            var keyCode = e.which || e.keyCode;
+            if (keyCode === 32) { // 32 - space
                 if (mod_keyboardLib.canIgnoreSpaceOnElement(e.target) && !mod_keyboardLib.wasSpaceUsedAsModifier()) {
                     // select downward CU or scroll down if no CUs
                     mod_CUsMgr.selectNextCU('down');
                 }
             }
             // check if this is the "thumb" modifier key (91 - cmd, 18 - alt)
-            else if (isMac? (keycode === 91 || keycode === 93): (keycode === 18)) {
+            else if (isMac? (keyCode === 91 || keyCode === 93): (keyCode === 18)) {
                 isThumbModifierKeyDown = false;
                 if (!wasThumbModifierKeyUsedAsModifier) {
                     // select upward CU or scroll up if no CUs
@@ -28,9 +28,9 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
         }, true);
 
         mod_domEvents.addEventListener(document, 'keydown', function(e) {
-            var keycode = e.which || e.keyCode;
+            var keyCode = e.which || e.keyCode;
             // check if this is the "thumb" modifier key (91/93 - cmd, 18 - alt)
-            if (isMac? (keycode === 91 || keycode === 93): (keycode === 18)) {
+            if (isMac? (keyCode === 91 || keyCode === 93): (keyCode === 18)) {
                 isThumbModifierKeyDown = true;
                 wasThumbModifierKeyUsedAsModifier = false; // reset
             }
