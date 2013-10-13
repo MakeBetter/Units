@@ -258,12 +258,14 @@ defaultSettings.urlDataMap = {
         {
             // Facebook main feed page
             urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*", "www.facebook.com/hashtag/*"],
-            CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._6kq",
+            CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._6kq", //  ._6kq for the new layout
             CUs_SUs: {
-                "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
-                "std_comment": ".comment_link",
-                "std_share": ".share_action_link",
-                "std_viewComments": ".UFIPagerLink, .mls", //.UFIPagerLink for "view more comments" link, .mls for the comment icon
+                // The last selector in the following apply for the new FB layout (for eg: ._6k6, ._6k2 etc)
+                "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink,  ._6k6" },
+                "std_comment": ".comment_link, ._6k2",
+                "std_share": ".share_action_link, ._6j_",
+                "std_viewComments": ".UFIPagerLink, .UFIBlingBoxCommentIcon, .prm:contains('Comment')", //.UFIPagerLink for "view more comments" link on both old and new layouts,
+                // .UFIBlingBoxCommentIcon and .prm:contains('Comment')" for the comment icon on old and new layout respectively
 
                 // We don't want to focus the following:
                 // .highlightSelectorButton is the button on the top right of a post. We don't want it to be selected as
@@ -284,14 +286,10 @@ defaultSettings.urlDataMap = {
 
                 std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a, .photoRedesignLink a), "  +
                             ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a, .photoRedesignLink a), " +
-                            ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText",
+                            ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText, " +
+                            "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_", // these are for the new FB layout
 
                 std_seeMore: ".text_exposed_link>a"
-            },
-            CUs_style: {
-                // This allows the little UI element on the top right that comes up when
-                // you mouse-over on a CU to lie completely within the overlay
-                overlayPadding: "0 8px 0 0"
             },
             page_SUs: {
                 std_header: "#headNav",
