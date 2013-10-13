@@ -210,7 +210,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             if (typeof value_diff === "string" || typeof value_diff === "number" || typeof value_diff === "boolean") {
                 finalSettings[key] = value_diff;
             }
-            else if (value_finalSettings.kbdShortcuts) {
+            else if (value_finalSettings && value_finalSettings.kbdShortcuts) {
                 applyDiffForArrays(value_diff, value_finalSettings);
             }
         }
