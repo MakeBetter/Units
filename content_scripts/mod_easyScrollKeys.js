@@ -1,3 +1,5 @@
+// Allows downward scroll using space key, and upward scroll using cmd key in Mac/alt key elsewhere
+// Scroll happens by CU if the page has CUs, else normally
 _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLib, mod_domEvents) {
 
     var thisModule = {
@@ -9,6 +11,18 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
         wasThumbModifierKeyUsedAsModifier;
 
     function setup() {
+        mod_domEvents.addEventListener(document, 'keydown', function(e) {
+            var keyCode = e.which || e.keyCode;
+            // check if this is the "thumb" modifier key (91/93 - cmd, 18 - alt)
+            if (isMac? (keyCode === 91 || keyCode === 93): (keyCode === 18)) {
+                isThumbModifierKeyDown = true;
+                wasThumbModifierKeyUsedAsModifier = false; // reset
+            }
+            else if (isThumbModifierKeyDown) {
+                wasThumbModifierKeyUsedAsModifier = true;
+            }
+        }, true);
+
         mod_domEvents.addEventListener(document, 'keyup', function(e) {
             var keyCode = e.which || e.keyCode;
             if (keyCode === 32) { // 32 - space
@@ -24,18 +38,6 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
                     // select upward CU or scroll up if no CUs
                     mod_CUsMgr.selectNextCU('up');
                 }
-            }
-        }, true);
-
-        mod_domEvents.addEventListener(document, 'keydown', function(e) {
-            var keyCode = e.which || e.keyCode;
-            // check if this is the "thumb" modifier key (91/93 - cmd, 18 - alt)
-            if (isMac? (keyCode === 91 || keyCode === 93): (keyCode === 18)) {
-                isThumbModifierKeyDown = true;
-                wasThumbModifierKeyUsedAsModifier = false; // reset
-            }
-            else if (isThumbModifierKeyDown) {
-                wasThumbModifierKeyUsedAsModifier = true;
             }
         }, true);
     }
