@@ -262,47 +262,63 @@
         }
     }
 
+    /**
+     * Append SelectCUDown shortcuts to scrollDown shortcuts in the Help UI. Similarly for Select CU Up, Left, Right
+     * shortcuts.
+     * @param settings
+     * @param $miscShortcutsSection
+     */
     function appendSpecialCases(settings, $miscShortcutsSection) {
         var pageNavigationShortcuts = settings.pageNavigationShortcuts,
             CUsShortcuts_Default = settings.CUsShortcuts,
-            nextCUShortcuts = CUsShortcuts_Default.nextCU.kbdShortcuts,
-            prevCUShortcuts = CUsShortcuts_Default.prevCU.kbdShortcuts,
+
+            // Select CU shortcuts
+            selectCUDownShortcuts = CUsShortcuts_Default.selectCUDown.kbdShortcuts,
+            selectCUUpShortcuts = CUsShortcuts_Default.selectCUUp.kbdShortcuts,
+            selectCURightShortcuts = CUsShortcuts_Default.selectCURight.kbdShortcuts,
+            selectCULeftShortcuts = CUsShortcuts_Default.selectCULeft.kbdShortcuts,
+
+            // Scroll shortcuts
             scrollDownShortcuts = pageNavigationShortcuts.scrollDown.kbdShortcuts,
             scrollUpShortcuts = pageNavigationShortcuts.scrollUp.kbdShortcuts,
+            scrollRightShortcuts = pageNavigationShortcuts.scrollRight.kbdShortcuts,
+            scrollLeftShortcuts = pageNavigationShortcuts.scrollLeft.kbdShortcuts,
+
+            // Jquery element for where scroll shortcuts are rendered in Help UI
             $scrollDownShortcuts = $miscShortcutsSection.find("#scrollDown td.key"),
-            $scrollUpShortcuts =  $miscShortcutsSection.find("#scrollUp td.key");
+            $scrollUpShortcuts =  $miscShortcutsSection.find("#scrollUp td.key"),
+            $scrollRightShortcuts =  $miscShortcutsSection.find("#scrollRight td.key"),
+            $scrollLeftShortcuts =  $miscShortcutsSection.find("#scrollLeft td.key");
 
-        var additionalShortcuts,
-            i;
 
-        // Append NextCU shortcuts to scrollDown shortcuts
-        if (scrollDownShortcuts.length) {
-            $scrollDownShortcuts.append(keysSeparatorHtml);
-        }
+        var map = {
+            up: [selectCUUpShortcuts, scrollUpShortcuts, $scrollUpShortcuts],
+            down: [selectCUDownShortcuts, scrollDownShortcuts, $scrollDownShortcuts],
+            right: [selectCURightShortcuts, scrollRightShortcuts, $scrollRightShortcuts],
+            left: [selectCULeftShortcuts, scrollLeftShortcuts, $scrollLeftShortcuts]
+        };
 
-        additionalShortcuts = "";
-        for (i = 0; i < nextCUShortcuts.length; i++) {
-            additionalShortcuts += "<span class=key-text>"+ nextCUShortcuts[i] + "</span>" + "*" ;
-            if (i !== nextCUShortcuts.length - 1) {
-                additionalShortcuts+= keysSeparatorHtml;
+        // Append CU shortcuts to scroll shortcuts in the UI (for select CU up, down, right, left)
+        for (var key in map) {
+            var array = map[key],
+                CUShortcuts = array[0],
+                scrollShortcuts = array[1],
+                $scrollShortcuts = array[2];
+
+            if (scrollShortcuts.length) {
+                $scrollShortcuts.append(keysSeparatorHtml);
             }
-        }
-        additionalShortcuts && $scrollDownShortcuts.append(additionalShortcuts);
 
-
-        // Append PrevCU shortcuts to scrollUp shortcuts
-        if (scrollUpShortcuts.length) {
-            $scrollUpShortcuts.append(keysSeparatorHtml);
-        }
-
-        additionalShortcuts = "";
-        for (i = 0; i < prevCUShortcuts.length; i++) {
-            additionalShortcuts += "<span class=key-text>"+ prevCUShortcuts[i] + "</span>" + "*";
-            if (i !== prevCUShortcuts.length - 1) {
-                additionalShortcuts+= keysSeparatorHtml;
+            var additionalShortcutsHtml = ""; // construct html based on CUShortcuts that will be appended to $scrollShortcuts
+            for (var i = 0; i < CUShortcuts.length; i++) {
+                additionalShortcutsHtml += "<span class=key-text>"+ CUShortcuts[i] + "</span>" + "*" ;
+                if (i !== CUShortcuts.length - 1) {
+                    additionalShortcutsHtml+= keysSeparatorHtml;
+                }
             }
+
+            additionalShortcutsHtml && $scrollShortcuts.append(additionalShortcutsHtml);
         }
-        additionalShortcuts && $scrollUpShortcuts.append(additionalShortcuts);
     }
 
     function disableCUShortcutsIfUnavailable(data) {
