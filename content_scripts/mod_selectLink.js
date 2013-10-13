@@ -134,7 +134,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
 
         // some (other) key pressed while [space] was already pressed down with the focus being
         // on a non-input type element
-        if (mod_keyboardLib.canUseSpaceAsModfier()) {
+        if (keyCode !== 32 && mod_keyboardLib.canUseSpaceAsModfier()) { // 32 - space
             // Focus the dummy text box. And stop the event from propagating, but don't
             // prevent it's default action, so that it enters text into the text box.
             // This lets us give focus to the dummy text box just-in-time (i.e. when the

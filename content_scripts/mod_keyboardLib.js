@@ -141,6 +141,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
                 _wasSpaceUsedAsModifier = false; // reset the value on space keydown
                 if (canIgnoreSpaceOnElement(e.target)) {
                     _canUseSpaceAsModifier = true;
+                    mod_contentHelper.suppressEvent(e);
                 }
             }
             else { // 'keyup'
