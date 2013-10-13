@@ -134,7 +134,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
     }
 
     function handlerToEnableSpaceAsModifier(e) {
-        var keycode = e.which || e.keycode;
+        var keycode = e.which || e.keyCode;
         // 32 - space
         if (keycode === 32) {
             if (e.type === 'keydown') {
