@@ -237,6 +237,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function onDomReady() {
         clearInterval(interval_updateCUsTillDomReady);
         bindMutationEvents();
+        updateCUsAndRelatedState();
         mainContainer  = getMainContainer();
     }
 
