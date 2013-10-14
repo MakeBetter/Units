@@ -1,12 +1,11 @@
 
-_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardLib, mod_globals, CONSTS) {
+_u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_directionalNav, mod_keyboardLib, mod_globals, CONSTS) {
     "use strict";
 
     /*-- Public interface --*/
     var thisModule = $.extend({}, _u.mod_pubSub, {
         setup: setup
     });
-
 
     var $document = $(document),
         class_unitsProjElem = CONSTS.class_unitsProjElem,
@@ -135,21 +134,43 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         // some (other) key pressed while [space] was already pressed down with the focus being
         // on a non-input type element
         if (keyCode !== 32 && mod_keyboardLib.canUseSpaceAsModfier()) { // 32 - space
-            // Focus the dummy text box. And stop the event from propagating, but don't
-            // prevent it's default action, so that it enters text into the text box.
-            // This lets us give focus to the dummy text box just-in-time (i.e. when the
-            // <char> is pressed after pressing space, and not at the keydown of space
-            // itself. This is nicer for a couple of reasons:
-            // 1) it doesn't take away focus from the active element till as late as
-            // possible, and if the user decides to not press anything after pressing
-            // space, the focus will remain where it was.
-            // 2) this will be make it easier to implement in the future a feature where
-            // if the user presses space without pressing anything else the document is
-            // scrolled down by a page (like the default browser behavior which gets broken
-            // due to this feature)
-            focusDummyTextBoxAndRemoveHints();
-            e.stopImmediatePropagation();
 
+            // if one of the arrow keys was pressed
+            if (keyCode === 37) {
+                selectNextFocusable('left');
+                mod_contentHelper.suppressEvent(e);
+            }
+            else if (keyCode === 38) {
+                selectNextFocusable('up');
+                mod_contentHelper.suppressEvent(e);
+            }
+            else if (keyCode === 39) {
+                selectNextFocusable('right');
+                mod_contentHelper.suppressEvent(e);
+            }
+            else if (keyCode === 40) {
+                selectNextFocusable('down');
+                mod_contentHelper.suppressEvent(e);
+            }
+
+            // some other key was pressed
+            else {
+
+                // Focus the dummy text box. And stop the event from propagating, but don't
+                // prevent it's default action, so that it enters text into the text box.
+                // This lets us give focus to the dummy text box just-in-time (i.e. when the
+                // <char> is pressed after pressing space, and not at the keydown of space
+                // itself. This is nicer for a couple of reasons:
+                // 1) it doesn't take away focus from the active element till as late as
+                // possible, and if the user decides to not press anything after pressing
+                // space, the focus will remain where it was.
+                // 2) this will be make it easier to implement in the future a feature where
+                // if the user presses space without pressing anything else the document is
+                // scrolled down by a page (like the default browser behavior which gets broken
+                // due to this feature)
+                focusDummyTextBoxAndRemoveHints();
+                e.stopImmediatePropagation();
+            }
         }
         // 'f' pressed. focus dummy text box so that the next char entered triggers onMatchCharInput
         else if (String.fromCharCode(keyCode).toLowerCase() === "f" &&
@@ -226,7 +247,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
     // links starting with it, etc.
     function onMatchCharInput(matchChar_lowerCase) {
         removeHints();  // first remove any existing hints
-        var $elemsInViewport = getElemsInViewport(),
+        var $elemsInViewport = $getFocusablesInViewport(),
             $matchingElems;
 
         // space + '.' targets all links without any alphabetic text, considering only the innerText
@@ -388,7 +409,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
             ).trim();
     }
 
-    function getElemsInViewport() {
+    function $getFocusablesInViewport() {
         return $getAllLinkLikeElems().filter(function() {
             return (!mod_contentHelper.isUnitsProjNode(this) && isAnyPartOfElementInViewport(this));
         });
@@ -427,7 +448,31 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_keyboardL
         clearTimeout(timeout_blurDummyTextbox);
     }
 
+    function selectNextFocusable(direction) {
+        var elems = $getFocusablesInViewport();
+        var activeEl = document.activeElement;
+        // if active element is not in the viewport, focus first element in the viewport
+        if (!activeEl || activeEl === document.body || !isAnyPartOfElementInViewport(activeEl)) {
+            console.log('here');
+            var len = elems.length;
+            for (var i = 0; i < len; i++) {
+                var elem = elems[i];
+                if(isAnyPartOfElementInViewport(elems)) {
+                    elem.focus();
+                    return;
+                }
+            }
+        }
+        // this is the main flow of the method
+        else {
+            var index = mod_directionalNav.getClosest(activeEl, elems, direction);
+            if (index > -1) {
+                elems[index].focus();
+            }
+        }
+    }
+
     return thisModule;
 
-})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_keyboardLib, _u.mod_globals, _u.CONSTS);
+})(jQuery, _u.mod_domEvents, _u.mod_contentHelper, _u.mod_directionalNav, _u.mod_keyboardLib, _u.mod_globals, _u.CONSTS);
 
