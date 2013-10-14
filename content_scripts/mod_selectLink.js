@@ -416,17 +416,11 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
     }
 
     function isAnyPartOfElementInViewport(el) {
-        var top = el.offsetTop;
-        var left = el.offsetLeft;
+        var offset = $(el).offset();
+        var top = offset.top;
+        var left = offset.left;
         var width = el.offsetWidth;
         var height = el.offsetHeight;
-
-        // get top and left values relative to the document by traversing up the offsetParent chain
-        while(el.offsetParent) {
-            el = el.offsetParent;
-            top += el.offsetTop;
-            left += el.offsetLeft;
-        }
 
         return (top < (window.scrollY + window.innerHeight)) &&     // elTop < winBottom
             ((top + height) > window.scrollY) &&                    // elBottom > winTop
