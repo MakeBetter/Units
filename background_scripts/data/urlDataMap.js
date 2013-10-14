@@ -220,6 +220,24 @@ defaultSettings.urlDataMap = {
             }
         }
     ],
+    "amazon.com": [
+        {
+            urlPatterns: ["www.amazon.com"],
+            CUs_specifier: "#centerA, #centerB, .widget",
+            CUs_SUs: {
+                // TODO: these don't have any effect right now since they are not focusable (see #178)
+                std_mainEl: ".s9TitleText, img"
+            }
+        },
+        {
+            urlPatterns: ["www.amazon.com/**"],
+            CUs_specifier: ".celwidget, .widget, .unified_widget, .shoveler, .yshShoveler",
+            CUs_SUs: {
+                std_mainEl: "h3>a"
+            }
+        }
+    ],
+
     "backbonejs.org":  {
         urlPatterns: ["backbonejs.org*"],
         CUs_specifier: {
