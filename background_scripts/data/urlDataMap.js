@@ -131,7 +131,8 @@ defaultSettings.urlDataMap = {
             },
             CUs_style: {
                 "overlayPadding": "5px",
-                useInnerElementsToGetOverlaySize: false // defaults to false; true is used in some sites like hacker news and reddit
+                useInnerElementsToGetOverlaySize: false, // defaults to false; true is used in some sites like hacker news and reddit
+                setOverlayZIndexHigh: true  // use high z-index for CU overlay
             },
             CUs_SUs: {
                 std_mainEl: ".post_title",  // When a CU is selected, this identifies the element inside it that is given the initial focus (apart from allowing a shortcut to be specified to access it when a CU is selected)
@@ -528,7 +529,10 @@ defaultSettings.urlDataMap = {
     "pinterest.com": [
         {
             urlPatterns: ["www.pinterest.com"],
-            CUs_specifier: ".item"
+            CUs_specifier: ".item",
+            CUs_style: {
+                setOverlayZIndexHigh: true
+            }
         },
     ],
 
@@ -881,6 +885,16 @@ defaultSettings.urlDataMap = {
             page_mainContent: {
                 selector: "#content[role=main], #article-leaf-page>.main-content",
                 exclude: "#header-v3, #wpni_adi_inline_bb, #article-side-rail, #article-leaf-page-footer-taboola, #echo_container_a"
+            }
+        }
+    ],
+
+    "yahoo.com": [
+        {
+            urlPatterns: ["www.yahoo.com"],
+            CUs_specifier: ".main-story, #stream li, .voh-parent-wrapper, .app",
+            CUs_style: {
+                setOverlayZIndexHigh: true
             }
         }
     ],

@@ -68,7 +68,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         hoveredCUIndex  = -1, // Index of the hovered CU in CUs_filtered
 
         // overlay for the selected CU
-        $selectedCUOverlay = $createCUOverlay('selected'),
+        $selectedCUOverlay,
 
         // overlay for the hovered-over CU.
         // **Note on the hovered-over CU overlay**:
@@ -78,7 +78,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // For this reason, we make this overlay disappear (i.e. call dehoverCU()) each time
         // a CU is selected. But, the overlay is shown again whenever the user moves the
         // mouse, which is exactly the point of it.
-        $hoveredCUOverlay = $createCUOverlay('hovered'),
+        $hoveredCUOverlay,
 
         body,   // will hold reference to document.body (once that is available within setup())
 
@@ -149,8 +149,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lastSelectedCUBoundingRect;
 
     function reset() {
-        dehoverCU();
-        deselectCU();
+        // the existence checks are needed since the overlays won't exist
+        // at the time of the first call to reset()
+        if ($selectedCUOverlay) {
+            deselectCU();
+            $selectedCUOverlay.remove();
+        }
+        if ($hoveredCUOverlay) {
+            dehoverCU();
+            $hoveredCUOverlay.remove();
+        }
 
         // reset these references that are initialized during setup()
         miscSettings = expandedUrlData = CUsSpecifier = CUsSelector = mainElementSelector = headerSelector =
@@ -195,6 +203,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_SUs) && (tmp = tmp.std_header) && tmp.selector;
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
+
+        $selectedCUOverlay = $createCUOverlay('selected');
+        $hoveredCUOverlay = $createCUOverlay('hovered');
 
         setupEvents();
         
@@ -246,12 +257,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // `$selectedCUOverlay` and `$hoveredCUOverlay`
     // type should be either 'selected' or 'hovered'
     function $createCUOverlay(type) {
-        return $('<div></div>').
+        var $overlay = $('<div></div>').
             addClass(class_CUOverlay).
             addClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay).
             addClass(class_unitsProjElem).
             hide().
             appendTo($topLevelContainer);
+
+        if (CUStyleData && CUStyleData.setOverlayZIndexHigh) {
+            // set it slightly less than than the highest z-index possible (2147483647),
+            // so that it is less than the z-index of the help page etc
+            $overlay.css('z-index', 2147483647-4);
+        }
+        return $overlay;
     }
 
     function getMainContainer() {
