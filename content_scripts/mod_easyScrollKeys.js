@@ -69,6 +69,18 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
         });
 
         thisModule.listenTo(mod_keyboardLib, 'space-used-as-modifier', endRepeatedScroll);
+
+        // the following is required to fix the issue of inadvertent scroll-ups ups on the thumb-modifier
+        // key's keyup, when thumb modifier is involved in a keyboard shortcut (like cmd + <key>) to change
+        // tabs
+        chrome.runtime.onMessage.addListener(
+            function(request, sender, sendResponse) {
+                if (request.message === "tabActivated" || request.message === "tabDeactivated") {
+                    wasThumbModifierUsedAsModifier = true;
+                    endRepeatedScroll();
+                }
+            }
+        );
     }
 
     // starts a repeated scroll in the specified direction
