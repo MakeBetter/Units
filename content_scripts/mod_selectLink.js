@@ -135,25 +135,29 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
         // on a non-input type element
         if (keyCode !== 32 && mod_keyboardLib.canUseSpaceAsModfier()) { // 32 - space
 
-            // if one of the arrow keys was pressed
-            if (keyCode === 37) {
+            // if one of the arrow keys was pressed:
+            // space+left OR space+shift+H
+            if (keyCode === 37 || e.shiftKey && keyCode === 72) {
                 selectNextFocusable('left');
                 mod_contentHelper.suppressEvent(e);
             }
-            else if (keyCode === 38) {
+            // space+up OR space+shift+K
+            else if (keyCode === 38 || e.shiftKey && keyCode === 75) {
                 selectNextFocusable('up');
                 mod_contentHelper.suppressEvent(e);
             }
-            else if (keyCode === 39) {
+            // space+right OR space+shift+L
+            else if (keyCode === 39 || e.shiftKey && keyCode === 76) {
                 selectNextFocusable('right');
                 mod_contentHelper.suppressEvent(e);
             }
-            else if (keyCode === 40) {
+            // space+down OR space+shift+J
+            else if (keyCode === 40 || e.shiftKey && keyCode === 74) {
                 selectNextFocusable('down');
                 mod_contentHelper.suppressEvent(e);
             }
 
-            // some other key was pressed
+            // some other key was presse
             else {
 
                 // Focus the dummy text box. And stop the event from propagating, but don't
