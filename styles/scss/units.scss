@@ -12,31 +12,29 @@ Also, hence the generous use of !important property here.
 
 .CU-overlay-selected-marker {
   content: "";
-  width: 0;
-  height: 0;
+  width: 6px;
+  height: 4px;
   position: absolute;
   display: inline-block;
   opacity: 0.7;
+  background-color: $border-color-grey;;
 }
 
 .CU-overlay-selected  {
   @include box-shadow(0px 0px 7px 0px $border-color-grey !important);
   border: none !important;
-  background-color: rgba(122, 255, 122, 0.02) !important;
+  background-color: rgba(85, 255, 85, 0.02) !important;
 
   &:before {
     @extend .CU-overlay-selected-marker;
+    top: 0;
     right: 0;
-    border-top: 6px solid $border-color-grey;
-    border-left: 6px solid transparent;
   }
 
   &:after {
     @extend .CU-overlay-selected-marker;
     bottom: 0;
     left: 0;
-    border-bottom: 6px solid $border-color-grey;
-    border-right: 6px solid transparent;
   }
 }
 
@@ -52,7 +50,7 @@ Also, hence the generous use of !important property here.
   z-index: $highest-z-index - 1 !important;
   opacity: 0.8 !important;
   position: fixed !important;
-  font: normal normal normal 9px/9px Verdana $sans-serif-font-family !important;
+  font: normal normal normal 10px/10px Verdana $sans-serif-font-family !important;
   color: #d7f0d7 !important;
   background-color: #052805 !important;
   padding: 1px 2px !important;
