@@ -75,7 +75,7 @@ opposed to supplementing them.) This allows complete control over what keyboard 
 // in the content scripts
 defaultSettings.urlDataMap = {
 
-    // this domain key serves only as an example illustrating the structure of a domain-key and value pair. is named so to appear first among sorted keys
+    // this domain key serves only as an example illustrating the structure of a domain-key and value pair.
     "example.com": [
         {
             // If any one of the url-patterns or url-regexps listed below match the actual URL, the corresponding
@@ -251,6 +251,14 @@ defaultSettings.urlDataMap = {
         {
             urlPatterns: ["blogs.timesofindia.indiatimes.com/*"],
             page_mainContent: "#profileBlock"
+        }
+    ],
+
+    "ebay.com": [
+        {
+            // for testing
+            urlPatterns: ["www.ebay.com/electronics/cell-phone-pda"],
+            CUs_specifier: "ul.e-fs-cnti>li"
         }
     ],
 
@@ -494,10 +502,18 @@ defaultSettings.urlDataMap = {
         },
         {
             urlPatterns:["www.nytimes.com"],
-            CUs_specifier: ".column.last .columnGroup, #main .module .column, #insideNYTimesBrowser td"
-
+            CUs_specifier: ".story, .headlinesOnly, .baseLayoutBelowFold .module>.column, .navigationHomeLede, .extendedVideoPlayerModule, #classifiedsWidget, #mostPopWidget, .tabbedBlogModule, .singleRule, #spanABTopRegion"
+//            CUs_specifier: ".column.last .columnGroup, #main .module .column, #insideNYTimesBrowser td"
         }
     ],
+
+    "pinterest.com": [
+        {
+            urlPatterns: ["www.pinterest.com"],
+            CUs_specifier: ".item"
+        },
+    ],
+
     "quora.com": [
         {
             urlPatterns: ["www.quora.com/search?*"],
@@ -835,6 +851,13 @@ defaultSettings.urlDataMap = {
     },
 
     "washingtonpost.com": [
+        {
+            urlPatterns: ["www.washingtonpost.com", "www.washingtonpost.com/regional"],
+            CUs_specifier: ".module:not(.right-rail, .hot-topics)", // :not can have comma within in jQuery's extensions to CSS selectors
+            CUs_SUs: {
+                std_mainEl: ".headline>a, h2>a"
+            }
+        },
         {
             urlPatterns: ["www.washingtonpost.com/**"],
             page_mainContent: {
