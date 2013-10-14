@@ -495,15 +495,16 @@ defaultSettings.urlDataMap = {
 
     "linkedin.com": [
         {
-            urlPatterns: ["www.linkedin.com", "www.linkedin.com/?trk=nav_logo"],
+            urlPatterns: ["www.linkedin.com/*"],
             CUs_specifier: "#my-feed-post .feed-item",
             CUs_style: {
-                overlayPadding: "0 0 20px 0"
+                overlayPadding: "0 0 20px 0",
+                setOverlayZIndexHigh: true
             },
             CUs_SUs: {
                 std_mainEl: ".new-miniprofile-container a"
             }
-        }
+        },
     ],
 
     // Experimental. Does not work well. 
