@@ -65,9 +65,17 @@ _u.mod_directionalNav = (function($) {
             minPerpendicularOverlap = 1,
             maxDirectionalOverlap = 2,
 
+            // this is for elements that have a positive perpendicular overlap (such an element is an "ideal" match)
             bestMatchIndex = -1,
             bestMatchOverlap = -Infinity,
-            bestMatchDistance = Infinity;
+            bestMatchDistance = Infinity,
+
+            // this is for elements that have perpendicular overlap higher than a threshold negative value (such an
+            // element is a "fallback" match)
+            fallbackMatchMinPerpOverlap = -100,
+            fallbackMatchIndex = -1,
+            fallbackMatchOverlap = -Infinity,
+            fallbackMatchDistance = Infinity;
 
         for (i = 0; i < len; i++) {
             if (i === ownIndex) continue;
@@ -116,8 +124,22 @@ _u.mod_directionalNav = (function($) {
                     bestMatchDistance = distance;
                 }
             }
+
+            // the following allows us to find matches overlap more than a certain small negative perpendicular overlap
+            // if no element with a positive perpendicular overlap have been found yet
+            if (bestMatchIndex === -1 && perpOverlap >= fallbackMatchMinPerpOverlap &&
+                distance >= -maxDirectionalOverlap && distance <= fallbackMatchDistance) {
+
+                if (distance < fallbackMatchDistance ||
+                    (distance === fallbackMatchDistance && perpOverlap > fallbackMatchOverlap)) {
+
+                    fallbackMatchIndex = i;
+                    fallbackMatchOverlap = perpOverlap;
+                    fallbackMatchDistance = distance;
+                }
+            }
         }
-        return bestMatchIndex;
+        return bestMatchIndex > -1? bestMatchIndex: fallbackMatchIndex;
     }
 
     // NOTE: since this uses getBoundingClientRect, the rect returned is relative to the viewport, but since
