@@ -137,6 +137,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         smoothScroll = mod_smoothScroll.smoothScroll,
 
         timeout_onMouseMovePause,
+        timeout_viewportChange,
 
         /* these are updated when the mouse moves */
         elemUnderMouse,
@@ -1883,6 +1884,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_domEvents.addEventListener(document, 'mousemove', onMouseMove, true);
         mod_domEvents.addEventListener(document, 'mouseout', onMouseOut, true);
         mod_domEvents.addEventListener(document, 'contextmenu', onContextMenu, true);
+        $(window).on('resize scroll', onViewportChange);
 
         // event handlers for scroll commented out for now. not that useful + might be a bad idea performance-wise
 //        mod_domEvents.addEventListener(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
@@ -1983,6 +1985,14 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return CUs_all;
     }
 
+    function onViewportChange() {
+        clearTimeout(timeout_viewportChange);
+        timeout_viewportChange = setTimeout(_onViewportChange, 200);
+    }
+
+    function _onViewportChange() {
+//        iscu
+    }
     return thisModule;
 
 })(jQuery, _u.mod_basicPageUtils, _u.mod_domEvents, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_filterCUs,
