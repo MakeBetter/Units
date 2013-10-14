@@ -8,7 +8,6 @@ Also, hence the generous use of !important property here.
 .CU-overlay {
   position: absolute !important;
   pointer-events: none !important;
-  // z-index: $highest-z-index - 5; // this is helpful in some sites, but causes a problem with overlay appearing on top of dialogs like the share dialog
 }
 
 .CU-overlay-selected-marker {
@@ -23,7 +22,7 @@ Also, hence the generous use of !important property here.
 .CU-overlay-selected  {
   @include box-shadow(0px 0px 7px 0px $border-color-grey !important);
   border: none !important;
-  // background-color: rgba(255, 255, 0, 0.1) !important;
+  background-color: rgba(122, 255, 122, 0.02) !important;
 
   &:before {
     @extend .CU-overlay-selected-marker;
