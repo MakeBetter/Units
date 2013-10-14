@@ -876,7 +876,7 @@ defaultSettings.urlDataMap = {
                 selector: ".primary-col li"
             },
             CUs_SUs: {
-                std_mainEl: ".feed-video-title"
+                std_mainEl: ".yt-uix-tile-link"
             }
         },
         {
