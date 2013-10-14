@@ -157,8 +157,8 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
                 mod_contentHelper.suppressEvent(e);
             }
 
-            // some other key was presse
-            else {
+            // some other NON-SHIFT key was pressed
+            else if (keyCode != 16) {
 
                 // Focus the dummy text box. And stop the event from propagating, but don't
                 // prevent it's default action, so that it enters text into the text box.
@@ -447,11 +447,12 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
     }
 
     function selectNextFocusable(direction) {
-        var elems = $getFocusablesInViewport();
+        var elems = $getAllLinkLikeElems().filter(function() {
+            return (!mod_contentHelper.isUnitsProjNode(this));
+        });
         var activeEl = document.activeElement;
         // if active element is not in the viewport, focus first element in the viewport
-        if (!activeEl || activeEl === document.body || !isAnyPartOfElementInViewport(activeEl)) {
-            console.log('here');
+        if (!activeEl || activeEl === document.body) {
             var len = elems.length;
             for (var i = 0; i < len; i++) {
                 var elem = elems[i];
@@ -460,6 +461,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
                     return;
                 }
             }
+            elems[0].focus();
         }
         // this is the main flow of the method
         else {
