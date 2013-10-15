@@ -921,10 +921,32 @@ defaultSettings.urlDataMap = {
             }
         },
         {
-            urlPatterns:["www.youtube.com/*"],
+            urlPatterns: ["www.youtube.com/user/*"],
+            CUs_specifier: ".channels-content-item, .c4-spotlight-module, .expanded-shelf-content-item-wrapper",
+            CUs_SUs: {
+                std_mainEl: ".yt-uix-tile-link, .title>a"
+            },
+            CUs_style: {
+                overlayPadding: "0 0 4px 0"
+            },
+        },
+        {
+            urlPatterns: ["www.youtube.com/channel/*"],
+            CUs_specifier: ".c4-welcome-primary-col, .feed-item-snippet, .expanded-shelf-content-item, " +
+                ".feed-list-item, .yt-shelf-grid-item",
+            CUs_SUs: {
+                std_mainEl: ".yt-uix-tile-link, .yt-ui-ellipsis a"
+            },
+            CUs_style: {
+                overlayPadding: "0 0 4px 0"
+            },
+        },
+        {
+            urlPatterns: ["www.youtube.com/*"],
             CUs_specifier: ".feed-list-item",
             CUs_SUs: {
-                std_mainEl: ".feed-item-content a:not(.g-hovercard>a, .g-hovercard), .content-item-detail a, a.yt-uix-tile-link, a.yt-uix-redirect-link"
+                std_mainEl: ".feed-item-content a:not(.g-hovercard>a, .g-hovercard), .content-item-detail a, " +
+                    "a.yt-uix-tile-link, a.yt-uix-redirect-link"
             },
             CUs_style: {
                 overlayPadding: "" // some negative margin-top would be nice to apply.
@@ -933,7 +955,17 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-//                std_logout: "#masthead-expanded-menu-account-container a:contains('Sign out')"
+                "upvote": {
+                    selector: "#watch-like",
+                    kbdShortcuts:["u"],
+                    descr: "Like video"
+                },
+                "downvote": {
+                    selector: "#watch-dislike",
+                    kbdShortcuts:["d"],
+                    descr: "Dislike video"
+                },
+                std_comment: ".comments-textarea-container textarea"
             }
         }
     ],
