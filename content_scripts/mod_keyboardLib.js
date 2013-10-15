@@ -158,15 +158,22 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
         }
     }
 
-    // We deem space key ignorable if the target is not an input type or an element
-    // that allows typing (included <select>)
-    // This allows other modules (mainly mod_selectLink) to use space as a special
-    // modifier key.
+    // Checks if space can be "ignored" on an element (if so, we can suppress the space key event
+    // and use space as a modifier on such elements)
     function canIgnoreSpaceOnElement(elem) {
-        // (`elemAllowsTyping()` includes check for `select` element)
-        return elem.tagName.toLowerCase() !== "input" && !mod_contentHelper.elemAllowsTyping(elem);
-    }
+        var $elem = $(elem);
 
+        return !( elem.tagName.toLowerCase() === "input" ||
+            !mod_contentHelper.elemAllowsSingleKeyShortcut(elem) ||
+            $elem.is('[role=button]') ||
+            // checks if the element or any of its ancestors is an HTML5 video element
+            // (On youtube pages with HTML5 video, the classes "html5-video-player", and
+            // "html5-video-container" exist on the immediate ancestors of the <video>
+            // element. If the video is clicked, it the '.html5-video-player' element that
+            // seems to have focus rather than the actual <video> element, so we check for
+            // these classes as well)
+            $elem.closest('video, .html5-video-player, .html5-video-container').length );
+    }
 
     /**
      * Determines whether the invoked key/key combination (`shortcut`) should be handled as a shortcut
