@@ -532,7 +532,8 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.pinterest.com"],
             CUs_specifier: ".item",
             CUs_style: {
-                setOverlayZIndexHigh: true
+                setOverlayZIndexHigh: true,
+                highlightCUOnSelection: true
             }
         },
     ],

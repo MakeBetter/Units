@@ -23,7 +23,8 @@ Also, hence the generous use of !important property here.
 .CU-overlay-selected  {
   @include box-shadow(0px 0px 7px 0px $border-color-grey !important);
   border: none !important;
-  background-color: rgba(85, 255, 85, 0.02) !important;
+  background-color: rgba(100, 100, 100, 0.03) !important;
+  transition: background-color 1s;
 
   &:before {
     @extend .CU-overlay-selected-marker;
@@ -36,6 +37,11 @@ Also, hence the generous use of !important property here.
     bottom: 0;
     left: 0;
   }
+}
+
+.highlighted-overlay {
+  background-color: rgba(200, 250, 50, 0.2) !important;
+  transition: width !important;
 }
 
 .CU-overlay-hovered  {

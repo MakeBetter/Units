@@ -138,6 +138,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         timeout_onMouseMovePause,
         timeout_viewportChange,
+        timeout_highlightCU,
 
         /* these are updated when the mouse moves */
         elemUnderMouse,
@@ -295,6 +296,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return CUs_filtered[selectedCUIndex];
     }
 
+    function highlightSelectedCUBriefly_ifRequired() {
+        if (CUStyleData && CUStyleData.highlightCUOnSelection) {
+            clearTimeout(timeout_highlightCU);
+            $selectedCUOverlay.addClass('highlighted-overlay');
+            timeout_highlightCU = setTimeout(function() {
+                $selectedCUOverlay.removeClass('highlighted-overlay');
+            }, 500);
+        }
+    }
+
     /**
      * Selects the CU specified.
      * @param {number|jQuery} CUOrItsIndex Specifies the CU. Should either be the JQuery object representing the CU
@@ -338,6 +349,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_globals.isCUSelected = true;
 
         showSelectedOverlay($CU);
+        highlightSelectedCUBriefly_ifRequired();
 
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
@@ -653,6 +665,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function selectNextCU (direction) {
         var disabledByMe = mod_mutationObserver.disable();
         _selectNextCU(direction);
+        highlightSelectedCUBriefly_ifRequired();
         disabledByMe && mod_mutationObserver.enable();
     }
     function _selectNextCU (direction) {
