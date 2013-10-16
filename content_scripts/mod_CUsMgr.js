@@ -607,17 +607,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         var $selectedCU = CUs_filtered[selectedCUIndex];
         if ($selectedCU) {
-            if (isAnyPartOfCUinViewport($selectedCU)) {
-                var nextIndex = mod_directionalNav.getClosest($selectedCU, CUs_filtered, direction,
-                        getBoundingRect, areCUsSame),
-                    $nextCU = CUs_filtered[nextIndex];
+            var nextIndex = mod_directionalNav.getClosest($selectedCU, CUs_filtered, direction,
+                    getBoundingRect, areCUsSame),
+                $nextCU = CUs_filtered[nextIndex];
 
-                if ($nextCU && isAnyPartOfCUinViewport($nextCU)) {
-                    selectCU(nextIndex, true, true, direction);
-                }
-                else {
-                    mod_basicPageUtils.scroll(direction, body);
-                }
+            if ($nextCU && isAnyPartOfCUinViewport($nextCU)) {
+                selectCU(nextIndex, true, true, direction);
             }
             else {
                 mod_basicPageUtils.scroll(direction, body);
