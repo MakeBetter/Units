@@ -645,9 +645,18 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     /**
      * Selects the most "sensible" CU depending on various parameters. Returns true if one can be
-     * found, else false.
+     * found, else false. We try to ensure that there is no change in the change the scrolling
+     * of the page due to a call to this
      */
     function selectMostSensibleCU(setFocus) {
+        var savedScrollPos = document.body.scrollTop,
+            returnVal;
+        returnVal = _selectMostSensibleCU(setFocus);
+        // make sure the scroll position doesn't change due to the main element getting focus
+        document.body.scrollTop = savedScrollPos;
+        return returnVal;
+    }
+    function _selectMostSensibleCU(setFocus) {
         var lastSelectedCUIndex;
         if ( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
             isAnyPartOfCUinViewport($lastSelectedCU)) {
