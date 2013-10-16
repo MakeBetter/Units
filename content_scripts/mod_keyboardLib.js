@@ -36,7 +36,8 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
     var protectedWebpageShortcuts,
         //    var protectedWebpageShortcuts_lowerCase,
         _canUseSpaceAsModifier,
-        _wasSpaceUsedAsModifier = false;
+        _wasSpaceUsedAsModifier = false,
+        isSpaceDown = false;
 
     function setup(settings) {
         mod_domEvents.addEventListener(document, 'keydown', handlerToEnableSpaceAsModifier, true);
@@ -139,6 +140,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
         if (keyCode === 32) {
             if (e.type === 'keydown') {
                 _wasSpaceUsedAsModifier = false; // reset the value on space keydown
+                isSpaceDown = true;
                 if (canIgnoreSpaceOnElement(e.target)) {
                     _canUseSpaceAsModifier = true;
                     mod_contentHelper.suppressEvent(e);
@@ -147,6 +149,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
             }
             else { // 'keyup'
                 _canUseSpaceAsModifier = false;
+                isSpaceDown = false;
             }
         }
         // any other key than space
@@ -192,7 +195,7 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
         // don't treat the current key as shortcut if
         // 1) hints are enabled
         // 2) space is pressed down
-        if (mod_globals.hintsEnabled || _canUseSpaceAsModifier) {
+        if (mod_globals.hintsEnabled || isSpaceDown) {
             return false;
         }
 
