@@ -231,18 +231,21 @@ _u.mod_keyboardLib = (function(Mousetrap, mod_contentHelper, mod_globals, mod_do
      */
     function canTreatAsShortcut(shortcut, targetElement) {
 
-        // Check if one of these 'special modifier keys' is present: `ctrl`, `alt`, `option`, `meta`, and `command`
-        // (i.e. all modifiers excluding `shift`), each of which by itself is enough to deem the key combination a
-        // shortcut irrespective of the target element.
-        // NOTE: alt+<key> used to type accented letters etc in some cases. But if the user wants to use alt+<key>
-        // as a shortcut
-        var shortcutKeys = shortcut.trim().split(/\s*\+\s*/),
-            splModifierKeys = ["ctrl", "alt", "option", "meta", "command"];
+        shortcut = shortcut.replace('control', 'ctrl').replace('option', 'alt');
 
-        for (var i = 0; i < shortcutKeys.length; ++i) {
-            if (splModifierKeys.indexOf(shortcutKeys[i]) >= 0) {
-                return true;
-            }
+        var shortcutKeys = shortcut.trim().split(/\s*\+\s*/);
+
+        // Irrespective of the target element, we can return true,
+        // if: at least one of 'ctrl', 'command' or 'meta' is part of the shortcut,
+        // else if: both 'shift' and 'alt' are part of it (either 'shift' or 'alt',
+        // by itself isn't enough, since they are used for typing uppercase and
+        // accented letters as well)
+        if (shortcutKeys.indexOf('ctrl') > -1 ||
+            shortcutKeys.indexOf('meta') > -1 ||
+            shortcutKeys.indexOf('command') > -1 ||
+            (shortcutKeys.indexOf('shift') > -1 && shortcutKeys.indexOf('alt') > -1)) {
+
+            return true;
         }
 
         // If shortcut is the single key [enter] or [space] and element is *any* input type or the select type,
