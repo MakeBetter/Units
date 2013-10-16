@@ -48,7 +48,7 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
                 lastSpaceUpTime = Date.now();
                 if (mod_keyboardLib.canIgnoreSpaceOnElement(e.target) && !mod_keyboardLib.wasSpaceUsedAsModifier()) {
                     // select downward CU or scroll down if no CUs
-                    mod_CUsMgr.selectNextCU('down');
+                    mod_CUsMgr.selectNextCUOrScroll('down');
                 }
             }
             // check if this is the "thumb" modifier key (93 - right cmd, 18 - alt)
@@ -57,7 +57,7 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
                 isThumbModifierDown = false;
                 if (!wasThumbModifierUsedAsModifier) {
                     // select upward CU or scroll up if no CUs
-                    mod_CUsMgr.selectNextCU('up');
+                    mod_CUsMgr.selectNextCUOrScroll('up');
                 }
             }
         }, true);
@@ -87,7 +87,7 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
     function startRepeatedScroll(direction) {
         endRepeatedScroll();
         interval_repeatedScroll = setInterval(function(){
-            mod_CUsMgr.selectNextCU(direction);
+            mod_CUsMgr.selectNextCUOrScroll(direction);
         }, 100);
     }
 
