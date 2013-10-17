@@ -271,6 +271,10 @@ var defaultSettings = {
             std_seeMore: {
                 descr: "See More",
                 kbdShortcuts: ["m"]
+            },
+            std_star: {
+                descr: "Star",
+                kbdShortcuts: ["*"]
             }
         }
     },
