@@ -614,8 +614,17 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             if ($nextCU && isAnyPartOfCUinViewport($nextCU)) {
                 selectCU(nextIndex, true, true, direction);
             }
-            else {
+            else if (isAnyPartOfCUinViewport($selectedCU)) {
                 mod_basicPageUtils.scroll(direction, body);
+            }
+            // if the page has been scrolled to a position away from the selected CU...
+            else {
+                nextIndex = findFirstSensibleCUInViewport();
+                nextIndex > -1?
+                    // `direction` isn't passed in the following call because it
+                    // doesn't mean anything in this case. TODO: verify this
+                    selectCU(nextIndex, true, true):
+                    mod_basicPageUtils.scroll(direction, body);
             }
         }
         else {
@@ -665,31 +674,41 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             return true;
         }
         else {
-            // select the first CU fully in the viewport, if found,
-            // else the first CU partially in view if found
-            return selectFirstCUInViewport({fullyInView: true, setFocus: setFocus}) ||
-                selectFirstCUInViewport({fullyInView: false, setFocus: setFocus});
+            var i = findFirstSensibleCUInViewport();
+            if (i > -1) {
+                selectCU(i, setFocus, false);
+                return true;
+            }
+            else {
+                return false;
+            }
         }
     }
 
     /**
-     * Selects first CU in the viewport, and return true if one is found, else return false.
-     * The key 'fullyInView' in `options` can be used to specify if the CU needs to be fully
-     * contained in the viewport or just partially.
+     * Returns index (in CUs_filtered) of the first CU (looking in DOM order, for now) that
+     * is contained *fully* in the viewport. If no such CU exists, returns the index of the
+     * first CU which has *any part* in the viewport. Returns -1 if neither type is found.
+     * @returns {number}
      */
-    function selectFirstCUInViewport (options) {
-
+    function findFirstSensibleCUInViewport() {
         if (CUs_filtered && CUs_filtered.length) {
             var CUsArrLen = CUs_filtered.length,
-                isCUInViewport = options.fullyInView? isCUFullyInViewport: isAnyPartOfCUinViewport;
+                firstPartiallyContainedCUIndex = -1,
+                $CU;
+
             for (var i = 0; i < CUsArrLen; ++i) {
-                if (isCUInViewport(CUs_filtered[i])) {
-                    selectCU(i, options.setFocus, false);
-                    return true;
+                $CU = CUs_filtered[i];
+                if (isCUFullyInViewport($CU)) {
+                    return i;
+                }
+                if (firstPartiallyContainedCUIndex === -1 && isAnyPartOfCUinViewport($CU)) {
+                    firstPartiallyContainedCUIndex = i;
                 }
             }
+            // if not returned yet
+            return firstPartiallyContainedCUIndex;
         }
-        return false;
     }
 
     /**
