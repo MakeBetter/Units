@@ -249,6 +249,19 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "craigslist.org": {
+        // Matches delhi.craigslist.co.in, grenoble.fr.craigslist.fr, providence.craigslist.org etc.
+        urlPatterns: ["*.craigslist.org/*", "*.craigslist.*/*"],
+        CUs_specifier: ".row, .nextpage a",
+        CUs_style: {
+            overlayPadding: "8px",
+            useInnerElementsToGetOverlaySize: true
+        },
+        CUs_SUs: {
+            std_star: ".star"
+        }
+    },
+
     "indiatimes.com": [
         {
             urlPatterns: ["timesofindia.indiatimes.com/*"],
@@ -1016,6 +1029,10 @@ var specialDomain_masterDomain_map = [
         // which is superfluous here as it is the "master domain" key.)
         regexp: /^google\.(?:com|((?:co\.)?[a-z]{2}))$/,
         masterDomainKey: "google.com"
+    },
+    {
+        regexp: /craigslist\.(?:org|((?:co\.)?[a-z]{2}))$/,
+        masterDomainKey: "craigslist.org"
     }
 //    {
 //        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
