@@ -623,7 +623,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 nextIndex > -1?
                     // `direction` isn't passed in the following call because it
                     // doesn't mean anything in this case. TODO: verify this
-                    selectCU(nextIndex, true, true):
+                    selectCU(nextIndex, true, false):
                     mod_basicPageUtils.scroll(direction, body);
             }
         }
@@ -688,27 +688,54 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     /**
      * Returns index (in CUs_filtered) of the first CU (looking in DOM order, for now) that
      * is contained *fully* in the viewport. If no such CU exists, returns the index of the
-     * first CU which has *any part* in the viewport. Returns -1 if neither type is found.
+     * CU with the *largest area* in the viewport. Returns -1 if no CU is found in the viewport.
      * @returns {number}
      */
     function findFirstSensibleCUInViewport() {
         if (CUs_filtered && CUs_filtered.length) {
             var CUsArrLen = CUs_filtered.length,
-                firstPartiallyContainedCUIndex = -1,
-                $CU;
+                CUIndexWithMaxAreaInViewport = -1,
+                maxArea = 0;
 
             for (var i = 0; i < CUsArrLen; ++i) {
-                $CU = CUs_filtered[i];
-                if (isCUFullyInViewport($CU)) {
+                var $CU = CUs_filtered[i],
+                    CUBoundingRect = getBoundingRect($CU);
+                if (isCUFullyInViewport($CU, CUBoundingRect)) {
                     return i;
                 }
-                if (firstPartiallyContainedCUIndex === -1 && isAnyPartOfCUinViewport($CU)) {
-                    firstPartiallyContainedCUIndex = i;
+                var area = getCUAreaInViewport($CU, CUBoundingRect);
+                if (area > maxArea) {
+                    maxArea = area;
+                    CUIndexWithMaxAreaInViewport = i;
                 }
             }
             // if not returned yet
-            return firstPartiallyContainedCUIndex;
+            return CUIndexWithMaxAreaInViewport;
         }
+    }
+
+    // Returns the area of the part of the CU in the viewport (and 0 if no part of the
+    // CU is in the viewport)
+    // `CUBoundingRect` is optional; should be passed if already determined by caller
+    function getCUAreaInViewport($CU, CUBoundingRect) {
+        var boundingRect = CUBoundingRect || getBoundingRect($CU);
+
+        if (isAnyPartOfCUinViewport($CU, boundingRect)) {
+            var CUTop = boundingRect.top,
+                CUBottom = CUTop + boundingRect.height,
+                CULeft = boundingRect.left,
+                CURight = CULeft + boundingRect.width,
+
+                winTop = window.scrollY, //body.scrollTop,
+                winBottom = winTop + window.innerHeight,
+                winLeft = window.scrollX,
+                winRight = winLeft + window.innerWidth;
+
+            return ( (Math.min(winRight, CURight) - Math.max(winLeft, CULeft)) *
+                (Math.min(winBottom, CUBottom) - Math.max(winTop, CUTop)) );
+        }
+        else
+            return 0;
     }
 
     /**
@@ -1879,15 +1906,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return ( CUs_filtered.length === 0) || isCUFullyInViewport(CUs_filtered[CUs_filtered.length-1]);
     }
 
-    // returns true if any part of $CU is in the viewport, false otherwise
-    function isAnyPartOfCUinViewport($CU) {
-
-        // for the CU
-        var boundingRect = getBoundingRect($CU),
+    // returns true if any part of $CU is in the viewport, false otherwise.
+    // `CUBoundingRect` is optional; should be passed if already determined by caller
+    function isAnyPartOfCUinViewport($CU, CUBoundingRect) {
+        var boundingRect = CUBoundingRect || getBoundingRect($CU),
             CUTop = boundingRect.top,
-            CUBottom = CUTop + boundingRect.height;
+            CUBottom = CUTop + boundingRect.height,
 
-        var // for the window:
             winTop = window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
@@ -1895,13 +1920,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     // returns true if the specified CU is completely in the viewport, false otherwise
-    function isCUFullyInViewport($CU) {
-        // for the CU
-        var boundingRect = getBoundingRect($CU),
+    // `CUBoundingRect` is optional; should be passed if already determined by caller
+    function isCUFullyInViewport($CU, CUBoundingRect) {
+        var boundingRect = CUBoundingRect || getBoundingRect($CU),
             CUTop = boundingRect.top,
-            CUBottom = CUTop + boundingRect.height;
-
-        var // for the window:
+            CUBottom = CUTop + boundingRect.height,
             winTop = window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
