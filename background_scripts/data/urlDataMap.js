@@ -350,12 +350,8 @@ defaultSettings.urlDataMap = {
     ],
 
     "feedly.com": {
-        // Note: Feedly units seem to have a higher z-index than 0 (CU overlays whose z-index are not explicitly set
-        // are not visible on Feedly).
-        urlPatterns:["www.feedly.com*"],
-        CUs_specifier: {
-            selector: ".u0Entry, .u5entry, .u100Entry, .u4Entry"
-        }
+        urlPatterns:["cloud.feedly.com*"],
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
     },
 
     "github.com": [
@@ -482,7 +478,7 @@ defaultSettings.urlDataMap = {
         },
         {
             // for Gmail
-            urlPatterns: ["gmail.com", "gmail.com/*", "mail.google.com", "mail.google.com/*"],
+            urlPatterns: ["gmail.com*", "mail.google.com*"],
             protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
         },
         {
@@ -644,50 +640,40 @@ defaultSettings.urlDataMap = {
     // only support on the main page
     "reddit.com": [
         {
+            // There is no straighforward CU_specifier selector for the comments page. It used to work well with
+            // buildUnitAround using (".arrow.up") but seems to have recently stopped to work. There's likely work needed
+            // in the buildUnitAround code.
             urlPatterns: ["www.reddit.com/*/comments/*"],
-            CUs_specifier: {
-                buildCUAround: ".arrow.up, .usertext-edit",
-                //                exclude: ".panestack-title, .menuarea"
+            protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
 
-            },
-            CUs_SUs: {
-                //                std_mainEl: ".title",
-                "std_upvote": ".arrow.up, .arrow.upmod",
-                "std_downvote": ".arrow.down, .arrow.downmod",
-                "std_share": ".share-button .active",
-                "std_viewComments": {kbdShortcuts: ["c, g c"],  selector: ".comments" },
-                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
-                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
-                "minimize": {kbdShortcuts: ["m"],  selector: ".noncollapsed .expand" }
-            }
         },
         {
-            urlPatterns: ["www.reddit.com", "www.reddit.com/?*"],
+            urlPatterns: ["www.reddit.com", "www.reddit.com/?*", "www.reddit.com/r/*", "www.reddit.com/@"],
             CUs_specifier: {
-                selector: "#siteTable>div.thing, .nextprev a[rel='nofollow next']" //works well. doesn't include the promoted article.
+                selector: ".sitetable>div.thing, .nextprev a[rel='nofollow next']" //works well. doesn't include the promoted article.
             },
             CUs_style: {
                 useInnerElementsToGetOverlaySize: true,
                 "overlayPadding": "5px 10px 5px 0"
             },
             CUs_SUs: {
-                std_mainEl: ".title",
-                "std_upvote": ".arrow.up, .arrow.upmod",
-                "std_downvote": ".arrow.down, .arrow.downmod",
-                "std_share": ".share-button .active",
+                std_mainEl: "a.title",
                 "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".flat-list.buttons .comments"},
                 "hide": {kbdShortcuts: ["h"],  selector: ".hide-button a" },
-                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
                 "save": {kbdShortcuts: ["shift+s"], selector: ".save-button a"}
-            },
-            CUs_actions: {
-
             }
         },
         {
             shared: "true",
             page_SUs: {
                 std_logout: ".logout a:contains('logout')"
+            },
+            CUs_SUs: {
+                "std_upvote": ".arrow.up, .arrow.upmod",
+                "std_downvote": ".arrow.down, .arrow.downmod",
+                "std_share": ".share-button .active",
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
+                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
             }
         },
     ],
