@@ -1,10 +1,10 @@
 // Allows downward scroll using space key, and upward scroll using the "thumb-modifier" key,
 // i.e. the cmd key in Mac and alt key elsewhere.
-// Scroll happens by CU if the page has CUs, else normally
+// Scrolling is done CU-by-CU if the page has CUs, else normally.
 // Cmd/Alt is a modifier key and Space is treated as a special modifier elsewhere in this
 // extension. For this reason, we can use them for scrolling action only on *keyup*, if they
 // were *not* used as modifiers.
-// However, as a way to enable quick repeated scrolling, the thumb-modifier/space key can be
+// However, for quick repeated scrolling, the thumb-modifier/space key can be
 // tapped twice in quick succession, without releasing it after pressing it down the second
 // time.
 _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLib, mod_domEvents) {
@@ -14,23 +14,30 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
     });
 
     var isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
+        isSpaceDown,
         isThumbModifierDown,
         wasThumbModifierUsedAsModifier,
         interval_repeatedScroll,
         lastSpaceUpTime,
         lastThumbModifierUpTime,
-        doubleTapPeriod = 400;
+        lastSpaceDownTime,
+        lastThumbModifierDownTime,
+        doubleTapPeriod = 400,
+        now,
+        // scroll/select CU on key-up only if the thumb modifier or space is held down for less than this time
+        // (to reduce accidental triggering)
+        maxKeyDownTime = 400;  
 
     function setup() {
-        lastSpaceUpTime = lastThumbModifierUpTime = 0;
+        lastSpaceUpTime = lastThumbModifierUpTime = lastSpaceDownTime = lastThumbModifierDownTime = 0;
         mod_domEvents.addEventListener(document, 'keydown', function(e) {
             var keyCode = e.which || e.keyCode;
             // check if this is the "thumb" modifier key (93 - right cmd, 18 - alt)
-            if (isMac? (keyCode === 93): (keyCode === 18)) {
-                isThumbModifierDown = true;
+            if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
                 wasThumbModifierUsedAsModifier = false; // reset
-
-                if (interval_repeatedScroll === false && Date.now() - lastThumbModifierUpTime < doubleTapPeriod) {
+                isThumbModifierDown = true;
+                lastThumbModifierDownTime = now = Date.now();
+                if (interval_repeatedScroll === false && now - lastThumbModifierUpTime < doubleTapPeriod) {
                     startRepeatedScroll('up');
                 }
             }
@@ -45,17 +52,20 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
             endRepeatedScroll();    // end any on-going repeated scroll
             var keyCode = e.which || e.keyCode;
             if (keyCode === 32) { // 32 - space
-                lastSpaceUpTime = Date.now();
-                if (mod_keyboardLib.canIgnoreSpaceOnElement(e.target) && !mod_keyboardLib.wasSpaceUsedAsModifier()) {
+                isSpaceDown = false;
+                lastSpaceUpTime = now = Date.now();
+                if (now - lastSpaceDownTime < maxKeyDownTime &&
+                    mod_keyboardLib.canIgnoreSpaceOnElement(e.target) && !mod_keyboardLib.wasSpaceUsedAsModifier()) {
+
                     // select downward CU or scroll down if no CUs
                     mod_CUsMgr.selectNextCUOrScroll('down');
                 }
             }
-            // check if this is the "thumb" modifier key (93 - right cmd, 18 - alt)
-            if (isMac? (keyCode === 93): (keyCode === 18)) {
-                lastThumbModifierUpTime = Date.now();
+            // check if this is the "thumb" modifier key (91, 93 - cmd, 18 - alt)
+            if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
+                lastThumbModifierUpTime = now = Date.now();
                 isThumbModifierDown = false;
-                if (!wasThumbModifierUsedAsModifier) {
+                if (now - lastThumbModifierDownTime < maxKeyDownTime && !wasThumbModifierUsedAsModifier) {
                     // select upward CU or scroll up if no CUs
                     mod_CUsMgr.selectNextCUOrScroll('up');
                 }
@@ -63,8 +73,12 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
         }, true);
 
         thisModule.listenTo(mod_keyboardLib, 'space-down-ignored', function() {
-            if (interval_repeatedScroll === false && Date.now() - lastSpaceUpTime < doubleTapPeriod) {
-                startRepeatedScroll('down');
+            if (!isSpaceDown) {
+                isSpaceDown = true;
+                lastSpaceDownTime =  now = Date.now();
+                if (interval_repeatedScroll === false && now - lastSpaceUpTime < doubleTapPeriod) {
+                    startRepeatedScroll('down');
+                }
             }
         });
 
