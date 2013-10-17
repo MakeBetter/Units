@@ -317,7 +317,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * focused.
      * @param {boolean} [adjustScrolling] If true, document's scrolling is adjusted so that
      * all (or such much as is possible) of the selected CU is in the viewport. Defaults to false.
-     * @param {string} [direction] direction we moved, compared to the last selected CU, if relevant
+     * @param {string} [direction] The direction of movement specified by the user, if relevant.
      */
     function selectCU(CUOrItsIndex, setFocus, adjustScrolling, direction) {
         var now = Date.now();
@@ -621,9 +621,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             else {
                 nextIndex = findFirstSensibleCUInViewport();
                 nextIndex > -1?
-                    // `direction` isn't passed in the following call because it
-                    // doesn't mean anything in this case. TODO: verify this
-                    selectCU(nextIndex, true, false):
+                    selectCU(nextIndex, true, false, direction):
                     mod_basicPageUtils.scroll(direction, body);
             }
         }
@@ -961,12 +959,21 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Scrolls the window such the specified element lies fully in the viewport (or as much as is
+     * Scrolls the  page to center the specified CU on it. Uses `direction` to decide how to
+     * position an element that doesn't fit in the viewport, and to ensure that we don't scroll
+     * opposite to the `direction` of movement specified by the user.
      * possible if the element is too large).
-     * //TODO3: consider if horizontal scrolling should be adjusted as well (some sites sites, like an image gallery,
-     * might have CUs laid out horizontally)
      * @param {jQuery} $CUOverlay
-     * @param {string} [direction] The direction in which we moved in, compared to the last selected CU, if relevant
+     * @param {string} [direction] The direction of movement specified by the user, if relevant.
+     * *NOTE* If the `direction` is specified, it performs two important functions:
+     * 1) We ensure that we do NOT scroll the page in the *opposite* to the specified direction.
+     * For example if 'j' (down direction) is pressed, and centering the specified CU required
+     * the page to be scrolled up, the scrolling won't take place.
+     * 2) We use `direction` to decide which side of a large CU (that doesn't fit within the
+     * viewport) should be aligned with the (corresponding side of) the viewport. For example,
+     * scrolling downward into a new large CU, we would align it's top to the top of the page,
+     * but had the scrolling been upward, we would align its bottom to the bottom of the page
+     * -- and similarly for left/right movement.
      */
     function scrollCUIntoView($CUOverlay, direction) {
 
@@ -1004,17 +1011,23 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 newWinLeft = elRight - winWidth + margin;
             }
 
-            if (miscSettings.animatedCUScroll) {
-                animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
-                    Math.abs(newWinLeft-winLeft) / miscSettings.animatedCUScroll_Speed);
+            // ensure we don't scroll opposite to the direction specified
+            if (!direction || 
+                (direction === 'right' && newWinLeft > winLeft) ||
+                (direction === 'left' && newWinLeft < winLeft) ) {
+                
+                if (miscSettings.animatedCUScroll) {
+                    animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
+                        Math.abs(newWinLeft-winLeft) / miscSettings.animatedCUScroll_Speed);
 
-                // TODO: if the animation for vertical scroll is required (see below), this
-                // animation will be terminated instantly. Instead, ideally, a diagonal, animation
-                // should take place. Low priority, given the rarity of horizontal scroll
-                smoothScroll(body, 'scrollLeft', newWinLeft, animationDuration);
-            }
-            else {
-                body.scrollLeft = newWinLeft;
+                    // TODO: if the animation for vertical scroll is required (see below), this
+                    // animation will be terminated instantly. Instead, ideally, a diagonal, animation
+                    // should take place. Low priority, given the rarity of horizontal scroll
+                    smoothScroll(body, 'scrollLeft', newWinLeft, animationDuration);
+                }
+                else {
+                    body.scrollLeft = newWinLeft;
+                }
             }
         }
 
@@ -1041,17 +1054,22 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 newWinTop = elBottom - winHeight + margin;
             }
 
-            if (miscSettings.animatedCUScroll) {
-                animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
-                    Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
+            // ensure we don't scroll opposite to the direction specified
+            if (!direction ||
+                (direction === 'down' && newWinTop > winTop) ||
+                (direction === 'up' && newWinTop < winTop) ) {
 
-                smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
-            }
-            else {
-                body.scrollTop = newWinTop;
+                if (miscSettings.animatedCUScroll) {
+                    animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
+                        Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
+
+                    smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
+                }
+                else {
+                    body.scrollTop = newWinTop;
+                }
             }
         }
-
     }
 
     function getJQueryWrapper(x) {
