@@ -705,12 +705,31 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+//    "coffitivity.com": [
+//        {
+//            urlPatterns: ["coffitivity.com"],
+//            CUs_specifier: ".content, .audiocontroller",
+////            CUs_style: {
+////                useInnerElementsToGetOverlaySize: true,
+////                "overlayPadding": "10px 5px 50px 0px"
+////            },
+//        }
+//    ],
+
     // Sites included: "*.stackexchange.com", "stackoverflow.com", "superuser.com", "serverfault.com", "stackapps.com",
     // "askubuntu.com"
     // Also, "meta.stackoverflow.com", "meta.superuser.com","meta.stackoverflow.com", etc.
 
     //StackExchange powered sites included: "mathoverflow.net"
     "stackexchange.com": [
+        {
+            urlPatterns: ["stackoverflow.com/about"],
+            CUs_specifier: ".content-page>div",
+            CUs_style: {
+                useInnerElementsToGetOverlaySize: true,
+                "overlayPadding": "10px 10px 50px 10px"
+            },
+        },
         {
             // Pages with lists of questions
             // Examples: http://stackoverflow.com/questions, http://stackoverflow.com/questions/tagged/perl,
