@@ -61,21 +61,27 @@ _u.mod_directionalNav = (function($) {
 
             // "Directional distances" between `refEl` and elements in `candidates` - i.e. distance along the direction
             // specified (i.e horizontal distance when `direction` is left/right and vertical distance for up/down)
-            distances = [],
-            minPerpendicularOverlap = 1,
-            maxDirectionalOverlap = 2,
+            dirDistances = [],
 
-            // this is for elements that have a positive perpendicular overlap (such an element is an "ideal" match)
+            // minimum directional distance between both sets of *corresponding* sides for an element to be considered a
+            // match. E.g: if direction is 'up' or 'down', both the following should be higher than the value specified
+            // by this variable:
+            // 1) the vertical distance between the top sides of the elements
+            // 2) the vertical distance between their bottom sides
+            // (we consider this condition if actual "directional distance" between the two elements is negative, that
+            // is they have "directional overlap".)
+            minDirDistanceOfCorrespondingSides = 5,
+
+            /* the following are for elements that are "ideal" candidates for a match, meaning they have a positive
+             "perpendicular overlap" (while being to the correct side of the reference element directionally) */
             bestMatchIndex = -1,
             bestMatchOverlap = -Infinity,
             bestMatchDistance = Infinity,
 
-            // this is for elements that have perpendicular overlap higher than a threshold negative value (such an
-            // element is a "fallback" match)
-            fallbackMatchMinPerpOverlap = -100,
-            fallbackMatchIndex = -1,
-            fallbackMatchOverlap = -Infinity,
-            fallbackMatchDistance = Infinity;
+            /* the following are for "fallback" matches, which are elements that (lie to the correct side of the
+            reference element directionally, but) do NOT a positive "perpendicular overlap" */
+            bestFallbackMatchIndex = -1,
+            highestFallbackMatchScore = -Infinity;
 
         for (i = 0; i < len; i++) {
             if (i === ownIndex) continue;
@@ -84,19 +90,35 @@ _u.mod_directionalNav = (function($) {
                 maxDiff,    // Max diff between any two points in the two rects (measured perpendicular to the direction
                             // of movement). if this is less than `sum`, there is a "perpendicular overlap"
                 perpOverlap,
-                distance;
+                // "directional distance" - distance between elements along the direction specified. This will
+                // usually be positive, and if not there is a directional overlap between the elements  
+                dirDistance,
+                // directional distance between the leading edges in specified `direction`. This will always
+                // greater than `dirDistance`
+                leadingEdgeDirDistance,
+                // directional distance between the non-leading edges in specified `direction`. This will always
+                // greater than `dirDistance`
+                nonLeadingEdgeDirDistance;
 
-            if (direction === 'right' || direction === 'left') {
+                if (direction === 'right' || direction === 'left') {
                 sum = ownRect.height + otherRect.height;
                 maxDiff = Math.max(ownRect.top + ownRect.height, otherRect.top + otherRect.height) -
                     Math.min(ownRect.top, otherRect.top);
 
                 perpOverlap = sum - maxDiff; // higher the value, more the overlap
 
-               direction === 'right'?
-                   (distance = otherRect.left - (ownRect.left + ownRect.width)):
-                   (distance = ownRect.left - (otherRect.left + otherRect.width));
-
+                var ownRectRight = ownRect.left + ownRect.width,
+                    otherRectRight = otherRect.left + otherRect.width;
+                if (direction === 'right') {
+                    dirDistance = otherRect.left - ownRectRight;
+                    leadingEdgeDirDistance = otherRectRight - ownRectRight;
+                    nonLeadingEdgeDirDistance = otherRect.left - ownRect.left;
+                }
+                else {
+                    dirDistance = ownRect.left - otherRectRight;
+                    leadingEdgeDirDistance = ownRect.left - otherRect.left;
+                    nonLeadingEdgeDirDistance = ownRectRight - otherRectRight;
+                }
             }
             else if (direction === 'down' || direction === 'up') {
                 sum = ownRect.width + otherRect.width;
@@ -105,42 +127,55 @@ _u.mod_directionalNav = (function($) {
 
                 perpOverlap = sum - maxDiff; // higher the value, more the overlap
 
-                direction === 'down'?
-                    (distance = otherRect.top - (ownRect.top + ownRect.height)):
-                    (distance = ownRect.top - (otherRect.top + otherRect.height));
-
+                var ownRectBottom = ownRect.top + ownRect.height,
+                    otherRectBottom = otherRect.top + otherRect.height;
+                if (direction === 'down') {
+                    dirDistance = otherRect.top - ownRectBottom;
+                    leadingEdgeDirDistance = otherRectBottom - ownRectBottom;
+                    nonLeadingEdgeDirDistance = otherRect.top - ownRect.top;
+                }
+                else {
+                    dirDistance = ownRect.top - otherRectBottom;
+                    leadingEdgeDirDistance = ownRect.top - otherRect.top;
+                    nonLeadingEdgeDirDistance = ownRectBottom - otherRectBottom;
+                }
             }
 
             perpendicularOverlaps[i] = perpOverlap;
-            distances[i] = distance;
+            dirDistances[i] = dirDistance;
 
-            // allow up to `maxDirectionalOverlap` directional overlap (i.e. allow distance to be negative till that value)
-            if (perpOverlap >= minPerpendicularOverlap && distance >= -maxDirectionalOverlap && distance <= bestMatchDistance) {
-                if (distance < bestMatchDistance ||
-                    (distance === bestMatchDistance && perpOverlap > bestMatchOverlap)) {
+            if (perpOverlap > 0 &&
+                // the following 'or' condition ensures that don't miss any element that can be thought
+                // to be positioned on the correct side of `refEl` as per the `direction` specified
+                (dirDistance > 0 ||
+                    (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
+
+                if (dirDistance < bestMatchDistance ||
+                    (dirDistance === bestMatchDistance && perpOverlap > bestMatchOverlap)) {
 
                     bestMatchIndex = i;
                     bestMatchOverlap = perpOverlap;
-                    bestMatchDistance = distance;
+                    bestMatchDistance = dirDistance;
                 }
             }
 
-            // the following allows us to find matches overlap more than a certain small negative perpendicular overlap
-            // if no element with a positive perpendicular overlap have been found yet
-            if (bestMatchIndex === -1 && perpOverlap >= fallbackMatchMinPerpOverlap &&
-                distance >= -maxDirectionalOverlap && distance <= fallbackMatchDistance) {
+            // if an "ideal" match (elements with positive perpOverlap; see comments near the top) is not found, the
+            // following allows us to find best fallback match (elements with -ve perpOverlap ) from amongst elements
+            // which lie in the correct side of `refEl` as per the `direction` specified
+            if (bestMatchIndex === -1 &&
+                (dirDistance > 0 ||
+                    (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
 
-                if (distance < fallbackMatchDistance ||
-                    (distance === fallbackMatchDistance && perpOverlap > fallbackMatchOverlap)) {
-
-                    fallbackMatchIndex = i;
-                    fallbackMatchOverlap = perpOverlap;
-                    fallbackMatchDistance = distance;
+                var matchScore = perpOverlap - dirDistance;
+                if (matchScore > highestFallbackMatchScore) {
+                    highestFallbackMatchScore = matchScore;
+                    bestFallbackMatchIndex = i;
                 }
             }
         }
-        return bestMatchIndex > -1? bestMatchIndex: fallbackMatchIndex;
+        return bestMatchIndex > -1? bestMatchIndex: bestFallbackMatchIndex;
     }
+
 
     // NOTE: since this uses getBoundingClientRect, the rect returned is relative to the viewport, but since
     // we're considering relative values only, it doesn't matter
