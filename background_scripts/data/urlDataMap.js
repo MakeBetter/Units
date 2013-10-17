@@ -900,28 +900,44 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-    // only support on the first page
-    "ycombinator.com": {
-        urlPatterns: ["news.ycombinator.com/*"],
-        CUs_specifier: {
-            buildCUAround: "td.title>a"
-        },
-        CUs_style: {
-            useInnerElementsToGetOverlaySize: true,
-            "overlayPadding": "3px 6px 3px 0"
-        },
-        CUs_actions: {
-
-        },
-        CUs_SUs: {
-            "std_mainEl": "td.title>a",
-            "std_viewComments": {
-                kbdShortcuts: ["c", "v c"], // overridden to add additional shortcut
-                selector: "a:contains('comment'), a:contains('discuss')"
+    "ycombinator.com": [
+        {
+            urlPatterns: ["news.ycombinator.com/item*"],
+            CUs_specifier: {
+                buildCUAround: "center>a" // upvote link
             },
-            "std_upvote": "td:nth-child(2)>center>a"
+            CUs_SUs: {
+                std_mainEl: ".comhead>a, td.title>a", // commenter's name and shared post's title
+                std_comment: {
+                    selector: "a:contains('reply')",
+                    descr: "Reply",
+                    kbdShortcuts: ["r", "c"]
+                },
+                std_upvote: "center>a"
+            }
+        },
+        {
+            urlPatterns: ["news.ycombinator.com"],
+            CUs_specifier: {
+                buildCUAround: "td.title>a"
+            },
+            CUs_style: {
+                useInnerElementsToGetOverlaySize: true,
+                "overlayPadding": "3px 6px 3px 0"
+            },
+            CUs_actions: {
+
+            },
+            CUs_SUs: {
+                "std_mainEl": "td.title>a",
+                "std_viewComments": {
+                    kbdShortcuts: ["c", "v c"], // overridden to add additional shortcut
+                    selector: "a:contains('comment'), a:contains('discuss')"
+                },
+                "std_upvote": "td:nth-child(2)>center>a"
+            }
         }
-    },
+    ],
 
     "youtube.com": [
         {
