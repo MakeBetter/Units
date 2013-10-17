@@ -230,14 +230,12 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
     function onKeydown(e) {
         var code = e.which;
-        // 17 - ctrl, 18 - alt, 91 & 93 - meta/cmd/windows
-        if (e.target === $searchBox[0] && [17, 18, 91, 93].indexOf(code) == -1) {
-
-            if (code === 27) { // Esc
-                suppressEvent(e);
-                closeUI();
-            }
-            else  if (code === 13) { // Enter
+        if (code === 27) { // Esc
+            suppressEvent(e);
+            closeUI();
+        }
+        else if (e.target === $searchBox[0] && !(e.shiftKey || e.ctrlKey || e.altKey || e.metaKey)) {
+            if (code === 13) { // Enter
                 suppressEvent(e);
                 triggerFilteringIfRequired();
             }
