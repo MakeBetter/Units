@@ -361,7 +361,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         if (setFocus) {
+            var savedScrollPos = body.scrollTop;
             focusMainElement($CU);
+            body.scrollTop = savedScrollPos;
         }
 
         if (miscSettings.increaseFontInSelectedCU && !$CU.data('fontIncreasedOnSelection')) {
@@ -1037,7 +1039,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 newWinLeft = elRight - winWidth + margin;
             }
 
-            // ensure we don't scroll opposite to the direction specified
+            // ensure we scroll only if it's not opposite to `direction` (if specified)
             if (!direction || 
                 (direction === 'right' && newWinLeft > winLeft) ||
                 (direction === 'left' && newWinLeft < winLeft) ) {
@@ -1080,7 +1082,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 newWinTop = elBottom - winHeight + margin;
             }
 
-            // ensure we don't scroll opposite to the direction specified
+            // ensure we scroll only if it's not opposite to `direction` (if specified)
             if (!direction ||
                 (direction === 'down' && newWinTop > winTop) ||
                 (direction === 'up' && newWinTop < winTop) ) {
