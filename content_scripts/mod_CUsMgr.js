@@ -574,18 +574,31 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         hoveredCUIndex = -1;
     }
 
-    function selectUp() {
+    function smartScrollUp() {
         selectNextCUOrScroll('up');
     }
-    function selectDown() {
+    function smartScrollDown() {
         selectNextCUOrScroll('down');
     }
-    function selectRight() {
+    function smartScrollRight() {
         selectNextCUOrScroll('right');
     }
-
-    function selectLeft() {
+    function smartScrollLeft() {
         selectNextCUOrScroll('left');
+    }
+
+    function selectCUUp() {
+        selectNextCU('up');
+    }
+    function selectCUDown() {
+        selectNextCU('down');
+    }
+    function selectCURight() {
+        selectNextCU('right');
+    }
+
+    function selectCULeft() {
+        selectNextCU('left');
     }
 
     /**
@@ -593,10 +606,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * the page in the appropriate direction as appropriate
      */
     function selectNextCUOrScroll (direction) {
-        var disabledByMe = mod_mutationObserver.disable();
         _selectNextCUOrScroll(direction);
         highlightSelectedCUBriefly_ifRequired();
-        disabledByMe && mod_mutationObserver.enable();
     }
 
     function _selectNextCUOrScroll(direction) {
@@ -627,6 +638,21 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         else {
             selectMostSensibleCU(true) || mod_basicPageUtils.scroll(direction, body);
+        }
+    }
+
+    // selects the next CU in the direction specified (NOTE: in most cases, calling `selectNextCUOrScroll()`
+    // might be better than calling this)
+    function selectNextCU(direction) {
+        var $selectedCU = CUs_filtered[selectedCUIndex],
+            nextIndex;
+        if ($selectedCU && (nextIndex = mod_directionalNav.getClosest($selectedCU, CUs_filtered, direction,
+            getBoundingRect, areCUsSame)) > -1) {
+
+            selectCU(nextIndex, true, true, direction);
+        }
+        else {
+            selectMostSensibleCU(true);
         }
     }
 
@@ -1906,10 +1932,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // the "if" condition below is redundant since this check is made when the CUsMgr module is being setup, but
         // it's being left here since it would be if useful this code was moved out of this module
         if (expandedUrlData && expandedUrlData.CUs_specifier) {
-            mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, selectDown, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, selectUp, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, selectRight, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, selectLeft, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, smartScrollDown, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, smartScrollUp, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, smartScrollRight, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, smartScrollLeft, {pageHasCUs: true});
 
             mod_keyboardLib.bind(CUsShortcuts.selectFirstCU.kbdShortcuts, function() {
                 selectFirst(true, true);
