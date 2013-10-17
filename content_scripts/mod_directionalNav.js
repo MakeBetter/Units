@@ -79,9 +79,10 @@ _u.mod_directionalNav = (function($) {
             bestMatchDistance = Infinity,
 
             /* the following are for "fallback" matches, which are elements that (lie to the correct side of the
-            reference element directionally, but) do NOT a positive "perpendicular overlap" */
+            reference element directionally, but) do NOT have a positive "perpendicular overlap" */
             bestFallbackMatchIndex = -1,
-            highestFallbackMatchScore = -Infinity;
+            largestSubZeroPerpOverlap = -Infinity,
+            dirDistanceOfBestFallbackMatch = -Infinity;
 
         for (i = 0; i < len; i++) {
             if (i === ownIndex) continue;
@@ -166,9 +167,10 @@ _u.mod_directionalNav = (function($) {
                 (dirDistance > 0 ||
                     (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
 
-                var matchScore = perpOverlap - dirDistance;
-                if (matchScore > highestFallbackMatchScore) {
-                    highestFallbackMatchScore = matchScore;
+                if (perpOverlap > largestSubZeroPerpOverlap ||
+                    (perpOverlap === largestSubZeroPerpOverlap && dirDistance < dirDistanceOfBestFallbackMatch) ){
+                    largestSubZeroPerpOverlap = perpOverlap;
+                    dirDistanceOfBestFallbackMatch = dirDistance;
                     bestFallbackMatchIndex = i;
                 }
             }
