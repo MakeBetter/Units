@@ -958,6 +958,20 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "hnsearch.com": [
+        {
+            urlPatterns: ["www.hnsearch.com/search*"],
+            CUs_specifier: ".content-results-wrapper table", // .content-pagination a:contains('Next') main element
+            // focus does not work because the link does not have an href. We need to implement a fake focus for such cases.
+            CUs_SUs: {
+                std_mainEl: ".content-result-subheader a:contains('on:')"
+            },
+            CUs_style: {
+                overlayPadding: "5px"
+            }
+        }
+    ],
+
     "youtube.com": [
         {
             urlPatterns: ["www.youtube.com/results*"],
