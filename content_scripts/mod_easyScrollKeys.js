@@ -1,4 +1,4 @@
-// Allows downward scroll using space key, and upward scroll using the "thumb-modifier" key,
+// Allows downward scroll using space key, and upward scroll using either shift+space or the "thumb-modifier" key,
 // i.e. the cmd key in Mac and alt key elsewhere.
 // Scrolling is done CU-by-CU if the page has CUs, else normally.
 // Cmd/Alt is a modifier key and Space is treated as a special modifier elsewhere in this
@@ -16,6 +16,7 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
     var isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
         isSpaceDown,
         isThumbModifierDown,
+        isShiftDown,
         wasThumbModifierUsedAsModifier,
         interval_repeatedScroll,
         lastSpaceUpTime,
@@ -26,14 +27,17 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
         now,
         // scroll/select CU on key-up only if the thumb modifier or space is held down for less than this time
         // (to reduce accidental triggering)
-        maxKeyDownTime = 400;  
+        maxKeyDownTime = 400;
 
     function setup() {
         lastSpaceUpTime = lastThumbModifierUpTime = lastSpaceDownTime = lastThumbModifierDownTime = 0;
         mod_domEvents.addEventListener(document, 'keydown', function(e) {
             var keyCode = e.which || e.keyCode;
+            if (keyCode === 16) { // 16 - shift
+                isShiftDown = true;
+            }
             // check if this is the "thumb" modifier key (93 - right cmd, 18 - alt)
-            if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
+            else if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
                 wasThumbModifierUsedAsModifier = false; // reset
                 isThumbModifierDown = true;
                 lastThumbModifierDownTime = now = Date.now();
@@ -51,14 +55,17 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
         mod_domEvents.addEventListener(document, 'keyup', function(e) {
             endRepeatedScroll();    // end any on-going repeated scroll
             var keyCode = e.which || e.keyCode;
-            if (keyCode === 32) { // 32 - space
+            if (keyCode === 16) { // 16 - shift
+                isShiftDown = false;
+            }
+            else if (keyCode === 32) { // 32 - space
                 isSpaceDown = false;
                 lastSpaceUpTime = now = Date.now();
                 if (now - lastSpaceDownTime < maxKeyDownTime &&
                     mod_keyboardLib.canIgnoreSpaceOnElement(e.target) && !mod_keyboardLib.wasSpaceUsedAsModifier()) {
 
                     // select downward CU or scroll down if no CUs
-                    mod_CUsMgr.selectNextCUOrScroll('down');
+                    mod_CUsMgr.selectNextCUOrScroll(isShiftDown? 'up': 'down');
                 }
             }
             // check if this is the "thumb" modifier key (91, 93 - cmd, 18 - alt)
@@ -72,12 +79,14 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
             }
         }, true);
 
+        // we need to listen to this event since the space-keydown event is suppressed by the
+        // keyboard library
         thisModule.listenTo(mod_keyboardLib, 'space-down-ignored', function() {
             if (!isSpaceDown) {
                 isSpaceDown = true;
                 lastSpaceDownTime =  now = Date.now();
                 if (interval_repeatedScroll === false && now - lastSpaceUpTime < doubleTapPeriod) {
-                    startRepeatedScroll('down');
+                    startRepeatedScroll(isShiftDown? 'up': 'down');
                 }
             }
         });
