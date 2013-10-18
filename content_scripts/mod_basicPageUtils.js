@@ -34,10 +34,9 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         smoothScroll = mod_smoothScroll.smoothScroll,
 
         // classes used when styling focused element
-        class_focusedElement = "UnitsProj-focused-element",
         class_focusedImage = "UnitsProj-focused-image",
         class_focusedLinkOrButton = "UnitsProj-focused-link-or-button",
-        class_inlineBlock = "UnitsProj-focused-element-inline-block";
+        class_focusedLargeImage= "UnitsProj-focused-large-image";
 
     function reset() {
         removeActiveElementStyle();
@@ -322,51 +321,31 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         el = el || document.activeElement;
         var $el = $(el);
 
-        var hasAnyBlockDescendant = function($el) {
-            var $descendants = $el.find('*');
-            for (var i = 0; i < $descendants.length; i++) {
-                var $element = $descendants.eq(i);
-                if ($element.is(":visible") && ($element.css("display") !== "inline" || $element.is("img"))) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        // Don't apply any Units-specific styles to element with tabindex = -1 and if outline is set to 0 explicitly by the
-        // website.
-        // This is for elements such as the tweet container on Twitter, and email container on Gmail that have tabindex = -1
-        // but the outline is set to 0 explicitly. Showing the Units elements on such elements can tend to be distracting.
+        // Don't apply any Units-specific focus styles to element if it has tabindex = -1 and its outline-width is set to 0.
+        // Examples of such elements: Gmail email container, and Twitter tweet container. They get focus by clicking on them,
+        // and the Units outline style is rather distracting in these cases.
         if (el.tabIndex === -1 && parseInt($el.css("outline-width"), 10) === 0) {
             return;
         }
 
-        // If it contains an image, show the outline with an offset.
+        // If it contains an image, show image-specific outline
         // TODO: Can put a better check to ensure that the element contains only ONE leaf child image/embed etc and no other
         // elements.
         var $img = $el.find('img');
         if ($el.is("a") && $img.length === 1) {
-            $el.addClass(class_focusedElement);
+            $el.addClass(class_focusedImage);
 
+            // for larger images, apply a thicker border with an offset.
             if ($img.height() > 50 || $img.width() > 50) {
-                $el.addClass(class_focusedImage);
+                $el.addClass(class_focusedLargeImage);
             }
         }
-        // if link or button, add styles.
-        else if ($el.is("a, button, input[type=button]")) {
+        // Else if focused element is link or button
+        else if ($el.is("a, button, input[type=button], [role=button]")) {
             $el
-                .addClass(class_focusedElement)
                 .addClass(class_focusedLinkOrButton);
         }
         // for any other types of elements, no styles added.
-
-
-        // If the anchor has display:inline and has a non-inline child, then set the display to inline-block. This is so
-        // that the outlnie around it is drawn correctly.
-        // http://stackoverflow.com/questions/17146707/outline-is-drawn-incorrectly-on-chrome-if-outline-style-is-set-to-solid-and-n
-        if ($el.css("display") === "inline" && hasAnyBlockDescendant($el)) {
-            $el.addClass(class_inlineBlock);
-        }
 
         return;
     }
@@ -377,10 +356,9 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 //        var disabledHere = mod_mutationObserver.disable();
         var el = element || document.activeElement;
         $(el)
-            .removeClass(class_focusedElement)
             .removeClass(class_focusedImage)
             .removeClass(class_focusedLinkOrButton)
-            .removeClass(class_inlineBlock);
+            .removeClass(class_focusedLargeImage);
 //        disabledHere && mod_mutationObserver.enable();
     }
 

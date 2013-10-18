@@ -87,27 +87,39 @@ input.UnitsProj-dummyInput {
 
 /************* Focused element styles *************/
 
-.UnitsProj-focused-element {
-  outline-color: $focused-element-or-CU-color !important;
-  outline-style: solid !important;
-  outline-width: 1px !important;
+/*
+We use outline-style: auto (and solid) so that outlines are drawn properly around anchors that contain block elements.
+See SO issue for this: http://stackoverflow.com/questions/17146707/outline-is-drawn-incorrectly-on-chrome-if-outline-style-is-set-to-solid-and-n/17148490
+Though we'll have to live with the issue #33 for image links (till Chrome fixes it).
+*/
+.UnitsProj-focused-image {
+  outline-color: darken($focused-element-or-CU-color, 10) !important;
+  outline-style: auto !important;
+  outline-width: 1px;
 }
 
-/* For all a's that contains an image, video or embed, set an offset for the outline so that the outline is clearly visible.*/
-.UnitsProj-focused-image {
+/*
+ For all a's that contains a large image: 1) Have a thick outline 2) Have an outline-offset so that the outline is
+ clearly visible
+*/
+
+.UnitsProj-focused-large-image {
   outline-offset: 3px !important;
   outline-width: 3px !important;
 }
 
-/* Set background for all a's and buttons */
+/*
+For textual and button links, 1) set the background-color. This is because on some sites, the links are laid out in the DOM
+such that the outline is not visible. We apply the background-color to make sure that the link is still clearly visible.
+2) Set the outline-style: solid (cannot be 'auto'. See issue: https://github.com/MakeBetter/Units/issues/33)
+*/
+
 .UnitsProj-focused-link-or-button {
-  //background-color: #e6fff1 !important;
+  outline-color: $focused-element-or-CU-color !important;
+  outline-width: 1px !important;
+  outline-style: solid !important;
   background-color: #dbf3db !important;
   color: #333 !important;
-}
-
-.UnitsProj-focused-element-inline-block {
-  display: inline-block !important;
 }
 
 /* ****** Filter module styles ***** */
