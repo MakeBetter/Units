@@ -563,8 +563,19 @@ defaultSettings.urlDataMap = {
         },
         {
             urlPatterns:["www.nytimes.com"],
-            CUs_specifier: ".story, .headlinesOnly, .baseLayoutBelowFold .module>.column, .navigationHomeLede, .extendedVideoPlayerModule, #classifiedsWidget, #mostPopWidget, .tabbedBlogModule, .singleRule, #spanABTopRegion"
+            CUs_specifier: ".navigationHomeLede, .story, .headlinesOnly, .baseLayoutBelowFold .module>.column, .extendedVideoPlayerModule, #classifiedsWidget, #mostPopWidget, .tabbedBlogModule, .singleRule, #spanABTopRegion, #wsodMarkets"
 //            CUs_specifier: ".column.last .columnGroup, #main .module .column, #insideNYTimesBrowser td"
+        },
+        {
+            urlPatterns:["international.nytimes.com"],
+            CUs_specifier: ".flush.primary, .story, .headlinesOnly, .baseLayoutBelowFold .module>.column, .extendedVideoPlayerModule, #classifiedsWidget, #mostPopWidget, .tabbedBlogModule, .singleRule, #spanABTopRegion, #wsodMarketsGlobalEditionHPModule"
+//            CUs_specifier: ".column.last .columnGroup, #main .module .column, #insideNYTimesBrowser td"
+        },
+        {
+            shared: "true",
+            CUs_style: {
+                overlayPadding: "2px"
+            }
         }
     ],
 
