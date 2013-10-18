@@ -92,10 +92,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $lastSelectedCU = null,   // to store a reference to the last selected CU
 
-        // last invoked time ("lit") for selectCU or deselectCU. If a CU is currently selected, this stores the time it was
-        // selected, else this stores the time the last selected CU was deselected.
-        lit_CUSelectOrDeselect,
-
         // number of milliseconds since its last selection/deselection after which a CU is no longer deemed to be
         // selected/last-selected, IF it is not in the viewport
         selectionTimeoutPeriod = 60000,
@@ -137,7 +133,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         smoothScroll = mod_smoothScroll.smoothScroll,
 
         timeout_onMouseMovePause,
-        timeout_viewportChange,
         timeout_highlightCU,
 
         /* these are updated when the mouse moves */
@@ -169,7 +164,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_globals.isCUSelected = false;
         mod_globals.numCUs_all = mod_globals.numCUs_filtered = 0;
 
-        lit_updateCUsEtc = lit_selectCU = lit_CUSelectOrDeselect = 0;
+        lit_updateCUsEtc = lit_selectCU = 0;
         timeout_updateCUs = false;
         CUsFoundOnce = false;
         lastSelectedCUBoundingRect = null;
@@ -358,7 +353,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
 
         $lastSelectedCU = $CU;
-        lit_CUSelectOrDeselect = Date.now();
 
         if (adjustScrolling) {
             scrollCUIntoView($selectedCUOverlay, direction);
@@ -404,7 +398,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $selectedCUOverlay.hide();
         lastSelectedCUBoundingRect = null;
-        lit_CUSelectOrDeselect = Date.now();
         selectedCUIndex = -1;
         mod_globals.isCUSelected = false;
 
@@ -1951,7 +1944,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_domEvents.addEventListener(document, 'mousemove', onMouseMove, true);
         mod_domEvents.addEventListener(document, 'mouseout', onMouseOut, true);
         mod_domEvents.addEventListener(document, 'contextmenu', onContextMenu, true);
-        $(window).on('resize scroll', onViewportChange);
 
         // event handlers for scroll commented out for now. not that useful + might be a bad idea performance-wise
 //        mod_domEvents.addEventListener(document, 'DOMMouseScroll', onMouseWheel, false); // for gecko
@@ -2052,14 +2044,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return CUs_all;
     }
 
-    function onViewportChange() {
-        clearTimeout(timeout_viewportChange);
-        timeout_viewportChange = setTimeout(_onViewportChange, 200);
-    }
-
-    function _onViewportChange() {
-//        iscu
-    }
     return thisModule;
 
 })(jQuery, _u.mod_basicPageUtils, _u.mod_domEvents, _u.mod_keyboardLib, _u.mod_mutationObserver, _u.mod_filterCUs,
