@@ -24,6 +24,13 @@ Notes:
 1) Each key of the urlDataMap object is called a domain-key, and is the "main domain" for the corresponding
 website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
 
+Exception: There may be some exception to the above rule. Example, "blogspot.com". Now, per the public suffix list,
+blogspot.com is itself a public suffix (and so each first sub-domain of blogspot.com is a registrable domain and should
+technically an be individual key in urlDataMap).
+However, since all blogspot sub-domains have a similar markup format, we need them to map to the same key in the
+urlDataMap object. For this we are using specialDomain_masterDomain_map - We use a regex that matches all valid blogspot URLs
+and points to the "blogspot.com" key in the urlDataMap object.
+
 2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
 domain-key is called a "master domain". For example, google.com may be used as the master domain for google.co.in etc)
 
@@ -249,6 +256,17 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "blogspot.com": {
+        urlPatterns: ["*.blogspot.*"],
+        CUs_specifier: ".post-outer",
+        CUs_SUs: {
+            std_mainEl: ".post-title a"
+        },
+        CUs_style: {
+            overlayPadding: "5px"
+        }
+    },
+
     "craigslist.org": {
         // Matches delhi.craigslist.co.in, grenoble.fr.craigslist.fr, providence.craigslist.org etc.
         urlPatterns: ["*.craigslist.org/*", "*.craigslist.*/*"],
@@ -324,8 +342,8 @@ defaultSettings.urlDataMap = {
                 // NOTE: We can afford for these selectors to be non-optimized because these will be looked for inside $CU.
                 // If these were meant for the entire page, then some of these would be very bad!
 
-                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a, .photoRedesignLink a), "  +
-                            ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a, .photoRedesignLink a), " +
+                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), "  +
+                            ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), " +
                             ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText, " +
                             "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_", // these are for the new FB layout
 
@@ -1083,6 +1101,13 @@ var specialDomain_masterDomain_map = [
     {
         regexp: /craigslist\.(?:org|((?:co\.)?[a-z]{2}))$/,
         masterDomainKey: "craigslist.org"
+    },
+
+    {
+        // Match domains *.blogspot.com, *.blogspot.in etc. NOTE: Blogspot is an exception domain because it is registered
+        // as a "public suffix". See comments near the top of this file for more details.
+        regexp: /blogspot\.(?:com|((?:co\.)?[a-z]{2}))$/,
+        masterDomainKey: "blogspot.com"
     }
 //    {
 //        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
