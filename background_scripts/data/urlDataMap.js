@@ -871,6 +871,16 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "tumblr.com": [
+        {
+            urlPatterns: ["*.tumblr.com*"],
+            CUs_specifier: "article, .post",
+
+            page_SUs: {
+                std_header: "#navigation, #top-ad"
+            }
+        }
+    ],
 
     "twitter.com": [
         {
