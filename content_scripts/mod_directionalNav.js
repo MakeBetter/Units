@@ -7,7 +7,8 @@ _u.mod_directionalNav = (function($) {
 
     /*-- Public interface --*/
     var thisModule = {
-        getClosest: getClosest
+        getClosest: getClosest,
+        getPerpOverlap: getPerpOverlap
     };
 
     /**
@@ -87,10 +88,7 @@ _u.mod_directionalNav = (function($) {
         for (i = 0; i < len; i++) {
             if (i === ownIndex) continue;
             var otherRect = rects[i],
-                sum,        // Sum of ownRect's + otherRect's sides that are perpendicular to the direction of movement)
-                maxDiff,    // Max diff between any two points in the two rects (measured perpendicular to the direction
-                            // of movement). if this is less than `sum`, there is a "perpendicular overlap"
-                perpOverlap,
+                perpOverlap = getPerpOverlap(ownRect, otherRect, direction), // "perpendicular overlap" between the rects
                 // "directional distance" - distance between elements along the direction specified. This will
                 // usually be positive, and if not there is a directional overlap between the elements  
                 dirDistance,
@@ -101,13 +99,7 @@ _u.mod_directionalNav = (function($) {
                 // greater than `dirDistance`
                 nonLeadingEdgeDirDistance;
 
-                if (direction === 'right' || direction === 'left') {
-                sum = ownRect.height + otherRect.height;
-                maxDiff = Math.max(ownRect.top + ownRect.height, otherRect.top + otherRect.height) -
-                    Math.min(ownRect.top, otherRect.top);
-
-                perpOverlap = sum - maxDiff; // higher the value, more the overlap
-
+            if (direction === 'right' || direction === 'left') {
                 var ownRectRight = ownRect.left + ownRect.width,
                     otherRectRight = otherRect.left + otherRect.width;
                 if (direction === 'right') {
@@ -122,12 +114,6 @@ _u.mod_directionalNav = (function($) {
                 }
             }
             else if (direction === 'down' || direction === 'up') {
-                sum = ownRect.width + otherRect.width;
-                maxDiff = Math.max(ownRect.left + ownRect.width, otherRect.left + otherRect.width) -
-                    Math.min(ownRect.left, otherRect.left);
-
-                perpOverlap = sum - maxDiff; // higher the value, more the overlap
-
                 var ownRectBottom = ownRect.top + ownRect.height,
                     otherRectBottom = otherRect.top + otherRect.height;
                 if (direction === 'down') {
@@ -178,6 +164,30 @@ _u.mod_directionalNav = (function($) {
         return bestMatchIndex > -1? bestMatchIndex: bestFallbackMatchIndex;
     }
 
+    // Returns the "perpendicular overlap" between the reference rect (`refRect`) and the `otherRect`, i.e.
+    // i.e *horizontal overlap* if the `direction` is up/down, and *vertical overlap* if the direction is left/right.
+    // The higher the returned value, the more the perpendicular overlap. If the returned value is negative, there
+    // is no perp overlap, and the rects are actually separated by a "perpendicular distance" equal to the magnitude of
+    // the negative value.
+    function getPerpOverlap(refRect, otherRect, direction) {
+        var perpSum,        // sum of the rectangles' heights if direction is right/left, and widths if it is up/down.
+            perpMaxDiff;    // Max diff between any two points in the two rects (measured perpendicular to the direction
+                            // of movement). if this is less than `perpSum`, there is a "perpendicular overlap"
+
+        if (direction === 'right' || direction === 'left') {
+            perpSum = refRect.height + otherRect.height;
+            perpMaxDiff = Math.max(refRect.top + refRect.height, otherRect.top + otherRect.height) -
+                Math.min(refRect.top, otherRect.top);
+
+        }
+        else if (direction === 'down' || direction === 'up') {
+            perpSum = refRect.width + otherRect.width;
+            perpMaxDiff = Math.max(refRect.left + refRect.width, otherRect.left + otherRect.width) -
+                Math.min(refRect.left, otherRect.left);
+        }
+
+        return perpSum - perpMaxDiff; // higher the value, more the overlap
+    }
 
     // NOTE: since this uses getBoundingClientRect, the rect returned is relative to the viewport, but since
     // we're considering relative values only, it doesn't matter

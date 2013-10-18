@@ -298,12 +298,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function highlightSelectedCUBriefly_ifRequired() {
         if (CUStyleData && CUStyleData.highlightCUOnSelection) {
-            clearTimeout(timeout_highlightCU);
-            $selectedCUOverlay.addClass('highlighted-overlay');
-            timeout_highlightCU = setTimeout(function() {
-                $selectedCUOverlay.removeClass('highlighted-overlay');
-            }, 500);
+            highlightSelectedCUBriefly();
         }
+    }
+
+    function highlightSelectedCUBriefly() {
+        clearTimeout(timeout_highlightCU);
+        $selectedCUOverlay.addClass('highlighted-overlay');
+        timeout_highlightCU = setTimeout(function() {
+            $selectedCUOverlay.removeClass('highlighted-overlay');
+        }, 500);
     }
 
     /**
@@ -604,8 +608,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * selects the next CU in the specified direction - 'up', 'down', 'left' or 'right', or scrolls
-     * the page in the appropriate direction as appropriate
+     * selects the next CU in the specified direction - 'up', 'down', 'left' or 'right' OR scrolls
+     * the page in the specified direction, as appropriate
      */
     function selectNextCUOrScroll (direction) {
         _selectNextCUOrScroll(direction);
@@ -625,6 +629,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 $nextCU = CUs_filtered[nextIndex];
 
             if ($nextCU && isAnyPartOfCUinViewport($nextCU)) {
+                // NOTE: On a page with CUs, this is the HAPPY PATH, that the code branch
+                // that would execute in in most cases
                 selectCU(nextIndex, true, true, direction);
             }
             else if (isAnyPartOfCUinViewport($selectedCU)) {
@@ -633,13 +639,56 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             // if the page has been scrolled to a position away from the selected CU...
             else {
                 nextIndex = findFirstSensibleCUInViewport();
-                nextIndex > -1?
-                    selectCU(nextIndex, true, false, direction):
+                $nextCU = CUs_filtered[nextIndex];
+
+                // The following code is more complex than would seem necessary. But this is required in order to
+                // handle well pages with grid/2-D type CU layout (including cases where there are gaps between
+                // CUs on the page, meaning the CUs are not all stacked adjacent to each other)
+                if ($nextCU) {
+                    var perpOverlap = mod_directionalNav.getPerpOverlap(getBoundingRect($selectedCU),
+                        getBoundingRect($nextCU), direction);
+
+                    if (perpOverlap > 0) {
+                        // we first check if the CU found by `findFirstSensibleCUInViewport` has a positive
+                        // perp overlap rather than looking for the CU with the highest perpOverlap, because
+                        // that works better, especially on sites with linear CUs like google search results page
+                        selectCU(nextIndex, true, false, direction);
+                    }
+                    else {
+                        // find CU in viewport with maximum "perpendicular overlap"
+                        var highestPerpOverlap = -Infinity,
+                            indexWithHigestPerpOverlap = -1;     // index in CUs_filtered
+                        for (var i = 0; i < CUs_filtered.length; i++) {
+                            var $CU = CUs_filtered[i];
+
+                            // TODO: the following can be optimized for performance since we are
+                            // checking for CUs in the viewport again instead of making use of the
+                            // same check that had happened earlier. However, since this is not a
+                            // commonly executing code path, it's not a priority
+                            if (isAnyPartOfCUinViewport($CU)) {
+                                perpOverlap = mod_directionalNav.getPerpOverlap(getBoundingRect($selectedCU),
+                                    getBoundingRect($CU), direction);
+                                if (perpOverlap > highestPerpOverlap) {
+                                    highestPerpOverlap = perpOverlap;
+                                    indexWithHigestPerpOverlap = i;
+                                }
+                            }
+                        }
+                        // the enclosing if-block [if ($nextCU) {}] ensures that `indexWithHigestPerpOverlap`
+                        // will have a non-negative value
+                        selectCU(indexWithHigestPerpOverlap, true, true, direction);
+                        if (highestPerpOverlap < 0) {
+                            highlightSelectedCUBriefly();
+                        }
+                    }
+                }
+                else {
                     mod_basicPageUtils.scroll(direction, body);
+                }
             }
         }
         else {
-            selectMostSensibleCU(true) || mod_basicPageUtils.scroll(direction, body);
+            selectMostSensibleCU_withoutScrollingPage(true) || mod_basicPageUtils.scroll(direction, body);
         }
     }
 
@@ -654,7 +703,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             selectCU(nextIndex, true, true, direction);
         }
         else {
-            selectMostSensibleCU(true);
+            selectMostSensibleCU_withoutScrollingPage(true);
         }
     }
 
@@ -679,36 +728,37 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Selects the most "sensible" CU depending on various parameters. Returns true if one can be
-     * found, else false. We try to ensure that there is no change in the change the scrolling
-     * of the page due to a call to this
+     * Selects the most "sensible" CU, not based on directional user input. Returns true if one is
+     * found, else false.
+     * NOTE: this is called when there is applicable directional input, but we want to find a
+     * "sensible" CU. For that reason  ensure that there is NO change in the change the scrolling
+     * of the page due to a call to this.
      */
-    function selectMostSensibleCU(setFocus) {
+    function selectMostSensibleCU_withoutScrollingPage(setFocus) {
         var savedScrollPos = document.body.scrollTop,
             returnVal;
-        returnVal = _selectMostSensibleCU(setFocus);
-        // make sure the scroll position doesn't change due to the main element getting focus
-        document.body.scrollTop = savedScrollPos;
-        return returnVal;
-    }
-    function _selectMostSensibleCU(setFocus) {
+
         var lastSelectedCUIndex;
         if ( (lastSelectedCUIndex = findCUInArray($lastSelectedCU, CUs_filtered)) >=0 &&
             isAnyPartOfCUinViewport($lastSelectedCU)) {
 
             selectCU(lastSelectedCUIndex, setFocus, false);
-            return true;
+            returnVal = true;
         }
         else {
             var i = findFirstSensibleCUInViewport();
             if (i > -1) {
                 selectCU(i, setFocus, false);
-                return true;
+                returnVal = true;
             }
             else {
-                return false;
+                returnVal = false;
             }
         }
+
+        // make sure the scroll position doesn't change due to the main element getting focus
+        document.body.scrollTop = savedScrollPos;
+        return returnVal;
     }
 
     /**
@@ -1221,7 +1271,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (!CUsFoundOnce && CUs_filtered.length) {
             CUsFoundOnce = true;
             if ( miscSettings.selectCUOnLoad) {
-                selectMostSensibleCU(true);
+                selectMostSensibleCU_withoutScrollingPage(true);
             }
             mainContainer  = getMainContainer();
         }
@@ -1248,7 +1298,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                         deselectCU($prevSelectedCU);
                         selectedCUIndex = -1;
                         if (miscSettings.selectCUOnLoad) {
-                            selectMostSensibleCU(false);
+                            selectMostSensibleCU_withoutScrollingPage(false);
                         }
                     }
 
@@ -1325,22 +1375,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
                 var filterFirst = function(){
                     var $el = $(this);
-                    if ($el.is($_first) || $el.has($_first).length) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                    return $el.is($_first) || $el.has($_first).length;
                 };
 
                 var filterLast = function(){
                     var $el = $(this);
-                    if ($el.is($_last) || $el.has($_last).length) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                    return $el.is($_last) || $el.has($_last).length;
                 };
 
                 for (var i = 0; i < firstsArrLen; ++i) {
