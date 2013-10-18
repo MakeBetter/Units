@@ -1076,7 +1076,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             elRight = elLeft + elWidth;
 
         var newWinTop, newWinLeft, // we will scroll the window to these values if required
-            margin = 20,
+            margin = 10,
             animationDuration;
 
         // adjust horizontally, if not fully within the viewport horizontally
