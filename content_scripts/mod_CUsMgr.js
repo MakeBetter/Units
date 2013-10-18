@@ -1551,7 +1551,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     /**
      * process all CUs in CUsArr does the following
-     1) remove any CU that is not visible in the DOM
+     1) remove any CU that is not visible in the DOM or is too small
      2) remove any CU that is fully contained within another
      */
     function processCUs(CUsArr) {
@@ -1571,7 +1571,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         for (i = 0; i < CUsArrLen; ++i) {
             var $CU = CUsArr[i];
-            if (!$CU.hasClass('UnitsProj-HiddenByFiltering') && isCUInvisible($CU)) {
+            if ( (!$CU.hasClass('UnitsProj-HiddenByFiltering') && isCUInvisible($CU)) || isCUTooSmall($CU)) {
                 removeCurrentCU();
                 continue;
             }
@@ -1604,6 +1604,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 }
             }
         }
+    }
+
+    // helps ignore CUs that are too small (these are found on nytimes.com and some other websites)
+    function isCUTooSmall($CU) {
+        var rect = getBoundingRect($CU);
+        return rect.width < 10 || rect.height < 10 || rect.width * rect.height < 400;
     }
 
 // Based on the header selector provided, this returns the "effective" height of the header (i.e. unusable space) at the
