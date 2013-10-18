@@ -343,9 +343,9 @@ defaultSettings.urlDataMap = {
                 // If these were meant for the entire page, then some of these would be very bad!
 
                 std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), "  +
-                            ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), " +
-                            ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText, " +
-                            "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_", // these are for the new FB layout
+                    ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), " +
+                    ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText, " +
+                    "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_", // these are for the new FB layout
 
                 std_seeMore: ".text_exposed_link>a"
             },
@@ -859,6 +859,7 @@ defaultSettings.urlDataMap = {
             page_mainContent: "#left-column"
         }
     ],
+
 
     "twitter.com": [
         {
