@@ -877,8 +877,10 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["twitter.com/*"], // works on all pages of twitter. Relevant URLS:  main feed page, user page, tweet page
     //        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
             CUs_specifier: {
-                selector: ".js-actionable-tweet, .stream-user-gallery" // can alternately use #stream-items-id>li if we don't want to select comment
-                // tweets on twitter main page.
+                // .inline-reply-tweetbox: Reply to tweet container
+                // .view-more-container: "View more in conversation" link container
+                // .js-actionable tweet: All tweets (Main tweets + response tweets that show when the main tweet is expanded)
+                selector: ".js-actionable-tweet, .stream-user-gallery, .inline-reply-tweetbox, .view-more-container"
             },
             CUs_SUs: {
                 std_mainEl: '.js-details',
