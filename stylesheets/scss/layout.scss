@@ -1,0 +1,135 @@
+@import "base-variables";
+
+/* Table of Content
+==================================================
+	#Site Styles
+	#Page Styles
+	#Media Queries
+	#Font-Face */
+
+/* #Site Styles
+================================================== */
+
+body {
+  background-color: lighten($border-grey, 5);
+  color: $text-color;
+}
+
+header {
+  float: right;
+  padding-top: 20px;
+
+  span {
+    margin: 0 20px 0 0;
+  }
+}
+
+.container {
+    background-color: white;
+    border-right: 1px solid $border-grey;
+    border-left: 1px solid $border-grey;
+}
+
+section {
+  border-bottom: 1px solid $border-grey;
+  padding: 20px 0;
+}
+
+nav {
+  padding-top: 60px;
+  position: fixed;
+
+  @include simple-vertical-menu;
+}
+
+h3 {
+  text-align: center;
+}
+
+
+
+/* #Page Styles
+================================================== */
+
+.hero {
+    padding: 20px 0;
+    text-align: center;
+
+    .title {
+      font-size: 6em;
+      line-height: 1;
+      color: #666666;
+      margin: 40px 0;
+    }
+
+    .beta {
+      font-size: 0.2em;
+      color: $text-color-grey;
+    }
+
+    .hero-text {
+      font-size: 1.5em;
+      line-height: 1.2;
+      width: 80%;
+      margin: 10px auto;
+    }
+
+    .tagline {
+      color: $text-color-grey;
+    }
+
+    .description {
+      //text-align: left;
+      font-size: 1.3em;
+    }
+
+    .install-button {
+      font-size: 150%;
+      background: #02a6eb;
+      color: white;
+      border: 1px solid $border-grey;
+      margin: 20px 0;
+
+      &:hover {
+        background: darken(#02a6eb, 2);
+        border: 1px solid #fafafa;
+      }
+    }
+
+    .main-features {
+      margin-top: 40px;
+      h5 {
+        font-weight: bold;
+
+      }
+    }
+}
+
+#demo>div {
+  margin: 20px auto;
+  width: 640px;
+}
+
+section h6 {
+  font-weight: bold;
+}
+
+/* #Media Queries
+================================================== */
+
+	/* Smaller than standard 960 (devices and browsers) */
+	@media only screen and (max-width: 959px) {}
+
+	/* Tablet Portrait size to standard 960 (devices and browsers) */
+	@media only screen and (min-width: 768px) and (max-width: 959px) {}
+
+	/* All Mobile Sizes (devices and browser) */
+	@media only screen and (max-width: 767px) {}
+
+	/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+	@media only screen and (min-width: 480px) and (max-width: 767px) {}
+
+	/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+	@media only screen and (max-width: 479px) {}
+
+
