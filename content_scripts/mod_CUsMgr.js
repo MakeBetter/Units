@@ -441,7 +441,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         // If main element not specified or found, then return the first focusable in the CU.
-        var $containedFocusables = $getContainedFocusables($CU);
+        var $containedFocusables = $getContainedFocusables($CU).filter(function() {
+            return mod_contentHelper.elemAllowsSingleKeyShortcut(this);
+        });
         if ($containedFocusables && $containedFocusables.length) {
             return $containedFocusables[0];
         }
