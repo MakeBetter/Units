@@ -1111,7 +1111,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             }
         }
 
-        var pageHeaderHeight = getEffectiveHeaderHeight();
+        var pageHeaderHeight = getUnusableSpaceAtTopOfPage();
 
         // if `verticallyCenterSelectedCU` is true, and direction isn't explicitly 'left' or 'right
         if ((miscSettings.verticallyCenterSelectedCU && direction !== 'left' && direction !== 'right') ||
@@ -1614,11 +1614,16 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return rect.width < 10 || rect.height < 10 || rect.width * rect.height < 400;
     }
 
-// Based on the header selector provided, this returns the "effective" height of the header (i.e. unusable space) at the
-// top of the current view.
-// Only the part of the header below the view's top is considered, and its size returned. If there is more than one
-// header element, we do the same thing, but for the bottommost one.
-    function getEffectiveHeaderHeight() {
+// Based on the header selector provided, this returns the unusable space at the top of the current view.
+// Only the part of the header below the view's top is considered. If there is more than one header found
+// we account for all of them
+    function getUnusableSpaceAtTopOfPage() {
+        // ignore elements whose bottom is farther from the viewport top than this, because they are almost
+        // certainly not header-like elements. This was done to check against the navigation pane that occurred
+        // as a header on most tumblr blogs, but was placed as a footer on a certain blog. Refer issue #197.
+        // In any case this is a sensible check to make on all pages
+        var maxAllowedBottom = 300;
+
         if (!headerSelector) {
             return 0;
         }
@@ -1635,7 +1640,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     headerBottom = headerTop + $header[0].offsetHeight; // get header height including vertical padding,
                     // borders and horizontal scrollbar height.
 
-                if (headerBottom > maxHeaderBottom) {
+                if (headerBottom < maxAllowedBottom && headerBottom > maxHeaderBottom) {
                     maxHeaderBottom = headerBottom;
                 }
 
