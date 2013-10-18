@@ -1111,7 +1111,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             }
         }
 
-        var pageHeaderHeight = getUnusableSpaceAtTopOfPage();
+        var pageHeaderHeight = getUnusableSpaceAtTopDueToHeader();
 
         // if `verticallyCenterSelectedCU` is true, and direction isn't explicitly 'left' or 'right
         if ((miscSettings.verticallyCenterSelectedCU && direction !== 'left' && direction !== 'right') ||
@@ -1614,42 +1614,31 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return rect.width < 10 || rect.height < 10 || rect.width * rect.height < 400;
     }
 
-// Based on the header selector provided, this returns the unusable space at the top of the current view.
-// Only the part of the header below the view's top is considered. If there is more than one header found
-// we account for all of them
-    function getUnusableSpaceAtTopOfPage() {
+    // Based on the header selector provided, this returns the *unusable space* at the top of the current view.
+    // Only the part of the header below the view's top is considered. If there is more than one header found
+    // we account for all of them.
+    // If no header is found etc, 0 is returned;
+    function getUnusableSpaceAtTopDueToHeader() {
         // ignore elements whose bottom is farther from the viewport top than this, because they are almost
         // certainly not header-like elements. This was done to check against the navigation pane that occurred
         // as a header on most tumblr blogs, but was placed as a footer on a certain blog. Refer issue #197.
         // In any case this is a sensible check to make on all pages
-        var maxAllowedBottom = 300;
+        var maxAllowedBottomFromTop = 300;
 
         if (!headerSelector) {
             return 0;
         }
         var $headers = $(headerSelector).filter(':visible'),
-            headersLen;
+            headersLen = $headers.length,
+            max = 0; // NOTE: start at 0, so don't consider anything above the viewport
 
-        if ($headers && (headersLen = $headers.length)) {
-
-            var maxHeaderBottom = 0;
-
-            for (var i = 0; i < headersLen; ++i) {
-                var $header = $headers.eq(i),
-                    headerTop = $header.offset().top,
-                    headerBottom = headerTop + $header[0].offsetHeight; // get header height including vertical padding,
-                    // borders and horizontal scrollbar height.
-
-                if (headerBottom < maxAllowedBottom && headerBottom > maxHeaderBottom) {
-                    maxHeaderBottom = headerBottom;
-                }
-
+        for (var i = 0; i < headersLen; ++i) {
+            var rectBottomRelToViewport = $headers[i].getBoundingClientRect().bottom;
+            if (rectBottomRelToViewport > max && rectBottomRelToViewport < maxAllowedBottomFromTop) {
+                max = rectBottomRelToViewport;
             }
-            return Math.max(0, maxHeaderBottom - body.scrollTop);
         }
-        else {
-            return 0;
-        }
+        return max;
     }
 
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
