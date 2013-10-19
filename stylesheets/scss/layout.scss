@@ -30,6 +30,8 @@ header {
     border-left: 1px solid $border-grey;
 }
 
+
+
 section {
   border-bottom: 1px solid $border-grey;
   padding: 20px 0;
@@ -133,3 +135,18 @@ section h6 {
 	@media only screen and (max-width: 479px) {}
 
 
+
+
+//TODO: Play with this a bit more. 
+//
+//@media only screen and (min-width: 700px) and (max-width: 1300px) {
+//  .container {margin-left: 180px;}
+//}
+//
+//@media only screen and (max-width: 767px) {
+//  nav {display: none; }
+//  #demo iframe {
+//    width: 300px;
+//  }
+//
+//}

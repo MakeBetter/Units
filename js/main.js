@@ -2,11 +2,24 @@
 var navigationMenu = document.querySelector("nav"),
     class_menuSelected = "menu-selected";
 
-document.addEventListener("scroll", onDocumentScroll_highlightMenu);
+function setup() {
+    document.addEventListener("scroll", onDocumentScroll_highlightMenu);
 
-navigationMenu.addEventListener("click", function(event) {
-    navigateToSection(event.target.parentNode);
-});
+    navigationMenu.addEventListener("click", function(event) {
+        navigateToSection(event.target.parentNode);
+    });
+
+    setNavigationMenuPosition();
+    window.onresize = setNavigationMenuPosition;
+
+}
+
+function setNavigationMenuPosition() {
+    var mainContainer = document.querySelector("main"),
+        mainContainerLeft = mainContainer.getBoundingClientRect().left;
+
+    navigationMenu.style.left = (mainContainerLeft - navigationMenu.offsetWidth - 20) + "px";
+}
 
 /**
  * Implement scroll spy
@@ -68,3 +81,5 @@ function navigateToSection(menuItem) {
     // Highlight menu item
     highlightMenuItem(menuItem);
 }
+
+setup();
