@@ -231,7 +231,6 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     function onKeydown(e) {
         var code = e.which;
         if (code === 27) { // Esc
-            suppressEvent(e);
             closeUI();
         }
         else if (e.target === $searchBox[0] && !(e.shiftKey || e.ctrlKey || e.altKey || e.metaKey)) {
