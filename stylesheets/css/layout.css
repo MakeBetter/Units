@@ -1,0 +1,150 @@
+/* Table of Content
+==================================================
+	#Site Styles
+	#Page Styles
+	#Media Queries
+	#Font-Face */
+/* #Site Styles
+================================================== */
+/* line 13, ../scss/layout.scss */
+body {
+  background-color: #f7f7f7;
+  color: #444444;
+}
+
+/* line 18, ../scss/layout.scss */
+header {
+  float: right;
+  padding-top: 20px;
+}
+/* line 22, ../scss/layout.scss */
+header span {
+  margin: 0 20px 0 0;
+}
+
+/* line 27, ../scss/layout.scss */
+.container {
+  background-color: white;
+  border-right: 1px solid #eaeaea;
+  border-left: 1px solid #eaeaea;
+}
+
+/* line 35, ../scss/layout.scss */
+section {
+  border-bottom: 1px solid #eaeaea;
+  padding: 20px 0;
+}
+
+/* line 40, ../scss/layout.scss */
+nav {
+  padding-top: 60px;
+  position: fixed;
+}
+/* line 8, ../scss/_base-variables.scss */
+nav > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 150px;
+}
+/* line 15, ../scss/_base-variables.scss */
+nav li {
+  margin: 0;
+  color: #999999;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid #bbb;
+}
+/* line 25, ../scss/_base-variables.scss */
+nav li.menu-selected, nav li:hover {
+  color: #333333;
+  border-bottom: 1px solid #999;
+  transition: all 0.5s ease-out;
+}
+/* line 33, ../scss/_base-variables.scss */
+nav a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  padding: 10px 5px 5px 5px;
+}
+
+/* line 47, ../scss/layout.scss */
+h3 {
+  text-align: center;
+}
+
+/* #Page Styles
+================================================== */
+/* line 56, ../scss/layout.scss */
+.hero {
+  padding: 20px 0;
+  text-align: center;
+}
+/* line 60, ../scss/layout.scss */
+.hero .title {
+  font-size: 6em;
+  line-height: 1;
+  color: #666666;
+  margin: 40px 0;
+}
+/* line 67, ../scss/layout.scss */
+.hero .beta {
+  font-size: 0.2em;
+  color: #999999;
+}
+/* line 72, ../scss/layout.scss */
+.hero .hero-text {
+  font-size: 1.5em;
+  line-height: 1.2;
+  width: 80%;
+  margin: 10px auto;
+}
+/* line 79, ../scss/layout.scss */
+.hero .tagline {
+  color: #999999;
+}
+/* line 83, ../scss/layout.scss */
+.hero .description {
+  font-size: 1.3em;
+}
+/* line 88, ../scss/layout.scss */
+.hero .install-button {
+  font-size: 150%;
+  background: #02a6eb;
+  color: white;
+  border: 1px solid #eaeaea;
+  margin: 20px 0;
+}
+/* line 95, ../scss/layout.scss */
+.hero .install-button:hover {
+  background: #029fe1;
+  border: 1px solid #fafafa;
+}
+/* line 101, ../scss/layout.scss */
+.hero .main-features {
+  margin-top: 40px;
+}
+/* line 103, ../scss/layout.scss */
+.hero .main-features h5 {
+  font-weight: bold;
+}
+
+/* line 110, ../scss/layout.scss */
+#demo > div {
+  margin: 20px auto;
+  width: 640px;
+}
+
+/* line 115, ../scss/layout.scss */
+section h6 {
+  font-weight: bold;
+}
+
+/* #Media Queries
+================================================== */
+/* Smaller than standard 960 (devices and browsers) */
+/* Tablet Portrait size to standard 960 (devices and browsers) */
+/* All Mobile Sizes (devices and browser) */
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
