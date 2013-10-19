@@ -839,10 +839,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var CUOffset = $selectedCUOverlay.offset(),
             CUOverlay = $selectedCUOverlay[0],
 
-            // Random note that might be useful:
-            // the following two can be set as more than the actual values without causing any trouble,
-            // but should NOT be less. So in case a choice has to be made err on the right side)
-            bodyHeight = $body.innerHeight(),   // body.clientHeight doesn't work correctly on Hacker News
+            // The following two variables can be set to *more* than the actual values (which should be
+            // body.clientHeight and body.clientWidth) without causing any trouble, but NOT lesser).
+            // [body.clientHeight doesn't get the correct value on Hacker News, and on twitter nothing
+            // apart from body.scrollHeight returns the correct value including, it seems, jQuery's height()
+            // and innerHeight()]
+            bodyHeight = Math.max(body.clientHeight, body.offsetHeight, body.scrollHeight, $body.innerHeight()),
             bodyWidth = $body.innerWidth(),
 
             CUOverlayTop = CUOffset.top,
