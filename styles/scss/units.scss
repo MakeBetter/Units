@@ -23,7 +23,7 @@ Also, hence the generous use of !important property here.
 .CU-overlay-selected  {
   @include box-shadow(0px 0px 7px 0px $border-color-grey !important);
   border: none !important;
-  background-color: rgba(100, 100, 100, 0.03) !important;
+  //background-color: rgba(100, 100, 100, 0.03) !important;
   transition: background-color 1s;
 
   &:before {
@@ -39,13 +39,19 @@ Also, hence the generous use of !important property here.
   }
 }
 
-.highlighted-overlay {
+.highlighted-CU-overlay {
   background-color: rgba(200, 250, 50, 0.2) !important;
-  transition: width !important;
+  transition: background-color 0s !important;
 }
 
 .CU-overlay-hovered  {
   border: 1px solid $cu-hovered-border-color;
+}
+
+.non-CU-page-overlay {
+  position: absolute !important;
+  pointer-events: none !important;
+  background-color: rgba(127, 127, 127, 0.05) !important;
 }
 
 /* ****** 'Select Link' module styles ***** */

@@ -60,9 +60,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $topLevelContainer = _u.$topLevelContainer,
 
         class_unitsProjElem = CONSTS.class_unitsProjElem,  //class applied to all elements created by UnitsProj
-        class_CUOverlay = CONSTS.class_CUOverlay,                    // class applied to all CU overlays
+        class_CUOverlay = CONSTS.class_CUOverlay,                    // class applied to CU overlays
         class_CUSelectedOverlay = CONSTS.class_CUSelectedOverlay,    // class applied to overlay on a selected CU
         class_CUHoveredOverlay = CONSTS.class_CUHoveredOverlay,      // class applied to overlay on a hovered-over CU
+        // class applied to each of the 4 overlays covering the non-selected-CU part of the page
+        class_nonCUPageOverlay = CONSTS.class_nonCUPageOverlay,
 
         selectedCUIndex  = -1, // Index of the selected CU in CUs_filtered
         hoveredCUIndex  = -1, // Index of the hovered CU in CUs_filtered
@@ -80,6 +82,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // mouse, which is exactly the point of it.
         $hoveredCUOverlay,
 
+        // holds 4 overlays used to cover the non-selected-CU part of the page.
+        // convention: these overlays exist in order as [top, bottom, left, right]
+        nonCUPageOverlays = [],
+
         body,   // will hold reference to document.body (once that is available within setup())
 
         // cached jQuery objects
@@ -92,12 +98,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $lastSelectedCU = null,   // to store a reference to the last selected CU
 
-        // number of milliseconds since its last selection/deselection after which a CU is no longer deemed to be
-        // selected/last-selected, IF it is not in the viewport
-        selectionTimeoutPeriod = 60000,
-
         interval_updateCUsTillDomReady,
-        CUsFoundOnce,
+        CUsBeenFoundOnce,
 
 //        $commonCUsAncestor, // closest common ancestor of the CUs
 
@@ -145,15 +147,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lastSelectedCUBoundingRect;
 
     function reset() {
-        // the existence checks are needed since the overlays won't exist
-        // at the time of the first call to reset()
+        // this condition ensures execution of the contained code doesn't happen the first time
+        // reset() is called, at which point the various overlays won't exist
         if ($selectedCUOverlay) {
-            deselectCU();
             $selectedCUOverlay.remove();
-        }
-        if ($hoveredCUOverlay) {
-            dehoverCU();
             $hoveredCUOverlay.remove();
+
+            deselectCU();
+            dehoverCU();
+
+            for (var i = 0; i < nonCUPageOverlays.length; i++)
+                nonCUPageOverlays[i].remove();
+
+            nonCUPageOverlays = [];
         }
 
         // reset these references that are initialized during setup()
@@ -166,7 +172,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         lit_updateCUsEtc = lit_selectCU = 0;
         timeout_updateCUs = false;
-        CUsFoundOnce = false;
+        CUsBeenFoundOnce = false;
         lastSelectedCUBoundingRect = null;
         thisModule.stopListening();
         clearInterval(interval_updateCUsTillDomReady);
@@ -202,6 +208,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         $selectedCUOverlay = $createCUOverlay('selected');
         $hoveredCUOverlay = $createCUOverlay('hovered');
+
+        for (var i = 0; i < 4; i++)
+            nonCUPageOverlays[i] = $createCUOverlay('nonCUPageOverlay');
 
         setupEvents();
         
@@ -249,23 +258,28 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mainContainer  = getMainContainer();
     }
 
-    // meant to be called during module initialization, to initialize global variables
-    // `$selectedCUOverlay` and `$hoveredCUOverlay`
-    // type should be either 'selected' or 'hovered'
+    // To be called during module initialization, to initialize global variables variables
+    // that refer to the various overlays.
+    // `type` should be one of  'selected', 'hovered', 'nonCUPageOverlay'
     function $createCUOverlay(type) {
         var $overlay = $('<div></div>').
-            addClass(class_CUOverlay).
-            addClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay).
             addClass(class_unitsProjElem).
-            hide().
-            appendTo($topLevelContainer);
+            hide();
 
-        if (CUStyleData && CUStyleData.setOverlayZIndexHigh) {
+        if (type === 'selected' || type === 'hovered') {
+            $overlay.addClass(class_CUOverlay).
+                addClass(type === 'selected'? class_CUSelectedOverlay: class_CUHoveredOverlay);
+        }
+        else {
+            $overlay.addClass(class_nonCUPageOverlay);
+        }
+
+        if (CUStyleData && CUStyleData.setOverlayZIndexHigh || type === 'nonCUPageOverlay') {
             // set it slightly less than than the highest z-index possible (2147483647),
             // so that it is less than the z-index of the help page etc
             $overlay.css('z-index', 2147483647-4);
         }
-        return $overlay;
+        return $overlay.appendTo($topLevelContainer);
     }
 
     function getMainContainer() {
@@ -299,9 +313,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function highlightSelectedCUBriefly() {
         clearTimeout(timeout_highlightCU);
-        $selectedCUOverlay.addClass('highlighted-overlay');
+        $selectedCUOverlay.addClass('highlighted-CU-overlay');
         timeout_highlightCU = setTimeout(function() {
-            $selectedCUOverlay.removeClass('highlighted-overlay');
+            $selectedCUOverlay.removeClass('highlighted-CU-overlay');
         }, 500);
     }
 
@@ -397,6 +411,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         $selectedCUOverlay.hide();
+        for (var i = 0; i < 4; i++)
+            nonCUPageOverlays[i].hide();
+
         lastSelectedCUBoundingRect = null;
         selectedCUIndex = -1;
         mod_globals.isCUSelected = false;
@@ -492,6 +509,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         _showOverlay('hovered', boundingRect || getBoundingRect($CU));
     }
 
+    //TODO: the `showOverlay()` and `_showOverlay()` functions should perhaps be renamed
+    // to something more apt now that `_showNonCUPageOverlays()` from within
+
     /**
      * Code for showing selected/hovered overlays. Only meant to be
      * called from within showSelectedOverlay() or showHoveredOverlay()
@@ -510,6 +530,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         applyPaddingToCUOverlay($overlay);
         $overlay.show();
+        if (type === 'selected') {
+            _showNonCUPageOverlays();
+        }
         disabledHere && mod_mutationObserver.enable();
     }
 
@@ -530,7 +553,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
             /* Reason for this strangeness:
              * 1. We want to let users specify the overlay padding as is normally done in CSS.
-             * 2. At the same time, we don't want the overlay to * actually * have any padding. For the triangle markers
+             * 2. At the same time, we don't want the overlay to * actually * have any padding. For the corner markers
              * (that we insert inside the overlay) to stick to the corners of the overlay, it is best if the overlay does
              * not have any padding.
              */
@@ -807,6 +830,64 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         else
             return 0;
+    }
+
+    // Show overlays to cover the non-CU part of the page.
+    // NOTE: This is only meant to be called from within
+    // (the code flow of) showSelectedOverlay()
+    function _showNonCUPageOverlays() {
+        var CUOffset = $selectedCUOverlay.offset(),
+            CUOverlay = $selectedCUOverlay[0],
+
+            // Random note that might be useful:
+            // the following two can be set as more than the actual values without causing any trouble,
+            // but should NOT be less. So in case a choice has to be made err on the right side)
+            bodyHeight = $body.innerHeight(),   // body.clientHeight doesn't work correctly on Hacker News
+            bodyWidth = $body.innerWidth(),
+
+            CUOverlayTop = CUOffset.top,
+            CUOverlayLeft = CUOffset.left,
+            CUOverlayRight = CUOverlayLeft + CUOverlay.offsetWidth,
+            CUOverlayHeight = CUOverlay.offsetHeight,
+
+            // margins from the edges of the body
+            CUOverlayBottomMargin = bodyHeight - (CUOverlayTop + CUOverlayHeight),
+            COOverlayRightMargin = bodyWidth - CUOverlayRight;
+
+
+        //NOTE: we set top, left, width, height in each case below because that seems to work more reliably
+        // than setting bottom (and perhaps right) which would have made calculations easier
+
+        nonCUPageOverlays[0].css({
+            top: 0 + "px",
+            left: 0 + "px",
+            width: bodyWidth + "px",
+            height: CUOverlayTop + "px",
+        }).show();
+
+        // bottom
+        nonCUPageOverlays[1].css({
+            top: CUOverlayTop + CUOverlayHeight + "px",
+            left: 0 + "px",
+            width: bodyWidth + "px",
+            height: CUOverlayBottomMargin + "px"
+        }).show();
+
+        // left
+        nonCUPageOverlays[2].css({
+            top: CUOverlayTop + "px",
+            left: 0 + "px",
+            width: CUOverlayLeft + "px",
+            height: CUOverlayHeight + "px"
+        }).show();
+
+        // right
+        nonCUPageOverlays[3].css({
+            top: CUOverlayTop + "px",
+            left: CUOverlayRight + "px",
+            width: COOverlayRightMargin + "px",
+            height: CUOverlayHeight + "px"
+        }).show();
     }
 
     /**
@@ -1263,8 +1344,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_globals.numCUs_filtered = CUs_filtered.length; // do this after filtering is applied
 
         // if this is the first time CUs were found...
-        if (!CUsFoundOnce && CUs_filtered.length) {
-            CUsFoundOnce = true;
+        if (!CUsBeenFoundOnce && CUs_filtered.length) {
+            CUsBeenFoundOnce = true;
             if ( miscSettings.selectCUOnLoad) {
                 selectMostSensibleCU_withoutScrollingPage(true);
             }

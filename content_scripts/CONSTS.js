@@ -12,6 +12,8 @@ _u.CONSTS = (function(mod_commonHelper){
         class_CUOverlay : "CU-overlay",                     // class applied to all CU overlays
         class_CUSelectedOverlay : "CU-overlay-selected",    // class applied to overlay on a selected CU
         class_CUHoveredOverlay : "CU-overlay-hovered",      // class applied to overlay on a hovered CU
+        // class applied to each of the 4 overlays covering the non-selected-CU part of the page
+        class_nonCUPageOverlay: "non-CU-page-overlay",
 
         class_zenModeHidden: "UnitsProj-zen-mode-hidden", // class added to all elements made visible in the zen mode
         class_zenModeExcluded: "UnitsProj-zen-mode-excluded", // class added to all elements explicitly excluded in the zen mode
