@@ -873,7 +873,7 @@ defaultSettings.urlDataMap = {
 
     "tumblr.com": [
         {
-            urlPatterns: ["*.tumblr.com*"],
+            urlPatterns: ["*.tumblr.com", "*.tumblr.com/page/@"],
             CUs_specifier: "article, .post",
 
             page_SUs: {
