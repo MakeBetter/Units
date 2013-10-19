@@ -88,6 +88,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // default opacity for non-CU-page overlays, default should be a low'ish value
         defaultOpacity_nonCUPageOverlays = 0.05,
+    // TODO: move the default opacity to settings (also should we allow different values for each "url pattern"?) +
+    // maybe sites with larger CUs can have a higher value compared to sites with small CUs like HN, google search results etc.
         currentOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
 
         body,   // will hold reference to document.body (once that is available within setup())
@@ -483,22 +485,27 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
     }
 
-    function showSelectedOverlay($CU) {
+    // Shows (and updates) the selected CU overlay
+    // `enforceRedraw` - optional; is passed as true when the page height/width changes
+    // to enforce redrawing of the non-CU page overlays
+    function showSelectedOverlay($CU, enforceRedraw) {
         var boundingRect = getBoundingRect($CU);
 
-        // This check helps performance since _showOverlay() takes orders
-        // of magnitude more time that getBoundingRect().
-        // (This check isn't required for showHoveredOverlay()  because the
-        // needless redrawing of the same selected overlay happens only due
-        // to showSelectedOverlay() getting repeatedly called on dom mutations.
-        // On the other hand, showHoveredOverlay() doesn't get invoked nearly
-        // as frequently since the hovered overlay is usually not present, as
-        // it gets removed on every selectCU() etc)
-        if (! (lastSelectedCUBoundingRect &&
-            boundingRect.top === lastSelectedCUBoundingRect.top &&
-            boundingRect.left === lastSelectedCUBoundingRect.left &&
-            boundingRect.width === lastSelectedCUBoundingRect.width &&
-            boundingRect.height === lastSelectedCUBoundingRect.height) ) {
+        if (enforceRedraw ||
+            // When `enforceRedraw` isn't true (as is usually the case), the following
+            // check helps performance since _showOverlay() takes orders of magnitude
+            // more time than getBoundingRect().
+            // (This check isn't required for showHoveredOverlay()  because the
+            // needless redrawing of the same selected overlay happens only due
+            // to showSelectedOverlay() getting repeatedly called on dom mutations.
+            // On the other hand, showHoveredOverlay() doesn't get invoked nearly
+            // as frequently since the hovered overlay is usually not present, as
+            // it gets removed on every selectCU() etc)
+            !(lastSelectedCUBoundingRect &&
+                boundingRect.top === lastSelectedCUBoundingRect.top &&
+                boundingRect.left === lastSelectedCUBoundingRect.left &&
+                boundingRect.width === lastSelectedCUBoundingRect.width &&
+                boundingRect.height === lastSelectedCUBoundingRect.height)) {
 
             lastSelectedCUBoundingRect = boundingRect;
             _showOverlay('selected', boundingRect);
@@ -900,7 +907,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // To increase/decrease "spotlight" on the selected CU
     // `how` should be one of 'increase', 'decrease', 'default'
     function changeSpotlightOnSelecteCU(how) {
-        var delta = 0.02;
+        var delta = 0.05;
         if (how === 'increase')
             currentOpacity_nonCUPageOverlays += delta;
         else if (how === 'decrease')
@@ -1751,6 +1758,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             mainContainer_prevScrollHeight = mainContainer.scrollHeight;
             mainContainer_prevScrollWidth = mainContainer.scrollWidth;
 
+            var $selectedCU = CUs_filtered[selectedCUIndex];
+            $selectedCU && showSelectedOverlay($selectedCU, true); // pass true to enforce redraw of non-CU page overlays
             handleBasedOnLastCUPosition();
         }
 
