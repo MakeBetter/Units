@@ -51,7 +51,7 @@ Also, hence the generous use of !important property here.
 .non-CU-page-overlay {
   position: absolute !important;
   pointer-events: none !important;
-  background-color: rgba(127, 127, 127, 0.05) !important;
+  //background-color: rgba(127, 127, 127, 0.05) !important; // this is done programmatically
 }
 
 /* ****** 'Select Link' module styles ***** */

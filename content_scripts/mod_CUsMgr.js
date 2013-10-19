@@ -86,6 +86,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // convention: these overlays exist in order as [top, bottom, left, right]
         nonCUPageOverlays = [],
 
+        // default opacity for non-CU-page overlays, default should be a low'ish value
+        defaultOpacity_nonCUPageOverlays = 0.05,
+        currentOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
+
         body,   // will hold reference to document.body (once that is available within setup())
 
         // cached jQuery objects
@@ -272,6 +276,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         else {
             $overlay.addClass(class_nonCUPageOverlay);
+            $overlay.css('background-color', 'rgba(127, 127, 127, ' + currentOpacity_nonCUPageOverlays + ')');
         }
 
         if (CUStyleData && CUStyleData.setOverlayZIndexHigh || type === 'nonCUPageOverlay') {
@@ -890,6 +895,26 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             width: COOverlayRightMargin + "px",
             height: CUOverlayHeight + "px"
         }).show();
+    }
+
+    // To increase/decrease "spotlight" on the selected CU
+    // `how` should be one of 'increase', 'decrease', 'default'
+    function changeSpotlightOnSelecteCU(how) {
+        var delta = 0.02;
+        if (how === 'increase')
+            currentOpacity_nonCUPageOverlays += delta;
+        else if (how === 'decrease')
+            currentOpacity_nonCUPageOverlays -= delta;
+        else
+            currentOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays;
+
+        if (currentOpacity_nonCUPageOverlays < 0)
+            currentOpacity_nonCUPageOverlays = 0;
+        if (currentOpacity_nonCUPageOverlays > 1)
+            currentOpacity_nonCUPageOverlays = 1;
+
+        var $nonCUOverlays = $('.' + class_nonCUPageOverlay);
+        $nonCUOverlays.css('background-color', 'rgba(127, 127, 127, ' + currentOpacity_nonCUPageOverlays + ')');
     }
 
     /**
@@ -2067,6 +2092,19 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             mod_keyboardLib.bind(CUsShortcuts.selectLastCU.kbdShortcuts, function() {
                 selectLast(true, true);
             }, {pageHasCUs: true});
+
+            mod_keyboardLib.bind(['=', '+'], function() {
+                changeSpotlightOnSelecteCU('increase');
+            }, {pageHasCUs: true});
+
+            mod_keyboardLib.bind(['-'], function() {
+                changeSpotlightOnSelecteCU('decrease');
+            }, {pageHasCUs: true});
+
+            mod_keyboardLib.bind(['0'], function() {
+                changeSpotlightOnSelecteCU('default');
+            }, {pageHasCUs: true});
+
         }
     }
 
