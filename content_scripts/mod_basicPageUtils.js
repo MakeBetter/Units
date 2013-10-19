@@ -112,10 +112,10 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         mod_keyboardLib.bind(pageNavigationShortcuts.scrollRight.kbdShortcuts, scrollRight);
         mod_keyboardLib.bind(pageNavigationShortcuts.scrollLeft.kbdShortcuts, scrollLeft);
         // special shortcuts, these will get invoked only when the page has no CUs
-        mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, scrollDown, {pageHasCUs: false});
-        mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, scrollUp, {pageHasCUs: false});
-        mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, scrollRight, {pageHasCUs: false});
-        mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, scrollLeft, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.smartScrollDown.kbdShortcuts, scrollDown, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.smartScrollUp.kbdShortcuts, scrollUp, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.smartScrollRight.kbdShortcuts, scrollRight, {pageHasCUs: false});
+        mod_keyboardLib.bind(CUsShortcuts.smartScrollLeft.kbdShortcuts, scrollLeft, {pageHasCUs: false});
     }
 
     // invokes the browser's 'back' action

@@ -1976,10 +1976,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // the "if" condition below is redundant since this check is made when the CUsMgr module is being setup, but
         // it's being left here since it would be if useful this code was moved out of this module
         if (expandedUrlData && expandedUrlData.CUs_specifier) {
-            mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, smartScrollDown, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, smartScrollUp, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, smartScrollRight, {pageHasCUs: true});
-            mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, smartScrollLeft, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.smartScrollDown.kbdShortcuts, smartScrollDown, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.smartScrollUp.kbdShortcuts, smartScrollUp, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.smartScrollRight.kbdShortcuts, smartScrollRight, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.smartScrollLeft.kbdShortcuts, smartScrollLeft, {pageHasCUs: true});
+
+            mod_keyboardLib.bind(CUsShortcuts.selectCUDown.kbdShortcuts, selectCUDown, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCUUp.kbdShortcuts, selectCUUp, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCURight.kbdShortcuts, selectCURight, {pageHasCUs: true});
+            mod_keyboardLib.bind(CUsShortcuts.selectCULeft.kbdShortcuts, selectCULeft, {pageHasCUs: true});
 
             mod_keyboardLib.bind(CUsShortcuts.selectFirstCU.kbdShortcuts, function() {
                 selectFirst(true, true);

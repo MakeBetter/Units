@@ -161,24 +161,41 @@ var defaultSettings = {
     CUsShortcuts: {
         // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-        selectCUDown: {
-            descr: "Select next/down CU",
+        smartScrollDown: {
+            descr: "Smart scroll down",
             kbdShortcuts: ['j'/*, 'down'*/],
             importanceHigh: true
         },
-        selectCUUp: {
-            descr: "Select prev/up CU",
+        smartScrollUp: {
+            descr: "Smart scroll up",
             kbdShortcuts: ['k'/*, 'up'*/],
             importanceHigh: true
         },
 
+        smartScrollRight: {
+            descr: "Smart scroll right",
+            kbdShortcuts: ['l'/*, 'right'*/],
+        },
+        smartScrollLeft: {
+            descr: "Smart scroll left",
+            kbdShortcuts: ['h'/*, 'left'*/],
+        },
+        selectCUDown: {
+            descr: "Select next/down CU",
+            kbdShortcuts: ['alt+shift+j'/*, 'down'*/],
+        },
+        selectCUUp: {
+            descr: "Select prev/up CU",
+            kbdShortcuts: ['alt+shift+k'/*, 'up'*/],
+        },
+
         selectCURight: {
             descr: "Select right CU",
-            kbdShortcuts: ['l'/*, 'right'*/],
+            kbdShortcuts: ['alt+shift+l'/*, 'right'*/],
         },
         selectCULeft: {
             descr: "Select left CU",
-            kbdShortcuts: ['h'/*, 'left'*/],
+            kbdShortcuts: ['alt+shift+h'/*, 'left'*/],
         },
 
         selectFirstCU: {
