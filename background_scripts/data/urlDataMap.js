@@ -382,7 +382,7 @@ defaultSettings.urlDataMap = {
 
     "feedly.com": {
         urlPatterns:["cloud.feedly.com*"],
-        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n", "h", "l"]
     },
 
     "github.com": [
@@ -1101,7 +1101,7 @@ defaultSettings.urlDataMap = {
 
      "duckduckgo.com": {
         urlPatterns: ["duckduckgo.com/*"],
-        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n", "h", "l"]
     },
 
 //     "delicious.com": {
