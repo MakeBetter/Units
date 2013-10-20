@@ -304,13 +304,6 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-    "ebay.com": [
-        {
-            // for testing
-            urlPatterns: ["www.ebay.com/electronics/cell-phone-pda"],
-            CUs_specifier: "ul.e-fs-cnti>li"
-        }
-    ],
 
     "facebook.com": [
         {
@@ -549,12 +542,12 @@ defaultSettings.urlDataMap = {
     ],
 
     // Experimental. Does not work well. 
-    "medium.com": [
-        {
-            urlPatterns: ["medium.com", "medium.com/@"],
-            CUs_specifier: ".post-item"
-        }
-    ],
+//    "medium.com": [
+//        {
+//            urlPatterns: ["medium.com", "medium.com/@"],
+//            CUs_specifier: ".post-item"
+//        }
+//    ],
 
     "nytimes.com": [
         {
@@ -579,16 +572,16 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-    "pinterest.com": [
-        {
-            urlPatterns: ["www.pinterest.com"],
-            CUs_specifier: ".item",
-            CUs_style: {
-                setOverlayZIndexHigh: true,
-                highlightCUOnSelection: true
-            }
-        },
-    ],
+//    "pinterest.com": [
+//        {
+//            urlPatterns: ["www.pinterest.com"],
+//            CUs_specifier: ".item",
+//            CUs_style: {
+//                setOverlayZIndexHigh: true,
+//                highlightCUOnSelection: true
+//            }
+//        },
+//    ],
 
     "quora.com": [
         {
@@ -965,15 +958,15 @@ defaultSettings.urlDataMap = {
         }
     ],
 
-    "yahoo.com": [
-        {
-            urlPatterns: ["www.yahoo.com"],
-            CUs_specifier: ".main-story, #stream li, .voh-parent-wrapper, .app",
-            CUs_style: {
-                setOverlayZIndexHigh: true
-            }
-        }
-    ],
+//    "yahoo.com": [
+//        {
+//            urlPatterns: ["www.yahoo.com"],
+//            CUs_specifier: ".main-story, #stream li, .voh-parent-wrapper, .app",
+//            CUs_style: {
+//                setOverlayZIndexHigh: true
+//            }
+//        }
+//    ],
 
     "ycombinator.com": [
         {
@@ -1079,18 +1072,18 @@ defaultSettings.urlDataMap = {
 
     //Data that may need to be removed for friend release. 1) These sites are either not very commonly known. 2) They are
     // experimental and not well supported by Units.
-    "sulekha.com": {
-        urlPatterns: ["*.sulekha.com/*"],
-        CUs_specifier: {
-            selector: ".sul_result_container"
-        }
-    },
-    "team-bhp.com": {
-        urlPatterns: ["*.team-bhp.com/*"],
-        CUs_specifier: {
-            selector: ".box>table tr"
-        }
-    },
+//    "sulekha.com": {
+//        urlPatterns: ["*.sulekha.com/*"],
+//        CUs_specifier: {
+//            selector: ".sul_result_container"
+//        }
+//    },
+//    "team-bhp.com": {
+//        urlPatterns: ["*.team-bhp.com/*"],
+//        CUs_specifier: {
+//            selector: ".box>table tr"
+//        }
+//    },
 
     // pages that have their own units.
 
