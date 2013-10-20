@@ -509,8 +509,8 @@ defaultSettings.urlDataMap = {
         },
         {
             // for Gmail
-            urlPatterns: ["gmail.com*", "mail.google.com*"],
-            protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+//            urlPatterns: ["gmail.com*", "mail.google.com*"],
+//            protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
         },
         {
             shared: "true",
