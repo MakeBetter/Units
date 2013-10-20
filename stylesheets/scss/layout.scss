@@ -137,16 +137,16 @@ section h6 {
 
 
 
-//TODO: Play with this a bit more. 
-//
-//@media only screen and (min-width: 700px) and (max-width: 1300px) {
-//  .container {margin-left: 180px;}
-//}
-//
-//@media only screen and (max-width: 767px) {
-//  nav {display: none; }
-//  #demo iframe {
-//    width: 300px;
-//  }
-//
-//}
+//TODO: Play with this a bit more.
+
+@media only screen and (min-width: 700px) and (max-width: 1300px) {
+  .container {margin-left: $nav-menu-width + 20}
+}
+
+@media only screen and (max-width: 767px) {
+  nav {display: none; }
+  #demo iframe {
+    width: 300px;
+  }
+
+}

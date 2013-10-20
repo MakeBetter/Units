@@ -40,14 +40,14 @@ nav {
   padding-top: 60px;
   position: fixed;
 }
-/* line 8, ../scss/_base-variables.scss */
+/* line 9, ../scss/_base-variables.scss */
 nav > ul {
   list-style: none;
   padding: 0;
   margin: 0;
-  width: 150px;
+  width: 130px;
 }
-/* line 15, ../scss/_base-variables.scss */
+/* line 16, ../scss/_base-variables.scss */
 nav li {
   margin: 0;
   color: #999999;
@@ -55,13 +55,13 @@ nav li {
   cursor: pointer;
   border-bottom: 1px solid #bbb;
 }
-/* line 25, ../scss/_base-variables.scss */
+/* line 26, ../scss/_base-variables.scss */
 nav li.menu-selected, nav li:hover {
   color: #333333;
   border-bottom: 1px solid #999;
   transition: all 0.5s ease-out;
 }
-/* line 33, ../scss/_base-variables.scss */
+/* line 34, ../scss/_base-variables.scss */
 nav a {
   text-decoration: none;
   color: inherit;
@@ -148,3 +148,20 @@ section h6 {
 /* All Mobile Sizes (devices and browser) */
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (min-width: 700px) and (max-width: 1300px) {
+  /* line 143, ../scss/layout.scss */
+  .container {
+    margin-left: 150px;
+  }
+}
+@media only screen and (max-width: 767px) {
+  /* line 147, ../scss/layout.scss */
+  nav {
+    display: none;
+  }
+
+  /* line 148, ../scss/layout.scss */
+  #demo iframe {
+    width: 300px;
+  }
+}

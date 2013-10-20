@@ -3,13 +3,14 @@ $border-grey: #eaeaea;
 $text-color: #444;
 $text-color-grey: #999;
 
+$nav-menu-width: 130px;
 
 @mixin simple-vertical-menu {
   &>ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 150px;
+    width: $nav-menu-width;
   }
 
   li {

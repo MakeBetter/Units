@@ -10,8 +10,17 @@ function setup() {
     });
 
     setNavigationMenuPosition();
-    window.onresize = setNavigationMenuPosition;
+    window.onresize = onWindowResize;
 
+}
+
+function onWindowResize() {
+    setNavigationMenuPosition();
+
+    var windowWidth = window.innerWidth;
+    if (window.innerWidth < 1100 && windowWidth > 767) {
+        document.querySelector("main").classList.remove("offset-by-one");
+    }
 }
 
 function setNavigationMenuPosition() {
