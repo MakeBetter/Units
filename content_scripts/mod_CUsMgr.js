@@ -1681,7 +1681,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         for (i = 0; i < CUsArrLen; ++i) {
             var $CU = CUsArr[i];
-            if ( (!$CU.hasClass('UnitsProj-HiddenByFiltering') && isCUInvisible($CU)) || isCUTooSmall($CU)) {
+            if (!$CU.hasClass('UnitsProj-HiddenByFiltering') && (isCUInvisible($CU) || isCUTooSmall($CU))) {
                 removeCurrentCU();
                 continue;
             }
