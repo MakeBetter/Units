@@ -267,6 +267,20 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "boredpanda.com": [
+        {
+            urlPatterns: ["www.boredpanda.com"],
+            CUs_specifier: ".feature",
+        },
+        {
+            urlPatterns: ["www.boredpanda.com/**"],
+            CUs_specifier: ".copWrp_contentImageWrapper",
+            CUs_SUs: {
+                std_mainEl: ".wrapperSocialPanelButton"
+            }
+        }
+    ],
+
     "craigslist.org": {
         // Matches delhi.craigslist.co.in, grenoble.fr.craigslist.fr, providence.craigslist.org etc.
         urlPatterns: ["*.craigslist.org/*", "*.craigslist.*/*"],

@@ -36,20 +36,20 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
             if (keyCode === 16) { // 16 - shift
                 isShiftDown = true;
             }
-            // check if this is the "thumb" modifier key (93 - right cmd, 18 - alt)
-            else if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
-                wasThumbModifierUsedAsModifier = false; // reset
-                isThumbModifierDown = true;
-                lastThumbModifierDownTime = now = Date.now();
-                if (interval_repeatedScroll === false && now - lastThumbModifierUpTime < doubleTapPeriod) {
-                    startRepeatedScroll('up');
-                }
-            }
-            // some other key pressed while thumb modifier is down
-            else if (isThumbModifierDown) {
-                wasThumbModifierUsedAsModifier = true;
-                endRepeatedScroll();
-            }
+//            // check if this is the "thumb" modifier key (93 - right cmd, 18 - alt)
+//            else if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
+//                wasThumbModifierUsedAsModifier = false; // reset
+//                isThumbModifierDown = true;
+//                lastThumbModifierDownTime = now = Date.now();
+//                if (interval_repeatedScroll === false && now - lastThumbModifierUpTime < doubleTapPeriod) {
+//                    startRepeatedScroll('up');
+//                }
+//            }
+//            // some other key pressed while thumb modifier is down
+//            else if (isThumbModifierDown) {
+//                wasThumbModifierUsedAsModifier = true;
+//                endRepeatedScroll();
+//            }
         }, true);
 
         mod_domEvents.addEventListener(document, 'keyup', function(e) {
@@ -69,14 +69,14 @@ _u.mod_easyScrollKeys = (function(mod_CUsMgr, mod_basicPageUtils, mod_keyboardLi
                 }
             }
             // check if this is the "thumb" modifier key (91, 93 - cmd, 18 - alt)
-            if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
-                lastThumbModifierUpTime = now = Date.now();
-                isThumbModifierDown = false;
-                if (now - lastThumbModifierDownTime < maxKeyDownTime && !wasThumbModifierUsedAsModifier) {
-                    // select upward CU or scroll up if no CUs
-                    mod_CUsMgr.selectNextCUOrScroll('up');
-                }
-            }
+//            if (isMac? (keyCode === 93 || keyCode === 91): (keyCode === 18)) {
+//                lastThumbModifierUpTime = now = Date.now();
+//                isThumbModifierDown = false;
+//                if (now - lastThumbModifierDownTime < maxKeyDownTime && !wasThumbModifierUsedAsModifier) {
+//                    // select upward CU or scroll up if no CUs
+//                    mod_CUsMgr.selectNextCUOrScroll('up');
+//                }
+//            }
         }, true);
 
         // we need to listen to this event since the space-keydown event is suppressed by the
