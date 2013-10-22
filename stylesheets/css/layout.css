@@ -121,22 +121,26 @@ h3 {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 101, ../scss/layout.scss */
+/* line 100, ../scss/layout.scss */
+.hero .install-button .small-text {
+  font-size: 50%;
+}
+/* line 105, ../scss/layout.scss */
 .hero .main-features {
   margin-top: 40px;
 }
-/* line 103, ../scss/layout.scss */
+/* line 107, ../scss/layout.scss */
 .hero .main-features h5 {
   font-weight: bold;
 }
 
-/* line 110, ../scss/layout.scss */
+/* line 114, ../scss/layout.scss */
 #demo > div {
   margin: 20px auto;
   width: 640px;
 }
 
-/* line 115, ../scss/layout.scss */
+/* line 119, ../scss/layout.scss */
 section h6 {
   font-weight: bold;
 }
@@ -149,18 +153,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 143, ../scss/layout.scss */
+  /* line 147, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 147, ../scss/layout.scss */
+  /* line 151, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 148, ../scss/layout.scss */
+  /* line 152, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }
