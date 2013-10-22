@@ -94,7 +94,7 @@ function navigateToSection(menuItem) {
 }
 
 function installExtension() {
-    chrome.webstore.install();
+    chrome.webstore.install(function(args) {console.log(args);}, function(arg) {console.log(args);});
 }
 
 setup();
