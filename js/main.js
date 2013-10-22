@@ -5,6 +5,8 @@ var navigationMenu = document.querySelector("nav"),
 function setup() {
     document.addEventListener("scroll", onDocumentScroll_highlightMenu);
 
+    document.getElementsByClassName("install-button")[0].addEventListener("click", installExtension);
+
     navigationMenu.addEventListener("click", function(event) {
         navigateToSection(event.target.parentNode);
     });
@@ -89,6 +91,10 @@ function navigateToSection(menuItem) {
 //
     // Highlight menu item
     highlightMenuItem(menuItem);
+}
+
+function installExtension() {
+    chrome.webstore.install();
 }
 
 setup();
