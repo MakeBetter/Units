@@ -294,6 +294,22 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "engadget.com": {
+        urlPatterns: ["www.engadget.com*"],
+        CUs_specifier: "#carousel, article"
+    },
+
+    "gigaom.com": {
+        urlPatterns: ["gigaom.com"],
+        CUs_specifier: "article",
+        CUs_style: {
+            setOverlayZIndexHigh: true
+        },
+        CUs_SUs: {
+            std_mainEl: "h3>a"
+        }
+    },
+
     "indiatimes.com": [
         {
             urlPatterns: ["timesofindia.indiatimes.com/*"],
