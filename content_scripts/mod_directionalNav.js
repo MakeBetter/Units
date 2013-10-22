@@ -36,24 +36,10 @@ _u.mod_directionalNav = (function($) {
         getBoundingRect || (getBoundingRect = _getBoundingRect);
         areSame || (areSame = _areSame);
 
-        var ownIndex,   // index of `refEl` in `candidates`
-            ownRect,    // rect for `refEl`
-            rects = []; // rects corresponding to elements in arr
-
-        var len = candidates.length;
-        for (var i = 0; i < len; i++) {
-            rects[i] = getBoundingRect(candidates[i]);
-            if (areSame(refEl, candidates[i])) {
-                ownIndex = i;
-                ownRect = rects[i];
-            }
-        }
-
-        if (!ownRect) { // in case `refEl` is not present in `candidates`
-            ownRect = getBoundingRect(refEl);
-        }
-
         var
+            ownRect = getBoundingRect(refEl),
+            otherRect,
+
             // "Perpendicular overlap" values between `refEl` and the elements in `candidates`. e.g: if the direction
             // specified is 'right', we consider the vertical overlap between the rects (irrespective
             // of the horizontal positions).
@@ -85,9 +71,13 @@ _u.mod_directionalNav = (function($) {
             largestSubZeroPerpOverlap = -Infinity,
             dirDistanceOfBestFallbackMatch = -Infinity;
 
-        for (i = 0; i < len; i++) {
-            if (i === ownIndex) continue;
-            var otherRect = rects[i],
+        var len = candidates.length;
+        for (var i = 0; i < len; i++) {
+            if (areSame(refEl, candidates[i]))
+                continue;
+
+            otherRect = getBoundingRect(candidates[i]);
+            var
                 perpOverlap = getPerpOverlap(ownRect, otherRect, direction), // "perpendicular overlap" between the rects
                 // "directional distance" - distance between elements along the direction specified. This will
                 // usually be positive, and if not there is a directional overlap between the elements  
