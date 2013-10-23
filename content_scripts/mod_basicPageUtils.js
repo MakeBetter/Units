@@ -30,7 +30,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         $document = $(document),
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
         overlap_pgUpPgDn = 100,
-        scrollAnimationDuration = 150, // millisecs
+        scrollAnimationDuration = 200, // millisecs
         smoothScroll = mod_smoothScroll.smoothScroll,
 
         // classes used when styling focused element
