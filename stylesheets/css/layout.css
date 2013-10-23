@@ -78,44 +78,51 @@ nav a {
 
 /* line 53, ../scss/layout.scss */
 h3 {
+  padding-bottom: 10px;
   text-align: center;
+}
+
+/* line 58, ../scss/layout.scss */
+.bold {
+  font-weight: bold;
+  color: #444;
 }
 
 /* #Page Styles
 ================================================== */
-/* line 62, ../scss/layout.scss */
+/* line 66, ../scss/layout.scss */
 .hero {
   padding: 20px 0;
   text-align: center;
 }
-/* line 66, ../scss/layout.scss */
+/* line 70, ../scss/layout.scss */
 .hero .title {
   font-size: 6em;
   line-height: 1;
   color: #666666;
   margin: 40px 0;
 }
-/* line 73, ../scss/layout.scss */
+/* line 77, ../scss/layout.scss */
 .hero .beta {
   font-size: 0.2em;
   color: #999999;
 }
-/* line 78, ../scss/layout.scss */
+/* line 82, ../scss/layout.scss */
 .hero .hero-text {
   font-size: 1.5em;
   line-height: 1.2;
   width: 80%;
   margin: 10px auto;
 }
-/* line 85, ../scss/layout.scss */
+/* line 89, ../scss/layout.scss */
 .hero .tagline {
   color: #999999;
 }
-/* line 89, ../scss/layout.scss */
+/* line 93, ../scss/layout.scss */
 .hero .description {
   font-size: 1.3em;
 }
-/* line 94, ../scss/layout.scss */
+/* line 98, ../scss/layout.scss */
 .hero .install-button {
   font-size: 150%;
   background: #02a6eb;
@@ -123,57 +130,66 @@ h3 {
   border: 1px solid #eaeaea;
   margin: 20px 0;
 }
-/* line 101, ../scss/layout.scss */
+/* line 105, ../scss/layout.scss */
 .hero .install-button:hover {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 106, ../scss/layout.scss */
+/* line 110, ../scss/layout.scss */
 .hero .install-button .small-text {
   font-size: 50%;
 }
-/* line 111, ../scss/layout.scss */
+/* line 115, ../scss/layout.scss */
 .hero .main-features {
   margin-top: 40px;
 }
-/* line 113, ../scss/layout.scss */
+/* line 117, ../scss/layout.scss */
 .hero .main-features h5 {
   font-weight: bold;
 }
 
 /* Main Features */
-/* line 124, ../scss/layout.scss */
+/* line 128, ../scss/layout.scss */
 section h4 {
   margin-bottom: 10px;
 }
-/* line 128, ../scss/layout.scss */
+/* line 132, ../scss/layout.scss */
 section figure, section img {
   width: 600px;
 }
-/* line 132, ../scss/layout.scss */
+/* line 136, ../scss/layout.scss */
 section figure {
   padding: 2px;
   border: 1px solid #ccc;
 }
-/* line 137, ../scss/layout.scss */
-section figcaption {
+/* line 141, ../scss/layout.scss */
+section div.caption {
   background-color: #ffffe0;
 }
 
-/* line 144, ../scss/layout.scss */
+/* line 149, ../scss/layout.scss */
 #demo > div {
   margin: 20px auto;
   width: 640px;
 }
 
-/* line 149, ../scss/layout.scss */
+/* line 154, ../scss/layout.scss */
 section h6 {
   font-weight: bold;
 }
 
-/* line 153, ../scss/layout.scss */
+/* line 158, ../scss/layout.scss */
 .try-it-out {
   color: #bbb;
+}
+
+/* line 163, ../scss/layout.scss */
+#supported-websites h6 {
+  display: inline-block;
+}
+/* line 167, ../scss/layout.scss */
+#supported-websites li {
+  margin-bottom: 6px;
 }
 
 /* #Media Queries
@@ -184,18 +200,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 181, ../scss/layout.scss */
+  /* line 196, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 185, ../scss/layout.scss */
+  /* line 200, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 186, ../scss/layout.scss */
+  /* line 201, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }

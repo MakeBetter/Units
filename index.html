@@ -47,10 +47,10 @@
             <li id='menu-key-features'><a href="#key-features">Key Features</a></li>
             <li id='menu-supported-websites'><a href="#supported-websites">Supported Sites </a></li>
             <li id='menu-minimal-interference'><a href="#minimal-interference">Minimal Interference </a></li>
-            <li id='menu-how-works'><a href="#how-works">How does it work? </a></li>
-            <li id='menu-vision'><a href="#vision">Long-term vision </a></li>
-            <li id='menu-known-issues'><a href="#known-issues">Known Issues</a></li>
-            <li id='menu-pipeline'><a href="#pipeline">In the pipeline</a></li>
+            <!--<li id='menu-how-works'><a href="#how-works">How does it work? </a></li>-->
+            <!--<li id='menu-vision'><a href="#vision">Long-term vision </a></li>-->
+            <!--<li id='menu-known-issues'><a href="#known-issues">Known Issues</a></li>-->
+            <!--<li id='menu-pipeline'><a href="#pipeline">In the pipeline</a></li>-->
         </ul>
 
     </nav>
@@ -79,7 +79,7 @@
             <section id="demo" data-menuid="menu-demo">
                 <h3>Demo</h3>
                 <div id="video-container">
-                    <iframe width="640" height="360" src="http://www.youtube.com/embed/ZQoatYak_oY?rel=0" frameborder="0" allowfullscreen>
+                    <iframe width="640" height="360" src="http://www.youtube.com/embed/GXRftNuTqGw?rel=0" frameborder="0" allowfullscreen>
                     </iframe>
                 </div>
 
@@ -88,23 +88,34 @@
 
             <section id='key-features' data-menuid="menu-key-features">
                 <h3>Key Features</h3>
+                <p>
+                    The core idea here is that we identify the <span class="bold">main 'units' of content</span> on a website.
+                </p>
+                <p>
+                    What are these units? For a Google search page, these would be the search results. For Facebook, the shared posts.
+                    For a blog, these are the individual posts. For a Q&A or a forum, the units would be yes, the question and its related answers.
 
-                <section>
-                    <h4> Content Units </h4>
-                    <h6>Identify the most important 'units' of a webpage. Once you have these units, you can do a lot to customize
-                        <em>your</em> experience of web browsing. </h6>
-                    <p>
-                        Popular websites like social networking sites, Q&A sites, forums, news sites, all have
-                    </p>
-                </section>
+                </p>
+                 <p>
+                     Once we find these units on a page, we can use them to do many very cool things that help focused
+                     browsing, productivity, usability and accessibility (and more!). We'd like to show you some of the features that we've been working on:
+                 </p>
+
+
 
                 <section>
                     <h4> Scrolling done right</h4>
                     <p>
                         Scrolling is the most common action performed on the web!
 
-                        If a page has discrete content units, there is a certain beauty to scrolling by units -- it
-                        combines the strengths of a slide show with those of a continuous single page layout.
+                        There is a certain beauty to scrolling by units -- it combines the strengths of a slide show (which
+                        allows viewing content in discrete logical chunks) with those of a continuous scrollable page.
+
+                    <p>
+                        Through feedback and iterations, we've tried to perfect the scrolling experience across different
+                        websites and different types of units. Recommend that you try the extension and check it out.
+                    </p>
+
 
                     </p>
 
@@ -125,12 +136,20 @@
                         <p>
                             Dim out the rest of the page, and read one post at a time with focus. Try it!
                         </p>
-                        <figure>
-                            <img src="images/focused-reading-quora.png" alt="Focused reading mode on Quora">
+                        <table>
+                            <tr>
+                                <td>
+                                    <img src="images/focused-reading-quora.png" alt="Focused reading mode on Quora">
 
-                            <figcaption>Spotlight effect on the selected unit on Quora. Press "+" to increase the dimming effect
-                                and "-" to decrease it. </figcaption>
-                        </figure>
+                                </td>
+                                <td>
+
+                                    <span class="caption">Spotlight effect on the selected unit on Quora. Press "+" to increase the dimming effect
+                                        and "-" to decrease it. </span>
+                                </td>
+                            </tr>
+
+                        </table>
                     </div>
                 </section>
 
@@ -154,11 +173,14 @@
                 </section>
 
                 <section>
-                    <h4> Contextual and consistent shortcuts across sites</h4>
+                    <h4> Consistent shortcuts across sites</h4>
                     <p>
-                        Units enables consistent shortcuts that work in the context of the selected unit. For example,
-                        the shortcut 'u' lets you upvote a Facebook post, a Quora answer, a StackOverflow question and so on.
-                        There are shortcuts defined for the most common actions
+                        Units enables consistent shortcuts that work in the context of the selected unit. For example, I
+                        can press "u" to upvote a post, "s" to share a post, "m" to see more, etc.
+                    </p>
+                    <p>
+                        The cool thing about this is that the same shortcuts work consistently across the supported websites.
+                        It helps makes these shortcuts so much easier to use and remember.
                     </p>
 
                 </section>
@@ -166,7 +188,6 @@
                 <section>
                     <h4> Productivity Goodies</h4>
                     <p>
-
                     </p>
                    <div class="try-it-out">
                        <h6> Try it out:  </h6> <p> Press 'space' + 'a' to select the "About" link, or any other link on this page
@@ -178,20 +199,29 @@
 
             <section id='supported-websites' data-menuid="menu-supported-websites">
                 <h3>Supported Sites</h3>
-                <p>Units is supported on 20 of the 100 most popular websites. Though they possibly account for around 75% time
-                    of a typical person's browsing in day.</p>
+                <p>Units is supported on a fairly large percentage of the most popular websites. </p>
 
-                <h6>Social networking sites</h6>
+                <ul>
+                    <li> <h6>Social networking sites</h6>: Facebook, Twitter, LinkedIn</li>
+                    <li> <h6>Search Engines</h6>: Google, HN Search</li>
+                    <li> <h6>Q&A sites</h6>: Quora, Stack Overflow, All StackExchange sites </li>
+                    <li> <h6>Blogs and Microblogs</h6>: Many Tumblr and Blogspot blogs (we working on supporting more), GigaOm</li>
+                    <li> <h6>News</h6>: Hacker News, NY Times</li>
+                    <li> <h6>E-commerce, Classifieds</h6>: Amazon, Craigslist</li>
+                    <li> <h6>Others</h6>: YouTube, Github</li>
+                </ul>
 
-                <h6>Search Engines</h6>
-                <h6> Blogs and Microblogs</h6>
-
+                <p> Adding support for a website is very easy and quick. You would just need add the data for your site URL.
+                    We'd love your help in adding more sites to the repository! </p>
 
             </section>
 
             <section id='minimal-interference' data-menuid="menu-minimal-interference">
                 <h3> Minimal Interference</h3>
                 <p>
+                To provide an integrated browsing experience across websites, Units needed to work on all websites.
+                But at the same time, we really try to be minimally invasive. 
+
                 <ul>
                     <li>
                         1) Quickly disable extension temporarily or permanently on a webpage.
@@ -207,54 +237,54 @@
 
             </section>
 
-            <section id='how-works' data-menuid="menu-how-works">
-                <h3>How does it work?</h3>
-                <p>
+            <!--<section id='how-works' data-menuid="menu-how-works">-->
+                <!--<h3>How does it work?</h3>-->
+                <!--<p>-->
 
-                </p>
-            </section>
+                <!--</p>-->
+            <!--</section>-->
 
-            <section id='vision' data-menuid="menu-vision">
-                <h3>Long-term vision</h3>
+            <!--<section id='vision' data-menuid="menu-vision">-->
+                <!--<h3>Long-term vision</h3>-->
 
-            </section>
+            <!--</section>-->
 
-            <section id="known-issues" data-menuid="menu-known-issues">
-                <h3>Known Issues</h3>
-                <ul>
-                    <li>1.</li>
+            <!--<section id="known-issues" data-menuid="menu-known-issues">-->
+                <!--<h3>Known Issues</h3>-->
+                <!--<ul>-->
+                    <!--<li>1.</li>-->
 
-                </ul>
-            </section>
+                <!--</ul>-->
+            <!--</section>-->
 
-            <section id="pipeline" data-menuid="menu-pipeline">
-                <h3>In the pipeline</h3>
-                <ul>
-                    <li></li>
+            <!--<section id="pipeline" data-menuid="menu-pipeline">-->
+                <!--<h3>In the pipeline</h3>-->
+                <!--<ul>-->
+                    <!--<li></li>-->
 
-                </ul>
-            </section>
+                <!--</ul>-->
+            <!--</section>-->
 
-            <section id="todo" data-menuid="menu-pipeline">
-                <h3>TODO: </h3>
-                <ul>
-                                    <li>1. put a note on website for h,j,kl</li>
-                                    <li>4. focus on links getting focused.</li>
-                                    <li>5 Get it to work on different types of sites and link to them on the website. Himanshu has a list of these.</li>
-                                    <li>7. Add a README and license file to the github project.</li>
-                                    <li>8. Help us out.</li>
-                                    <li>8. Facebook, Twitter like buttons etc.</li>
-                                    <li>8. Make it work/ Show in demo on reading focused sites. Blogs.
-                                    example: http://www.engadget.com/, techcrunch, blogspot posts</li>
-                                    <li>
-                                        When the install button is pressed, show a overlay and show a message:
-                                        1) talk about the privacy thingy
-                                        2) mention that the extension has been made public for purposes of YC
+            <!--<section id="todo" data-menuid="menu-pipeline">-->
+                <!--<h3>TODO: </h3>-->
+                <!--<ul>-->
+                                    <!--<li>1. put a note on website for h,j,kl</li>-->
+                                    <!--<li>4. focus on links getting focused.</li>-->
+                                    <!--<li>5 Get it to work on different types of sites and link to them on the website. Himanshu has a list of these.</li>-->
+                                    <!--<li>7. Add a README and license file to the github project.</li>-->
+                                    <!--<li>8. Help us out.</li>-->
+                                    <!--<li>8. Facebook, Twitter like buttons etc.</li>-->
+                                    <!--<li>8. Make it work/ Show in demo on reading focused sites. Blogs.-->
+                                    <!--example: http://www.engadget.com/, techcrunch, blogspot posts</li>-->
+                                    <!--<li>-->
+                                        <!--When the install button is pressed, show a overlay and show a message:-->
+                                        <!--1) talk about the privacy thingy-->
+                                        <!--2) mention that the extension has been made public for purposes of YC-->
 
-                                    </li>
-                </ul>
-              
-            </section>
+                                    <!--</li>-->
+                <!--</ul>-->
+              <!---->
+            <!--</section>-->
         </main>
 		
 

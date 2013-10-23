@@ -51,10 +51,14 @@ nav {
 }
 
 h3 {
+  padding-bottom: 10px;
   text-align: center;
 }
 
-
+.bold {
+  font-weight: bold;
+  color: #444;
+}
 
 /* #Page Styles
 ================================================== */
@@ -134,8 +138,9 @@ section {
     border: 1px solid #ccc;
   }
 
-  figcaption {
+  div.caption {
     background-color: #ffffe0;
+    //float: left;
   }
 
 
@@ -152,6 +157,16 @@ section h6 {
 
 .try-it-out {
   color: #bbb;
+}
+
+#supported-websites {
+  h6 {
+    display: inline-block;
+  }
+
+  li {
+    margin-bottom:  6px;
+  }
 }
 
 /* #Media Queries
