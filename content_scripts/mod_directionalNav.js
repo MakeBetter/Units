@@ -59,17 +59,19 @@ _u.mod_directionalNav = (function($) {
             // is they have "directional overlap".)
             minDirDistanceOfCorrespondingSides = 5,
 
+            minPerpOverlap,   // a non-negative value, will be calculated later
+
             /* the following are "ideal" matches, i.e. elements with "perpendicular overlap" that is greater than
             `minPerpOverlap` (while lying to the correct side of the reference element directionally) */
             bestMatchIndex = -1,
-            bestMatchScore = -Infinity,
-            minPerpOverlap,   // a non-negative value, will be calculated later
+            bestMatchDirDistance = Infinity,
+            bestMatchPerpOverlap = -Infinity,
 
             /* the following are for "fallback" matches i.e . elements whose "perpendicular overlap" is less than
             `minPerpOverlap` (while lying to the correct side of the reference element directionally) */
             bestFallbackMatchIndex = -1,
-            largestSubZeroPerpOverlap = -Infinity,
-            dirDistanceOfBestFallbackMatch = -Infinity,
+            bestFallbackMatchDirDistance = Infinity,
+            bestFallbackMatchPerpOverlap = -Infinity,
 
             ownRectRight = ownRect.left + ownRect.width,
             ownRectBottom = ownRect.top + ownRect.height,
@@ -125,27 +127,38 @@ _u.mod_directionalNav = (function($) {
 
             perpendicularOverlaps[i] = perpOverlap;
             dirDistances[i] = dirDistance;
+            var buffer = 10;
 
             // This check includes any element that might be considered to lie
             // on the correct side of `refEl` as per the `direction` specified
             if ((dirDistance > 0 ||
                 (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
 
-                // "ideal matches" (see comments near the top)
+                // Condition for "ideal matches" (see comments near the top)
+                // Note: Entering the outer condition once ensures that we will find an "idea" match. That is, we
+                // *will* enter the inner block where bestMatchIndex is assigned a value (based on the initial values
+                // of bestMatchDirDistance and  bestMatchPerpOverlap)
                 if (perpOverlap > minPerpOverlap) {
-                    var matchScore = -Math.max(0 , dirDistance);
-                    if (matchScore > bestMatchScore) {
-                        bestMatchScore = matchScore;
-                        bestMatchIndex = i;
+                    var dirDistToConsider = Math.max(0 , dirDistance);
+                    // below we keep track of the best match so far, which is the element with the lowest
+                    // `dirDistToConsider`. However, an element with a *slightly* higher value of `dirDistToConsider`
+                    // than the best match found so far, but with a significantly higher value of `perpOverlap` trumps
+                    // it as the best match
+                    if (dirDistToConsider < bestMatchDirDistance + buffer) {
+                        if (dirDistToConsider < bestMatchDirDistance - buffer || perpOverlap > bestMatchPerpOverlap + buffer) {
+                            bestMatchDirDistance = dirDistance;
+                            bestMatchPerpOverlap = perpOverlap;
+                            bestMatchIndex = i;
+                        }
                     }
                 }
 
                 // "fallback matches" (see comments near the top)
-                if (bestMatchIndex === -1) {
-                    if (perpOverlap > largestSubZeroPerpOverlap ||
-                        (perpOverlap === largestSubZeroPerpOverlap && dirDistance < dirDistanceOfBestFallbackMatch) ){
-                        largestSubZeroPerpOverlap = perpOverlap;
-                        dirDistanceOfBestFallbackMatch = dirDistance;
+                else if (bestMatchIndex === -1) {
+                    if (perpOverlap > bestFallbackMatchPerpOverlap ||
+                        (perpOverlap === bestFallbackMatchPerpOverlap && dirDistance < bestFallbackMatchDirDistance) ){
+                        bestFallbackMatchPerpOverlap = perpOverlap;
+                        bestFallbackMatchDirDistance = dirDistance;
                         bestFallbackMatchIndex = i;
                     }
                 }
