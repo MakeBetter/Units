@@ -43,6 +43,11 @@ section {
 }
 
 /* line 46, ../scss/layout.scss */
+#key-features section:last-of-type {
+  border-bottom: 0;
+}
+
+/* line 50, ../scss/layout.scss */
 nav {
   padding-top: 60px;
   position: fixed;
@@ -76,13 +81,13 @@ nav a {
   padding: 10px 5px 5px 5px;
 }
 
-/* line 53, ../scss/layout.scss */
+/* line 57, ../scss/layout.scss */
 h3 {
   padding-bottom: 10px;
   text-align: center;
 }
 
-/* line 58, ../scss/layout.scss */
+/* line 62, ../scss/layout.scss */
 .bold {
   font-weight: bold;
   color: #444;
@@ -90,39 +95,39 @@ h3 {
 
 /* #Page Styles
 ================================================== */
-/* line 66, ../scss/layout.scss */
+/* line 70, ../scss/layout.scss */
 .hero {
   padding: 20px 0;
   text-align: center;
 }
-/* line 70, ../scss/layout.scss */
+/* line 74, ../scss/layout.scss */
 .hero .title {
   font-size: 6em;
   line-height: 1;
   color: #666666;
   margin: 40px 0;
 }
-/* line 77, ../scss/layout.scss */
+/* line 81, ../scss/layout.scss */
 .hero .beta {
   font-size: 0.2em;
   color: #999999;
 }
-/* line 82, ../scss/layout.scss */
+/* line 86, ../scss/layout.scss */
 .hero .hero-text {
   font-size: 1.5em;
   line-height: 1.2;
   width: 80%;
   margin: 10px auto;
 }
-/* line 89, ../scss/layout.scss */
+/* line 93, ../scss/layout.scss */
 .hero .tagline {
   color: #999999;
 }
-/* line 93, ../scss/layout.scss */
+/* line 97, ../scss/layout.scss */
 .hero .description {
   font-size: 1.3em;
 }
-/* line 98, ../scss/layout.scss */
+/* line 102, ../scss/layout.scss */
 .hero .install-button {
   font-size: 150%;
   background: #02a6eb;
@@ -130,64 +135,70 @@ h3 {
   border: 1px solid #eaeaea;
   margin: 20px 0;
 }
-/* line 105, ../scss/layout.scss */
+/* line 109, ../scss/layout.scss */
 .hero .install-button:hover {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 110, ../scss/layout.scss */
+/* line 114, ../scss/layout.scss */
 .hero .install-button .small-text {
   font-size: 50%;
 }
-/* line 115, ../scss/layout.scss */
+/* line 119, ../scss/layout.scss */
 .hero .main-features {
   margin-top: 40px;
 }
-/* line 117, ../scss/layout.scss */
+/* line 121, ../scss/layout.scss */
 .hero .main-features h5 {
   font-weight: bold;
 }
 
 /* Main Features */
-/* line 128, ../scss/layout.scss */
+/* line 132, ../scss/layout.scss */
 section h4 {
   margin-bottom: 10px;
 }
-/* line 132, ../scss/layout.scss */
+/* line 136, ../scss/layout.scss */
 section figure, section img {
   width: 600px;
 }
-/* line 136, ../scss/layout.scss */
+/* line 140, ../scss/layout.scss */
 section figure {
   padding: 2px;
   border: 1px solid #ccc;
 }
-/* line 141, ../scss/layout.scss */
-section div.caption {
+/* line 145, ../scss/layout.scss */
+section td.caption {
+  vertical-align: top;
+}
+/* line 148, ../scss/layout.scss */
+section td.caption div {
+  display: inline-block;
   background-color: #ffffe0;
+  padding: 5px;
 }
 
-/* line 149, ../scss/layout.scss */
+/* line 157, ../scss/layout.scss */
 #demo > div {
   margin: 20px auto;
   width: 640px;
 }
 
-/* line 154, ../scss/layout.scss */
+/* line 162, ../scss/layout.scss */
 section h6 {
   font-weight: bold;
 }
 
-/* line 158, ../scss/layout.scss */
+/* line 166, ../scss/layout.scss */
 .try-it-out {
   color: #bbb;
 }
 
-/* line 163, ../scss/layout.scss */
+/* line 171, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
 }
-/* line 167, ../scss/layout.scss */
+/* line 175, ../scss/layout.scss */
 #supported-websites li {
   margin-bottom: 6px;
 }
@@ -200,18 +211,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 196, ../scss/layout.scss */
+  /* line 204, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 200, ../scss/layout.scss */
+  /* line 208, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 201, ../scss/layout.scss */
+  /* line 209, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }
