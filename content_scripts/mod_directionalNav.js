@@ -59,16 +59,21 @@ _u.mod_directionalNav = (function($) {
             // is they have "directional overlap".)
             minDirDistanceOfCorrespondingSides = 5,
 
-            /* the following are for elements that are "ideal" candidates for a match, meaning they have a positive
-             "perpendicular overlap" (while being to the correct side of the reference element directionally) */
+            /* the following are "ideal" matches, i.e. elements with "perpendicular overlap" that is greater than
+            `minPerpOverlap` (while lying to the correct side of the reference element directionally) */
             bestMatchIndex = -1,
             bestMatchScore = -Infinity,
+            minPerpOverlap,   // a non-negative value, will be calculated later
 
-            /* the following are for "fallback" matches, which are elements that (lie to the correct side of the
-            reference element directionally, but) do NOT have a positive "perpendicular overlap" */
+            /* the following are for "fallback" matches i.e . elements whose "perpendicular overlap" is less than
+            `minPerpOverlap` (while lying to the correct side of the reference element directionally) */
             bestFallbackMatchIndex = -1,
             largestSubZeroPerpOverlap = -Infinity,
-            dirDistanceOfBestFallbackMatch = -Infinity;
+            dirDistanceOfBestFallbackMatch = -Infinity,
+
+            ownRectRight = ownRect.left + ownRect.width,
+            ownRectBottom = ownRect.top + ownRect.height,
+            ownRectPerpDimension = (direction === 'up' || direction === 'down')? ownRect.width: ownRect.height;
 
         var len = candidates.length;
         for (var i = 0; i < len; i++) {
@@ -89,8 +94,7 @@ _u.mod_directionalNav = (function($) {
                 nonLeadingEdgeDirDistance;
 
             if (direction === 'right' || direction === 'left') {
-                var ownRectRight = ownRect.left + ownRect.width,
-                    otherRectRight = otherRect.left + otherRect.width;
+                var otherRectRight = otherRect.left + otherRect.width;
                 if (direction === 'right') {
                     dirDistance = otherRect.left - ownRectRight;
                     leadingEdgeDirDistance = otherRectRight - ownRectRight;
@@ -101,10 +105,10 @@ _u.mod_directionalNav = (function($) {
                     leadingEdgeDirDistance = ownRect.left - otherRect.left;
                     nonLeadingEdgeDirDistance = ownRectRight - otherRectRight;
                 }
+                minPerpOverlap = 0.1 * Math.max(ownRectPerpDimension, otherRect.height);
             }
             else if (direction === 'down' || direction === 'up') {
-                var ownRectBottom = ownRect.top + ownRect.height,
-                    otherRectBottom = otherRect.top + otherRect.height;
+                var otherRectBottom = otherRect.top + otherRect.height;
                 if (direction === 'down') {
                     dirDistance = otherRect.top - ownRectBottom;
                     leadingEdgeDirDistance = otherRectBottom - ownRectBottom;
@@ -115,36 +119,35 @@ _u.mod_directionalNav = (function($) {
                     leadingEdgeDirDistance = ownRect.top - otherRect.top;
                     nonLeadingEdgeDirDistance = ownRectBottom - otherRectBottom;
                 }
+                // 10% of the larger dimension
+                minPerpOverlap = 0.1 * Math.max(ownRectPerpDimension, otherRect.width);
             }
 
             perpendicularOverlaps[i] = perpOverlap;
             dirDistances[i] = dirDistance;
 
-            if (perpOverlap > 0 &&
-                // the following 'or' condition ensures that don't miss any element that can be thought
-                // to be positioned on the correct side of `refEl` as per the `direction` specified
-                (dirDistance > 0 ||
-                    (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
+            // This check includes any element that might be considered to lie
+            // on the correct side of `refEl` as per the `direction` specified
+            if ((dirDistance > 0 ||
+                (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
 
-                var matchScore = perpOverlap - dirDistance;
-                if (matchScore > bestMatchScore) {
-                    bestMatchScore = matchScore;
-                    bestMatchIndex = i;
+                // "ideal matches" (see comments near the top)
+                if (perpOverlap > minPerpOverlap) {
+                    var matchScore = -Math.max(0 , dirDistance);
+                    if (matchScore > bestMatchScore) {
+                        bestMatchScore = matchScore;
+                        bestMatchIndex = i;
+                    }
                 }
-            }
 
-            // if an "ideal" match (elements with positive perpOverlap; see comments near the top) is not found, the
-            // following allows us to find best fallback match (elements with -ve perpOverlap ) from amongst elements
-            // which lie in the correct side of `refEl` as per the `direction` specified
-            if (bestMatchIndex === -1 &&
-                (dirDistance > 0 ||
-                    (Math.min(leadingEdgeDirDistance, nonLeadingEdgeDirDistance) >= minDirDistanceOfCorrespondingSides))) {
-
-                if (perpOverlap > largestSubZeroPerpOverlap ||
-                    (perpOverlap === largestSubZeroPerpOverlap && dirDistance < dirDistanceOfBestFallbackMatch) ){
-                    largestSubZeroPerpOverlap = perpOverlap;
-                    dirDistanceOfBestFallbackMatch = dirDistance;
-                    bestFallbackMatchIndex = i;
+                // "fallback matches" (see comments near the top)
+                if (bestMatchIndex === -1) {
+                    if (perpOverlap > largestSubZeroPerpOverlap ||
+                        (perpOverlap === largestSubZeroPerpOverlap && dirDistance < dirDistanceOfBestFallbackMatch) ){
+                        largestSubZeroPerpOverlap = perpOverlap;
+                        dirDistanceOfBestFallbackMatch = dirDistance;
+                        bestFallbackMatchIndex = i;
+                    }
                 }
             }
         }
