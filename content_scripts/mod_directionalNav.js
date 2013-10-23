@@ -66,6 +66,7 @@ _u.mod_directionalNav = (function($) {
             bestMatchIndex = -1,
             bestMatchDirDistance = Infinity,
             bestMatchPerpOverlap = -Infinity,
+            bestMatchPerpDistBtwCenters = Infinity,
 
             /* the following are for "fallback" matches i.e . elements whose "perpendicular overlap" is less than
             `minPerpOverlap` (while lying to the correct side of the reference element directionally) */
@@ -75,7 +76,18 @@ _u.mod_directionalNav = (function($) {
 
             ownRectRight = ownRect.left + ownRect.width,
             ownRectBottom = ownRect.top + ownRect.height,
-            ownRectPerpDimension = (direction === 'up' || direction === 'down')? ownRect.width: ownRect.height;
+            ownRectPerpDimension,
+            ownRectPerpDimensionCenter,
+            perpDistanceBtwCenters;
+
+        if  (direction === 'up' || direction === 'down') {
+            ownRectPerpDimension = ownRect.width;
+            ownRectPerpDimensionCenter = ownRect.left + ownRectPerpDimension/2;
+        }
+        else {
+            ownRectPerpDimension = ownRect.height;
+            ownRectPerpDimensionCenter = ownRect.top + ownRectPerpDimension/2;
+        }
 
         var len = candidates.length;
         for (var i = 0; i < len; i++) {
@@ -95,21 +107,7 @@ _u.mod_directionalNav = (function($) {
                 // greater than `dirDistance`
                 nonLeadingEdgeDirDistance;
 
-            if (direction === 'right' || direction === 'left') {
-                var otherRectRight = otherRect.left + otherRect.width;
-                if (direction === 'right') {
-                    dirDistance = otherRect.left - ownRectRight;
-                    leadingEdgeDirDistance = otherRectRight - ownRectRight;
-                    nonLeadingEdgeDirDistance = otherRect.left - ownRect.left;
-                }
-                else {
-                    dirDistance = ownRect.left - otherRectRight;
-                    leadingEdgeDirDistance = ownRect.left - otherRect.left;
-                    nonLeadingEdgeDirDistance = ownRectRight - otherRectRight;
-                }
-                minPerpOverlap = 0.1 * Math.max(ownRectPerpDimension, otherRect.height);
-            }
-            else if (direction === 'down' || direction === 'up') {
+            if (direction === 'down' || direction === 'up') {
                 var otherRectBottom = otherRect.top + otherRect.height;
                 if (direction === 'down') {
                     dirDistance = otherRect.top - ownRectBottom;
@@ -121,13 +119,31 @@ _u.mod_directionalNav = (function($) {
                     leadingEdgeDirDistance = ownRect.top - otherRect.top;
                     nonLeadingEdgeDirDistance = ownRectBottom - otherRectBottom;
                 }
-                // 10% of the larger dimension
-                minPerpOverlap = 0.1 * Math.max(ownRectPerpDimension, otherRect.width);
+                minPerpOverlap = 0.1 * Math.max(ownRectPerpDimension, otherRect.width);  // 10% of the larger dimension
+                perpDistanceBtwCenters = Math.abs(ownRectPerpDimensionCenter - (otherRect.left + otherRect.width/2));
             }
+            else { // (direction === 'right' || direction === 'left')
+                var otherRectRight = otherRect.left + otherRect.width;
+                if (direction === 'right') {
+                    dirDistance = otherRect.left - ownRectRight;
+                    leadingEdgeDirDistance = otherRectRight - ownRectRight;
+                    nonLeadingEdgeDirDistance = otherRect.left - ownRect.left;
+                }
+                else {
+                    dirDistance = ownRect.left - otherRectRight;
+                    leadingEdgeDirDistance = ownRect.left - otherRect.left;
+                    nonLeadingEdgeDirDistance = ownRectRight - otherRectRight;
+                }
+                minPerpOverlap = 0.1 * Math.max(ownRectPerpDimension, otherRect.height);  // 10% of the larger dimension
+                perpDistanceBtwCenters = Math.abs(ownRectPerpDimensionCenter - (otherRect.top + otherRect.height/2));
+            }
+
+            console.log (ownRectPerpDimensionCenter, perpDistanceBtwCenters);
 
             perpendicularOverlaps[i] = perpOverlap;
             dirDistances[i] = dirDistance;
-            var buffer = 10;
+            var buffer1 = 10,
+                buffer2 = 100;
 
             // This check includes any element that might be considered to lie
             // on the correct side of `refEl` as per the `direction` specified
@@ -140,14 +156,32 @@ _u.mod_directionalNav = (function($) {
                 // of bestMatchDirDistance and  bestMatchPerpOverlap)
                 if (perpOverlap > minPerpOverlap) {
                     var dirDistToConsider = Math.max(0 , dirDistance);
-                    // below we keep track of the best match so far, which is the element with the lowest
-                    // `dirDistToConsider`. However, an element with a *slightly* higher value of `dirDistToConsider`
-                    // than the best match found so far, but with a significantly higher value of `perpOverlap` trumps
-                    // it as the best match
-                    if (dirDistToConsider < bestMatchDirDistance + buffer) {
-                        if (dirDistToConsider < bestMatchDirDistance - buffer || perpOverlap > bestMatchPerpOverlap + buffer) {
+                    // below we keep track of the best match so far, which is *usually* element with the lowest
+                    // `dirDistToConsider`. However, an element with a *slightly* worse value of `dirDistToConsider`
+                    // than the best match found so far, but a significantly better values of either of these trumps
+                    // it as the best match:
+                    // 1) perpOverlap
+
+                    // below we keep track of the best match so far, which is *usually* the element with the lowest
+                    // `dirDistToConsider`, but can be another element if it's `dirDistToConsider` is *close* to
+                    // the value for the best match, and it satisfies at last one of criteria listed below...
+                    if (dirDistToConsider < bestMatchDirDistance + buffer1) {
+                        if (
+                            // 1) it has a significantly better value of `perpOverlap`
+                            perpOverlap > bestMatchPerpOverlap + buffer1 ||
+
+                            // 2) it has a similar value of `perpOverlap` but a significantly better value of
+                            // `perpDistanceBtwCenters`
+                            (perpOverlap > bestMatchPerpOverlap - buffer2 &&
+                                perpDistanceBtwCenters < bestMatchPerpDistBtwCenters - buffer2) ||
+
+                            // (OR if simply, it's value of `dirDistToConsider` is much lesser than the value of
+                            // the best match so far
+                            dirDistToConsider < bestMatchDirDistance - buffer1
+                            ) {
                             bestMatchDirDistance = dirDistance;
                             bestMatchPerpOverlap = perpOverlap;
+                            bestMatchPerpDistBtwCenters = perpDistanceBtwCenters;
                             bestMatchIndex = i;
                         }
                     }
