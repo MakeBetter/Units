@@ -94,8 +94,8 @@ function navigateToSection(menuItem) {
 }
 
 function installExtension(event) {
-    window.open("https://chrome.google.com/webstore/detail/units/nhigacflkpibihampdilikhaoehddmnc",'_blank');
-    //chrome.webstore.install("https://chrome.google.com/webstore/detail/nhigacflkpibihampdilikhaoehddmnc", function() {console.log("hello");}, function(arg) {console.log(arg);});
+//    window.open("https://chrome.google.com/webstore/detail/units/nhigacflkpibihampdilikhaoehddmnc",'_blank');
+    chrome.webstore.install("https://chrome.google.com/webstore/detail/nhigacflkpibihampdilikhaoehddmnc", function() {console.log("hello");}, function(arg) {console.log(arg);});
 }
 
 setup();
