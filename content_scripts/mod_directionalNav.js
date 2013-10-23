@@ -138,8 +138,6 @@ _u.mod_directionalNav = (function($) {
                 perpDistanceBtwCenters = Math.abs(ownRectPerpDimensionCenter - (otherRect.top + otherRect.height/2));
             }
 
-            console.log (ownRectPerpDimensionCenter, perpDistanceBtwCenters);
-
             perpendicularOverlaps[i] = perpOverlap;
             dirDistances[i] = dirDistance;
             var buffer1 = 10,
