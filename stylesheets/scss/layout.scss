@@ -1,5 +1,11 @@
 @import "base-variables";
 
+.under-construction {
+  background-color: lightgoldenrodyellow;
+  position: fixed;
+  right: 20px;
+}
+
 /* Table of Content
 ==================================================
 	#Site Styles
@@ -111,6 +117,30 @@ h3 {
   }
 }
 
+
+
+/* Main Features */
+section {
+  h4 {
+    margin-bottom: 10px;
+  }
+
+  figure, img{
+    width: 600px;
+  }
+
+  figure {
+    padding: 2px;
+    border: 1px solid #ccc;
+  }
+
+  figcaption {
+    background-color: #ffffe0;
+  }
+
+
+}
+
 #demo>div {
   margin: 20px auto;
   width: 640px;
@@ -118,6 +148,10 @@ h3 {
 
 section h6 {
   font-weight: bold;
+}
+
+.try-it-out {
+  color: #bbb;
 }
 
 /* #Media Queries
