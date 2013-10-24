@@ -27,6 +27,10 @@
         // Note: Do NOT reset this in disableExtension() (or reset() for mod_main , if you make a function like that)
         isDisabled_temporarily = false,
 
+        // mutation observer is disabled when the tab loses focus (unless filtering of CUs is active), and be
+        // re-enabled when it gains focus
+        isMutationObserverDisabled  = false,
+
         // modules that require setup() and/or reset() to be called during extension initialization and disabling
         // respectively. Generally, modules should be setup in relative order of priority of keyboard shortcuts
         // (this is the order in which they are listed in the array below), while reset() is called in the
@@ -190,17 +194,27 @@
 
     var timeout_onTabActivation;
 
-    // triggers after the user has activated on the tab and continued to keep it active
-    // (to prevent against running for tabs that are briefly activated in the process
+    // triggers after the current tab got activated and remained active for a (very) brief period
+    // (to prevent this from running for tabs that are briefly activated in the process
     // of moving through a bunch of tabs to reach a final one)
     function onTabActivation() {
-        mod_mutationObserver.enable();
-        CUsSpecifier && mod_CUsMgr.updateCUsAndRelatedState();
-        mod_chromeAltHack && mod_chromeAltHack.removeAnyConflictingAccessKeyAttr(document);
+
+        if (isMutationObserverDisabled) {
+            isMutationObserverDisabled = false;
+            mod_mutationObserver.enable();
+            CUsSpecifier && mod_CUsMgr.updateCUsAndRelatedState();
+            // since we had stopped observing mutations, we must check the entire document for
+            // any conflicting access key attrs (if mod_chromeAltHack is being used)
+            mod_chromeAltHack && mod_chromeAltHack.removeAnyConflictingAccessKeyAttr(document);
+        }
     }
 
     function onTabDeactivation() {
-        mod_mutationObserver.disable(true);
+        // disable mutation observer if the tab got deactivated AND didn't have CUs filtering ongoing
+        if (!mod_filterCUs.isActive()) {
+            mod_mutationObserver.disable(true);
+            isMutationObserverDisabled = true;
+        }
     }
 
     function onWindowMessage(event, targetOrigin) {
