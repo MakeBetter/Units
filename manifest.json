@@ -2,7 +2,7 @@
     "name": "Units",
     "version": "0.53",
     "manifest_version": 2,
-    "description": "Keyboard navigation. Accessibility. Readability/Focus. A better web experience. kthxbye.",
+    "description": "Browse the web with greater ease and control.",
     "options_page": "background_scripts/options_page/options_page.html",
     "browser_action": {
         "default_icon": "icon-disabled.png",
