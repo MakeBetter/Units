@@ -579,6 +579,23 @@ defaultSettings.urlDataMap = {
 //        }
 //    ],
 
+    "npr.org": [
+        {
+            urlPatterns: ["www.npr.org"],
+            CUs_specifier: ".attachment-group, .story-wrap, article",
+            CUs_style: {
+                setOverlayZIndexHigh: true
+            },
+            CUs_SUs: {
+                std_mainEl: ".story-text>a"
+            },
+            page_SUs: {
+                std_header: ".header, nav"
+            },
+
+        },
+    ],
+
     "nytimes.com": [
         {
             urlPatterns: ["www.nytimes.com/**"],
