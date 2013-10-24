@@ -112,9 +112,12 @@ var defaultSettings = {
     Shortcuts related to selecting or invoking elements in a page
     */
     elementNavigationShortcuts: {
-        open: { //TODO: should 'enter' be spcified here
+        open: {
             descr: "Open/invoke selected item",
-            kbdShortcuts: ['shift+o']
+            // while 'enter' should work without having to specify it in the binding below, we specify it
+            // explicitly since on some websites it might be bound as a shortcut for something else
+            // (like on facebook it is bound to focus the comments textbox)
+            kbdShortcuts: ['enter', 'shift+o']
         },
         openInNewTab: {
             descr: "Open selected link in new tab",
