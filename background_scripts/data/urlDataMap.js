@@ -470,7 +470,7 @@ defaultSettings.urlDataMap = {
                 "overlayPadding": "5px"
             },
             CUs_SUs: {
-                /*std_mainEl: "a.l"*/
+                std_mainEl: ".r>a" // For the "in-depth article" section of the search results
             },
             CUs_actions: {
 //                // This feature has now been removed since google removed the "preview" feature
