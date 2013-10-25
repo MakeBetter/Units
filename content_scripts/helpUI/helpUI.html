@@ -14,13 +14,14 @@
                  <div class="sidebar">
                      <div id="filter-by">
                          <ul>
-                             <li id="all" class="menu-selected"> All </li>
-                             <li id = "most-important"> Most Important </li>
-                             <li id="specific-to-page"> Current page/site </li>
-                             <li id="cu-based"> CU based </li>
+                             <li id = "most-important" class="menu-selected"> Most Important </li>
+                             <!--<li id="specific-to-page"> Current page/site </li>-->
+                             <!--<li id="cu-based"> CU based </li>-->
+                             <li id="all"> All </li>
+
                              <!--<li id="cool-features"> Cool Features</li>-->
                              <li id="getting-started"> Getting Started</li>
-                             <li id="faq"> FAQs</li>
+                             <!--<li id="faq"> FAQs</li>-->
 
                          </ul>
                      </div>
@@ -47,14 +48,14 @@
                              </div>
                          </div>
                          <div class=UnitsProj-float-fixer></div>
-                         <p id=footer-message class="UnitsProj-message">* These will scroll the page up/down only when there are no CUs on the page.
-                             Else, these are used to go to previous/next CU. </p>
+                         <p id=footer-message class="UnitsProj-message">* These will scroll the page when there are no units on the page.
+                             Else, these are used to go to previous/next unit. </p>
                      </div>
                      <div id="getting-started-content" style="display: none">
                         <p>Browse the web like a boss! Here's a few tips to get you started... </p>
 
                         <section>
-                            <h3 class="section-title">Pages with 'CUs':</h3>
+                            <h3 class="section-title">Easy Navigation</h3>
                             <div class="section-content">
                                 <ol>
                                     <li>
@@ -65,9 +66,9 @@
                                         <a href="http://stackoverflow.com/questions/5874652/prop-vs-attr">Stack Overflow</a>.
                                     </li>
                                     <li>
-                                        Notice that the first <em> content unit </em> (CU) on the page is selected. Press
+                                        Notice that the first main <em> unit </em> on the page is selected. Press
                                         <span class="key-text" id="next-cu">j</span> and
-                                        <span class="key-text" id="previous-cu">k</span> to move between CUs.
+                                        <span class="key-text" id="previous-cu">k</span> to move between the units.
                                     </li>
                                     <li>
                                         In most cases, the most important link in the unit is already selected for you. Press <span class="key-text">o</span>
@@ -76,45 +77,53 @@
                                     <li>
                                         Use <span class="key-text">tab</span> to move focus to the next link in the page.
                                     </li>
+
+                                    'j' and 'k' are "smart scrolling" keys. On a page with units, it smartly decides between
+                                    when to select the next unit and when to scroll the page. For pages with no units, 'j'
+                                    and 'k' will simply smooth scroll the page.
+
                                 </ol>
                             </div>
                         </section>
 
                         <section>
-                            <h3 class="section-title">All pages:</h3>
+                            <h3 class="section-title">Other useful features:</h3>
 
                             <div class="section-content">
-                                <p class="section-description"> Give these general utilities a spin. We think these are
-                                    essential for a seamless 'unit-y' experience.
-                                </p>
                                 <ol>
-                                    <li> On pages with no CUs, use <span class="key-text">j</span> and <span class="key-text"> k</span> to scroll the page.
-                                        (Marvel at how smooth it is :)
-                                    </li>
-
                                     <li>
-                                        Protip: Use <span class="key-text" id="next-tab"></span> and
-                                        <span class="key-text" id="prev-tab"></span> to move between tabs.
+                                        Spotlight mode: This one is great for focused reading. Increase spotlight
+                                        on the selected unit by pressing "+" and decrease with "-".
                                     </li>
                                     <li>
-                                        Quickly access any link on the page. Press <span class="key-text">space</span> and
-                                        <span class="key-text">letter</span> to reach a link starting with that letter.
-                                    </li>
-                                    <li>
-                                        Press <span class="key-text">z</span> to try out the Zen Mode (on pages that
-                                        support it).
+                                        Filter Units: You can filter units based on a search term. It hides all the units
+                                        from the page that don't match. Shortcut: "alt+f"
                                     </li>
                                 </ol>
+
                             </div>
+
                         </section>
-                         <section id="ending-note">
-                             <p> This is a good start. But there's lots more. Do explore the shortcuts in detail and our website if you
-                             like it thus far. </p>
-                             <p> Also note Units is highly configurable. Check out the <a id="options" target="_blank" href="../../background_scripts/options_page/options_page.html">Options</a>
-                                 page for more. </p>
+
+                         <section>
+                             <h3 class="section-title">Disable and configure:</h3>
+
+                             <div class="section-content">
+                                 <ol>
+                                     <li>
+                                         To quickly disable Units on any page, press ",".
+                                         <br>
+                                         To disable Units permanently on a site: Click on the Units extension icon in the
+                                         browser and disable from there.
+                                     </li>
+                                     <li>
+                                         Units is highly configurable. See the
+                                         <a id="options" target="_blank" href="../../background_scripts/options_page/options_page.html">
+                                             Options</a> page to change settings and shortcuts.
+                                     </li>
+                                 </ol>
+                             </div>
                          </section>
-
-
                      </div>
                      <div id="faq-content" style="display: none">
                         <section>

@@ -146,6 +146,7 @@ var defaultSettings = {
         toggleZenMode: {
             descr: "Toggle zen mode",
             kbdShortcuts: ['z'],
+            importanceHigh: true
         },
         toggleExtension: {
             descr: "Disable/enable Units on current page",
@@ -155,6 +156,7 @@ var defaultSettings = {
         showHelp: {
             descr: "Show the help page",
             kbdShortcuts: ['alt+/'],
+            importanceHigh: true
         }
     },
 
@@ -184,36 +186,44 @@ var defaultSettings = {
             kbdShortcuts: ['h'/*, 'left'*/],
         },
         selectCUDown: {
-            descr: "Select next/down CU",
+            descr: "Select next/down unit",
             kbdShortcuts: ['alt+shift+j'/*, 'down'*/],
         },
         selectCUUp: {
-            descr: "Select prev/up CU",
+            descr: "Select prev/up unit",
             kbdShortcuts: ['alt+shift+k'/*, 'up'*/],
         },
 
         selectCURight: {
-            descr: "Select right CU",
+            descr: "Select right unit",
             kbdShortcuts: ['alt+shift+l'/*, 'right'*/],
         },
         selectCULeft: {
-            descr: "Select left CU",
+            descr: "Select left unit",
             kbdShortcuts: ['alt+shift+h'/*, 'left'*/],
         },
 
         selectFirstCU: {
-            descr: "Select first CU",
+            descr: "Select first unit",
             kbdShortcuts: ['^', 'alt+1']
         },
         selectLastCU: {
-            descr: "Select last CU",
+            descr: "Select last unit",
             kbdShortcuts: ['$', 'alt+9']
         },
 
         filterCUs: {
-            descr: "Search and filter CUs ",
+            descr: "Search and filter units ",
             kbdShortcuts: ['alt+f'],
+            importanceHigh: true
         },
+
+        // TODO: This shortcut is hardcoded in code at the moment.
+        increaseSpotlight: {
+            descr: "Increase spotlight on selected unit",
+            kbdShortcuts: ["+"],
+            importanceHigh: true
+        }
     },
 
     /*

@@ -98,6 +98,8 @@
         renderPageNavigationShortcuts(settings);
 
         renderGettingStarted(settings);
+
+        showMostImportantShortcuts();
     }
 
     function renderCUShortcuts(settings) {
@@ -109,8 +111,8 @@
 
         var $shortcutsTable = $CUShortcutsSection.find("table");
 
-        addShortcutsSubsectionToParentTable(CUsShortcuts_Default, $shortcutsTable, "Content Unit (CU) based");
-        addShortcutsSubsectionToParentTable(CUsShortcuts_URLBased, $shortcutsTable, "CU based: for this page/site",class_pageSpecificShortcuts);
+        addShortcutsSubsectionToParentTable(CUsShortcuts_Default, $shortcutsTable, "Unit based");
+        addShortcutsSubsectionToParentTable(CUsShortcuts_URLBased, $shortcutsTable, "Unit based: for this page/site",class_pageSpecificShortcuts);
     }
 
     function renderMiscShortcuts(settings) {
@@ -140,7 +142,7 @@
             shortcut[property_importanceHigh] = true;
         });
 
-        addShortcutsSubsectionToParentTable(miscShortcuts, $shortcutsTable, "Miscellaneous and Important");
+        addShortcutsSubsectionToParentTable(miscShortcuts, $shortcutsTable, "Miscellaneous");
         addShortcutsSubsectionToParentTable(globalShortcuts, $shortcutsTable, "Tab operations");
         addShortcutsSubsectionToParentTable(page_allShortcuts, $shortcutsTable, "Shortcuts for this page/site", class_pageSpecificShortcuts);
     }
@@ -263,7 +265,7 @@
     }
 
     /**
-     * Append SelectCUDown shortcuts to scrollDown shortcuts in the Help UI. Similarly for Select CU Up, Left, Right
+     * Append smartScrollDown shortcuts to scrollDown shortcuts in the Help UI. Similarly for Select CU Up, Left, Right
      * shortcuts.
      * @param settings
      * @param $miscShortcutsSection
@@ -273,10 +275,10 @@
             CUsShortcuts_Default = settings.CUsShortcuts,
 
             // Select CU shortcuts
-            selectCUDownShortcuts = CUsShortcuts_Default.selectCUDown.kbdShortcuts,
-            selectCUUpShortcuts = CUsShortcuts_Default.selectCUUp.kbdShortcuts,
-            selectCURightShortcuts = CUsShortcuts_Default.selectCURight.kbdShortcuts,
-            selectCULeftShortcuts = CUsShortcuts_Default.selectCULeft.kbdShortcuts,
+            smartScrollDownShortcuts = CUsShortcuts_Default.smartScrollDown.kbdShortcuts,
+            smartScrollUpShortcuts = CUsShortcuts_Default.smartScrollUp.kbdShortcuts,
+            smartScrollRightShortcuts = CUsShortcuts_Default.smartScrollRight.kbdShortcuts,
+            smartScrollLeftShortcuts = CUsShortcuts_Default.smartScrollLeft.kbdShortcuts,
 
             // Scroll shortcuts
             scrollDownShortcuts = pageNavigationShortcuts.scrollDown.kbdShortcuts,
@@ -292,10 +294,10 @@
 
 
         var map = {
-            up: [selectCUUpShortcuts, scrollUpShortcuts, $scrollUpShortcuts],
-            down: [selectCUDownShortcuts, scrollDownShortcuts, $scrollDownShortcuts],
-            right: [selectCURightShortcuts, scrollRightShortcuts, $scrollRightShortcuts],
-            left: [selectCULeftShortcuts, scrollLeftShortcuts, $scrollLeftShortcuts]
+            up: [smartScrollUpShortcuts, scrollUpShortcuts, $scrollUpShortcuts],
+            down: [smartScrollDownShortcuts, scrollDownShortcuts, $scrollDownShortcuts],
+            right: [smartScrollRightShortcuts, scrollRightShortcuts, $scrollRightShortcuts],
+            left: [smartScrollLeftShortcuts, scrollLeftShortcuts, $scrollLeftShortcuts]
         };
 
         // Append CU shortcuts to scroll shortcuts in the UI (for select CU up, down, right, left)
@@ -311,7 +313,7 @@
 
             var additionalShortcutsHtml = ""; // construct html based on CUShortcuts that will be appended to $scrollShortcuts
             for (var i = 0; i < CUShortcuts.length; i++) {
-                additionalShortcutsHtml += "<span class=key-text>"+ CUShortcuts[i] + "</span>" + "*" ;
+                additionalShortcutsHtml += "<span class=key-text>"+ CUShortcuts[i] + "* </span>";
                 if (i !== CUShortcuts.length - 1) {
                     additionalShortcutsHtml+= keysSeparatorHtml;
                 }
@@ -370,8 +372,8 @@
 
     function showMostImportantShortcuts() {
         showAllShortcuts();
-        $("tr:not(.importance-high)").hide();
-        showFilterMessage("Here's a list of the main shortcuts to help you get started. Remember: j, k, o and enter are your best friends.");
+        $("tr:not(.importance-high, .page-specific)").hide();
+//        showFilterMessage("Here's a list of the main shortcuts to help you get started. Remember: j, k, o and enter are your best friends.");
 
         $footerMessage.show();
     }

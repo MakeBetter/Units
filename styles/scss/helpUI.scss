@@ -20,6 +20,8 @@ body {
 #help {
   font-family: $sans-serif-font-family;
   color: $text-color;
+  min-height: 800px;
+
 }
 
 // These calculations can be automated using js. We are manually setting the modalbody-content-width and sidebar width here.
