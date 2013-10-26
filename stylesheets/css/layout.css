@@ -176,29 +176,30 @@ section td.caption div {
   display: inline-block;
   background-color: #ffffe0;
   padding: 5px;
+  margin-left: 10px;
 }
 
-/* line 157, ../scss/layout.scss */
+/* line 158, ../scss/layout.scss */
 #demo > div {
   margin: 20px auto;
   width: 640px;
 }
 
-/* line 162, ../scss/layout.scss */
+/* line 163, ../scss/layout.scss */
 section h6 {
   font-weight: bold;
 }
 
-/* line 166, ../scss/layout.scss */
+/* line 167, ../scss/layout.scss */
 .try-it-out {
   color: #bbb;
 }
 
-/* line 171, ../scss/layout.scss */
+/* line 172, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
 }
-/* line 175, ../scss/layout.scss */
+/* line 176, ../scss/layout.scss */
 #supported-websites li {
   margin-bottom: 6px;
 }
@@ -211,18 +212,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 204, ../scss/layout.scss */
+  /* line 205, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 208, ../scss/layout.scss */
+  /* line 209, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 209, ../scss/layout.scss */
+  /* line 210, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }
