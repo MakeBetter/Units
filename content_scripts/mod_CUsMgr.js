@@ -98,6 +98,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // cached jQuery objects
         $body, // will refer to $(body)
         $document = $(document),
+        $window = $(window),
 
         rtMouseBtnDown,         // boolean holding the state of the right mouse button
 //        ltMouseBtnDown,         // boolean holding the state of the left mouse button
@@ -1201,7 +1202,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         var // for the window:
             winTop = body.scrollTop,
-        // winHeight = $(window).height(), // this doesn't seem to work correctly on news.ycombinator.com
+        // winHeight =$window.height(), // this doesn't seem to work correctly on news.ycombinator.com
             winHeight = window.innerHeight,
             winBottom = winTop + winHeight,
             winLeft = body.scrollLeft,
@@ -2081,10 +2082,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function setupScrollEventHandler() {
-        $(window).on('scroll', onWindowScroll);
+       $window.on('scroll', onWindowScroll);
     }
     function resetScrollEventHandler() {
-        $(window).off('scroll', onWindowScroll);
+       $window.off('scroll', onWindowScroll);
     }
 
     function setupEvents() {
@@ -2110,7 +2111,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // Need to specify 'true' below (for capturing phase) for google search (boo!)
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_Esc, true);
 
-        $(window).on('resize', function() {
+       $window.on('resize', function() {
             updateSelectedOverlay();
             dehoverCU();
         });

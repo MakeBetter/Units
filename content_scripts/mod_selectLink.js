@@ -8,6 +8,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
     });
 
     var $document = $(document),
+        $window = $(window),
         class_unitsProjElem = CONSTS.class_unitsProjElem,
         class_hint = 'UnitsProj-hintLabel',                     // class for all hint labels
         class_hintVisible = 'UnitsProj-hintLabel-visible',      // class applied to make a hint label visible,
@@ -103,7 +104,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
         hintsEnabled = mod_globals.hintsEnabled = false;
 
         // event is unbound when hints are removed since there is no need to track the 'scroll' event continuously
-        $(window).off('resize scroll', onViewportChange);
+        $window.off('resize scroll', onViewportChange);
         clearTimeout(timeout_removeHints);
 
     }
@@ -119,7 +120,7 @@ _u.mod_selectLink = (function($, mod_domEvents, mod_contentHelper, mod_direction
         hintInputStr_upperCase = "";
         hintsEnabled = mod_globals.hintsEnabled = true;
 
-        $(window).on('resize scroll', onViewportChange);
+        $window.on('resize scroll', onViewportChange);
         timeout_removeHints = setTimeout(removeHints, timeoutPeriod);
     }
 
