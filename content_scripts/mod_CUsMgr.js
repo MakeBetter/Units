@@ -139,8 +139,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lit_selectCU,    // last invoked time ("lit") for _selectCU()
         minInterval_selectCU = 70,
 
-        smoothScroll = mod_smoothScroll.smoothScroll,
-
         timeout_onMouseMovePause,
         timeout_highlightCU,
         timeout_viewportChange,
@@ -184,6 +182,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         lastSelectedCUBoundingRect = null;
         thisModule.stopListening();
         clearInterval(interval_updateCUsTillDomReady);
+        resetScrollEventHandler();
     }
 
     function setup(settings) {
@@ -1176,6 +1175,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         };
     }
 
+    function smoothScroll(elementToScroll, scrollProperty, value, duration) {
+        resetScrollEventHandler(); // to prevent continuous firing of handler during smooth scroll animation
+        mod_smoothScroll.smoothScroll(elementToScroll, scrollProperty, value, duration, setupScrollEventHandler);
+    }
+
     /**
      * Scrolls the  page to center the specified CU on it. Uses `direction` to decide how to
      * position an element that doesn't fit in the viewport, and to ensure that we don't scroll
@@ -2076,6 +2080,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             isContextApplicable);
     }
 
+    function setupScrollEventHandler() {
+        $(window).on('scroll', onWindowScroll);
+    }
+    function resetScrollEventHandler() {
+        $(window).off('scroll', onWindowScroll);
+    }
+
     function setupEvents() {
         bindTabKey();
 
@@ -2104,7 +2115,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             dehoverCU();
         });
 
-        $(window).on('scroll', onWindowScroll);
+        setupScrollEventHandler();
 
         // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
         // However, 'focusin' behaves as expected in either case.
