@@ -15,7 +15,6 @@
 ================================================== */
 /* line 19, ../scss/layout.scss */
 body {
-  background-color: #f7f7f7;
   color: #444444;
 }
 
@@ -30,24 +29,68 @@ header span {
 }
 
 /* line 33, ../scss/layout.scss */
-.container {
-  background-color: white;
-  border-right: 1px solid #eaeaea;
-  border-left: 1px solid #eaeaea;
+p, li {
+  font-size: 17px;
+  line-height: 24px;
 }
 
-/* line 41, ../scss/layout.scss */
+/* line 42, ../scss/layout.scss */
+.fixer {
+  clear: both;
+}
+
+/* line 53, ../scss/layout.scss */
 section {
   border-bottom: 1px solid #eaeaea;
-  padding: 20px 0;
+  padding: 40px;
+  margin: 10px 0 20px 0;
+  background-color: #F4F1D7;
+  border: 1px solid #e9e3af;
+  text-align: justify;
+}
+/* line 61, ../scss/layout.scss */
+section h4 {
+  text-align: center;
 }
 
-/* line 46, ../scss/layout.scss */
+/* line 66, ../scss/layout.scss */
+section#core-concept {
+  background-color: #8CBEB2;
+  color: white;
+  text-align: center;
+  margin: auto;
+  border: 1px solid #6bac9c;
+}
+
+/* line 75, ../scss/layout.scss */
+section.feature {
+  background-color: #fcf3f0;
+  border: 0;
+}
+/* line 80, ../scss/layout.scss */
+section.feature h4 {
+  color: #F06060;
+  font-weight: bold;
+  text-align: center;
+}
+/* line 90, ../scss/layout.scss */
+section.feature:nth-child(2n) {
+  background-color: #f9e5df;
+}
+
+/* line 96, ../scss/layout.scss */
+section#supported-websites {
+  background-color: #45687d;
+  border-color: #eeeeee;
+  color: #fafafa;
+}
+
+/* line 102, ../scss/layout.scss */
 #key-features section:last-of-type {
   border-bottom: 0;
 }
 
-/* line 50, ../scss/layout.scss */
+/* line 106, ../scss/layout.scss */
 nav {
   padding-top: 60px;
   position: fixed;
@@ -81,13 +124,13 @@ nav a {
   padding: 10px 5px 5px 5px;
 }
 
-/* line 57, ../scss/layout.scss */
+/* line 113, ../scss/layout.scss */
 h3 {
   padding-bottom: 10px;
   text-align: center;
 }
 
-/* line 62, ../scss/layout.scss */
+/* line 118, ../scss/layout.scss */
 .bold {
   font-weight: bold;
   color: #444;
@@ -95,39 +138,38 @@ h3 {
 
 /* #Page Styles
 ================================================== */
-/* line 70, ../scss/layout.scss */
+/* line 126, ../scss/layout.scss */
 .hero {
   padding: 20px 0;
   text-align: center;
 }
-/* line 74, ../scss/layout.scss */
+/* line 130, ../scss/layout.scss */
 .hero .title {
   font-size: 6em;
   line-height: 1;
   color: #666666;
-  margin: 40px 0;
 }
-/* line 81, ../scss/layout.scss */
+/* line 137, ../scss/layout.scss */
 .hero .beta {
   font-size: 0.2em;
   color: #999999;
 }
-/* line 86, ../scss/layout.scss */
+/* line 142, ../scss/layout.scss */
 .hero .hero-text {
   font-size: 1.5em;
   line-height: 1.2;
   width: 80%;
   margin: 10px auto;
 }
-/* line 93, ../scss/layout.scss */
+/* line 149, ../scss/layout.scss */
 .hero .tagline {
-  color: #999999;
+  color: gray;
 }
-/* line 97, ../scss/layout.scss */
+/* line 153, ../scss/layout.scss */
 .hero .description {
   font-size: 1.3em;
 }
-/* line 102, ../scss/layout.scss */
+/* line 158, ../scss/layout.scss */
 .hero .install-button {
   font-size: 150%;
   background: #02a6eb;
@@ -135,43 +177,88 @@ h3 {
   border: 1px solid #eaeaea;
   margin: 20px 0;
 }
-/* line 109, ../scss/layout.scss */
+/* line 165, ../scss/layout.scss */
 .hero .install-button:hover {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 114, ../scss/layout.scss */
+/* line 170, ../scss/layout.scss */
 .hero .install-button .small-text {
   font-size: 50%;
 }
-/* line 119, ../scss/layout.scss */
+/* line 175, ../scss/layout.scss */
 .hero .main-features {
   margin-top: 40px;
 }
-/* line 121, ../scss/layout.scss */
+/* line 177, ../scss/layout.scss */
 .hero .main-features h5 {
   font-weight: bold;
 }
 
+/* line 191, ../scss/layout.scss */
+#video-container table {
+  margin-left: 100px;
+}
+
+/* line 198, ../scss/layout.scss */
+#supported-sites-table img {
+  max-height: 30px;
+  max-width: 100px;
+  margin: 5px;
+}
+/* line 204, ../scss/layout.scss */
+#supported-sites-table td {
+  vertical-align: middle;
+}
+
+/* line 211, ../scss/layout.scss */
+section#core-concept h4 {
+  margin-bottom: 20px;
+}
+/* line 214, ../scss/layout.scss */
+section#core-concept img {
+  padding-right: 10px;
+}
+/* line 217, ../scss/layout.scss */
+section#core-concept h5 {
+  font-size: 18px;
+}
+
+/* line 223, ../scss/layout.scss */
+.text {
+  width: 600px;
+  margin: auto;
+}
+
+/* line 228, ../scss/layout.scss */
+.key-features-title {
+  background-color: #f1f1f1;
+  color: #acacac;
+  line-height: 40px;
+  text-align: center;
+  padding: 10px 10px;
+  margin: 10px 0;
+}
+
 /* Main Features */
-/* line 132, ../scss/layout.scss */
+/* line 239, ../scss/layout.scss */
 section h4 {
   margin-bottom: 10px;
 }
-/* line 136, ../scss/layout.scss */
+/* line 243, ../scss/layout.scss */
 section figure, section img {
   width: 600px;
 }
-/* line 140, ../scss/layout.scss */
+/* line 247, ../scss/layout.scss */
 section figure {
   padding: 2px;
   border: 1px solid #ccc;
 }
-/* line 145, ../scss/layout.scss */
+/* line 252, ../scss/layout.scss */
 section td.caption {
   vertical-align: top;
 }
-/* line 148, ../scss/layout.scss */
+/* line 255, ../scss/layout.scss */
 section td.caption div {
   display: inline-block;
   background-color: #ffffe0;
@@ -179,27 +266,27 @@ section td.caption div {
   margin-left: 10px;
 }
 
-/* line 158, ../scss/layout.scss */
+/* line 265, ../scss/layout.scss */
 #demo > div {
   margin: 20px auto;
   width: 640px;
 }
 
-/* line 163, ../scss/layout.scss */
+/* line 270, ../scss/layout.scss */
 section h6 {
-  font-weight: bold;
+  font-style: italic;
 }
 
-/* line 167, ../scss/layout.scss */
+/* line 275, ../scss/layout.scss */
 .try-it-out {
   color: #bbb;
 }
 
-/* line 172, ../scss/layout.scss */
+/* line 280, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
 }
-/* line 176, ../scss/layout.scss */
+/* line 284, ../scss/layout.scss */
 #supported-websites li {
   margin-bottom: 6px;
 }
@@ -212,18 +299,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 205, ../scss/layout.scss */
+  /* line 313, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 209, ../scss/layout.scss */
+  /* line 317, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 210, ../scss/layout.scss */
+  /* line 318, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }

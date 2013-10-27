@@ -37,7 +37,7 @@ function setNavigationMenuPosition() {
  * @param event
  */
 function onDocumentScroll_highlightMenu(event) {
-    var sections = document.querySelectorAll("main>section"),
+    var sections = document.querySelectorAll("main>section, main>h2"),
         body = document.body,
         currentlySelectedMenuOption = navigationMenu.querySelector("." + class_menuSelected),
         headerHeight = 0,
@@ -61,7 +61,7 @@ function onDocumentScroll_highlightMenu(event) {
     // Special case for the last section.
     // If the scrollbar is close to the bottom of the page, and the last section's menu option is not highlighted
     // yet, then do that.
-    if (body.scrollHeight - 200 <= window.innerHeight + body.scrollTop) {
+    if (body.scrollHeight - 200 <= window.innerHeight + document.documentElement.scrollTop) {
         correspondingMenuOption = navigationMenu.querySelector("li:last-child");
         if (correspondingMenuOption !== currentlySelectedMenuOption) {
             highlightMenuItem(correspondingMenuOption);

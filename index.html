@@ -43,7 +43,8 @@
     <nav>
         <ul>
             <li class="menu-selected" id='menu-home'><a href="#home">Home </a></li>
-            <li id='menu-demo'><a href="#demo">Demo </a></li>
+            <!--<li id='menu-demo'><a href="#demo">Demo </a></li>-->
+            <li id='menu-core-concept'><a href="#core-concept">Core Concept</a></li>
             <li id='menu-key-features'><a href="#key-features">Key Features</a></li>
             <li id='menu-supported-websites'><a href="#supported-websites">Supported Sites </a></li>
             <li id='menu-minimal-interference'><a href="#minimal-interference">Minimal Interference </a></li>
@@ -63,45 +64,53 @@
         <!--</header>-->
 
 
-        <main class="fourteen columns offset-by-one">
+        <main class="sixteen columns">
             
             <section class="hero" id="home" data-menuid="menu-home">
                <span class="under-construction"> This page is under construction</span>
                 <h1 class="title remove-bottom">Units<span class="beta">Beta</span></h1>
                 <h4 class="tagline hero-text">Browse the web with greater ease and focus.</h4>
                 <button class="install-button" href="https://chrome.google.com/webstore/detail/units/nhigacflkpibihampdilikhaoehddmnc">Install to Chrome</button>
-                <p class="description hero-text">
-                    A Chrome extension for an enhanced browsing experience, based on effortless navigation
-                    between the main <em>Units</em> of a page. Includes wins for productivity, focus, and accessibility along the way.
-                </p>
-            </section>
-
-            <section id="demo" data-menuid="menu-demo">
-                <h3>Demo</h3>
+                <!--<p class="description hero-text">-->
+                    <!--A Chrome extension for an enhanced browsing experience, based on effortless navigation-->
+                    <!--between the main <em>Units</em> of a page. Includes wins for productivity, focus, and accessibility along the way.-->
+                <!--</p>-->
                 <div id="video-container">
-                    <iframe width="640" height="360" src="http://www.youtube.com/embed/GXRftNuTqGw?rel=0" frameborder="0" allowfullscreen>
-                    </iframe>
+                    <iframe src="http://player.vimeo.com/video/77904918?byline=0&amp;portrait=0" width="600" height="375" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                 </div>
-
-
+                <div class="fixer"></div>
             </section>
 
-            <section id='key-features' data-menuid="menu-key-features">
-                <h3>Key Features</h3>
-                <p>
-                    The core idea here is that we identify the <span class="bold">main 'units' of content</span> on a website.
-                </p>
-                <p>
-                    What are these units? For a Google search page, these would be the search results. For Facebook, the shared posts.
-                    For a blog, these are the individual posts. And similarly, for a Q&A or a forum, they are the question and its answers.
-                </p>
-                 <p>
-                     Once we find these units on a page, we can use them for varied purposes like focused browsing,
-                     productivity, accessibility (and more!).
-                 </p>
+            <!--<section id="demo" data-menuid="menu-demo">-->
+                <!--&lt;!&ndash;<h3>Demo</h3>&ndash;&gt;-->
 
-                <section>
-                    <h4> Scrolling done right</h4>
+
+
+            <!--</section>-->
+            <section id="core-concept" data-menuid="menu-core-concept">
+                <!--<h3>Core Concept</h3>-->
+                <h4>
+                    We identify the main <em>units</em> of content on a web page.
+                </h4>
+                <img src="images/facebookSketch.png" alt="" style="width: 250px;"/>
+                <img src="images/googleSketch.png" alt="" style="width: 250px;"/>
+                <img src="images/amazonSketch.png" alt="" style="width: 250px;"/>
+
+                <p>
+                    <!--What are these units? For a Google search page, these would be the search results. For Facebook, the shared posts.-->
+                    <!--For a blog, these are the individual posts. And similarly, for a Q&A or a forum, they are the question and its answers.-->
+                </p>
+                <h5 class="text">
+                    The extension provides an enhanced browsing experience based on effortless navigation between these
+                    units of a page. It packs several features for productivity, focus, and accessibility along the way.
+                </h5>
+            </section>
+
+            <h2 class="key-features-title" id="key-features" data-menuid="menu-key-features">Key Features</h2>
+
+            <section class="feature">
+                <h4> Scrolling done right</h4>
+                <div class="text">
                     <p>
                         Scrolling is the most common action performed on the web! There is a certain beauty to scrolling
                         by units -- it combines the strengths of a slide show (which allows viewing content in discrete
@@ -110,49 +119,50 @@
 
                     <p>
                         We've come up with a novel way of scrolling web pages that we think works quite well. When you press
-                        the scroll key, the page is scrolled by a unit or by a small increment, as most appropriate. 
+                        the scroll key, the page is scrolled by a unit or by a small increment, as most appropriate.
                     </p>
-
-
-
                     <div class="try-it-out">
                         <h6>
                             Try it out:
                         </h6>
                         <p> Press 'j' and 'k' to scroll this page in Units mode.</p>
                     </div>
+                </div>
 
-                </section>
+            </section>
 
-                <section>
-                    <h4> Focused reading</h4>
+            <section class="feature">
+                <h4> Focused reading</h4>
 
-                    <div class="spotlight-effect">
-                        <h6>Spotlight Effect</h6>
+                <div class="spotlight-effect">
+                    <div class="text">
                         <p>
                             Dim out the rest of the page, and read one post at a time with focus. Try it!
                         </p>
-                        <table>
-                            <tr>
-                                <td>
-                                    <img src="images/focused-reading-quora.png" alt="Focused reading mode on Quora">
+                    </div>
 
-                                </td>
-                                <td class="caption">
-                                    <div>
+                    <table>
+                        <tr>
+                            <td>
+                                <img src="images/focused-reading-quora.png" alt="Focused reading mode on Quora">
+
+                            </td>
+                            <td class="caption">
+                                <div>
                                         <span>Spotlight effect on the selected unit on Quora. Press "+" to increase the dimming effect
                                         and "-" to decrease it. </span>
-                                    </div>
+                                </div>
 
-                                </td>
-                            </tr>
+                            </td>
+                        </tr>
 
-                        </table>
-                    </div>
-                </section>
+                    </table>
+                </div>
+            </section>
 
-                <section>
-                    <h4> Filter Units</h4>
+            <section class="feature">
+                <h4> Filter Units</h4>
+                <div class="text">
                     <p>
                         The smart "find" feature you did not realize you needed. It finds units by your search term and hides
                         all the other units on the page.
@@ -160,23 +170,25 @@
                     <p>
                         For sites such as Facebook that implement infinite scroll, this feature is even more useful.
                     </p>
-                    <table>
-                        <tr>
-                            <td><img src="images/filter-units-facebook-gravity.png" alt="Filter units on Facebook"></td>
-                            <td class="caption">
-                                <div>
+                </div>
+                <table>
+                    <tr>
+                        <td><img src="images/filter-units-facebook-gravity.png" alt="Filter units on Facebook"></td>
+                        <td class="caption">
+                            <div>
                                     <span> So I want to check what my friends are saying about Gravity, a movie that came out
                             recently. The Filter feature leaves just those posts in the page that have that word (and
                                         hides all the rest). Neat!
                                     </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </section>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </section>
 
-                <section>
-                    <h4> Consistent shortcuts across sites</h4>
+            <section class="feature">
+                <h4> Consistent shortcuts across sites</h4>
+                <div class="text">
                     <p>
                         Units enables consistent shortcuts that work in the context of the selected unit. For example, I
                         can press "u" to upvote a post, "s" to share a post, "m" to see more, etc.
@@ -185,64 +197,113 @@
                         The cool thing about this is that the same shortcuts work consistently across the supported websites.
                         Helps makes these shortcuts so much easier to use and remember.
                     </p>
+                </div>
 
-                </section>
+            </section>
 
-                <section>
-                    <h4> Productivity Goodies</h4>
+            <section class="feature">
+                <h4> Productivity Goodies</h4>
+                <div class="text">
                     <p>
                     </p>
-                   <div class="try-it-out">
-                       <h6> Try it out:  </h6> <p> Press 'space' + 'a' to select the "About" link, or any other link on this page
-                       starting with the letter 'a'. </p>
-                   </div>
+                    <div class="try-it-out">
+                        <h6> Try it out:  </h6> <p> Press 'space' + 'a' to select the "About" link, or any other link on this page
+                        starting with the letter 'a'. </p>
+                    </div>
+                </div>
 
-                </section>
             </section>
+
+            <!--<section id='key-features' data-menuid="menu-key-features">-->
+                <!--<h3>Key Features</h3>-->
+
+
+                <!---->
+            <!--</section>-->
 
             <section id='supported-websites' data-menuid="menu-supported-websites">
                 <h3>Supported Sites</h3>
-                <p>Units is supported on a very large percentage of the most popular websites. </p>
 
-                <ul>
-                    <li> <h6>Social networking sites</h6>: Facebook, Twitter, LinkedIn</li>
-                    <li> <h6>Search Engines</h6>: Google, HN Search</li>
-                    <li> <h6>Q&A sites</h6>: Quora, Stack Overflow, All StackExchange sites </li>
-                    <li> <h6>Blogs and Microblogs</h6>: Many Tumblr and Blogspot blogs (we working on supporting more), GigaOm</li>
-                    <li> <h6>News</h6>: Hacker News, NY Times, NPR</li>
-                    <li> <h6>E-commerce, Classifieds</h6>: Amazon, Craigslist</li>
-                    <li> <h6>Others</h6>: YouTube, Github</li>
-                </ul>
+                <div class="text">
+                    <p>Units is supported on a very large percentage of the most popular websites. </p>
 
-                <p> Adding support for a website is very easy and quick. You would just need add the data for your site URL.
-                    We need your help in adding many more sites to the repository! </p>
+                    <ul>
+                        <li> <h6>Social networking sites</h6>: Facebook, Twitter, LinkedIn</li>
+                        <li> <h6>Search Engines</h6>: Google, HN Search</li>
+                        <li> <h6>Q&A sites</h6>: Quora, Stack Overflow, All StackExchange sites </li>
+                        <li> <h6>Blogs and Microblogs</h6>: Many Tumblr and Blogspot blogs (we working on supporting more), GigaOm</li>
+                        <li> <h6>News</h6>: Hacker News, NY Times, NPR</li>
+                        <li> <h6>E-commerce, Classifieds</h6>: Amazon, Craigslist</li>
+                        <li> <h6>Others</h6>: YouTube, Github</li>
+                    </ul>
+
+                    <p> Adding support for a website is very easy and quick. You would just need add the data for your site URL.
+                        We need your help in adding many more sites to the repository! </p>
+
+                </div>
+
+                <!--<table id="supported-sites-table">-->
+                    <!--<tr>-->
+                        <!--<td>-->
+                            <!--<img src="images/googleLogo.png" alt=""/>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--<img src="images/se-logo.png" alt=""/>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--<img src="images/facebookLogo.png" alt=""/>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>-->
+                            <!--<img src="images/amazonLogo.png" alt=""/>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--<img src="images/hackernewsLogo.png" alt=""/>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--Quora-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>-->
+                            <!--Facebook-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--Google-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--Quora-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--</table>-->
 
             </section>
 
             <section id='minimal-interference' data-menuid="menu-minimal-interference">
                 <h3> Minimal Interference</h3>
-                <p>
-                To provide an integrated browsing experience across websites, Units needs to work on all websites.
-                At the same time, we wouldn't want to interfere with your regular browsing patterns. We try to be minimally
-                invasive:
-                </p>
+                <div class="text">
+                    <p>
+                        To provide an integrated browsing experience across websites, Units needs to work on all websites.
+                        At the same time, we wouldn't want to interfere with your regular browsing patterns. We try to be minimally
+                        invasive:
+                    </p>
 
-                <ul>
-                    <li>
-                        <h6>Disabling Extension</h6>
-                        You can quickly disable the extension temporarily or permanently on a website.
-                    </li>
-                    <li>
-                        <h6>Configuring Options</h6>
-                        All general shortcuts can be easily changed from the "Options" page.
-                    </li>
-                    <li>
-                        <h6>Site specific shortcuts</h6>
+                    <ul>
+                        <li>
+                            <h6>Disabling Extension</h6>
+                            You can quickly disable the extension temporarily or permanently on a website.
+                        </li>
+                        <li>
+                            <h6>Configuring Options</h6>
+                            All general shortcuts can be easily changed from the "Options" page.
+                        </li>
+                        <li>
+                            <h6>Site specific shortcuts</h6>
 
-                    </li>
-                </ul>
-                </p>
-
+                        </li>
+                    </ul>
+                </div>
             </section>
 
             <!--<section id='how-works' data-menuid="menu-how-works">-->

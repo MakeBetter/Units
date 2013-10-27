@@ -17,7 +17,7 @@
 ================================================== */
 
 body {
-  background-color: lighten($border-grey, 5);
+  //background-color: lighten($border-grey, 5);
   color: $text-color;
 }
 
@@ -30,17 +30,73 @@ header {
   }
 }
 
+p, li {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+li {
+  //line-height: 30px;
+}
+
+.fixer {
+  clear: both;
+}
 .container {
-  background-color: white;
-  border-right: 1px solid $border-grey;
-  border-left: 1px solid $border-grey;
+  //background-color: aliceblue;
+  //border-right: 1px solid $border-grey;
+  //border-left: 1px solid $border-grey;
 }
 
 
 
 section {
   border-bottom: 1px solid $border-grey;
-  padding: 20px 0;
+  padding: 40px;
+  margin: 10px 0 20px 0;
+  background-color: #F4F1D7;
+  border: 1px solid darken(#F4F1D7, 10);
+  text-align: justify;
+  
+  h4 {
+    text-align: center;
+  }
+}
+
+section#core-concept {
+  background-color: #8CBEB2;
+  color: white;
+  text-align: center;
+  margin: auto;
+  border: 1px solid darken(#8CBEB2, 10);
+
+}
+
+section.feature {
+  background-color: lighten(#F0C1B5, 14);
+  border: 0;
+  //border-right: 10px solid orangered;
+
+  h4 {
+    color: #F06060;
+    font-weight: bold;
+    //background-color: brown;
+    //color: white;
+    //display: inline-block;
+    //margin: auto;
+    text-align: center;
+  }
+
+  &:nth-child(2n) {
+    background-color: lighten(#F0C1B5, 10);
+  }
+
+}
+
+section#supported-websites {
+  background-color: lighten(#334D5C, 10);
+  border-color: #eeeeee;
+  color: #fafafa;
 }
 
 #key-features section:last-of-type {
@@ -75,7 +131,7 @@ h3 {
     font-size: 6em;
     line-height: 1;
     color: #666666;
-    margin: 40px 0;
+    //margin: 40px 0;
   }
 
   .beta {
@@ -91,7 +147,7 @@ h3 {
   }
 
   .tagline {
-    color: $text-color-grey;
+    color: darken($text-color-grey, 10);
   }
 
   .description {
@@ -126,6 +182,57 @@ h3 {
 }
 
 
+#video-container {
+ //margin-top: 50px;
+ iframe, table {
+   //float: left;
+ }
+
+ table {
+   margin-left: 100px;
+ }
+
+}
+
+#supported-sites-table {
+  img{
+    max-height: 30px;
+    max-width: 100px;
+    margin: 5px;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+
+section#core-concept {
+  h4 {
+    margin-bottom: 20px;
+  }
+  img {
+    padding-right: 10px;
+  }
+  h5 {
+    font-size: 18px;
+  }
+
+}
+
+.text {
+  width: 600px;
+  margin: auto;
+}
+
+.key-features-title {
+  background-color: #f1f1f1;
+  color: #acacac;
+  line-height: 40px;
+  text-align: center;
+  padding: 10px 10px;
+  margin: 10px 0;
+}
 
 /* Main Features */
 section {
@@ -161,7 +268,8 @@ section {
 }
 
 section h6 {
-  font-weight: bold;
+  //font-weight: bold;
+  font-style: italic;
 }
 
 .try-it-out {
