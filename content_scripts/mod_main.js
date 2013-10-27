@@ -111,7 +111,7 @@
         disableExtension(); // resets the state
 
         chrome.runtime.sendMessage({
-                message: "getSettings",
+                message: "getSettings"
             },
             function(settings) {
 
