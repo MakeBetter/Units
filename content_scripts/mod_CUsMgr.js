@@ -90,7 +90,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         defaultOpacity_nonCUPageOverlays = 0.05,
     // TODO: move the default opacity to settings (also should we allow different values for each "url pattern"?) +
     // maybe sites with larger CUs can have a higher value compared to sites with small CUs like HN, google search results etc.
-        currentOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
+        userSetOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
+        actualOpacity_nonCUPageOverlays,
 
         body,   // will hold reference to document.body (once that is available within setup())
 
@@ -142,6 +143,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         timeout_onMouseMovePause,
         timeout_highlightCU,
+        timeout_viewportChange,
 
         /* these are updated when the mouse moves */
         elemUnderMouse,
@@ -278,7 +280,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
         else {
             $overlay.addClass(class_nonCUPageOverlay);
-            $overlay.css('background-color', 'rgba(127, 127, 127, ' + currentOpacity_nonCUPageOverlays + ')');
         }
 
         if (CUStyleData && CUStyleData.setOverlayZIndexHigh || type === 'nonCUPageOverlay') {
@@ -714,6 +715,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 }
                 else {
                     mod_basicPageUtils.scroll(direction, body);
+
                 }
             }
         }
@@ -902,26 +904,53 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             width: COOverlayRightMargin + "px",
             height: CUOverlayHeight + "px"
         }).show();
+
+        setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
     }
 
     // To increase/decrease "spotlight" on the selected CU
     // `how` should be one of 'increase', 'decrease', 'default'
     function changeSpotlightOnSelecteCU(how) {
         var delta = 0.05;
+
+        // we need to save `userSetOpacity_nonCUPageOverlays` before calling setNonCUPageOverlaysOpacity()
         if (how === 'increase')
-            currentOpacity_nonCUPageOverlays += delta;
+            userSetOpacity_nonCUPageOverlays += delta;
         else if (how === 'decrease')
-            currentOpacity_nonCUPageOverlays -= delta;
+            userSetOpacity_nonCUPageOverlays -= delta;
         else
-            currentOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays;
+            userSetOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays;
 
-        if (currentOpacity_nonCUPageOverlays < 0)
-            currentOpacity_nonCUPageOverlays = 0;
-        if (currentOpacity_nonCUPageOverlays > 1)
-            currentOpacity_nonCUPageOverlays = 1;
+        if (userSetOpacity_nonCUPageOverlays < 0)
+            userSetOpacity_nonCUPageOverlays = 0;
+        if (userSetOpacity_nonCUPageOverlays > 1)
+            userSetOpacity_nonCUPageOverlays = 1;
 
-        var $nonCUOverlays = $('.' + class_nonCUPageOverlay);
-        $nonCUOverlays.css('background-color', 'rgba(127, 127, 127, ' + currentOpacity_nonCUPageOverlays + ')');
+        setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+    }
+
+    function setNonCUPageOverlaysOpacity(opacity) {
+        if (opacity !== actualOpacity_nonCUPageOverlays) {
+            var $nonCUOverlays = $('.' + class_nonCUPageOverlay);
+            $nonCUOverlays.css('opacity', opacity);
+            actualOpacity_nonCUPageOverlays = opacity;
+        }
+    }
+
+    function onWindowScroll() {
+        clearTimeout(timeout_viewportChange);
+        timeout_viewportChange = setTimeout(_onWindowScrollPause, 100);
+    }
+
+    // called when there is a pause in the window's scrolling
+    function _onWindowScrollPause() {
+        var $selectedCU = CUs_filtered[selectedCUIndex];
+        if ($selectedCU && isAnyPartOfCUinViewport($selectedCU)) {
+            setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+        }
+        else {
+            setNonCUPageOverlaysOpacity(0);
+        }
     }
 
     /**
@@ -2073,6 +2102,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             updateSelectedOverlay();
             dehoverCU();
         });
+
+        $(window).on('scroll', onWindowScroll);
 
         // Specifying 'focus' as the event name below doesn't work if a filtering selector is not specified
         // However, 'focusin' behaves as expected in either case.
