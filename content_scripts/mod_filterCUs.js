@@ -65,7 +65,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
     }
 
     function isActive() {
-        return $UIContainer.is(':visible') && getFilterText_lowerCase();
+        return $UIContainer && $UIContainer.is(':visible') && getFilterText_lowerCase();
     }
 
     /**
