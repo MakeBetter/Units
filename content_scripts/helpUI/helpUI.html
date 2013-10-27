@@ -1,0 +1,184 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../styles/css/helpUI.css"/>
+        <script type="text/javascript" src="../../vendor/jquery-2.0.0.min.js"></script>
+    </head>
+    <body>
+         <div id= "help">
+
+             <div class= "modal-header">
+                 <h1 class="modal-title">Units Shortcuts</h1>
+                 <button class= close>&times;</button>
+             </div>
+             <div class = "modal-body">
+                 <div class="sidebar">
+                     <div id="filter-by">
+                         <ul>
+                             <li id = "most-important" class="menu-selected"> Most Important </li>
+                             <!--<li id="specific-to-page"> Current page/site </li>-->
+                             <!--<li id="cu-based"> CU based </li>-->
+                             <li id="all"> All </li>
+
+                             <!--<li id="cool-features"> Cool Features</li>-->
+                             <li id="getting-started"> Getting Started</li>
+                             <!--<li id="faq"> FAQs</li>-->
+
+                         </ul>
+                     </div>
+                 </div>
+                 <div class="main-content">
+                     <p id="filter-message" class="UnitsProj-message"><span></span> </p>
+                     <div id='shortcuts-container'>
+                         <!-- We have a sections-container so that we can identify and apply styles selectively to .section:first-child and
+                  .section:last-child in the CSS -->
+                         <div class="sections-container">
+                             <div class="section" id="CUs-shortcuts">
+                                 <table>
+                                 </table>
+                             </div>
+
+                             <div class="section" id="misc-shortcuts">
+                                 <table>
+                                 </table>
+                             </div>
+
+                             <div class="section" id="navigate-page-shortcuts">
+                                 <table>
+                                 </table>
+                             </div>
+                         </div>
+                         <div class=UnitsProj-float-fixer></div>
+                         <p id=footer-message class="UnitsProj-message">* These will scroll the page when there are no units on the page.
+                             Else, these are used to go to previous/next unit. </p>
+                     </div>
+                     <div id="getting-started-content" style="display: none">
+                        <p>Browse the web like a boss! Here's a few tips to get you started... </p>
+
+                        <section>
+                            <h3 class="section-title">Easy Navigation</h3>
+                            <div class="section-content">
+                                <ol>
+                                    <li>
+                                        Visit one of:
+                                        <a href="https://www.google.com/search?q=lolcats">Google Search</a>,
+                                        <a href="http://www.facebook.com/">Facebook</a>,
+                                        <a href="https://twitter.com/search?q=%23nowplaying">Twitter</a> or
+                                        <a href="http://stackoverflow.com/questions/5874652/prop-vs-attr">Stack Overflow</a>.
+                                    </li>
+                                    <li>
+                                        Notice that the first main <em> unit </em> on the page is selected. Press
+                                        <span class="key-text" id="next-cu">j</span> and
+                                        <span class="key-text" id="previous-cu">k</span> to move between the units.
+                                    </li>
+                                    <li>
+                                        In most cases, the most important link in the unit is already selected for you. Press <span class="key-text">o</span>
+                                        to open it in a new tab or <span class="key-text">enter</span> to open in the the same tab.
+                                    </li>
+                                    <li>
+                                        Use <span class="key-text">tab</span> to move focus to the next link in the page.
+                                    </li>
+
+                                    'j' and 'k' are "smart scrolling" keys. On a page with units, it smartly decides between
+                                    when to select the next unit and when to scroll the page. For pages with no units, 'j'
+                                    and 'k' will simply smooth scroll the page.
+
+                                </ol>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h3 class="section-title">Other useful features:</h3>
+
+                            <div class="section-content">
+                                <ol>
+                                    <li>
+                                        Spotlight mode: This one is great for focused reading. Increase spotlight
+                                        on the selected unit by pressing "+" and decrease with "-".
+                                    </li>
+                                    <li>
+                                        Filter Units: You can filter units based on a search term. It hides all the units
+                                        from the page that don't match. Shortcut: "alt+f"
+                                    </li>
+                                </ol>
+
+                            </div>
+
+                        </section>
+
+                         <section>
+                             <h3 class="section-title">Disable and configure:</h3>
+
+                             <div class="section-content">
+                                 <ol>
+                                     <li>
+                                         To quickly disable Units on any page, press ",".
+                                         <br>
+                                         To disable Units permanently on a site: Click on the Units extension icon in the
+                                         browser and disable from there.
+                                     </li>
+                                     <li>
+                                         Units is highly configurable. See the
+                                         <a id="options" target="_blank" href="../../background_scripts/options_page/options_page.html">
+                                             Options</a> page to change settings and shortcuts.
+                                     </li>
+                                 </ol>
+                             </div>
+                         </section>
+                     </div>
+                     <div id="faq-content" style="display: none">
+                        <section>
+                            <h3 class="section-title"> What is a Content Unit? </h3>
+                            <div class="section-content">
+                                A Content Unit represents a logical unit of content on a webpage. :P
+                                Search results pages, social network feeds, Q&A sites, news sites and blogs: all commonly
+                                present the primary content on the page as distinct 'units' or blocks. We call these blocks 'Content Units'.
+                            </div>
+                        </section>
+                        <section>
+                            <h3 class="section-title"> What is a CU based shortcut?</h3>
+                            <div class="section-content">
+
+                            </div>
+                        </section>
+                        <section>
+                            <h3 class="section-title"> What is a website/page specific shortcut? </h3>
+                            <div class="section-content">
+
+                            </div>
+                        </section>
+                         <section>
+                             <h3 class="section-title"> Can I still use the shortcuts defined by a website? </h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+                         <section>
+                             <h3 class="section-title"> How can I disable Units? </h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+                         <section>
+                             <h3 class="section-title"> I want to define Units CUs for my website. How can I do that?</h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+                         <section>
+                             <h3 class="section-title"> Tell me more about the Zen Mode.</h3>
+                             <div class="section-content">
+
+                             </div>
+                         </section>
+
+
+                     </div>
+                 </div>
+                 <div class=UnitsProj-float-fixer></div>
+             </div>
+
+
+         </div>
+         <script type="text/javascript" src="helpUI.js"></script>
+    </body>
+</html>

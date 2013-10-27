@@ -1,0 +1,412 @@
+/*
+This file contains styles that are applied on components that are inserted into webpages using content script.
+Also, hence the generous use of !important property here.
+*/
+/*
+Colors
+*/
+/* line 24, ../scss/_base.scss */
+a {
+  color: #1277dd;
+}
+
+/* line 28, ../scss/_base.scss */
+.UnitsProj-message {
+  color: #888888;
+}
+
+/*
+Fonts
+*/
+/*
+Miscellaneous
+*/
+/* line 42, ../scss/_base.scss */
+.UnitsProj-float-fixer {
+  clear: both !important;
+}
+
+/*highest z-index for a 32-bit int value*/
+/*
+Defining this because compass transition mixin does not accept the !important property.
+To be used only by content script CSS (i.e. units.scss), but declared in _base.css because the mixin close-button requires it.
+*/
+/* line 8, ../scss/units.scss */
+.CU-overlay {
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+/* line 13, ../scss/units.scss */
+.CU-overlay-selected-marker, .CU-overlay-selected:before, .CU-overlay-selected:after {
+  content: "";
+  width: 6px;
+  height: 4px;
+  position: absolute;
+  display: inline-block;
+  opacity: 0.7;
+  background-color: #999999;
+}
+
+/* line 23, ../scss/units.scss */
+.CU-overlay-selected {
+  -webkit-box-shadow: 0px 0px 7px 0px #999999 !important;
+  -moz-box-shadow: 0px 0px 7px 0px #999999 !important;
+  box-shadow: 0px 0px 7px 0px #999999 !important;
+  border: none !important;
+  transition: background-color 1s;
+}
+/* line 29, ../scss/units.scss */
+.CU-overlay-selected:before {
+  top: 0;
+  right: 0;
+}
+/* line 35, ../scss/units.scss */
+.CU-overlay-selected:after {
+  bottom: 0;
+  left: 0;
+}
+
+/* line 42, ../scss/units.scss */
+.highlighted-CU-overlay {
+  background-color: rgba(200, 250, 50, 0.2) !important;
+  transition: background-color 0s !important;
+}
+
+/* line 47, ../scss/units.scss */
+.CU-overlay-hovered {
+  border: 1px solid #dddddd;
+}
+
+/* line 51, ../scss/units.scss */
+.non-CU-page-overlay {
+  position: absolute !important;
+  pointer-events: none !important;
+  transition: opacity 0.1s;
+  background-color: #000;
+}
+
+/* ****** 'Select Link' module styles ***** */
+/* class for all hint labels */
+/* line 62, ../scss/units.scss */
+.UnitsProj-hintLabel {
+  display: none;
+  z-index: 2147483646 !important;
+  opacity: 0.8 !important;
+  position: fixed !important;
+  font: normal normal normal 10px/10px Verdana "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  color: #d7f0d7 !important;
+  background-color: #052805 !important;
+  padding: 1px 2px !important;
+  letter-spacing: 1px !important;
+  /* class for visible hint labels */
+}
+/* line 74, ../scss/units.scss */
+.UnitsProj-hintLabel.UnitsProj-hintLabel-visible {
+  display: inline !important;
+}
+
+/* To create an invisible text box which cannot be interacted with in any way
+but which can still be given focus and text input programmatically*/
+/* line 82, ../scss/units.scss */
+input.UnitsProj-dummyInput {
+  opacity: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  /* Use position fixed with (0, 0) to prevent page from scrolling when this textbox gets focus,
+  irrespective of the page's current scroll position*/
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: none !important;
+}
+
+/************* Focused element styles *************/
+/*
+We use outline-style: auto (and solid) so that outlines are drawn properly around anchors that contain block elements.
+See SO issue for this: http://stackoverflow.com/questions/17146707/outline-is-drawn-incorrectly-on-chrome-if-outline-style-is-set-to-solid-and-n/17148490
+Though we'll have to live with the issue #33 for image links (till Chrome fixes it).
+*/
+/* line 103, ../scss/units.scss */
+.UnitsProj-focused-image {
+  outline-color: #407465 !important;
+  outline-style: auto !important;
+  outline-width: 1px;
+}
+
+/*
+ For all a's that contains a large image: 1) Have a thick outline 2) Have an outline-offset so that the outline is
+ clearly visible
+*/
+/* line 114, ../scss/units.scss */
+.UnitsProj-focused-large-image {
+  outline-offset: 3px !important;
+  outline-width: 3px !important;
+}
+
+/*
+For textual and button links, 1) set the background-color. This is because on some sites, the links are laid out in the DOM
+such that the outline is not visible. We apply the background-color to make sure that the link is still clearly visible.
+2) Set the outline-style: solid (cannot be 'auto'. See issue: https://github.com/MakeBetter/Units/issues/33)
+*/
+/* line 125, ../scss/units.scss */
+.UnitsProj-focused-link-or-button {
+  outline-color: #529582 !important;
+  outline-width: 1px !important;
+  outline-style: solid !important;
+  background-color: #dbf3db !important;
+  color: #333 !important;
+}
+
+/* ****** Filter module styles ***** */
+/* line 135, ../scss/units.scss */
+.UnitsProj-highlight {
+  background-color: yellow;
+}
+
+/* line 137, ../scss/units.scss */
+.UnitsProj-HiddenByFiltering {
+  display: none !important;
+}
+
+/* This class can be used for (re)setting properties of any text input element that we insert into webpages using content script,
+and want to give a consistent look across webpages. That is, applying this class will override most/all styles associated with
+the text input element that might be specified by the webpage */
+/* line 143, ../scss/units.scss */
+input.UnitsProj-reset-text-input {
+  /*********
+  dimensions and float property of the input element
+  *********/
+  box-sizing: border-box !important;
+                                 /*using box-sizing for easier calculations. make sure to specify this because
+it varies across sites, and changes the effective dimensions of the textbox*/
+  margin: 0 !important;
+  padding: 2px !important;
+  width: 150px !important;
+  min-width: 0px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  float: none !important;
+  /********
+  border, outline and drop shadow
+  ********/
+  border: 1px solid #999999 !important;
+  -webkit-border-radius: 2px !important;
+  -moz-border-radius: 2px !important;
+  -ms-border-radius: 2px !important;
+  -o-border-radius: 2px !important;
+  border-radius: 2px !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  /**********
+  text properties
+  ***********/
+  font: normal normal normal 13px/15px "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  color: #333333 !important;
+  vertical-align: baseline !important;
+  word-spacing: 0px !important;
+  /*not sure if this is really required.*/
+  /*-webkit-appearance: textfield !important;*/
+  /*appearance: textfield !important;*/
+}
+
+/* line 181, ../scss/units.scss */
+input.UnitsProj-reset-text-input:focus {
+  /*show an outline around the element that is same as chrome's default. this needs to be set as it is turned off on
+  some sites. */
+  outline: 5px auto -webkit-focus-ring-color !important;
+}
+
+/* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
+margin of the #UnitsProj-filterUI-searchBox or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
+box-sizing to border-box)*/
+/* line 191, ../scss/units.scss */
+div#UnitsProj-filterUI-container {
+  width: 181px !important;
+  height: 45px !important;
+  /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
+  box-sizing: border-box !important;
+  /*using border-box to make calculations easier.*/
+  text-align: left !important;
+  /*this is important to be set to ensure that the input box and span align as required.*/
+  position: fixed !important;
+  /*top: 0px;*/
+  /*this is set via javascript*/
+  top: 0px;
+  left: 0px !important;
+  margin: 0px !important;
+  z-index: 100000 !important;
+  background-color: #d8d8d8 !important;
+  -webkit-border-radius: 0 0 6px 6px !important;
+  -moz-border-radius: 0 0 6px 6px !important;
+  -ms-border-radius: 0 0 6px 6px !important;
+  -o-border-radius: 0 0 6px 6px !important;
+  border-radius: 0 0 6px 6px !important;
+  /*for the sliding effect*/
+  -webkit-transition: top 0.1s ease-out !important;
+  -moz-transition: top 0.1s ease-out !important;
+  -ms-transition: top 0.1s ease-out !important;
+  -o-transition: top 0.1s ease-out !important;
+  transition: top 0.1s ease-out !important;
+  z-index: 2147483647 !important;
+  /* More than the z-index of zen mode backdrop, and less than help backdrop */
+}
+/* line 210, ../scss/units.scss */
+div#UnitsProj-filterUI-container .UnitsProj-close-button {
+  border: 1px solid transparent !important;
+  display: inline-block !important;
+  height: 13px !important;
+  line-height: 13px !important;
+                                                                                     /*IMPORTANT: that line-height and height have the same value
+to vertically center the text in the span. */
+  width: 13px !important;
+  box-sizing: content-box !important;
+                                  /* works better, because then we don't need to calculate the content height
+separately. the value of line-height needs to be the same as the content height.*/
+  text-align: center !important;
+  font-size: 15px !important;
+  font-family: arial, sans-serif !important;
+                                         /*the arial font seems to be work well for the multiplication symbol.
+change it if you find a better one.*/
+  color: #666 !important;
+  /*border-radius 50% to make it a circle*/
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  -ms-border-radius: 50% !important;
+  -o-border-radius: 50% !important;
+  border-radius: 50% !important;
+  cursor: default !important;
+  /* To not show the text selection icon */
+  -webkit-transition: all 0.1s ease-out !important;
+  -moz-transition: all 0.1s ease-out !important;
+  -ms-transition: all 0.1s ease-out !important;
+  -o-transition: all 0.1s ease-out !important;
+  transition: all 0.1s ease-out !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 6px !important;
+}
+/* line 85, ../scss/_base.scss */
+div#UnitsProj-filterUI-container .UnitsProj-close-button:hover {
+  background-color: #e38e83 !important;
+  border: solid 1px #d1847b !important;
+  color: #eee !important;
+}
+
+/* line 217, ../scss/units.scss */
+input#UnitsProj-filterUI-searchBox {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
+  box-sizing: border-box !important;
+                                 /*using box-sizing for easier calculations. make sure to specify this because
+it varies across sites, and changes the effective dimensions of the textbox*/
+  margin: 0 !important;
+  padding: 2px !important;
+  width: 150px !important;
+  height: 20px !important;
+}
+
+/* line 230, ../scss/units.scss */
+span#filter-message {
+  font-size: 11px !important;
+  color: #888888 !important;
+  position: absolute !important;
+  left: 6px !important;
+  bottom: 4px !important;
+  line-height: 11px !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  text-align: center !important;
+  font-weight: normal !important;
+}
+
+/* ****** Help styles ***** */
+/* line 244, ../scss/units.scss */
+#UnitsProj-help-container {
+  visibility: hidden !important;
+}
+
+/* line 248, ../scss/units.scss */
+#UnitsProj-iframe-help {
+  box-sizing: content-box !important;
+  width: 1120px !important;
+  position: fixed !important;
+  left: 50%;
+  margin-left: -550px;
+  /*center the div horizontally*/
+  z-index: 2147483647 !important;
+  /*highest z-index for a 32-bit int value*/
+  border: 2px solid #999;
+  border-radius: 4px !important;
+}
+
+/*
+Important to set the visibility property as important for both the container and iframe. Also, important to make this
+style more specific by using id's of the elements. Fix for #9.
+*/
+/* line 263, ../scss/units.scss */
+.UnitsProj-visible#UnitsProj-help-container, .UnitsProj-visible#UnitsProj-iframe-help {
+  visibility: visible !important;
+}
+
+/* line 267, ../scss/units.scss */
+.UnitsProj-hidden#UnitsProj-help-container, .UnitsProj-hidden#UnitsProj-iframe-help {
+  visibility: hidden !important;
+}
+
+/* line 271, ../scss/units.scss */
+.UnitsProj-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+/* line 279, ../scss/units.scss */
+#UnitsProj-help-backdrop {
+  background-color: #000000 !important;
+  opacity: 0.5 !important;
+  z-index: 2147483646 !important;
+  /* 1 less than the z-index of iframe help window */
+}
+
+/*********** Zen mode *************/
+/* line 288, ../scss/units.scss */
+.UnitsProj-zen-mode-active .UnitsProj-zen-mode-hidden {
+  display: none !important;
+  opacity: 0 !important;
+  /* Important to apply opacity: 0 as a backup for elements on which display:none does not work.*/
+}
+
+/* line 294, ../scss/units.scss */
+.UnitsProj-zen-mode-excluded {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* line 300, ../scss/units.scss */
+#UnitsProj-zen-mode-indicator {
+  position: fixed !important;
+  bottom: 30px !important;
+  right: 20px !important;
+  padding: 7px 10px !important;
+  border-radius: 2px !important;
+  background-color: #f9f9f9 !important;
+  border: 1px solid #ddd !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  color: #8a8a8a !important;
+  font-size: 12px !important;
+  line-height: 12px !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  opacity: 0.7;
+}
+
+/* line 316, ../scss/units.scss */
+.UnitsProj-zen-mode-active #UnitsProj-zen-mode-indicator {
+  background-color: #ecfbe1 !important;
+}
