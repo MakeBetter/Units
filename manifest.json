@@ -79,7 +79,8 @@
     ],
 
     "web_accessible_resources": [
-        "content_scripts/helpUI/helpUI.html"
+        "content_scripts/helpUI/helpUI.html",
+        "vendor/jquery-2.0.3.min.map"
     ],
 
     "commands": {
