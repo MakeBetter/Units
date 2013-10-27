@@ -850,6 +850,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // NOTE: This is only meant to be called from within
     // (the code flow of) showSelectedOverlay()
     function _showNonCUPageOverlays() {
+        // first set opacity (if it needs to be changed) to the right value
+        setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+
         var CUOffset = $selectedCUOverlay.offset(),
             CUOverlay = $selectedCUOverlay[0],
 
@@ -904,8 +907,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             width: COOverlayRightMargin + "px",
             height: CUOverlayHeight + "px"
         }).show();
-
-        setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
     }
 
     // To increase/decrease "spotlight" on the selected CU
