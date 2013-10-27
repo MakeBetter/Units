@@ -687,7 +687,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     else {
                         // find CU in viewport with maximum "perpendicular overlap"
                         var highestPerpOverlap = -Infinity,
-                            indexWithHigestPerpOverlap = -1;     // index in CUs_filtered
+                            indexWithHighestPerpOverlap = -1;     // index in CUs_filtered
                         for (var i = 0; i < CUs_filtered.length; i++) {
                             var $CU = CUs_filtered[i];
 
@@ -700,13 +700,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                                     getBoundingRect($CU), direction);
                                 if (perpOverlap > highestPerpOverlap) {
                                     highestPerpOverlap = perpOverlap;
-                                    indexWithHigestPerpOverlap = i;
+                                    indexWithHighestPerpOverlap = i;
                                 }
                             }
                         }
-                        // the enclosing if-block [if ($nextCU) {}] ensures that `indexWithHigestPerpOverlap`
+                        // the outer enclosing if-block [if ($nextCU) {}] ensures that `indexWithHighestPerpOverlap`
                         // will have a non-negative value
-                        selectCU(indexWithHigestPerpOverlap, true, true, direction);
+                        selectCU(indexWithHighestPerpOverlap, true, true, direction);
                         if (highestPerpOverlap < 0) {
                             highlightSelectedCUBriefly();
                         }
