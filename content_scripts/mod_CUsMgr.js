@@ -93,7 +93,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         userSetOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
         actualOpacity_nonCUPageOverlays,
 
-        body,   // will hold reference to document.body (once that is available within setup())
+        body,               // will hold reference to document.body (once that is available within setup())
+        documentElement,    // will hold reference to document.documentElement
 
         // cached jQuery objects
         $body, // will refer to $(body)
@@ -200,6 +201,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         reset();
 
         body = document.body;
+        documentElement = document.documentElement;
         $body = $(body);
         mainContainer = document.body;  // assume this to be the body for
 
@@ -381,9 +383,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         if (setFocus) {
-            var savedScrollPos = body.scrollTop;
+            var savedScrollPos = documentElement.scrollTop; // body.scrollTop is deprecated in strict mode;
             focusMainElement($CU);
-            body.scrollTop = savedScrollPos;
+            documentElement.scrollTop = savedScrollPos;
         }
 
         if (miscSettings.increaseFontInSelectedCU && !$CU.data('fontIncreasedOnSelection')) {
@@ -767,7 +769,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * of the page due to a call to this.
      */
     function selectMostSensibleCU_withoutScrollingPage(setFocus) {
-        var savedScrollPos = document.body.scrollTop,
+        var savedScrollPos = documentElement.scrollTop,
             returnVal;
 
         var lastSelectedCUIndex;
@@ -789,7 +791,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         // make sure the scroll position doesn't change due to the main element getting focus
-        document.body.scrollTop = savedScrollPos;
+        documentElement.scrollTop = savedScrollPos;
         return returnVal;
     }
 
@@ -834,9 +836,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 CULeft = boundingRect.left,
                 CURight = CULeft + boundingRect.width,
 
-                winTop = window.scrollY, //body.scrollTop,
+                winTop = documentElement.scrollTop, //window.scrollY, //body.scrollTop,
                 winBottom = winTop + window.innerHeight,
-                winLeft = window.scrollX,
+                winLeft = document.scrollLeft, // window.scrollX,
                 winRight = winLeft + window.innerWidth;
 
             return ( (Math.min(winRight, CURight) - Math.max(winLeft, CULeft)) *
@@ -1201,11 +1203,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function scrollCUIntoView($CUOverlay, direction) {
 
         var // for the window:
-            winTop = body.scrollTop,
+            winTop = documentElement.scrollTop,// body.scrollTop,
         // winHeight =$window.height(), // this doesn't seem to work correctly on news.ycombinator.com
             winHeight = window.innerHeight,
             winBottom = winTop + winHeight,
-            winLeft = body.scrollLeft,
+            winLeft = documentElement.scrollLeft, // body.scrollLeft,
             winWidth = window.innerWidth,
             winRight = winLeft + winWidth,
 
@@ -1246,10 +1248,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     // TODO: if the animation for vertical scroll is required (see below), this
                     // animation will be terminated instantly. Instead, ideally, a diagonal, animation
                     // should take place. Low priority, given the rarity of horizontal scroll
-                    smoothScroll(body, 'scrollLeft', newWinLeft, animationDuration);
+                    smoothScroll(documentElement, 'scrollLeft', newWinLeft, animationDuration);
                 }
                 else {
-                    body.scrollLeft = newWinLeft;
+                    documentElement.scrollLeft = newWinLeft;
                 }
             }
         }
@@ -1289,7 +1291,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
                 }
                 else {
-                    body.scrollTop = newWinTop;
+                    documentElement.scrollTop = newWinTop;
                 }
             }
         }
@@ -1924,9 +1926,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
 
         if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
-            var savedScrollPos = body.scrollTop;
+            var savedScrollPos = documentElement.scrollTop;
             focusMainElement(CUs_filtered[selectedCUIndex]);
-            body.scrollTop = savedScrollPos;
+            documentElement.scrollTop = savedScrollPos;
         }
     }
 
@@ -2172,7 +2174,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height,
 
-            winTop = window.scrollY, //body.scrollTop,
+            winTop = documentElement.scrollTop, // window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
         return CUTop < winBottom && CUBottom > winTop;
@@ -2184,7 +2186,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var boundingRect = CUBoundingRect || getBoundingRect($CU),
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height,
-            winTop = window.scrollY, //body.scrollTop,
+            winTop = documentElement.scrollTop, //window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
         return CUTop > winTop && CUBottom < winBottom;

@@ -95,7 +95,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         var savedScrollPos;
         if (!userInvoked) {
             // save this because the call to .hide() below will change the scrollTop value, in mose cases making it zero
-            savedScrollPos = document.body.scrollTop;
+            savedScrollPos = document.documentElement.scrollTop;
         }
         else {
             savedScrollPos = 0;
@@ -136,7 +136,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         // ** --------- POST FILTERING --------- **
         $document.show();
-        document.body.scrollTop = savedScrollPos;
+        document.documentElement.scrollTop = savedScrollPos;
         disabledByMe && mod_mutationObserver.enable();
 
         return CUs_filtered;
