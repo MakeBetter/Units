@@ -906,6 +906,10 @@ defaultSettings.urlDataMap = {
 
     "thehindu.com": [
         {
+            urlPatterns: ["www.thehindu.com/"],
+            CUs_specifier: ".left, .middle, .right, .courosel-row"
+        },
+        {
             urlPatterns: ["www.thehindu.com/**"],
             page_mainContent: "#left-column"
         }
