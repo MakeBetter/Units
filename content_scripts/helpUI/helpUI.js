@@ -1,7 +1,7 @@
 // This code runs in an iframe that is used to render the help UI on any website.
 // Since this script is included at the end of the body, DOM is ready when we execute this script.
 
-(function() {
+(function($) {
     "use strict";
 
     // First, get settings for the current tab URL and then render UI
@@ -443,4 +443,4 @@
 
     setup();
 
-})();
+})(jQuery);
