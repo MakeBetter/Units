@@ -28,7 +28,7 @@ module.exports = function(grunt) {
                     "content_scripts/mod_keyboardLib.js",
 
                     "content_scripts/mod_quickSearchSelectedText.js",
-                    "content_scripts/mod_help.js",
+//                    "content_scripts/mod_help.js",
                     "content_scripts/mod_basicPageUtils.js",
                     "content_scripts/mod_filterCUs.js",
                     "content_scripts/mod_CUsMgr.js",
