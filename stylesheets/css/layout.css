@@ -277,6 +277,11 @@ section h6 {
   font-style: italic;
 }
 
+/* line 275, ../scss/layout.scss */
+.try-it-out {
+  color: #bbb;
+}
+
 /* line 280, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
