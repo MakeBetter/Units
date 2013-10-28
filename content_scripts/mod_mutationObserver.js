@@ -37,7 +37,9 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     var
         isEnabled,
         currentUrl = window.location.href,
-        timemout_reenable;
+        timemout_reenable,
+        MutationObserver = window.MutationObserver ||window.WebKitMutationObserver || window.MozMutationObserver;
+
 
     var attrFilter = ['class', 'style', 'height', 'width', 'cols', 'colspan', 'rows', 'rowspan', 'shape', 'size'];
     // 'accesskey' required only for "chrome alt hack". It should be okay adding it to the entire list since the 'accesskey'
