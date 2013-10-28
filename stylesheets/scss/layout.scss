@@ -316,6 +316,28 @@ section h6 {
   }
 }
 
+
+.overlay {
+  background: black;
+  opacity: 0.85;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+
+  display: none;
+
+  .message {
+    top: 250px;
+    position: absolute;
+    width: 400px;
+    color: white;
+    font-size: 18px;
+    display: inline-block;
+    left: 50%;
+    margin-left: -200px;
+  }
+
+}
+
 /* #Media Queries
 ================================================== */
 

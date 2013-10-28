@@ -94,8 +94,15 @@ function navigateToSection(menuItem) {
 }
 
 function installExtension(event) {
+    var overlay = document.getElementsByClassName('overlay')[0];
+    overlay.style.display = 'block';
 //    window.open("https://chrome.google.com/webstore/detail/units/nhigacflkpibihampdilikhaoehddmnc",'_blank');
-    chrome.webstore.install("https://chrome.google.com/webstore/detail/nhigacflkpibihampdilikhaoehddmnc", function() {console.log("hello");}, function(arg) {console.log(arg);});
+    chrome.webstore.install("https://chrome.google.com/webstore/detail/nhigacflkpibihampdilikhaoehddmnc", hideInstallExtensionOverlay, hideInstallExtensionOverlay);
+}
+
+function hideInstallExtensionOverlay() {
+    var overlay = document.getElementsByClassName('overlay')[0];
+    overlay.style.display = 'none';
 }
 
 setup();

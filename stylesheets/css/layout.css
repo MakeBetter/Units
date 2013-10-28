@@ -322,6 +322,29 @@ section h6 {
   color: #fafafa;
 }
 
+/* line 320, ../scss/layout.scss */
+.overlay {
+  background: black;
+  opacity: 0.85;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+}
+/* line 328, ../scss/layout.scss */
+.overlay .message {
+  top: 250px;
+  position: absolute;
+  width: 400px;
+  color: white;
+  font-size: 18px;
+  display: inline-block;
+  left: 50%;
+  margin-left: -200px;
+}
+
 /* #Media Queries
 ================================================== */
 /* Smaller than standard 960 (devices and browsers) */
@@ -330,18 +353,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 343, ../scss/layout.scss */
+  /* line 365, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 347, ../scss/layout.scss */
+  /* line 369, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 348, ../scss/layout.scss */
+  /* line 370, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }
