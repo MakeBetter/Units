@@ -40,7 +40,10 @@ _u.mod_smoothScroll = (function() {
         },
         setPageXOffset = function(value) {
             window.scroll(value, window.pageYOffset);
-        };
+        },
+
+        requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+            window.msRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame;
 
     /**
      * Smooth scrolls the specified element by setting it's 'scrollTop'/'scrollLeft' (or 'pageYOffset' or 'pageXOffset'
