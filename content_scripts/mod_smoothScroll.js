@@ -18,7 +18,8 @@ _u.mod_smoothScroll = (function() {
     // function rather than an inner function of smoothScroll() (which means the function
     // object doesn't need to be created each time smoothScroll() is called)
     var element,                // element being scrolled
-        scrollProp,             // the scroll property of the element to modify -- 'scrollTop' or 'scrollLeft'
+        scrollProp,             // the scroll property of the element to modify -- mostly 'scrollTop' or 'scrollLeft',
+                                // but can be 'pageYOffset' or 'pageXOffset' if the element is `window`
         startPosition,          // scrollTop/scrollLeft position of the element at the time of animation beginning
         destination,            // final value of scrollTop/scrollLeft
         scrollingForward,       // true - if scroll direction is down/right; false - direction is rup/left
@@ -26,29 +27,47 @@ _u.mod_smoothScroll = (function() {
         inProgress,             // true if a scroll animation currently ongoing
         startTime,              // time the current animation was started
         maxDuration,            // max duration that this animation should end in
-        onAnimationEnd;         // function to be called once the animation is over
+        onAnimationEnd,         // function to be called once the animation is over
+
+        // This will later be set to one of: _setScrollProp, setPageYOffset, setPageXOffset
+        // We do it this way for performance reasons (we want scrolling to be as smooth as possible)
+        setScrollProp,
+        _setScrollProp = function(value) {
+            element[scrollProp] = value;
+        },
+        setPageYOffset = function(value) {
+            window.scroll(window.pageXOffset, value);
+        },
+        setPageXOffset = function(value) {
+            window.scroll(value, window.pageYOffset);
+        };
+
 
     /**
      * Smooth scrolls the specified element by setting it's scrollTop/scrollLeft to the `destination` value
      * over `duration` millisecs.
      * If this function is called again before the previous animation is over, the previous animation is
      * instantly ended at it's desired destination.
-     * @param elementToScroll The element whose scrollTop/scrollLeft property is to be changed in smooth
-     * increments
-     * @param {string} scrollProperty Specifies which scroll property to modify -- 'scrollTop' or 'scrollLeft'
+     * @param elementToScroll The element whose scrollTop/scrollLeft (or pageYOffet/pageXOffset) property is to
+     * be changed in smooth increments
+     * @param {string} scrollProperty Specifies which scroll property to modify -- 'mostly 'scrollTop' or 'scrollLeft',
+     * but can be 'pageYOffset' or 'pageXOffset' if the element is `window`
      * @param value Destination scrollTop value at the end of animation
      * @param duration Duration of smooth scroll animation (millisecs)
      * @param {Function} [callback] Optional. Function to be called once the animation is over
      */
     function smoothScroll(elementToScroll, scrollProperty, value, duration, callback) {
-        if (scrollProperty !== 'scrollTop' && scrollProperty !== 'scrollLeft') {
-            return;
-        }
         if (inProgress) {
             endAtDestination(); // instantly terminate any ongoing animation at final destination before starting a new one
         }
         element = elementToScroll;
         scrollProp = scrollProperty;
+
+        if (elementToScroll === window)
+            setScrollProp = scrollProperty === 'pageYOffset'? setPageYOffset: setPageXOffset;
+        else
+            setScrollProp = _setScrollProp;
+
         destination = value;
         onAnimationEnd = callback;
 
@@ -81,7 +100,7 @@ _u.mod_smoothScroll = (function() {
     }
 
     function endAtDestination() {
-        element[scrollProp] = destination;
+        setScrollProp(destination);
         inProgress = false;
         onAnimationEnd && onAnimationEnd();
     }
@@ -100,7 +119,7 @@ _u.mod_smoothScroll = (function() {
             endAtDestination();
         }
         else {
-            element[scrollProp] = nextPosition;
+            setScrollProp(nextPosition);
             requestAnimationFrame(step, element);
         }
     }

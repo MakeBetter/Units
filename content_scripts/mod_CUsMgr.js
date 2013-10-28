@@ -94,7 +94,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         actualOpacity_nonCUPageOverlays,
 
         body,               // will hold reference to document.body (once that is available within setup())
-        documentElement,    // will hold reference to document.documentElement
 
         // cached jQuery objects
         $body, // will refer to $(body)
@@ -201,7 +200,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         reset();
 
         body = document.body;
-        documentElement = document.documentElement;
         $body = $(body);
         mainContainer = document.body;  // assume this to be the body for
 
@@ -383,9 +381,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         if (setFocus) {
-            var savedScrollPos = documentElement.scrollTop; // body.scrollTop is deprecated in strict mode;
+            var savedScrollPos = window.pageYOffset; // body.scrollTop is deprecated in strict mode;
             focusMainElement($CU);
-            documentElement.scrollTop = savedScrollPos;
+            window.pageYOffset = savedScrollPos;
         }
 
         if (miscSettings.increaseFontInSelectedCU && !$CU.data('fontIncreasedOnSelection')) {
@@ -769,7 +767,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * of the page due to a call to this.
      */
     function selectMostSensibleCU_withoutScrollingPage(setFocus) {
-        var savedScrollPos = documentElement.scrollTop,
+        var savedScrollPos = window.pageYOffset,
             returnVal;
 
         var lastSelectedCUIndex;
@@ -791,7 +789,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         // make sure the scroll position doesn't change due to the main element getting focus
-        documentElement.scrollTop = savedScrollPos;
+        window.pageYOffset = savedScrollPos;
         return returnVal;
     }
 
@@ -836,7 +834,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 CULeft = boundingRect.left,
                 CURight = CULeft + boundingRect.width,
 
-                winTop = documentElement.scrollTop, //window.scrollY, //body.scrollTop,
+                winTop = window.pageYOffset, //window.scrollY, //body.scrollTop,
                 winBottom = winTop + window.innerHeight,
                 winLeft = document.scrollLeft, // window.scrollX,
                 winRight = winLeft + window.innerWidth;
@@ -1203,11 +1201,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function scrollCUIntoView($CUOverlay, direction) {
 
         var // for the window:
-            winTop = documentElement.scrollTop,// body.scrollTop,
+            winTop = window.pageYOffset,// body.scrollTop,
         // winHeight =$window.height(), // this doesn't seem to work correctly on news.ycombinator.com
             winHeight = window.innerHeight,
             winBottom = winTop + winHeight,
-            winLeft = documentElement.scrollLeft, // body.scrollLeft,
+            winLeft = window.pageXOffset, // body.scrollLeft,
             winWidth = window.innerWidth,
             winRight = winLeft + winWidth,
 
@@ -1248,10 +1246,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     // TODO: if the animation for vertical scroll is required (see below), this
                     // animation will be terminated instantly. Instead, ideally, a diagonal, animation
                     // should take place. Low priority, given the rarity of horizontal scroll
-                    smoothScroll(documentElement, 'scrollLeft', newWinLeft, animationDuration);
+                    smoothScroll(window, 'pageXOffset', newWinLeft, animationDuration);
                 }
                 else {
-                    documentElement.scrollLeft = newWinLeft;
+                    window.pageXOffset = newWinLeft;
                 }
             }
         }
@@ -1288,10 +1286,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
                         Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
 
-                    smoothScroll(body, 'scrollTop', newWinTop, animationDuration);
+                    smoothScroll(window, 'pageYOffset', newWinTop, animationDuration);
                 }
                 else {
-                    documentElement.scrollTop = newWinTop;
+                    window.pageYOffset = newWinTop;
                 }
             }
         }
@@ -1926,9 +1924,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
 
         if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
-            var savedScrollPos = documentElement.scrollTop;
+            var savedScrollPos = window.pageYOffset;
             focusMainElement(CUs_filtered[selectedCUIndex]);
-            documentElement.scrollTop = savedScrollPos;
+            window.pageYOffset = savedScrollPos;
         }
     }
 
@@ -2174,7 +2172,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height,
 
-            winTop = documentElement.scrollTop, // window.scrollY, //body.scrollTop,
+            winTop = window.pageYOffset, // window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
         return CUTop <= winBottom && CUBottom >= winTop;
@@ -2186,7 +2184,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var boundingRect = CUBoundingRect || getBoundingRect($CU),
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height,
-            winTop = documentElement.scrollTop, //window.scrollY, //body.scrollTop,
+            winTop = window.pageYOffset, //window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
         return CUTop >= winTop && CUBottom <= winBottom;

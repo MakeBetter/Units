@@ -136,7 +136,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
         if ($body) {
             var disabledByMe = mod_mutationObserver.disable();
 
-            var savedScrollPos = document.documentElement.scrollTop; // We lose the scroll position since we hide the body
+            var savedScrollPos = window.pageYOffset; // We lose the scroll position since we hide the body
 
             $body.hide(); // Hide the body before making a set of CSS changes together. It's much more efficient.
 
@@ -151,7 +151,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             $("." + class_excluded).removeClass(class_excluded);
 
             $body.show();
-            document.documentElement.scrollTop = savedScrollPos;
+            window.pageYOffset = savedScrollPos;
 
             disabledByMe && mod_mutationObserver.enable();
 

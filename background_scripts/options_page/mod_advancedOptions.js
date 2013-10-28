@@ -232,13 +232,13 @@ var mod_advancedOptions = (function($, mod_commonHelper, mod_settings, mod_optio
      */
     function onDocumentScroll_highlightMenu(event) {
         var sections = element_advancedOptionsContainer.querySelectorAll("section"),
-            documentElement = document.documentElement,
             currentlySelectedMenuOption = navigationMenu.querySelector("." + class_menuSelected),
+            body = document.body,
             correspondingMenuOption;
 
             for (var i = 0; i < sections.length; i++) {
             var section = sections[i],
-                sectionPositionTop = $(section).offset().top - documentElement.scrollTop; // get position
+                sectionPositionTop = $(section).offset().top - window.pageYOffset; // get position
             // relative to the viewport
 
             if (sectionPositionTop > headerHeight && sectionPositionTop < 300) {
@@ -255,7 +255,7 @@ var mod_advancedOptions = (function($, mod_commonHelper, mod_settings, mod_optio
         // Special case for the last section.
         // If the scrollbar is close to the bottom of the page, and the last section's menu option is not highlighted
         // yet, then do that.
-        if (documentElement.scrollHeight - 300 <= window.innerHeight + documentElement.scrollTop) {
+        if (body.scrollHeight - 300 <= window.innerHeight + window.pageYOffset) {
             correspondingMenuOption = navigationMenu.querySelector("li:last-child");
             if (correspondingMenuOption !== currentlySelectedMenuOption) {
                 highlightMenuItem(correspondingMenuOption);
