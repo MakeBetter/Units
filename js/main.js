@@ -5,7 +5,7 @@ var navigationMenu = document.querySelector("nav"),
 function setup() {
     document.addEventListener("scroll", onDocumentScroll_highlightMenu);
 
-    document.getElementsByClassName("install-button")[0].addEventListener("click", installExtension);
+    document.getElementsByClassName("install-button")[0].addEventListener("click", showChromeInstallExtensionUI);
 
     navigationMenu.addEventListener("click", function(event) {
         navigateToSection(event.target.parentNode);
@@ -93,13 +93,20 @@ function navigateToSection(menuItem) {
     highlightMenuItem(menuItem);
 }
 
-function installExtension(event) {
+function showChromeInstallExtensionUI(event) {
     var overlay = document.getElementsByClassName('overlay')[0];
-    overlay.style.display = 'block';
-//    window.open("https://chrome.google.com/webstore/detail/units/nhigacflkpibihampdilikhaoehddmnc",'_blank');
+
+    // show the overlay (with privacy message) after a timeout. This is to sync with the chrome extension UI which seems
+    // to take some time to come up.
+    setTimeout(function() {
+        overlay.style.display = 'block';
+    }, 500);
+
+    // Show inline chrome installation UI
     chrome.webstore.install("https://chrome.google.com/webstore/detail/nhigacflkpibihampdilikhaoehddmnc", hideInstallExtensionOverlay, hideInstallExtensionOverlay);
 }
 
+// Hide overlay
 function hideInstallExtensionOverlay() {
     var overlay = document.getElementsByClassName('overlay')[0];
     overlay.style.display = 'none';
