@@ -1,4 +1,5 @@
 @import "base-variables";
+@import "compass/css3/border-radius";
 
 .under-construction {
   background-color: lightgoldenrodyellow;
@@ -36,7 +37,7 @@ p, li {
 }
 
 li {
-  //line-height: 30px;
+  line-height: 22px;
 }
 
 .fixer {
@@ -57,6 +58,7 @@ section {
   background-color: #F4F1D7;
   border: 1px solid darken(#F4F1D7, 10);
   text-align: justify;
+  position: relative; /* make this a positioned parent */
   
   h4 {
     text-align: center;
@@ -73,8 +75,8 @@ section#core-concept {
 }
 
 section.feature {
-  background-color: lighten(#F0C1B5, 14);
-  border: 0;
+  background-color:  lighten(#DC9C76, 30);
+  border-color: lighten(#DC9C76, 27);
   //border-right: 10px solid orangered;
 
   h4 {
@@ -88,7 +90,8 @@ section.feature {
   }
 
   &:nth-child(2n) {
-    background-color: lighten(#F0C1B5, 10);
+    background-color: lighten(#DC9C76, 27);
+    border-color: lighten(#DC9C76, 24);
   }
 
 }
@@ -97,10 +100,6 @@ section#supported-websites {
   background-color: lighten(#334D5C, 10);
   border-color: #eeeeee;
   color: #fafafa;
-}
-
-#key-features section:last-of-type {
-  border-bottom: 0;
 }
 
 nav {
@@ -245,19 +244,12 @@ section {
   }
 
   figure {
-    padding: 2px;
-    border: 1px solid #ccc;
+    //padding: 2px;
+    ////border: 1px solid #ccc;
   }
 
-  td.caption {
-    vertical-align: top;
-
-    div {
-      display: inline-block;
-      background-color: #ffffe0;
-      padding: 5px;
-      margin-left: 10px;
-    }
+  figcaption {
+    background-color: lightgoldenrodyellow;
   }
 
 }
@@ -273,7 +265,24 @@ section h6 {
 }
 
 .try-it-out {
-  color: #bbb;
+  background-color: #555;
+  color: #fafafa;
+  display: inline-block;
+  @include border-radius(2px);
+  position: absolute;
+  right: -10px;
+  top: 50px;
+  width: 150px;
+  padding: 4px;
+
+  p {
+    font-size: 14px;
+    line-height: 17px;
+    margin: 0;
+  }
+
+ display: none;
+
 }
 
 #supported-websites {
