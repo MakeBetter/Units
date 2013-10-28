@@ -30,7 +30,6 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         $document = $(document),
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
         overlap_pgUpPgDn = 100,
-        scrollAnimationDuration = 200, // millisecs
         smoothScroll = mod_smoothScroll.smoothScroll,
 
         // classes used when styling focused element
@@ -44,8 +43,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
     function setup(settings) {
         reset();
-        // NOTE: The 'click' event is triggered whenever in response to invoking 'enter' or 'space' on a
-        // an "activatable" element as well. (The event 'DOMActivate' which was used for this purpose
+        // NOTE: The 'click' event is triggered in response to invoking 'enter' or 'space' on an
+        // "activate-able" element as well. (The event 'DOMActivate' which was used for this purpose
         // is now deprecated) [http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-activation]
         mod_domEvents.addEventListener(document, 'click', setLastInteractedElement, true);
         mod_domEvents.addEventListener(document, 'focus', setLastInteractedElement, true);
@@ -129,77 +128,125 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
 
     /**
      * Scroll the page as specified by `scrollType`
-     * The function will actually apply to the innermost sensible element that can be scrolled further in the
-     * appropriate direction.
+     * The function will actually scroll the innermost sensible element that can be scrolled further in the
+     * appropriate direction. Very often that will end up being the document/window, but doesn't have to be.
      * E.g: If there is an child element that has focus and can be scrolled up, the first invocation of scroll("top")
      * will act on it, and the next one will act on a suitable ancestor (since the child can no longer be scrolled up)
-     * @param {string} scrollType One of "up", "down", "pageUp", "pageDown", "top", "bottom"
-     * @param {HtmlElement} [element] element whose scrollTop is to be modified. If not provided, we determine
-     * the most appropriate one ourselves.
+     * @param {string} scrollType One of "up", "down", "left", "right", "pageUp", "pageDown", "top", "bottom"
      */
-    function scroll(scrollType, element) {
-        var areScrollingUp = ["up", "pageUp", "top"].indexOf(scrollType) >= 0;
-        var elToScroll = element || getElementToScroll(areScrollingUp);
+    function scroll(scrollType) {
+        // call endAtDestination() first, so that the calculations below can be made relative to the
+        // scrollTop position reached *after* any previous scrolling animation is completed. (this
+        // helps keep the scrolling smooth by preventing "first-down-then-up" type movements)
+        if (mod_smoothScroll.isInProgress()) {
+            mod_smoothScroll.endAtDestination();
+        }
+        var elem,
+            val,
+            duration = 200; // millisecs
+        switch(scrollType) {
 
-        if (elToScroll) {
+            // NOTES:
+            // 1) We pass `true` to some of the smoothScroll() calls below to indicate relative scroll
+            // 2) If the element-to-scroll is `window`, we can still pass 'scrollTop'/'scrollLeft' (instead
+            // of 'pageYOffset'/'pageXOffset') since smoothScroll() handles the scenario.
 
-            // call endAtDestination() first, so that the calculations below can be made relative to the
-            // scrollTop position reached *after* any previous scrolling animation is completed. (this
-            // helps keep the scrolling smooth by preventing "first-down-then-up" type movements)
-            if (mod_smoothScroll.isInProgress()) {
-                mod_smoothScroll.endAtDestination();
-            }
-            
-            switch(scrollType) {
-                case "down":
-                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop + miscSettings.pageScrollDelta, scrollAnimationDuration);
-                    break;
-                case "up":
-                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop - miscSettings.pageScrollDelta, scrollAnimationDuration);
-                    break;
-                case "right":
-                    smoothScroll(elToScroll, 'scrollLeft',  elToScroll.scrollLeft + miscSettings.pageScrollDelta, scrollAnimationDuration);
-                    break;
-                case "left":
-                    smoothScroll(elToScroll, 'scrollLeft',  elToScroll.scrollLeft - miscSettings.pageScrollDelta, scrollAnimationDuration);
-                    break;
-                case "pageDown":
-                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop +
-                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
-                    break;
-                case "pageUp":
-                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollTop -
-                        (Math.min(elToScroll.clientHeight, window.innerHeight) - overlap_pgUpPgDn), scrollAnimationDuration);
-                    break;
-                case "top":
-                    smoothScroll(elToScroll, 'scrollTop',  0, scrollAnimationDuration);
-                    break;
-                case "bottom":
-                    smoothScroll(elToScroll, 'scrollTop',  elToScroll.scrollHeight, scrollAnimationDuration);
-                    break;
-            }
+            case "down":
+                smoothScroll(getElemToScroll('down'), 'scrollTop', miscSettings.pageScrollDelta, duration, null, true);
+                break;
+            case "up":
+                smoothScroll(getElemToScroll('up'), 'scrollTop',  -miscSettings.pageScrollDelta, duration, null, true);
+                break;
+            case "right":
+                smoothScroll(getElemToScroll('right'), 'scrollLeft',  miscSettings.pageScrollDelta, duration, null, true);
+                break;
+            case "left":
+                smoothScroll(getElemToScroll('left'), 'scrollLeft', -miscSettings.pageScrollDelta, duration, null, true);
+                break;
+            case "pageDown":
+                elem = getElemToScroll('down');
+                val = elem === window?
+                    window.innerHeight - overlap_pgUpPgDn:
+                    Math.min(elem.clientHeight, window.innerHeight) - overlap_pgUpPgDn;
+                smoothScroll(elem, 'scrollTop', val, duration, null, true);
+                break;
+            case "pageUp":
+                elem = getElemToScroll('up');
+                val = elem === window?
+                    -(window.innerHeight - overlap_pgUpPgDn):
+                    -(Math.min(elem.clientHeight, window.innerHeight) - overlap_pgUpPgDn);
+                smoothScroll(elem, 'scrollTop', val, duration, null, true);
+                break;
+            case "top":
+                smoothScroll(getElemToScroll('up'), 'scrollTop',  0, duration);
+                break;
+            case "bottom":
+                elem = getElemToScroll('down');
+                if (elem === window) {
+                    var body = document.body,
+                        $body = $(body);
+                    val = Math.max(body.clientHeight, body.offsetHeight, body.scrollHeight, $body.innerHeight());
+                }
+                else {
+                    val = elem.scrollHeight;
+                }
+                smoothScroll(elem, 'scrollTop',  val, duration);
+                break;
         }
     }
     /**
-     * Gets the most sensible element to scroll based on  `areScrollingUp`
-     * @param {boolean} areScrollingUp true - scrolling up. false - scrolling down
+     * Gets the most sensible element to scroll based on `direction` [by finding the innermost
+     * element that can be scrolled in the direction specified. Consequently, it results in the
+     * element getting scrolled 1px in the specified direction (unless the "element" was found
+     * to be `window` itself). If this is undesired, this 1px scroll can be undone in the future.]
+     * NOTE: We return `window` instead of body/documentElement/document because window seems to work
+     * more reliably cross-browser for scrolling the "page" as a whole. (Refer to mod_smoothScroll.js
+     * for more on that)
      */
-    function getElementToScroll(areScrollingUp) {
-        var scrollElement = lastInteractedElement || document.activeElement || document.body,
-            oldScrollVal;
-        while (scrollElement) {
-            oldScrollVal = scrollElement.scrollTop;
+    function getElemToScroll(direction) {
+        var elem = lastInteractedElement || document.activeElement,
+            oldVal, newVal;
 
-            scrollElement.scrollTop += areScrollingUp? -1: 1;
+        // the last 2 checks in the condition below are mostly redundant, but they present just in case
+        // some in browser `document.activeElement` returns `documentElement` or `document` itself (when
+        // no element on page has focus)
+        while (elem && elem !== document.body &&
+            elem !== document.documentElement && elem !== document) {
 
-            if (oldScrollVal !== scrollElement.scrollTop) { // if scrolled
-                return scrollElement;
+            switch (direction){
+                case 'down':
+                    oldVal = elem.scrollTop;
+                    elem.scrollTop += 1;
+                    newVal = elem.scrollTop;
+                    break;
+
+                case 'up':
+                    oldVal = elem.scrollTop;
+                    elem.scrollTop -= 1;
+                    newVal = elem.scrollTop;
+                    break;
+
+                case 'right':
+                    oldVal = elem.scrollLeft;
+                    elem.scrollLeft += 1;
+                    newVal= elem.scrollLeft;
+                    break;
+
+                case 'left':
+                    oldVal = elem.scrollLeft;
+                    elem.scrollLeft -= 1;
+                    newVal= elem.scrollLeft;
+                    break;
+            }
+
+            if (oldVal !== newVal) { // if scrolled
+                return elem;
             }
             else {
-                scrollElement = scrollElement.parentElement;
+                elem = elem.parentElement;
             }
         }
-        return document.body;
+        return window;
     }
 
     function setLastInteractedElement(event) {

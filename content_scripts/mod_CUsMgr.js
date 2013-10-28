@@ -649,7 +649,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
     function _selectNextCUOrScroll(direction) {
         if (!CUs_filtered.length) {
-            mod_basicPageUtils.scroll(direction, body);
+            mod_basicPageUtils.scroll(direction);
             return;
         }
 
@@ -665,7 +665,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 selectCU(nextIndex, true, true, direction);
             }
             else if (isAnyPartOfCUinViewport($selectedCU)) {
-                mod_basicPageUtils.scroll(direction, body);
+                mod_basicPageUtils.scroll(direction);
             }
             // if the page has been scrolled to a position away from the selected CU...
             else {
@@ -714,13 +714,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     }
                 }
                 else {
-                    mod_basicPageUtils.scroll(direction, body);
-
+                    mod_basicPageUtils.scroll(direction);
                 }
             }
         }
         else {
-            selectMostSensibleCU_withoutScrollingPage(true) || mod_basicPageUtils.scroll(direction, body);
+            selectMostSensibleCU_withoutScrollingPage(true) || mod_basicPageUtils.scroll(direction);
         }
     }
 
