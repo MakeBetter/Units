@@ -335,7 +335,7 @@ section h6 {
 }
 /* line 328, ../scss/layout.scss */
 .overlay .message {
-  top: 250px;
+  top: 300px;
   position: absolute;
   width: 400px;
   color: white;
