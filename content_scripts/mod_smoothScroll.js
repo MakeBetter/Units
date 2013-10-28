@@ -60,14 +60,27 @@ _u.mod_smoothScroll = (function() {
         if (inProgress) {
             endAtDestination(); // instantly terminate any ongoing animation at final destination before starting a new one
         }
-        element = elementToScroll;
-        scrollProp = scrollProperty;
 
+        // Chrome (Canary) complains about `scrollTop` being deprecated on body (while it's value seems to
+        // always be 0 in firefox), and documentElement.scrollTop seems to not work reliably on chrome, so
+        if (elementToScroll === document.body || element === document.documentElement) {
+            elementToScroll = window;
+            if (scrollProperty === 'scrollTop'){
+                scrollProperty = 'pageYOffset';
+            }
+            else {
+                scrollProperty = 'pageXOffset';
+            }
+        }
+
+        // if this was specified as window or changed to window above
         if (elementToScroll === window)
             setScrollProp = scrollProperty === 'pageYOffset'? setPageYOffset: setPageXOffset;
         else
             setScrollProp = _setScrollProp;
 
+        element = elementToScroll;
+        scrollProp = scrollProperty;
         destination = value;
         onAnimationEnd = callback;
 
