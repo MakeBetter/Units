@@ -91,7 +91,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // TODO: move the default opacity to settings (also should we allow different values for each "url pattern"?) +
     // maybe sites with larger CUs can have a higher value compared to sites with small CUs like HN, google search results etc.
         userSetOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
-        actualOpacity_nonCUPageOverlays,
+        currentOpacity_nonCUPageOverlays,
 
         body,               // will hold reference to document.body (once that is available within setup())
 
@@ -369,7 +369,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         selectedCUIndex = indexOf$CU;
         mod_globals.isCUSelected = true;
 
-        showSelectedOverlay($CU);
+        showSelectedOverlay($CU, true, true);
         highlightSelectedCUBriefly_ifRequired();
 
         mod_mutationObserver.enableFor_selectedCUAndDescendants($CU);
@@ -489,7 +489,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // Shows (and updates) the selected CU overlay
     // `enforceRedraw` - optional; is passed as true when the page height/width changes
     // to enforce redrawing of the non-CU page overlays
-    function showSelectedOverlay($CU, enforceRedraw) {
+    // `invokedOnCUSelection` optional - true indicates this call happened due to a CU-selection
+    function showSelectedOverlay($CU, enforceRedraw, invokedOnCUSelection) {
         var boundingRect = getBoundingRect($CU);
 
         if (enforceRedraw ||
@@ -509,7 +510,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 boundingRect.height === lastSelectedCUBoundingRect.height)) {
 
             lastSelectedCUBoundingRect = boundingRect;
-            _showOverlay('selected', boundingRect);
+            _showOverlay('selected', boundingRect, invokedOnCUSelection);
         }
 //        else {
 //            console.log('call to _showOverlay() not needed');
@@ -531,9 +532,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      * @param type - 'selected' or 'hovered'
      * @param boundingRect bounding rectangle for the CU (not including padding/
      * style based on the urlData for the current page)
-     * @private
+     * @param {boolean} [invokedOnCUSelection] optional - true indicates this call happened due to a CU-selection
      */
-    function _showOverlay(type, boundingRect) {
+    function _showOverlay(type, boundingRect, invokedOnCUSelection) {
         var $overlay = (type === 'selected'? $selectedCUOverlay: $hoveredCUOverlay);
 
         var disabledHere = mod_mutationObserver.disable();
@@ -544,7 +545,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         applyPaddingToCUOverlay($overlay);
         $overlay.show();
         if (type === 'selected') {
-            _showNonCUPageOverlays();
+            _showNonCUPageOverlays(invokedOnCUSelection);
         }
         disabledHere && mod_mutationObserver.enable();
     }
@@ -848,9 +849,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // Show overlays to cover the non-CU part of the page.
     // NOTE: This is only meant to be called from within
     // (the code flow of) showSelectedOverlay()
-    function _showNonCUPageOverlays() {
-        // first set opacity (if it needs to be changed) to the right value
-        setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+    function _showNonCUPageOverlays(invokedOnCUSelection) {
+        // if invoked on CU selection, set opacity (if it needs to be changed) to the right value
+        invokedOnCUSelection && setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
 
         var CUOffset = $selectedCUOverlay.offset(),
             CUOverlay = $selectedCUOverlay[0],
@@ -930,10 +931,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     function setNonCUPageOverlaysOpacity(opacity) {
-        if (opacity !== actualOpacity_nonCUPageOverlays) {
+        if (opacity !== currentOpacity_nonCUPageOverlays) {
             var $nonCUOverlays = $('.' + class_nonCUPageOverlay);
             $nonCUOverlays.css('opacity', opacity);
-            actualOpacity_nonCUPageOverlays = opacity;
+            currentOpacity_nonCUPageOverlays = opacity;
         }
     }
 
