@@ -141,3 +141,8 @@ Desktop.ini
 SASS
 ############
 .sass-cache
+
+#############
+Nodes modules folder
+#############
+node_modules/
