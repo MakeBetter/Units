@@ -61,7 +61,7 @@ function onDocumentScroll_highlightMenu(event) {
     // Special case for the last section.
     // If the scrollbar is close to the bottom of the page, and the last section's menu option is not highlighted
     // yet, then do that.
-    if (body.scrollHeight - 200 <= window.innerHeight + body.scrollTop) {
+    if (body.scrollHeight - 20 <= window.innerHeight + body.scrollTop) {
         correspondingMenuOption = navigationMenu.querySelector("li:last-child");
         if (correspondingMenuOption !== currentlySelectedMenuOption) {
             highlightMenuItem(correspondingMenuOption);

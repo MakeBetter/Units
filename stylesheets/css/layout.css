@@ -89,11 +89,10 @@ section.feature:nth-child(2n) {
 /* line 99, ../scss/layout.scss */
 section#supported-websites {
   background-color: #45687d;
-  border-color: #eeeeee;
-  color: #fafafa;
+  border-color: #334D5C;
 }
 
-/* line 105, ../scss/layout.scss */
+/* line 104, ../scss/layout.scss */
 nav {
   padding-top: 60px;
   position: fixed;
@@ -128,13 +127,13 @@ nav a {
   padding: 10px 5px 5px 5px;
 }
 
-/* line 112, ../scss/layout.scss */
+/* line 111, ../scss/layout.scss */
 h3 {
   padding-bottom: 10px;
   text-align: center;
 }
 
-/* line 117, ../scss/layout.scss */
+/* line 116, ../scss/layout.scss */
 .bold {
   font-weight: bold;
   color: #444;
@@ -142,38 +141,38 @@ h3 {
 
 /* #Page Styles
 ================================================== */
-/* line 125, ../scss/layout.scss */
+/* line 124, ../scss/layout.scss */
 .hero {
   padding: 20px 0;
   text-align: center;
 }
-/* line 129, ../scss/layout.scss */
+/* line 128, ../scss/layout.scss */
 .hero .title {
   font-size: 6em;
   line-height: 1;
   color: #666666;
 }
-/* line 136, ../scss/layout.scss */
+/* line 135, ../scss/layout.scss */
 .hero .beta {
   font-size: 0.2em;
   color: #999999;
 }
-/* line 141, ../scss/layout.scss */
+/* line 140, ../scss/layout.scss */
 .hero .hero-text {
   font-size: 1.5em;
   line-height: 1.2;
   width: 80%;
   margin: 10px auto;
 }
-/* line 148, ../scss/layout.scss */
+/* line 147, ../scss/layout.scss */
 .hero .tagline {
   color: gray;
 }
-/* line 152, ../scss/layout.scss */
+/* line 151, ../scss/layout.scss */
 .hero .description {
   font-size: 1.3em;
 }
-/* line 157, ../scss/layout.scss */
+/* line 156, ../scss/layout.scss */
 .hero .install-button {
   font-size: 150%;
   background: #02a6eb;
@@ -181,60 +180,60 @@ h3 {
   border: 1px solid #eaeaea;
   margin: 20px 0;
 }
-/* line 164, ../scss/layout.scss */
+/* line 163, ../scss/layout.scss */
 .hero .install-button:hover {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 169, ../scss/layout.scss */
+/* line 168, ../scss/layout.scss */
 .hero .install-button .small-text {
   font-size: 50%;
 }
-/* line 174, ../scss/layout.scss */
+/* line 173, ../scss/layout.scss */
 .hero .main-features {
   margin-top: 40px;
 }
-/* line 176, ../scss/layout.scss */
+/* line 175, ../scss/layout.scss */
 .hero .main-features h5 {
   font-weight: bold;
 }
 
-/* line 190, ../scss/layout.scss */
+/* line 189, ../scss/layout.scss */
 #video-container table {
   margin-left: 100px;
 }
 
-/* line 197, ../scss/layout.scss */
+/* line 196, ../scss/layout.scss */
 #supported-sites-table img {
   max-height: 30px;
   max-width: 100px;
   margin: 5px;
 }
-/* line 203, ../scss/layout.scss */
+/* line 202, ../scss/layout.scss */
 #supported-sites-table td {
   vertical-align: middle;
 }
 
-/* line 210, ../scss/layout.scss */
+/* line 209, ../scss/layout.scss */
 section#core-concept h4 {
   margin-bottom: 20px;
 }
-/* line 213, ../scss/layout.scss */
+/* line 212, ../scss/layout.scss */
 section#core-concept img {
   padding-right: 10px;
 }
-/* line 216, ../scss/layout.scss */
+/* line 215, ../scss/layout.scss */
 section#core-concept h5 {
   font-size: 18px;
 }
 
-/* line 222, ../scss/layout.scss */
+/* line 221, ../scss/layout.scss */
 .text {
   width: 600px;
   margin: auto;
 }
 
-/* line 227, ../scss/layout.scss */
+/* line 226, ../scss/layout.scss */
 .key-features-title {
   background-color: #f1f1f1;
   color: #acacac;
@@ -245,31 +244,31 @@ section#core-concept h5 {
 }
 
 /* Main Features */
-/* line 238, ../scss/layout.scss */
+/* line 237, ../scss/layout.scss */
 section h4 {
   margin-bottom: 10px;
 }
-/* line 242, ../scss/layout.scss */
+/* line 241, ../scss/layout.scss */
 section figure, section img {
   width: 600px;
 }
-/* line 251, ../scss/layout.scss */
+/* line 250, ../scss/layout.scss */
 section figcaption {
   background-color: lightgoldenrodyellow;
 }
 
-/* line 257, ../scss/layout.scss */
+/* line 256, ../scss/layout.scss */
 #demo > div {
   margin: 20px auto;
   width: 640px;
 }
 
-/* line 262, ../scss/layout.scss */
+/* line 261, ../scss/layout.scss */
 section h6 {
   font-style: italic;
 }
 
-/* line 267, ../scss/layout.scss */
+/* line 266, ../scss/layout.scss */
 .try-it-out {
   background-color: #555;
   color: #fafafa;
@@ -286,20 +285,41 @@ section h6 {
   padding: 4px;
   display: none;
 }
-/* line 278, ../scss/layout.scss */
+/* line 277, ../scss/layout.scss */
 .try-it-out p {
   font-size: 14px;
   line-height: 17px;
   margin: 0;
 }
 
+/* line 287, ../scss/layout.scss */
+#supported-websites {
+  color: #eee;
+}
 /* line 289, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
+  color: #e0d97a;
+  font-style: normal;
 }
-/* line 293, ../scss/layout.scss */
+/* line 296, ../scss/layout.scss */
+#supported-websites ul {
+  border: 1px solid #496e83;
+}
+/* line 300, ../scss/layout.scss */
 #supported-websites li {
   margin-bottom: 6px;
+  padding: 5px;
+}
+/* line 304, ../scss/layout.scss */
+#supported-websites li span, #supported-websites li a {
+  color: #eee;
+  text-decoration: none;
+}
+/* line 309, ../scss/layout.scss */
+#supported-websites li:nth-child(2n) {
+  background-color: #496e83;
+  color: #fafafa;
 }
 
 /* #Media Queries
@@ -310,18 +330,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 322, ../scss/layout.scss */
+  /* line 343, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 326, ../scss/layout.scss */
+  /* line 347, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 327, ../scss/layout.scss */
+  /* line 348, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }

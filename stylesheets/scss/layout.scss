@@ -98,8 +98,7 @@ section.feature {
 
 section#supported-websites {
   background-color: lighten(#334D5C, 10);
-  border-color: #eeeeee;
-  color: #fafafa;
+  border-color: #334D5C;
 }
 
 nav {
@@ -286,12 +285,34 @@ section h6 {
 }
 
 #supported-websites {
+  color: #eee;
   h6 {
     display: inline-block;
+    color: #e0d97a;
+    font-style: normal;
+    //color: lightgoldenrodyellow;
+  }
+
+  ul {
+    border: 1px solid lighten(#334D5C, 12);
   }
 
   li {
     margin-bottom:  6px;
+    padding: 5px;
+
+    span, a {
+      color: #eee;
+      text-decoration: none;
+    }
+
+    &:nth-child(2n) {
+      background-color: lighten(#334D5C, 12);
+      color: #fafafa;
+
+
+      //color: #333;
+    }
   }
 }
 
