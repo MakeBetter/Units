@@ -211,7 +211,7 @@
 
     function onTabDeactivation() {
         // disable mutation observer if the tab got deactivated AND didn't have CUs filtering ongoing
-        if (!mod_filterCUs.isActive()) {
+        if (!(mod_filterCUs && mod_filterCUs.isActive())) {
             mod_mutationObserver.disable(true);
             isMutationObserverDisabled = true;
         }
