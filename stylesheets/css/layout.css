@@ -331,6 +331,7 @@ section h6 {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
   display: none;
 }
 /* line 329, ../scss/layout.scss */
@@ -338,7 +339,7 @@ section h6 {
   top: 300px;
   position: absolute;
   width: 400px;
-  color: white;
+  color: #eeeeee;
   font-size: 18px;
   display: inline-block;
   left: 50%;
