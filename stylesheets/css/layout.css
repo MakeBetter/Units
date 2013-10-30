@@ -283,6 +283,7 @@ section h6 {
   top: 50px;
   width: 150px;
   padding: 4px;
+  z-index: 1;
 }
 /* line 277, ../scss/layout.scss */
 .try-it-out p {
@@ -291,37 +292,37 @@ section h6 {
   margin: 0;
 }
 
-/* line 287, ../scss/layout.scss */
+/* line 288, ../scss/layout.scss */
 #supported-websites {
   color: #eee;
 }
-/* line 289, ../scss/layout.scss */
+/* line 290, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
   color: #e0d97a;
   font-style: normal;
 }
-/* line 296, ../scss/layout.scss */
+/* line 297, ../scss/layout.scss */
 #supported-websites ul {
   border: 1px solid #426376;
 }
-/* line 300, ../scss/layout.scss */
+/* line 301, ../scss/layout.scss */
 #supported-websites li {
   margin-bottom: 6px;
   padding: 5px;
 }
-/* line 304, ../scss/layout.scss */
+/* line 305, ../scss/layout.scss */
 #supported-websites li span, #supported-websites li a {
   color: #eee;
   text-decoration: none;
 }
-/* line 309, ../scss/layout.scss */
+/* line 310, ../scss/layout.scss */
 #supported-websites li:nth-child(2n) {
   background-color: #496e83;
   color: #fafafa;
 }
 
-/* line 320, ../scss/layout.scss */
+/* line 321, ../scss/layout.scss */
 .overlay {
   background: black;
   opacity: 0.85;
@@ -332,7 +333,7 @@ section h6 {
   bottom: 0;
   display: none;
 }
-/* line 328, ../scss/layout.scss */
+/* line 329, ../scss/layout.scss */
 .overlay .message {
   top: 300px;
   position: absolute;
@@ -352,18 +353,18 @@ section h6 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (min-width: 700px) and (max-width: 1300px) {
-  /* line 365, ../scss/layout.scss */
+  /* line 366, ../scss/layout.scss */
   .container {
     margin-left: 150px;
   }
 }
 @media only screen and (max-width: 767px) {
-  /* line 369, ../scss/layout.scss */
+  /* line 370, ../scss/layout.scss */
   nav {
     display: none;
   }
 
-  /* line 370, ../scss/layout.scss */
+  /* line 371, ../scss/layout.scss */
   #demo iframe {
     width: 300px;
   }

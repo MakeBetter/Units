@@ -279,6 +279,7 @@ section h6 {
     line-height: 17px;
     margin: 0;
   }
+  z-index: 1; // so that the selected unit overlay goes under the try-it-out div
 
 // display: none;
 
