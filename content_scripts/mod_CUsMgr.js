@@ -214,11 +214,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
 
-        $selectedCUOverlay = $createCUOverlay('selected');
-        $hoveredCUOverlay = $createCUOverlay('hovered');
+        $selectedCUOverlay = $createOverlay('selected');
+        $hoveredCUOverlay = $createOverlay('hovered');
 
         for (var i = 0; i < 4; i++)
-            nonCUPageOverlays[i] = $createCUOverlay('nonCUPageOverlay');
+            nonCUPageOverlays[i] = $createOverlay('nonCUPageOverlay');
+
+        setNonCUPageOverlaysOpacity(0); // reset `currentOpacity_nonCUPageOverlays`
 
         setupEvents();
         
@@ -269,7 +271,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // To be called during module initialization, to initialize global variables variables
     // that refer to the various overlays.
     // `type` should be one of  'selected', 'hovered', 'nonCUPageOverlay'
-    function $createCUOverlay(type) {
+    function $createOverlay(type) {
         var $overlay = $('<div></div>').
             addClass(class_unitsProjElem).
             hide();

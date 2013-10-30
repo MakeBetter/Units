@@ -53,7 +53,7 @@ Also, hence the generous use of !important property here.
   pointer-events: none !important;
   transition: opacity 0.1s;
   background-color: #000;
-  //opacity: 0.05; // this is done programmatically
+  opacity: 0; // this is changed programmatically
 }
 
 /* ****** 'Select Link' module styles ***** */
