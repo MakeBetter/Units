@@ -51,9 +51,13 @@ Also, hence the generous use of !important property here.
 .non-CU-page-overlay {
   position: absolute !important;
   pointer-events: none !important;
-  transition: opacity 0.2s;
   background-color: #000;
   opacity: 0; // this is changed programmatically
+  transition: opacity 0.6s !important;
+
+  &.fast-opacity-change {
+    transition: opacity 0.2s !important;
+  }
 }
 
 /* ****** 'Select Link' module styles ***** */

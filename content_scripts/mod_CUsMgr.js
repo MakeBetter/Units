@@ -83,15 +83,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $hoveredCUOverlay,
 
         // holds 4 overlays used to cover the non-selected-CU part of the page.
-        // convention: these overlays exist in order as [top, bottom, left, right]
+        // by convention: these overlays exist in order as [top, bottom, left, right]
         nonCUPageOverlays = [],
 
         // default opacity for non-CU-page overlays, default should be a low'ish value
-        defaultOpacity_nonCUPageOverlays = 0.05,
-    // TODO: move the default opacity to settings (also should we allow different values for each "url pattern"?) +
-    // maybe sites with larger CUs can have a higher value compared to sites with small CUs like HN, google search results etc.
-        userSetOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays,
-        currentOpacity_nonCUPageOverlays,
+        defaultDimmingOpacity = 0.05,
+        // TODO: move the default opacity to settings (also should we allow different values for each "url pattern"?) +
+        // maybe sites with larger CUs can have a higher value compared to sites with small CUs like HN, google search results etc.
+        userSetDimmingOpacity = defaultDimmingOpacity,
+        currentDimmingOpacity,
 
         body,               // will hold reference to document.body (once that is available within setup())
 
@@ -163,9 +163,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             deselectCU();
             dehoverCU();
 
-            for (var i = 0; i < nonCUPageOverlays.length; i++)
-                nonCUPageOverlays[i].remove();
-
+            $('.' + class_nonCUPageOverlay).remove();
             nonCUPageOverlays = [];
         }
 
@@ -217,10 +215,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         $selectedCUOverlay = $createOverlay('selected');
         $hoveredCUOverlay = $createOverlay('hovered');
 
+        // by convention: these 4 overlays exist in order as [top, bottom, left, right]
         for (var i = 0; i < 4; i++)
             nonCUPageOverlays[i] = $createOverlay('nonCUPageOverlay');
 
-        setNonCUPageOverlaysOpacity(0); // reset `currentOpacity_nonCUPageOverlays`
+        setNonCUPageOverlaysOpacity(0); // reset `currentDimmingOpacity`
 
         setupEvents();
         
@@ -853,7 +852,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // (the code flow of) showSelectedOverlay()
     function _showNonCUPageOverlays(invokedOnCUSelection) {
         // if invoked on CU selection, set opacity (if it needs to be changed) to the right value
-        invokedOnCUSelection && setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+        invokedOnCUSelection && setNonCUPageOverlaysOpacity(userSetDimmingOpacity);
 
         var CUOffset = $selectedCUOverlay.offset(),
             CUOverlay = $selectedCUOverlay[0],
@@ -911,27 +910,31 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function changeSpotlightOnSelecteCU(how) {
         var delta = 0.05;
 
-        // we need to save `userSetOpacity_nonCUPageOverlays` before calling setNonCUPageOverlaysOpacity()
+        // we need to save `userSetDimmingOpacity` before calling setNonCUPageOverlaysOpacity()
         if (how === 'increase')
-            userSetOpacity_nonCUPageOverlays += delta;
+            userSetDimmingOpacity += delta;
         else if (how === 'decrease')
-            userSetOpacity_nonCUPageOverlays -= delta;
+            userSetDimmingOpacity -= delta;
         else
-            userSetOpacity_nonCUPageOverlays = defaultOpacity_nonCUPageOverlays;
+            userSetDimmingOpacity = defaultDimmingOpacity;
 
-        if (userSetOpacity_nonCUPageOverlays < 0)
-            userSetOpacity_nonCUPageOverlays = 0;
-        if (userSetOpacity_nonCUPageOverlays > 1)
-            userSetOpacity_nonCUPageOverlays = 1;
+        if (userSetDimmingOpacity < 0)
+            userSetDimmingOpacity = 0;
+        if (userSetDimmingOpacity > 1)
+            userSetDimmingOpacity = 1;
 
-        setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+        for (var i = 0; i < nonCUPageOverlays.length; i++)
+            nonCUPageOverlays[i].addClass('fast-opacity-change');
+
+        setNonCUPageOverlaysOpacity(userSetDimmingOpacity);
     }
 
     function setNonCUPageOverlaysOpacity(opacity) {
-        if (opacity !== currentOpacity_nonCUPageOverlays) {
-            var $nonCUOverlays = $('.' + class_nonCUPageOverlay);
-            $nonCUOverlays.css('opacity', opacity);
-            currentOpacity_nonCUPageOverlays = opacity;
+        if (opacity !== currentDimmingOpacity) {
+            for (var i = 0; i < nonCUPageOverlays.length; i++)
+                nonCUPageOverlays[i].css('opacity', opacity);
+
+            currentDimmingOpacity = opacity;
         }
     }
 
@@ -943,8 +946,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // called when there is a pause in the window's scrolling
     function _onWindowScrollPause() {
         var $selectedCU = CUs_filtered[selectedCUIndex];
+
+        for (var i = 0; i < nonCUPageOverlays.length; i++)
+            nonCUPageOverlays[i].removeClass('fast-opacity-change');
+
         if ($selectedCU && isAnyPartOfCUinViewport($selectedCU)) {
-            setNonCUPageOverlaysOpacity(userSetOpacity_nonCUPageOverlays);
+            setNonCUPageOverlaysOpacity(userSetDimmingOpacity);
         }
         else {
             setNonCUPageOverlaysOpacity(0);
