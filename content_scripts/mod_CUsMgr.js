@@ -384,7 +384,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (setFocus) {
             var savedScrollPos = window.pageYOffset; // body.scrollTop is deprecated in strict mode;
             focusMainElement($CU);
-            window.pageYOffset = savedScrollPos;
+            window.scroll(window.pageXOffset, savedScrollPos);
         }
 
         if (miscSettings.increaseFontInSelectedCU && !$CU.data('fontIncreasedOnSelection')) {
@@ -790,7 +790,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         // make sure the scroll position doesn't change due to the main element getting focus
-        window.pageYOffset = savedScrollPos;
+        window.scroll(window.pageXOffset, savedScrollPos);
         return returnVal;
     }
 
@@ -1256,7 +1256,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     smoothScroll(window, 'pageXOffset', newWinLeft, animationDuration);
                 }
                 else {
-                    window.pageXOffset = newWinLeft;
+                    window.scroll(newWinLeft, window.pageYOffset);
                 }
             }
         }
@@ -1296,7 +1296,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                     smoothScroll(window, 'pageYOffset', newWinTop, animationDuration);
                 }
                 else {
-                    window.pageYOffset = newWinTop;
+                    window.scroll(window.pageXOffset, newWinTop);
                 }
             }
         }
@@ -1933,7 +1933,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
             var savedScrollPos = window.pageYOffset;
             focusMainElement(CUs_filtered[selectedCUIndex]);
-            window.pageYOffset = savedScrollPos;
+            window.scroll(window.pageXOffset, savedScrollPos);
         }
     }
 

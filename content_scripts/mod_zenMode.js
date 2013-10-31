@@ -151,7 +151,7 @@ _u.mod_zenMode = (function($, mod_CUsMgr, mod_keyboardLib, mod_mutationObserver,
             $("." + class_excluded).removeClass(class_excluded);
 
             $body.show();
-            window.pageYOffset = savedScrollPos;
+            window.scroll(window.pageXOffset, savedScrollPos);
 
             disabledByMe && mod_mutationObserver.enable();
 

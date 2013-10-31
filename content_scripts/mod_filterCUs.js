@@ -136,7 +136,7 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
 
         // ** --------- POST FILTERING --------- **
         $document.show();
-        window.pageYOffset = savedScrollPos;
+        window.scroll(window.pageXOffset, savedScrollPos);
         disabledByMe && mod_mutationObserver.enable();
 
         return CUs_filtered;
