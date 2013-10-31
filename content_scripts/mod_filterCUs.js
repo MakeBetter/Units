@@ -232,6 +232,9 @@ _u.mod_filterCUs = (function($, mod_mutationObserver, mod_contentHelper, mod_dom
         var code = e.which;
         if (code === 27) { // Esc
             closeUI();
+            if (e.target === $searchBox[0]) {
+                mod_contentHelper.suppressEvent(e);
+            }
         }
         else if (e.target === $searchBox[0] && !(e.shiftKey || e.ctrlKey || e.altKey || e.metaKey)) {
             if (code === 13) { // Enter
