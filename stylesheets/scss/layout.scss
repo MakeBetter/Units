@@ -10,7 +10,7 @@
 /* Table of Content
 ==================================================
 	#Site Styles
-	#Page Styles
+	#Home Page
 	#Media Queries
 	#Font-Face */
 
@@ -18,7 +18,6 @@
 ================================================== */
 
 body {
-  //background-color: lighten($border-grey, 5);
   color: $text-color;
 }
 
@@ -43,70 +42,6 @@ li {
 .fixer {
   clear: both;
 }
-.container {
-  //background-color: aliceblue;
-  //border-right: 1px solid $border-grey;
-  //border-left: 1px solid $border-grey;
-}
-
-
-
-section {
-  border-bottom: 1px solid $border-grey;
-  padding: 40px;
-  margin: 10px 0 20px 0;
-  background-color: #F4F1D7;
-  border: 1px solid darken(#F4F1D7, 10);
-  text-align: justify;
-  position: relative; /* make this a positioned parent */
-  
-  h4 {
-    text-align: center;
-  }
-}
-
-section#core-concept {
-  background-color: #8CBEB2;
-  color: white;
-  text-align: center;
-  margin: auto;
-  border: 1px solid darken(#8CBEB2, 10);
-
-}
-
-section.feature {
-  background-color:  lighten(#DC9C76, 30);
-  border-color: lighten(#DC9C76, 27);
-  //border-right: 10px solid orangered;
-
-  h4 {
-    color: #F06060;
-    font-weight: bold;
-    //background-color: brown;
-    //color: white;
-    //display: inline-block;
-    //margin: auto;
-    text-align: center;
-  }
-
-  &:nth-child(2n) {
-    background-color: lighten(#DC9C76, 27);
-    border-color: lighten(#DC9C76, 24);
-  }
-
-}
-
-section#supported-websites {
-  background-color: lighten(#334D5C, 10);
-  border-color: #334D5C;
-}
-
-nav {
-  padding-top: 60px;
-  position: fixed;
-
-  @include simple-vertical-menu;
-}
 
 h3 {
   padding-bottom: 10px;
@@ -118,18 +53,75 @@ h3 {
   color: #444;
 }
 
-/* #Page Styles
+
+/* #Home page
 ================================================== */
 
-.hero {
-  padding: 20px 0;
+nav {
+  padding-top: 60px;
+  position: fixed;
+
+  @include simple-vertical-menu;
+}
+
+section {
+  padding: 30px;
+  margin: 10px 0 20px 0;
+  text-align: justify;
+  position: relative; /* to make this a positioned parent */
+
+  /* Default color of section*/
+  background-color: #F4F1D7;
+  border: 1px solid darken(#F4F1D7, 10);
+  
+  h4 {
+    text-align: center;
+  }
+}
+
+/* Section individual colors */
+
+section#home {
+  background-color: #F4F1D7;
+  border: 1px solid darken(#F4F1D7, 10);
+}
+
+section#core-concept {
+  background-color: #8CBEB2;
+  color: white;
+  border: 1px solid darken(#8CBEB2, 10);
+}
+
+section.feature {
+  background-color:  lighten(#DC9C76, 30);
+  border-color: lighten(#DC9C76, 27);
+
+  h4 {
+    color: #F06060;
+    font-weight: bold;
+  }
+
+  &:nth-child(2n) {
+    background-color: lighten(#DC9C76, 27);
+    border-color: lighten(#DC9C76, 24);
+  }
+}
+
+section#supported-websites {
+  background-color: lighten(#334D5C, 10);
+  border-color: #334D5C;
+}
+
+/* Hero section (corresponds to 'Home' on the navigation menu') */
+
+#home {
   text-align: center;
+  padding: 20px;
 
   .title {
     font-size: 6em;
     line-height: 1;
     color: #666666;
-    //margin: 40px 0;
   }
 
   .beta {
@@ -149,7 +141,6 @@ h3 {
   }
 
   .description {
-    //text-align: left;
     font-size: 1.3em;
   }
 
@@ -174,38 +165,17 @@ h3 {
     margin-top: 40px;
     h5 {
       font-weight: bold;
-
     }
   }
 }
 
 
-#video-container {
- //margin-top: 50px;
- iframe, table {
-   //float: left;
- }
-
- table {
-   margin-left: 100px;
- }
-
-}
-
-#supported-sites-table {
-  img{
-    max-height: 30px;
-    max-width: 100px;
-    margin: 5px;
-  }
-
-  td {
-    vertical-align: middle;
-  }
-}
-
+/* Core concept section*/
 
 section#core-concept {
+  text-align: center;
+  margin: auto;
+
   h4 {
     margin-bottom: 20px;
   }
@@ -233,34 +203,23 @@ section#core-concept {
 }
 
 /* Main Features */
-section {
+.feature {
   h4 {
     margin-bottom: 10px;
   }
 
   figure, img{
-    width: 600px;
-  }
-
-  figure {
-    //padding: 2px;
-    ////border: 1px solid #ccc;
+    max-width: 600px;
   }
 
   figcaption {
     background-color: lightgoldenrodyellow;
   }
 
-}
+  h6 {
+    font-style: italic;
+  }
 
-#demo>div {
-  margin: 20px auto;
-  width: 640px;
-}
-
-section h6 {
-  //font-weight: bold;
-  font-style: italic;
 }
 
 .try-it-out {
@@ -280,10 +239,8 @@ section h6 {
     margin: 0;
   }
   z-index: 1; // so that the selected unit overlay goes under the try-it-out div
-
-// display: none;
-
 }
+
 
 #supported-websites {
   color: #eee;
@@ -291,7 +248,6 @@ section h6 {
     display: inline-block;
     color: #e0d97a;
     font-style: normal;
-    //color: lightgoldenrodyellow;
   }
 
   ul {
@@ -310,14 +266,12 @@ section h6 {
     &:nth-child(2n) {
       background-color: lighten(#334D5C, 12);
       color: #fafafa;
-
-
-      //color: #333;
     }
   }
 }
 
 
+/* Overlay and message that shows when inline install extension UI shows */
 .overlay {
   background: black;
   opacity: 0.85;
@@ -343,33 +297,54 @@ section h6 {
 ================================================== */
 
 /* Smaller than standard 960 (devices and browsers) */
-@media only screen and (max-width: 959px) {}
+@media only screen and (max-width: 959px) {
+
+  // hide the left navigation bar
+  nav, .try-it-out {
+    display: none;
+  }
+}
 
 /* Tablet Portrait size to standard 960 (devices and browsers) */
 @media only screen and (min-width: 768px) and (max-width: 959px) {}
 
 /* All Mobile Sizes (devices and browser) */
-@media only screen and (max-width: 767px) {}
-
-/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
-@media only screen and (min-width: 480px) and (max-width: 767px) {}
-
-/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
-@media only screen and (max-width: 479px) {}
-
-
-
-
-//TODO: Play with this a bit more.
-
-@media only screen and (min-width: 700px) and (max-width: 1300px) {
-  .container {margin-left: $nav-menu-width + 20}
+@media only screen and (max-width: 767px) {
+  .text {
+    width: auto;
+  }
 }
 
-@media only screen and (max-width: 767px) {
-  nav {display: none; }
-  #demo iframe {
-    width: 300px;
+@mixin set-image-and-video-dimensions($section-width) {
+  $section-padding: 10px;
+
+  section {
+    padding: $section-padding !important;
   }
 
+  $image-width: $section-width - ($section-padding * 2);
+
+  #video-container iframe, .feature img{
+    width: $image-width;
+  }
+
+  // set the height to maintain the height/width ratio that vimeo seems to need.
+  #video-container iframe{
+    height: $image-width * 0.625;
+  }
+}
+
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+
+  /* Design for a section width of 420px */
+  $section-width: 420px;
+  @include set-image-and-video-dimensions($section-width);
+
+}
+
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (max-width: 479px) {
+  $section-width: 300px;
+  @include set-image-and-video-dimensions($section-width);
 }
