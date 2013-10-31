@@ -858,13 +858,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         var CUOffset = $selectedCUOverlay.offset(),
             CUOverlay = $selectedCUOverlay[0],
 
-            // The following two variables can be set to *more* than the actual values (which should be
-            // body.clientHeight and body.clientWidth) without causing any trouble, but NOT lesser).
-            // [body.clientHeight doesn't get the correct value on Hacker News, and on twitter nothing
-            // apart from body.scrollHeight returns the correct value including, it seems, jQuery's height()
-            // and innerHeight()]
-            bodyHeight = Math.max(body.clientHeight, body.offsetHeight, body.scrollHeight, $body.innerHeight()),
-            bodyWidth = $body.innerWidth(),
+            bodyScrollHeight = body.scrollHeight,
+            bodyScrollWidth = body.scrollWidth,
 
             CUOverlayTop = CUOffset.top,
             CUOverlayLeft = CUOffset.left,
@@ -872,8 +867,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             CUOverlayHeight = CUOverlay.offsetHeight,
 
             // margins from the edges of the body
-            CUOverlayBottomMargin = bodyHeight - (CUOverlayTop + CUOverlayHeight),
-            COOverlayRightMargin = bodyWidth - CUOverlayRight;
+            CUOverlayBottomMargin = bodyScrollHeight - (CUOverlayTop + CUOverlayHeight),
+            CUOverlayRightMargin = bodyScrollWidth - CUOverlayRight;
 
 
         //NOTE: we set top, left, width, height in each case below because that seems to work more reliably
@@ -882,7 +877,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         nonCUPageOverlays[0].css({
             top: 0 + "px",
             left: 0 + "px",
-            width: bodyWidth + "px",
+            width: bodyScrollWidth + "px",
             height: CUOverlayTop + "px",
         }).show();
 
@@ -890,7 +885,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         nonCUPageOverlays[1].css({
             top: CUOverlayTop + CUOverlayHeight + "px",
             left: 0 + "px",
-            width: bodyWidth + "px",
+            width: bodyScrollWidth + "px",
             height: CUOverlayBottomMargin + "px"
         }).show();
 
@@ -906,7 +901,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         nonCUPageOverlays[3].css({
             top: CUOverlayTop + "px",
             left: CUOverlayRight + "px",
-            width: COOverlayRightMargin + "px",
+            width: CUOverlayRightMargin + "px",
             height: CUOverlayHeight + "px"
         }).show();
     }
@@ -1324,9 +1319,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     // If a selected CU exists, update the selected overlay
-    function updateSelectedOverlay() {
+    function updateSelectedOverlay(enforceRedraw) {
         var $selectedCU = CUs_filtered[selectedCUIndex];
-        $selectedCU && showSelectedOverlay($selectedCU);
+        $selectedCU && showSelectedOverlay($selectedCU, enforceRedraw);
     }
 
     // If a hovered-over CU exists
@@ -2114,7 +2109,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         mod_domEvents.addEventListener(document, 'keydown', onKeydown_Esc, true);
 
        $window.on('resize', function() {
-            updateSelectedOverlay();
+            updateSelectedOverlay(true);    // pass true to enforce redraw
             dehoverCU();
         });
 
