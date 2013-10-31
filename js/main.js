@@ -81,7 +81,6 @@ function highlightMenuItem(menuItem) {
 }
 
 function navigateToSection(menuItem) {
-    console.log("click");
 //    var sectionId = menuItem.dataset.target,
 //        section = document.getElementById(sectionId),
 //        pos = section && $(section).offset();
