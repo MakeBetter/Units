@@ -874,8 +874,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // than setting bottom (and perhaps right) which would have made calculations easier
 
         nonCUPageOverlays[0].css({
-            top: 0 + "px",
-            left: 0 + "px",
+            top: "0",
+            left: "0",
             width: bodyScrollWidth + "px",
             height: CUOverlayTop + "px",
         }).show();
@@ -883,7 +883,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // bottom
         nonCUPageOverlays[1].css({
             top: CUOverlayTop + CUOverlayHeight + "px",
-            left: 0 + "px",
+            left: "0",
             width: bodyScrollWidth + "px",
             height: CUOverlayBottomMargin + "px"
         }).show();
@@ -891,7 +891,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // left
         nonCUPageOverlays[2].css({
             top: CUOverlayTop + "px",
-            left: 0 + "px",
+            left: "0",
             width: CUOverlayLeft + "px",
             height: CUOverlayHeight + "px"
         }).show();
