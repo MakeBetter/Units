@@ -927,6 +927,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             nonCUPageOverlays[i].addClass('fast-opacity-change');
 
         setNonCUPageOverlaysOpacity(userSetDimmingOpacity);
+
+        if (selectedCUIndex === -1)
+            selectMostSensibleCU_withoutScrollingPage();
     }
 
     function setNonCUPageOverlaysOpacity(opacity) {
