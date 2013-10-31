@@ -1,3 +1,11 @@
+/**
+-----------
+NOTE, by Tanushree: This is a modified version of skeleton.scss. An additional grid for tablet landscape has been added. This was
+needed so we could fit in a 150px navigation menu along with the 16 column container.
+NOTE: This new grid is used only for widths between 1110px and 1024px. For all higher widths, and lower widths upto 959px, the base
+grid is used still.
+*/
+
 /*
 * Skeleton V1.2
 * Copyright 2011, Dave Gamache
@@ -11,6 +19,7 @@
 /* Table of Contents
 ==================================================
     #Base 960 Grid
+    #Tablet landscape and 1024px desktop. Added for UnitsSite.
     #Tablet (Portrait)
     #Mobile (Portrait)
     #Mobile (Landscape)
@@ -69,6 +78,64 @@
     .container .offset-by-fourteen              { padding-left: 840px; }
     .container .offset-by-fifteen               { padding-left: 900px; }
 
+
+/* [Modification for UnitsSite]
+#Tablet landscape and 1024px desktop.
+This column width is introduced to accommodate the 150px left navigation menu along with a sixteen column container for a
+1024px screen width.
+
+NOTE: This grid is used only for widths between 1110px and 1024px. For all higher widths, and lower widths upto 959px, the base
+grid is used.
+================================================== */
+
+/* Note: Design for a width of 880px*/
+
+@media only screen and (min-width: 1024px) and (max-width: 1110px) {
+  .container                                  { width: 880px; }
+  .container .column,
+  .container .columns                         { margin-left: 10px; margin-right: 10px;  }
+  .column.alpha, .columns.alpha               { margin-left: 0; margin-right: 10px; }
+  .column.omega, .columns.omega               { margin-right: 0; margin-left: 10px; }
+  .alpha.omega                                { margin-left: 0; margin-right: 0; }
+
+  .container .one.column,
+  .container .one.columns                     { width: 34px; }
+  .container .two.columns                     { width: 88px; }
+  .container .three.columns                   { width: 142px; }
+  .container .four.columns                    { width: 196px; }
+  .container .five.columns                    { width: 250px; }
+  .container .six.columns                     { width: 304px; }
+  .container .seven.columns                   { width: 358px; }
+  .container .eight.columns                   { width: 412px; }
+  .container .nine.columns                    { width: 466px; }
+  .container .ten.columns                     { width: 520px; }
+  .container .eleven.columns                  { width: 574px; }
+  .container .twelve.columns                  { width: 628px; }
+  .container .thirteen.columns                { width: 682px; }
+  .container .fourteen.columns                { width: 736px; }
+  .container .fifteen.columns                 { width: 790px; }
+  .container .sixteen.columns                 { width: 844px; }
+
+  .container .one-third.column                { width: 268px; }
+  .container .two-thirds.column               { width: 549px; }
+
+  /* Offsets */
+  .container .offset-by-one                   { padding-left: 54px; }
+  .container .offset-by-two                   { padding-left: 108px; }
+  .container .offset-by-three                 { padding-left: 162px; }
+  .container .offset-by-four                  { padding-left: 216px; }
+  .container .offset-by-five                  { padding-left: 270px; }
+  .container .offset-by-six                   { padding-left: 324px; }
+  .container .offset-by-seven                 { padding-left: 378px; }
+  .container .offset-by-eight                 { padding-left: 432px; }
+  .container .offset-by-nine                  { padding-left: 486px; }
+  .container .offset-by-ten                   { padding-left: 540px; }
+  .container .offset-by-eleven                { padding-left: 594px; }
+  .container .offset-by-twelve                { padding-left: 648px; }
+  .container .offset-by-thirteen              { padding-left: 702px; }
+  .container .offset-by-fourteen              { padding-left: 756px; }
+  .container .offset-by-fifteen               { padding-left: 810px; }
+}
 
 
 /* #Tablet (Portrait)

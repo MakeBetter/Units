@@ -93,7 +93,7 @@ nav a {
   padding: 10px 5px 5px 5px;
 }
 
-/* line 67, ../scss/layout.scss */
+/* line 69, ../scss/layout.scss */
 section {
   padding: 30px;
   margin: 10px 0 20px 0;
@@ -104,80 +104,80 @@ section {
   background-color: #F4F1D7;
   border: 1px solid #e9e3af;
 }
-/* line 77, ../scss/layout.scss */
+/* line 79, ../scss/layout.scss */
 section h4 {
   text-align: center;
 }
 
 /* Section individual colors */
-/* line 84, ../scss/layout.scss */
+/* line 86, ../scss/layout.scss */
 section#home {
   background-color: #F4F1D7;
   border: 1px solid #e9e3af;
 }
 
-/* line 89, ../scss/layout.scss */
+/* line 91, ../scss/layout.scss */
 section#core-concept {
   background-color: #8CBEB2;
   color: white;
   border: 1px solid #6bac9c;
 }
 
-/* line 95, ../scss/layout.scss */
+/* line 97, ../scss/layout.scss */
 section.feature {
   background-color: #fbf4f0;
   border-color: #f8ebe4;
 }
-/* line 99, ../scss/layout.scss */
+/* line 101, ../scss/layout.scss */
 section.feature h4 {
   color: #F06060;
   font-weight: bold;
 }
-/* line 104, ../scss/layout.scss */
+/* line 106, ../scss/layout.scss */
 section.feature:nth-child(2n) {
   background-color: #f8ebe4;
   border-color: #f5e2d7;
 }
 
-/* line 110, ../scss/layout.scss */
+/* line 112, ../scss/layout.scss */
 section#supported-websites {
   background-color: #45687d;
   border-color: #334D5C;
 }
 
 /* Hero section (corresponds to 'Home' on the navigation menu') */
-/* line 117, ../scss/layout.scss */
+/* line 119, ../scss/layout.scss */
 #home {
   text-align: center;
   padding: 20px;
 }
-/* line 121, ../scss/layout.scss */
+/* line 123, ../scss/layout.scss */
 #home .title {
   font-size: 6em;
   line-height: 1;
   color: #666666;
 }
-/* line 127, ../scss/layout.scss */
+/* line 129, ../scss/layout.scss */
 #home .beta {
   font-size: 0.2em;
   color: #999999;
 }
-/* line 132, ../scss/layout.scss */
+/* line 134, ../scss/layout.scss */
 #home .hero-text {
   font-size: 1.5em;
   line-height: 1.2;
   width: 80%;
   margin: 10px auto;
 }
-/* line 139, ../scss/layout.scss */
+/* line 141, ../scss/layout.scss */
 #home .tagline {
   color: gray;
 }
-/* line 143, ../scss/layout.scss */
+/* line 145, ../scss/layout.scss */
 #home .description {
   font-size: 1.3em;
 }
-/* line 147, ../scss/layout.scss */
+/* line 149, ../scss/layout.scss */
 #home .install-button {
   font-size: 150%;
   background: #02a6eb;
@@ -185,50 +185,50 @@ section#supported-websites {
   border: 1px solid #eaeaea;
   margin: 20px 0;
 }
-/* line 154, ../scss/layout.scss */
+/* line 156, ../scss/layout.scss */
 #home .install-button:hover {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 159, ../scss/layout.scss */
+/* line 161, ../scss/layout.scss */
 #home .install-button .small-text {
   font-size: 50%;
 }
-/* line 164, ../scss/layout.scss */
+/* line 166, ../scss/layout.scss */
 #home .main-features {
   margin-top: 40px;
 }
-/* line 166, ../scss/layout.scss */
+/* line 168, ../scss/layout.scss */
 #home .main-features h5 {
   font-weight: bold;
 }
 
 /* Core concept section*/
-/* line 175, ../scss/layout.scss */
+/* line 177, ../scss/layout.scss */
 section#core-concept {
   text-align: center;
   margin: auto;
 }
-/* line 179, ../scss/layout.scss */
+/* line 181, ../scss/layout.scss */
 section#core-concept h4 {
   margin-bottom: 20px;
 }
-/* line 182, ../scss/layout.scss */
+/* line 184, ../scss/layout.scss */
 section#core-concept img {
   padding-right: 10px;
 }
-/* line 185, ../scss/layout.scss */
+/* line 187, ../scss/layout.scss */
 section#core-concept h5 {
   font-size: 18px;
 }
 
-/* line 191, ../scss/layout.scss */
+/* line 193, ../scss/layout.scss */
 .text {
   width: 600px;
   margin: auto;
 }
 
-/* line 196, ../scss/layout.scss */
+/* line 198, ../scss/layout.scss */
 .key-features-title {
   background-color: #f1f1f1;
   color: #acacac;
@@ -239,24 +239,24 @@ section#core-concept h5 {
 }
 
 /* Main Features */
-/* line 207, ../scss/layout.scss */
+/* line 209, ../scss/layout.scss */
 .feature h4 {
   margin-bottom: 10px;
 }
-/* line 211, ../scss/layout.scss */
+/* line 213, ../scss/layout.scss */
 .feature figure, .feature img {
   max-width: 600px;
 }
-/* line 215, ../scss/layout.scss */
+/* line 217, ../scss/layout.scss */
 .feature figcaption {
   background-color: lightgoldenrodyellow;
 }
-/* line 219, ../scss/layout.scss */
+/* line 221, ../scss/layout.scss */
 .feature h6 {
   font-style: italic;
 }
 
-/* line 225, ../scss/layout.scss */
+/* line 227, ../scss/layout.scss */
 .try-it-out {
   background-color: #555;
   color: #fafafa;
@@ -271,47 +271,48 @@ section#core-concept h5 {
   top: 50px;
   width: 150px;
   padding: 4px;
+  text-align: left;
   z-index: 1;
 }
-/* line 236, ../scss/layout.scss */
+/* line 239, ../scss/layout.scss */
 .try-it-out p {
   font-size: 14px;
   line-height: 17px;
   margin: 0;
 }
 
-/* line 245, ../scss/layout.scss */
+/* line 248, ../scss/layout.scss */
 #supported-websites {
   color: #eee;
 }
-/* line 247, ../scss/layout.scss */
+/* line 250, ../scss/layout.scss */
 #supported-websites h6 {
   display: inline-block;
   color: #e0d97a;
   font-style: normal;
 }
-/* line 253, ../scss/layout.scss */
+/* line 256, ../scss/layout.scss */
 #supported-websites ul {
   border: 1px solid #426376;
 }
-/* line 257, ../scss/layout.scss */
+/* line 260, ../scss/layout.scss */
 #supported-websites li {
   margin-bottom: 6px;
   padding: 5px;
 }
-/* line 261, ../scss/layout.scss */
+/* line 264, ../scss/layout.scss */
 #supported-websites li span, #supported-websites li a {
   color: #eee;
   text-decoration: none;
 }
-/* line 266, ../scss/layout.scss */
+/* line 269, ../scss/layout.scss */
 #supported-websites li:nth-child(2n) {
   background-color: #496e83;
   color: #fafafa;
 }
 
 /* Overlay and message that shows when inline install extension UI shows */
-/* line 275, ../scss/layout.scss */
+/* line 278, ../scss/layout.scss */
 .overlay {
   background: black;
   opacity: 0.85;
@@ -323,7 +324,7 @@ section#core-concept h5 {
   z-index: 1;
   display: none;
 }
-/* line 283, ../scss/layout.scss */
+/* line 286, ../scss/layout.scss */
 .overlay .message {
   top: 300px;
   position: absolute;
@@ -337,17 +338,9 @@ section#core-concept h5 {
 
 /* #Media Queries
 ================================================== */
-/* Smaller than standard 960 (devices and browsers) */
-@media only screen and (max-width: 959px) {
-  /* line 303, ../scss/layout.scss */
-  nav, .try-it-out {
-    display: none;
-  }
-}
-/* Tablet Portrait size to standard 960 (devices and browsers) */
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
-  /* line 313, ../scss/layout.scss */
+  /* line 304, ../scss/layout.scss */
   .text {
     width: auto;
   }
@@ -355,35 +348,60 @@ section#core-concept h5 {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 @media only screen and (min-width: 480px) and (max-width: 767px) {
   /* Design for a section width of 420px */
-  /* line 321, ../scss/layout.scss */
+  /* line 312, ../scss/layout.scss */
   section {
     padding: 10px !important;
   }
 
-  /* line 327, ../scss/layout.scss */
+  /* line 318, ../scss/layout.scss */
   #video-container iframe, .feature img {
     width: 400px;
   }
 
-  /* line 332, ../scss/layout.scss */
+  /* line 323, ../scss/layout.scss */
   #video-container iframe {
     height: 250px;
   }
 }
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) {
-  /* line 321, ../scss/layout.scss */
+  /* line 312, ../scss/layout.scss */
   section {
     padding: 10px !important;
   }
 
-  /* line 327, ../scss/layout.scss */
+  /* line 318, ../scss/layout.scss */
   #video-container iframe, .feature img {
     width: 280px;
   }
 
-  /* line 332, ../scss/layout.scss */
+  /* line 323, ../scss/layout.scss */
   #video-container iframe {
     height: 175px;
+  }
+}
+/* Changing from margin:auto to a fixed margin-left. This is because we don't want the left navigation menu to get hidden
+ for these specific widths.*/
+@media only screen and (min-width: 1024px) and (max-width: 1260px) {
+  /* line 347, ../scss/layout.scss */
+  .container {
+    margin-left: 150px;
+  }
+}
+/* This width range is specific to the design of this site. */
+@media only screen and (min-width: 1024px) and (max-width: 1110px) {
+  /* line 352, ../scss/layout.scss */
+  .try-it-out {
+    width: 120px;
+                /* Reduce width from 150px as it is overlapping with the main text in the section.
+This is happening because we reduce the section width for screen width > 1024 and < 1110px */
+  }
+}
+/* Tablet landscape and all smaller mobile devices*/
+@media only screen and (max-width: 1023px) {
+  /* hide the left navigation bar and the "try it out" labels in mobile */
+  /* line 362, ../scss/layout.scss */
+  nav, .try-it-out {
+    display: none;
   }
 }

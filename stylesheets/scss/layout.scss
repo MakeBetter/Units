@@ -60,6 +60,8 @@ h3 {
 nav {
   padding-top: 60px;
   position: fixed;
+//  z-index: 100;
+//  background-color: white;
 
   @include simple-vertical-menu;
 }
@@ -232,6 +234,7 @@ section#core-concept {
   top: 50px;
   width: 150px;
   padding: 4px;
+  text-align: left;
 
   p {
     font-size: 14px;
@@ -296,18 +299,6 @@ section#core-concept {
 /* #Media Queries
 ================================================== */
 
-/* Smaller than standard 960 (devices and browsers) */
-@media only screen and (max-width: 959px) {
-
-  // hide the left navigation bar
-  nav, .try-it-out {
-    display: none;
-  }
-}
-
-/* Tablet Portrait size to standard 960 (devices and browsers) */
-@media only screen and (min-width: 768px) and (max-width: 959px) {}
-
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
   .text {
@@ -347,4 +338,28 @@ section#core-concept {
 @media only screen and (max-width: 479px) {
   $section-width: 300px;
   @include set-image-and-video-dimensions($section-width);
+}
+
+
+/* Changing from margin:auto to a fixed margin-left. This is because we don't want the left navigation menu to get hidden
+ for these specific widths.*/
+@media only screen and (min-width: 1024px) and (max-width: 1260px) {
+  .container {margin-left: $nav-menu-width + 20;}
+}
+
+/* This width range is specific to the design of this site. */
+@media only screen and (min-width: 1024px) and (max-width: 1110px){
+  .try-it-out {
+    width: 120px; /* Reduce width from 150px as it is overlapping with the main text in the section.
+  This is happening because we reduce the section width for screen width > 1024 and < 1110px */
+  }
+}
+
+/* Tablet landscape and all smaller mobile devices*/
+@media only screen and (max-width: 1023px) {
+
+  /* hide the left navigation bar and the "try it out" labels in mobile */
+  nav, .try-it-out {
+    display: none;
+  }
 }
