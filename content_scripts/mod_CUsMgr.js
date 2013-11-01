@@ -1931,9 +1931,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             indexOf_CUContainingActiveEl = getEnclosingCUIndex(activeEl);
 
         if (indexOf_CUContainingActiveEl !== selectedCUIndex) {
-            var savedScrollPos = window.pageYOffset;
+            var savedScrollPosX = window.pageXOffset,
+                savedScrollPosY = window.pageYOffset;
+
             focusMainElement(CUs_filtered[selectedCUIndex]);
-            window.scroll(window.pageXOffset, savedScrollPos);
+            window.scroll(savedScrollPosX, savedScrollPosY);
         }
     }
 
