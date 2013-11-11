@@ -53,7 +53,11 @@ var defaultSettings = {
         enhanceActiveElementVisibility: true, // give special highlight to the active element on the page (if set to false,
         // the browser's default style will be applied.
 
-        zenModeAutoOn: false // zen mode will be active on any page when the page first loads.
+        zenModeAutoOn: false, // zen mode will be active on any page when the page first loads
+
+        // default/starting opacity for non-CU-page overlays, can be anything between 0 and 1, but ideally should be
+        // a low'ish value (close to 0)
+        defaultSpotlightDimmingOpacity: 0
     },
 
     /*
@@ -320,11 +324,8 @@ var defaultSettings = {
         "w": "http://en.wikipedia.org/w/index.php?search=<<_serach_str_>>",
         "m": "http://maps.google.com/maps?q=<<_serach_str_>>",
         "i": "http://www.imdb.com/find?q=<<_serach_str_>>&s=all"
-
     }
-
 };
-
 </pre>
 </body>
 </html>

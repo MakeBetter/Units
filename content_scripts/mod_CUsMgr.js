@@ -86,12 +86,13 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // by convention: these overlays exist in order as [top, bottom, left, right]
         nonCUPageOverlays = [],
 
-        // default opacity for non-CU-page overlays, default should be a low'ish value
-        defaultDimmingOpacity = 0.05,
-        // TODO: move the default opacity to settings (also should we allow different values for each "url pattern"?) +
-        // maybe sites with larger CUs can have a higher value compared to sites with small CUs like HN, google search results etc.
-        userSetDimmingOpacity = defaultDimmingOpacity,
+        // spotlight opacity value set by the user (or the default value for this setting if the user hasn't changed it)
+        userSetDimmingOpacity,
+        // spotlight opacity currently in effect (Note: this would be 0 for when the user scrolls the selected CU out
+        // of the view)
         currentDimmingOpacity,
+
+
 
         body,               // will hold reference to document.body (once that is available within setup())
 
@@ -214,7 +215,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUsShortcuts = settings.CUsShortcuts;
         animatedScroll = miscSettings.animatedScroll;
         animatedScroll_Speed = miscSettings.animatedScroll_Speed;
-        animatedScroll_MaxDuration = miscSettings.animatedScroll_MaxDuration,
+        animatedScroll_MaxDuration = miscSettings.animatedScroll_MaxDuration;
+
+        // assume this is the default value to start off
+        userSetDimmingOpacity = miscSettings.defaultSpotlightDimmingOpacity;
 
         $selectedCUOverlay = $createOverlay('selected');
         $hoveredCUOverlay = $createOverlay('hovered');
@@ -914,13 +918,12 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     function changeSpotlightOnSelecteCU(how) {
         var delta = 0.05;
 
-        // we need to save `userSetDimmingOpacity` before calling setNonCUPageOverlaysOpacity()
         if (how === 'increase')
             userSetDimmingOpacity += delta;
         else if (how === 'decrease')
             userSetDimmingOpacity -= delta;
         else
-            userSetDimmingOpacity = defaultDimmingOpacity;
+            userSetDimmingOpacity = miscSettings.defaultSpotlightDimmingOpacity;
 
         if (userSetDimmingOpacity < 0)
             userSetDimmingOpacity = 0;
