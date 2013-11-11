@@ -136,6 +136,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         headerSelector,
         CUStyleData,
         CUsShortcuts,
+        animatedScroll, animatedScroll_Speed, animatedScroll_MaxDuration,
 
         lit_selectCU,    // last invoked time ("lit") for _selectCU()
         minInterval_selectCU = 70,
@@ -211,6 +212,9 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_SUs) && (tmp = tmp.std_header) && tmp.selector;
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
+        animatedScroll = miscSettings.animatedScroll;
+        animatedScroll_Speed = miscSettings.animatedScroll_Speed;
+        animatedScroll_MaxDuration = miscSettings.animatedScroll_MaxDuration,
 
         $selectedCUOverlay = $createOverlay('selected');
         $hoveredCUOverlay = $createOverlay('hovered');
@@ -837,7 +841,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
                 winTop = window.pageYOffset, //window.scrollY, //body.scrollTop,
                 winBottom = winTop + window.innerHeight,
-                winLeft = document.scrollLeft, // window.scrollX,
+                winLeft = window.pageXOffset, // window.scrollX,
                 winRight = winLeft + window.innerWidth;
 
             return ( (Math.min(winRight, CURight) - Math.max(winLeft, CULeft)) *
@@ -1245,19 +1249,15 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             if (!direction || 
                 (direction === 'right' && newWinLeft > winLeft) ||
                 (direction === 'left' && newWinLeft < winLeft) ) {
-                
-                if (miscSettings.animatedCUScroll) {
-                    animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
-                        Math.abs(newWinLeft-winLeft) / miscSettings.animatedCUScroll_Speed);
 
-                    // TODO: if the animation for vertical scroll is required (see below), this
-                    // animation will be terminated instantly. Instead, ideally, a diagonal, animation
-                    // should take place. Low priority, given the rarity of horizontal scroll
-                    smoothScroll(window, 'pageXOffset', newWinLeft, animationDuration);
-                }
-                else {
-                    window.scroll(newWinLeft, window.pageYOffset);
-                }
+                animationDuration = animatedScroll?
+                    Math.min(animatedScroll_MaxDuration, Math.abs(newWinLeft-winLeft) / animatedScroll_Speed):
+                    0;
+
+                // TODO: if the animation for vertical scroll is required (see below), this
+                // animation will be terminated instantly. Instead, ideally, a diagonal, animation
+                // should take place. Low priority, given the rarity of horizontal scroll
+                smoothScroll(window, 'pageXOffset', newWinLeft, animationDuration);
             }
         }
 
@@ -1289,15 +1289,11 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 (direction === 'down' && newWinTop > winTop) ||
                 (direction === 'up' && newWinTop < winTop) ) {
 
-                if (miscSettings.animatedCUScroll) {
-                    animationDuration = Math.min(miscSettings.animatedCUScroll_MaxDuration,
-                        Math.abs(newWinTop-winTop) / miscSettings.animatedCUScroll_Speed);
+                animationDuration = animatedScroll?
+                    Math.min(animatedScroll_MaxDuration, Math.abs(newWinTop-winTop) / animatedScroll_Speed):
+                    0;
 
-                    smoothScroll(window, 'pageYOffset', newWinTop, animationDuration);
-                }
-                else {
-                    window.scroll(window.pageXOffset, newWinTop);
-                }
+                smoothScroll(window, 'pageYOffset', newWinTop, animationDuration);
             }
         }
     }

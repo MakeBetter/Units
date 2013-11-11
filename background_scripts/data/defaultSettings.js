@@ -30,9 +30,10 @@ var defaultSettings = {
     */
     miscSettings: {
         selectCUOnLoad: true, // whether the first CU should be selected when the page loads
-        animatedCUScroll: true,
-        animatedCUScroll_Speed: 1, // pixels per millisecond, can be a decimal
-        animatedCUScroll_MaxDuration: 333, // milliseconds
+        pageScrollDelta: 200, // pixels to scroll on each key press
+        animatedScroll: true,
+        animatedScroll_Speed: 1, // pixels per millisecond, can be a decimal
+        animatedScroll_MaxDuration: 333, // milliseconds
 
         increaseFontInSelectedCU: false,
 
@@ -42,9 +43,6 @@ var defaultSettings = {
 
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
-
-        pageScrollDelta: 250, // pixels to scroll on each key press
-
         enhanceActiveElementVisibility: true, // give special highlight to the active element on the page (if set to false,
         // the browser's default style will be applied.
 

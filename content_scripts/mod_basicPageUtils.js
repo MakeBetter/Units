@@ -29,13 +29,17 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         lastInteractedElement, // the last element which received user interaction (click, mouse over, focus etc)
         $document = $(document),
         isMac = navigator.appVersion.indexOf("Mac")!=-1, // are we running on a Mac
-        overlap_pgUpPgDn = 100,
+        overlap_pgUpPgDn = 50,
         smoothScroll = mod_smoothScroll.smoothScroll,
 
         // classes used when styling focused element
         class_focusedImage = "UnitsProj-focused-image",
         class_focusedLinkOrButton = "UnitsProj-focused-link-or-button",
-        class_focusedLargeImage= "UnitsProj-focused-large-image";
+        class_focusedLargeImage= "UnitsProj-focused-large-image",
+        animatedScroll_Speed,
+        animatedScroll_MaxDuration,
+        regularScrollDelta,   // for page scrolling (i.e. non-CU type scrolling)
+        regularScrollDuration;
 
     function reset() {
         removeActiveElementStyle();
@@ -55,6 +59,10 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
             mod_domEvents.addEventListener(document, 'focus', onFocus, true);
             mod_domEvents.addEventListener(document, 'blur', onBlur, true);
         }
+        animatedScroll_Speed = miscSettings.animatedScroll? miscSettings.animatedScroll_Speed: Infinity;
+        animatedScroll_MaxDuration = miscSettings.animatedScroll_MaxDuration;
+        regularScrollDelta = miscSettings.pageScrollDelta;
+        regularScrollDuration = Math.min(animatedScroll_MaxDuration, regularScrollDelta/animatedScroll_Speed);
 
         setupShortcuts(settings.pageNavigationShortcuts, settings.elementNavigationShortcuts, settings.CUsShortcuts);
     }
@@ -141,9 +149,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         if (mod_smoothScroll.isInProgress()) {
             mod_smoothScroll.endAtDestination();
         }
-        var elem,
-            val,
-            duration = 200; // millisecs
+        var elem, pos, duration, diff;
+
         switch(scrollType) {
 
             // NOTES:
@@ -152,45 +159,51 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
             // of 'pageYOffset'/'pageXOffset') since smoothScroll() handles the scenario.
 
             case "down":
-                smoothScroll(getElemToScroll('down'), 'scrollTop', miscSettings.pageScrollDelta, duration, null, true);
+                smoothScroll(getElemToScroll('down'), 'scrollTop', regularScrollDelta, regularScrollDuration, null, true);
                 break;
             case "up":
-                smoothScroll(getElemToScroll('up'), 'scrollTop',  -miscSettings.pageScrollDelta, duration, null, true);
+                smoothScroll(getElemToScroll('up'), 'scrollTop',  -regularScrollDelta, regularScrollDuration, null, true);
                 break;
             case "right":
-                smoothScroll(getElemToScroll('right'), 'scrollLeft',  miscSettings.pageScrollDelta, duration, null, true);
+                smoothScroll(getElemToScroll('right'), 'scrollLeft',  regularScrollDelta, regularScrollDuration, null, true);
                 break;
             case "left":
-                smoothScroll(getElemToScroll('left'), 'scrollLeft', -miscSettings.pageScrollDelta, duration, null, true);
+                smoothScroll(getElemToScroll('left'), 'scrollLeft', -regularScrollDelta, regularScrollDuration, null, true);
                 break;
             case "pageDown":
                 elem = getElemToScroll('down');
-                val = elem === window?
+                pos = elem === window?
                     window.innerHeight - overlap_pgUpPgDn:
-                    Math.min(elem.clientHeight, window.innerHeight) - overlap_pgUpPgDn;
-                smoothScroll(elem, 'scrollTop', val, duration, null, true);
+                    Math.min(50, Math.min(elem.clientHeight, window.innerHeight) - overlap_pgUpPgDn);
+                duration = Math.min(animatedScroll_MaxDuration, pos/animatedScroll_Speed);
+                smoothScroll(elem, 'scrollTop', pos, duration, null, true);
                 break;
             case "pageUp":
                 elem = getElemToScroll('up');
-                val = elem === window?
+                pos = elem === window?
                     -(window.innerHeight - overlap_pgUpPgDn):
-                    -(Math.min(elem.clientHeight, window.innerHeight) - overlap_pgUpPgDn);
-                smoothScroll(elem, 'scrollTop', val, duration, null, true);
+                    -(Math.min(50, Math.min(elem.clientHeight, window.innerHeight) - overlap_pgUpPgDn));
+                duration = Math.min(animatedScroll_MaxDuration, -pos/animatedScroll_Speed); // since `pos` is -ve
+                smoothScroll(elem, 'scrollTop', pos, duration, null, true);
                 break;
             case "top":
-                smoothScroll(getElemToScroll('up'), 'scrollTop',  0, duration);
+                elem = getElemToScroll('up');
+                diff = elem === window? window.pageYOffset: elem.scrollTop;
+                duration = Math.min(animatedScroll_MaxDuration, diff/animatedScroll_Speed);
+                smoothScroll(elem, 'scrollTop',  0, duration);
                 break;
             case "bottom":
                 elem = getElemToScroll('down');
                 if (elem === window) {
-                    var body = document.body,
-                        $body = $(body);
-                    val = Math.max(body.clientHeight, body.offsetHeight, body.scrollHeight, $body.innerHeight());
+                    pos = document.body.scrollHeight - window.innerHeight;
+                    diff = pos - window.pageYOffset;
                 }
                 else {
-                    val = elem.scrollHeight;
+                    pos = elem.scrollHeight - elem.clientHeight;
+                    diff = pos - elem.scrollTop;
                 }
-                smoothScroll(elem, 'scrollTop',  val, duration);
+                duration = Math.min(animatedScroll_MaxDuration, diff/animatedScroll_Speed);
+                smoothScroll(elem, 'scrollTop',  pos, duration);
                 break;
         }
     }

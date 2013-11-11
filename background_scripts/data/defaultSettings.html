@@ -1,6 +1,9 @@
 <html>
 <body>
-<!-- Copy within the 'pre' tag below the entire contents of defaultSettings.js verbatim -->
+<!-- Copy within the 'pre' tag below the entire contents of defaultSettings.js verbatim
+(If using Webstorm, use 'paste simple' from the context menu, so that it doesn't change
+formatting compared to the original JS file)
+-->
 <pre>
 // JSHint Config
 /* exported defaultSettings */
@@ -22,7 +25,7 @@ var defaultSettings = {
     */
     disabledSites: {
 
-        urlPatterns: [/*'mail.google.com', 'mail.google.com/*', 'gmail.com', 'gmail.com/*'*/],
+        urlPatterns: ['www.reddit.com*', 'gmail.com*', 'mail.google.com*'], // Disabling Units because it might interfere
         urlRegexps: []
     },
 
@@ -34,21 +37,19 @@ var defaultSettings = {
     */
     miscSettings: {
         selectCUOnLoad: true, // whether the first CU should be selected when the page loads
-        animatedCUScroll: true,
-        animatedCUScroll_Speed: 1, // pixels per millisecond, can be a decimal
-        animatedCUScroll_MaxDuration: 333, // milliseconds
+        pageScrollDelta: 200, // pixels to scroll on each key press
+        animatedScroll: true,
+        animatedScroll_Speed: 1, // pixels per millisecond, can be a decimal
+        animatedScroll_MaxDuration: 333, // milliseconds
 
         increaseFontInSelectedCU: false,
 
-        // determines if while scrolling a CU should always be centered (whenever possible) or only if it lies
-        // outside the view port
+        // determines if while upward/downward CU selection, the CU should always be (vertically) centered or
+        // only if it lies outside the view port
         verticallyCenterSelectedCU: true,
 
         // if true, scrollNext() and scrollPrev() will scroll more of the current CU, if it is not in view
         sameCUScroll: true,
-
-        pageScrollDelta: 150, // pixels to scroll on each key press
-
         enhanceActiveElementVisibility: true, // give special highlight to the active element on the page (if set to false,
         // the browser's default style will be applied.
 
@@ -78,11 +79,11 @@ var defaultSettings = {
         },
         scrollRight: {
             descr: "Scroll page right",
-            kbdShortcuts: ['shift+j'],
+            kbdShortcuts: ['shift+l'],
         },
         scrollLeft: {
             descr: "Scroll page left",
-            kbdShortcuts: ['shift+k'],
+            kbdShortcuts: ['shift+h'],
         },
         back: {
             descr: "Go back",
@@ -116,9 +117,12 @@ var defaultSettings = {
     Shortcuts related to selecting or invoking elements in a page
     */
     elementNavigationShortcuts: {
-        open: { //TODO: should 'enter' be spcified here
+        open: {
             descr: "Open/invoke selected item",
-            kbdShortcuts: ['shift+o']
+            // while 'enter' should work without having to specify it in the binding below, we specify it
+            // explicitly since on some websites it might be bound as a shortcut for something else
+            // (like on facebook it is bound to focus the comments textbox)
+            kbdShortcuts: ['enter', 'shift+o']
         },
         openInNewTab: {
             descr: "Open selected link in new tab",
@@ -147,6 +151,7 @@ var defaultSettings = {
         toggleZenMode: {
             descr: "Toggle zen mode",
             kbdShortcuts: ['z'],
+            importanceHigh: true
         },
         toggleExtension: {
             descr: "Disable/enable Units on current page",
@@ -156,6 +161,7 @@ var defaultSettings = {
         showHelp: {
             descr: "Show the help page",
             kbdShortcuts: ['alt+/'],
+            importanceHigh: true
         }
     },
 
@@ -165,39 +171,64 @@ var defaultSettings = {
     CUsShortcuts: {
         // NOTE: since space is allowed as a modifier, it can only be used here in that capacity.
         // i.e. only 'space' or 'alt+space' are invalid shortcuts, while 'shift+space+x' is okay.
-        selectCUDown: {
-            descr: "Select next/down CU",
+        smartScrollDown: {
+            descr: "Smart scroll down",
             kbdShortcuts: ['j'/*, 'down'*/],
             importanceHigh: true
         },
-        selectCUUp: {
-            descr: "Select prev/up CU",
+        smartScrollUp: {
+            descr: "Smart scroll up",
             kbdShortcuts: ['k'/*, 'up'*/],
             importanceHigh: true
         },
 
-        selectCURight: {
-            descr: "Select right CU",
+        smartScrollRight: {
+            descr: "Smart scroll right",
             kbdShortcuts: ['l'/*, 'right'*/],
         },
-        selectCULeft: {
-            descr: "Select left CU",
+        smartScrollLeft: {
+            descr: "Smart scroll left",
             kbdShortcuts: ['h'/*, 'left'*/],
+        },
+        selectCUDown: {
+            descr: "Select next/down unit",
+            kbdShortcuts: ['alt+shift+j'/*, 'down'*/],
+        },
+        selectCUUp: {
+            descr: "Select prev/up unit",
+            kbdShortcuts: ['alt+shift+k'/*, 'up'*/],
+        },
+
+        selectCURight: {
+            descr: "Select right unit",
+            kbdShortcuts: ['alt+shift+l'/*, 'right'*/],
+        },
+        selectCULeft: {
+            descr: "Select left unit",
+            kbdShortcuts: ['alt+shift+h'/*, 'left'*/],
         },
 
         selectFirstCU: {
-            descr: "Select first CU",
+            descr: "Select first unit",
             kbdShortcuts: ['^', 'alt+1']
         },
         selectLastCU: {
-            descr: "Select last CU",
+            descr: "Select last unit",
             kbdShortcuts: ['$', 'alt+9']
         },
 
         filterCUs: {
-            descr: "Search and filter CUs ",
+            descr: "Search and filter units ",
             kbdShortcuts: ['alt+f'],
+            importanceHigh: true
         },
+
+        // TODO: This shortcut is hardcoded in code at the moment.
+        increaseSpotlight: {
+            descr: "Increase spotlight on selected unit",
+            kbdShortcuts: ["+"],
+            importanceHigh: true
+        }
     },
 
     /*
@@ -275,6 +306,10 @@ var defaultSettings = {
             std_seeMore: {
                 descr: "See More",
                 kbdShortcuts: ["m"]
+            },
+            std_star: {
+                descr: "Star",
+                kbdShortcuts: ["*"]
             }
         }
     },
@@ -282,13 +317,13 @@ var defaultSettings = {
     // as of now, all keys are meant to be lower case only.
     quickSearchSelectedText_data: {
         "g": "https://www.google.com/search?q=<<_serach_str_>>",
-    "w": "http://en.wikipedia.org/w/index.php?search=<<_serach_str_>>",
+        "w": "http://en.wikipedia.org/w/index.php?search=<<_serach_str_>>",
         "m": "http://maps.google.com/maps?q=<<_serach_str_>>",
-            "i": "http://www.imdb.com/find?q=<<_serach_str_>>&s=all"
+        "i": "http://www.imdb.com/find?q=<<_serach_str_>>&s=all"
 
-                }
+    }
 
-                };
+};
 
 </pre>
 </body>

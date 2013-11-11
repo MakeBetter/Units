@@ -10,9 +10,9 @@ var defaultSettingsHelp = {
     miscSettings: "These are some general miscellaneous settings. Click on the setting name to get its description.",
 
     selectCUOnLoad: "When a webpage loads, select the first CU by default. This, of course, applies only if CUs are specified for that page.", // whether the first CU should be selected when the page loads
-    animatedCUScroll: "Activate smooth scrolling",
-    animatedCUScroll_Speed: "Speed for smooth scrolling of CUs. In pixels per millisecond, can be decimal.", // pixels per millisecond, can be a decimal
-    animatedCUScroll_MaxDuration: "Specify upper limit for the time it can take to (smooth) scroll between CUs. In milliseconds", // milliseconds
+    animatedScroll: "Activate smooth scrolling",
+    animatedScroll_Speed: "Speed for smooth scrolling of CUs. In pixels per millisecond, can be decimal.", // pixels per millisecond, can be a decimal
+    animatedScroll_MaxDuration: "Specify upper limit for the time it can take to (smooth) scroll between CUs. In milliseconds", // milliseconds
 
     increaseFontInSelectedCU: "Increase font size of text in the selected CU. Default is false. This is an experimental feature.",
 

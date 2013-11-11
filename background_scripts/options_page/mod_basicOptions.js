@@ -17,7 +17,7 @@ var mod_basicOptions = (function(mod_commonHelper, mod_settings, mod_optionsHelp
         verticallyCenterSelectedCU: "Keep selected CU always centered on page",
         enhanceActiveElementVisibility: "Give special highlight to the currently selected link", /*enhanceActiveElementVisibility: "Give special highlight to the currently focused link <sup>*</sup>",*/
         pageScrollDelta: "Scrolling speed (pixels per key press)",
-        animatedCUScroll: "Animate scrolling",
+        animatedScroll: "Animate scrolling",
         sameCUScroll: "Enable scrolling within a large CU (when required)"
 
     };

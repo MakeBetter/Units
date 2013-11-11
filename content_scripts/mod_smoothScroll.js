@@ -1,6 +1,7 @@
-
-// We use this over jQuery's animated scroll, since we have more control this way, and we don't have another
-// jQuery dependency (plus, it seemed it would be fun to do!). Also (in limited testing) this seemed faster.
+// This module implements a smooth scrolling function.
+// [We use this over jQuery's animated scroll, since we have more control this way,
+// and we don't have another jQuery dependency (plus, it seemed it would be fun to do!).
+// Also (in limited testing) this seemed faster.]
 
 _u.mod_smoothScroll = (function() {
     "use strict";
@@ -56,7 +57,8 @@ _u.mod_smoothScroll = (function() {
      * @param {string} scrollProperty Specifies which scroll property to modify -- 'mostly 'scrollTop' or 'scrollLeft',
      * but can be 'pageYOffset' or 'pageXOffset' if the element is `window`
      * @param value Destination scrollTop value at the end of animation
-     * @param duration Duration of smooth scroll animation (millisecs)
+     * @param duration Duration of smooth scroll animation (millisecs). NOTE: This can be specified as 0 if we want
+     * no animation (i.e. scrolling should be instant)
      * @param {Function} [callback] Optional. Function to be called once the animation is over
      * @param {boolean} [isRelative] Optional. Is `value` to be treated as the "delta" between the current value and the
      * desired destination? If this is being passed, `callback` must be passed as `null` even if no callback is needed.
@@ -100,15 +102,16 @@ _u.mod_smoothScroll = (function() {
             destination = value;
         }
 
+        if (duration === 0 || destination === startPosition) {
+            endAtDestination();
+            return;
+        }
+
         if (destination > startPosition) {
             scrollingForward = true;
         }
-        else if (destination < startPosition) {
+        else { // (destination < startPosition)
             scrollingForward = false;
-        }
-        else {
-            endAtDestination();
-            return;
         }
 
         inProgress = true;
