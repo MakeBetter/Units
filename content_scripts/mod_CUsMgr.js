@@ -248,9 +248,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // NOTE: *Important* Keep in mind that the first mutation handler to execute that calls mod_mutationObserver.disable()
         // will prevent any queued mutation observer event in any other mutation observer from triggering.
-        //TODO: check the order in which the various mutation events are
-        // fired. Specifically, if the the 'fallback' event is fired
-        // before or after the other events.
 
         thisModule.listenTo(mod_mutationObserver, 'documentMuts_fallback', onMutations_fallback);
         

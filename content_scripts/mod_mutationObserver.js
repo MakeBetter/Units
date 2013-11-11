@@ -32,7 +32,6 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     4. "CUsAncestors": For the MOs on all the ancestors of the selected CU/middle CU (in most cases,
     (most of) these ancestors will be shared by all the the CUs)
 
-
     /*-- Module implementation --*/
     var
         isEnabled,
@@ -78,13 +77,9 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
         isEnabled = true;
         clearTimeout(timemout_reenable);
 
-        $selectedCU && enableFor_selectedCUAndDescendants();
-        $CUsAncestors && enableFor_CUsAncestors();
-
-        // Notes: Even to track (visual and state) changes to the set of CUs, we need to observe changes on the entire
-        // *document* (as opposed to the common ancestor of the CUs). An example of why this is necessary: if an element
-        // is added/resized near the top of the page, the position of the CUs would change.
         MO_fallback.observe(document, init_withSubtree);
+        $CUsAncestors && enableFor_CUsAncestors();
+        $selectedCU && enableFor_selectedCUAndDescendants();
     }
 
     /**
