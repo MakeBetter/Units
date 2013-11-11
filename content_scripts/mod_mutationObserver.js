@@ -117,10 +117,6 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
     }
 
     function handler_fallback(mutations) {
-        // Call this on every mutation, because,in theory, JS code on a page can replace the body element with a new one at
-        // any time, and so the current body may no longer contain $topLevelContainer even if it was inserted earlier
-        //ensureTopLevelContainerIsInDom();
-
         var newUrl = window.location.href;
         if (newUrl !== currentUrl) {
             thisModule.trigger("url-change", newUrl, currentUrl);
@@ -227,15 +223,6 @@ _u.mod_mutationObserver = (function($, mod_chromeAltHack, mod_contentHelper) {
 //            }
 //        }
 //        return true;
-//    }
-
-    // Currently commented out because it mostly likely serves no real use, while possibly impacting performance
-    // Checks if document.body contains the $topLevelContainer element, and appends it to the body if it doesn't.
-//    function ensureTopLevelContainerIsInDom() {
-//        if (!document.body.contains(_u.$topLevelContainer[0])) {
-////        console.log('appending $topLevelContainer to body');
-//            _u.$topLevelContainer.appendTo(document.body);
-//        }
 //    }
 
     return thisModule;
