@@ -214,7 +214,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
         animatedScroll = miscSettings.animatedScroll;
-        animatedScroll_Speed = miscSettings.animatedScroll_Speed;
+        animatedScroll_Speed = animatedScroll? miscSettings.animatedScroll_Speed: Infinity;
         animatedScroll_MaxDuration = miscSettings.animatedScroll_MaxDuration;
 
         // assume this is the default value to start off
@@ -1250,9 +1250,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 (direction === 'right' && newWinLeft > winLeft) ||
                 (direction === 'left' && newWinLeft < winLeft) ) {
 
-                animationDuration = animatedScroll?
-                    Math.min(animatedScroll_MaxDuration, Math.abs(newWinLeft-winLeft) / animatedScroll_Speed):
-                    0;
+                animationDuration = Math.min( animatedScroll_MaxDuration,
+                    Math.abs(newWinLeft-winLeft)/animatedScroll_Speed );
 
                 // TODO: if the animation for vertical scroll is required (see below), this
                 // animation will be terminated instantly. Instead, ideally, a diagonal, animation
@@ -1289,10 +1288,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
                 (direction === 'down' && newWinTop > winTop) ||
                 (direction === 'up' && newWinTop < winTop) ) {
 
-                animationDuration = animatedScroll?
-                    Math.min(animatedScroll_MaxDuration, Math.abs(newWinTop-winTop) / animatedScroll_Speed):
-                    0;
-
+                animationDuration = Math.min( animatedScroll_MaxDuration,
+                    Math.abs(newWinTop-winTop)/animatedScroll_Speed );
                 smoothScroll(window, 'pageYOffset', newWinTop, animationDuration);
             }
         }
