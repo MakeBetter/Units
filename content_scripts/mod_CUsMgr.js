@@ -92,8 +92,6 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         // of the view)
         currentDimmingOpacity,
 
-
-
         body,               // will hold reference to document.body (once that is available within setup())
 
         // cached jQuery objects
@@ -153,7 +151,10 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
 
         // holds the bounding rect calculated for the last selected CU using getBoundingRect()
         // (does not include padding etc applied to the actual overlay drawn on the CU)
-        lastSelectedCUBoundingRect;
+        lastSelectedCUBoundingRect,
+
+        unusableHeaderSpace_lastCalculated,
+        unusableHeaderSpace_lastCalculatedTime = 0;
 
     function reset() {
         // this condition ensures execution of the contained code doesn't happen the first time
@@ -1757,31 +1758,42 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         return rect.width < 10 || rect.height < 10 || rect.width * rect.height < 400;
     }
 
-    // Based on the header selector provided, this returns the *unusable space* at the top of the current view.
+    // Based on the header selector provided, this return a non-negative value that indicates the height
+    // (in pixels) of the *unusable space* at the top of the current view due to header type element(s).
+    // This is required due to "position:fixed" header type elements.
     // Only the part of the header below the view's top is considered. If there is more than one header found
     // we account for all of them.
     // If no header is found etc, 0 is returned;
     function getUnusableSpaceAtTopDueToHeader() {
-        // ignore elements whose bottom is farther from the viewport top than this, because they are almost
-        // certainly not header-like elements. This was done to check against the navigation pane that occurred
-        // as a header on most tumblr blogs, but was placed as a footer on a certain blog. Refer issue #197.
-        // In any case this is a sensible check to make on all pages
-        var maxAllowedBottomFromTop = 300;
-
         if (!headerSelector) {
             return 0;
         }
-        var $headers = $(headerSelector).filter(':visible'),
-            headersLen = $headers.length,
-            max = 0; // NOTE: start at 0, so don't consider anything above the viewport
 
-        for (var i = 0; i < headersLen; ++i) {
-            var rectBottomRelToViewport = $headers[i].getBoundingClientRect().bottom;
-            if (rectBottomRelToViewport > max && rectBottomRelToViewport < maxAllowedBottomFromTop) {
-                max = rectBottomRelToViewport;
+        var now  = Date.now();
+        // calculate only if the last calculation happened more than 100 ms before;
+        // (for performance reasons when this is called for each CU in a loop, etc)
+        if (now - unusableHeaderSpace_lastCalculatedTime > 100) {
+
+            // ignore elements whose bottom is farther from the viewport top than this, because they are almost
+            // certainly not header-like elements. This was done to check against the navigation pane that occurred
+            // as a header on most tumblr blogs, but was placed as a footer on a certain blog. Refer issue #197.
+            // In any case this is a sensible check to make on all pages
+            var maxAllowedBottomFromTop = 300;
+
+            var $headers = $(headerSelector).filter(':visible'),
+                headersLen = $headers.length,
+                max = 0; // NOTE: start at 0, so we don't consider anything above the viewport
+
+            for (var i = 0; i < headersLen; ++i) {
+                var rectBottomRelToViewport = $headers[i].getBoundingClientRect().bottom;
+                if (rectBottomRelToViewport > max && rectBottomRelToViewport < maxAllowedBottomFromTop) {
+                    max = rectBottomRelToViewport;
+                }
             }
+            unusableHeaderSpace_lastCalculated = max;
+            unusableHeaderSpace_lastCalculatedTime = now;
         }
-        return max;
+        return unusableHeaderSpace_lastCalculated;
     }
 
     // handler for the mutation events triggered by the "fallback" mutation observer (defined in mod_mutationObserver.js)
@@ -2177,7 +2189,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             winTop = window.pageYOffset, // window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
-        return CUTop <= winBottom && CUBottom >= winTop;
+        return CUTop <= winBottom && CUBottom >= winTop + getUnusableSpaceAtTopDueToHeader();
     }
 
     // returns true if the specified CU is completely in the viewport, false otherwise
@@ -2189,7 +2201,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             winTop = window.pageYOffset, //window.scrollY, //body.scrollTop,
             winBottom = winTop + window.innerHeight;
 
-        return CUTop >= winTop && CUBottom <= winBottom;
+        return CUTop >= winTop + getUnusableSpaceAtTopDueToHeader() && CUBottom <= winBottom;
     }
 
     function changeFontSize($jQuerySet, isBeingIncreased) {
