@@ -2182,26 +2182,32 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     // returns true if any part of $CU is in the viewport, false otherwise.
     // `CUBoundingRect` is optional; should be passed if already determined by caller
     function isAnyPartOfCUinViewport($CU, CUBoundingRect) {
-        var boundingRect = CUBoundingRect || getBoundingRect($CU),
-            CUTop = boundingRect.top,
-            CUBottom = CUTop + boundingRect.height,
-
-            winTop = window.pageYOffset, // window.scrollY, //body.scrollTop,
-            winBottom = winTop + window.innerHeight;
-
-        return CUTop <= winBottom && CUBottom >= winTop + getUnusableSpaceAtTopDueToHeader();
+       return isCUInViewport($CU, false, CUBoundingRect);
     }
 
     // returns true if the specified CU is completely in the viewport, false otherwise
     // `CUBoundingRect` is optional; should be passed if already determined by caller
     function isCUFullyInViewport($CU, CUBoundingRect) {
+        return isCUInViewport($CU, true, CUBoundingRect);
+    }
+
+    function isCUInViewport($CU, mustBeFullyInViewport, CUBoundingRect) {
         var boundingRect = CUBoundingRect || getBoundingRect($CU),
             CUTop = boundingRect.top,
             CUBottom = CUTop + boundingRect.height,
-            winTop = window.pageYOffset, //window.scrollY, //body.scrollTop,
-            winBottom = winTop + window.innerHeight;
+            CULeft = boundingRect.left,
+            CURight = CULeft + boundingRect.width,
 
-        return CUTop >= winTop + getUnusableSpaceAtTopDueToHeader() && CUBottom <= winBottom;
+            winTop = window.pageYOffset, //window.scrollY, //body.scrollTop,
+            winBottom = winTop + window.innerHeight,
+            winLeft = window.pageXOffset, // window.scrollX,
+            winRight = winLeft + window.innerWidth;
+
+        return mustBeFullyInViewport?
+            (CUTop >= winTop + getUnusableSpaceAtTopDueToHeader() && CUBottom <= winBottom &&
+                CULeft >= winLeft && CURight <= winRight):
+            (CUTop <= winBottom && CUBottom >= winTop + getUnusableSpaceAtTopDueToHeader() &&
+                CULeft <= winRight && CURight >= winLeft);
     }
 
     function changeFontSize($jQuerySet, isBeingIncreased) {
