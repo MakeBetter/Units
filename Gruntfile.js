@@ -55,7 +55,7 @@ module.exports = function(grunt) {
         uglify: {
             my_target: {
                 options: {
-                    sourceMap: 'js/units.min.js.map'
+                    sourceMap: 'units.min.js.map'
                 },
                 files: {
                     'js/units.min.js': ['js/units.js']
