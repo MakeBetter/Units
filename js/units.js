@@ -7686,7 +7686,9 @@ var settings = {
 };
 
 var urlData = {
-    CUs_specifier: "section"
+    //'section' for units.io
+    // '#posts .post' for blog.units.io
+    CUs_specifier: "section, #posts .post"
 };
 _u.mod_commonHelper.stringifyFunctions(urlData);
 expandUrlData(urlData);
