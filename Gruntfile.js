@@ -3,10 +3,10 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         concat: {
-            options: {
-                separator: ';'
-            },
-            dist: {
+            js: {
+                options: {
+                    separator: ';' // Required for concatenating javascript files
+                },
                 src: [ "content_scripts/jquery-2.0.3.min.js",
                     "content_scripts/underscore-dependencies.js",
                     "content_scripts/backbone-events.js",
@@ -41,10 +41,22 @@ module.exports = function(grunt) {
                     "content_scripts/mod_main.js"],
 
                 dest: 'js/units.js'
+            },
+            css: {
+                src: [
+                "stylesheets/css/base.css",
+                "stylesheets/css/skeleton.css",
+                "stylesheets/css/layout.css",
+                "stylesheets/css/units.css"
+                ],
+                dest: 'stylesheets/css/units-all.css'
             }
         },
         uglify: {
             my_target: {
+                options: {
+                    sourceMap: 'js/units.min.js.map'
+                },
                 files: {
                     'js/units.min.js': ['js/units.js']
                 }
