@@ -342,6 +342,12 @@ defaultSettings.urlDataMap = {
         }
     ],
 
+    "instagram.com": [
+        {
+            urlPatterns: ["instagram.com"],
+            CUs_specifier: ".timelineCenter"
+        }
+    ],
 
     "facebook.com": [
         {
