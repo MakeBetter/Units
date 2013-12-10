@@ -66,7 +66,10 @@ urlData objects associated with a URL's domain takes O(1) time, and search for t
 the URL is then restricted to the (very small) array.
 ii) it results in better structure/organization compared to having arrays of regexps at the top level.
 
-6) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
+6)
+i) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
+ii) A selector can be specified as a string or an array of strings. When specified as an array, we consider them in order
+till an element is found.
 
 7) // Guide for standard ("std_") items in urlData:
 This applies to SUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
@@ -267,6 +270,11 @@ defaultSettings.urlDataMap = {
         }
     },
 
+    "units.io": {
+        urlPatterns:["blog.units.io*"],
+        CUs_specifier: ".post"
+    },
+
     "boredpanda.com": [
         {
             urlPatterns: ["www.boredpanda.com"],
@@ -339,7 +347,10 @@ defaultSettings.urlDataMap = {
         {
             // Facebook main feed page
             urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*", "www.facebook.com/hashtag/*"],
-            CUs_specifier: ".genericStreamStory.uiUnifiedStory, ._6kq", //  ._6kq for the new layout
+            CUs_specifier: ".genericStreamStory.uiUnifiedStory, " + // For the original layout. This selector has consistently
+            // worked since Nov 2012. Possibly still exists for some users.
+                           "._5uch._5jmm._5pat, " + // Related to changes made around Nov 2013
+                           "._6kq,", // for the new layout, that has a very limited release at the moment.
             CUs_SUs: {
                 // The last selector in the following apply for the new FB layout (for eg: ._6k6, ._6k2 etc)
                 "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink,  ._6k6" },
@@ -365,10 +376,33 @@ defaultSettings.urlDataMap = {
                 // NOTE: We can afford for these selectors to be non-optimized because these will be looked for inside $CU.
                 // If these were meant for the entire page, then some of these would be very bad!
 
-                std_mainEl: ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), "  +
+                std_mainEl: [
+                    // mainEl is specified as an array of selectors for FB in order of preference.
+                    // The first selector is for shared content, the second for the author of the post.
+
+
+                    // 1. Shared content
+
+                    // original FB layout (was working consistently since Nov 2012)
+                    ".fbMainStreamAttachment a:first-child:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), "  +
                     ".uiStreamAttachments a:not(.highlightSelectorButton, .fbQuestionPollForm a, ._4q5, .lfloat, .shareRedesignContainer>a), " +
                     ".uiStreamSubstory .pronoun-link, .shareText a, a.shareText, " +
-                    "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_", // these are for the new FB layout
+
+
+                    // Since Nov 2013, some users' FB has the selectors changed.
+                    "a.uiVideoThumb, " +
+                    "a._5pb3._5dec, " + // image of shared link
+                    "a._5pc0._5dec, ._5pc1._5dec a, " + // shared photo
+                    "._5pb_.mvm>a, " + // photo. Not a directly "shared" photo, generally a photo that a friend commented on.
+                    "._5pc1._5dec.mbs.mrs a" + // photo in a shared album
+
+                    // Latest FB layout. Rolled out to a very limited set of users.
+                    "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_",
+
+
+                    // 2. Author of post (default main element if shared content not present)
+
+                    ".fwb.fcg a, a.profileLink"],
 
                 std_seeMore: ".text_exposed_link>a"
             },

@@ -553,13 +553,13 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
     // Also adds default 'miniDesc' and 'kbdShortcuts' values, if not specified by SUs/actions defined in urlData
     function expandUrlData(urlData) {
 
-        // if key value at property 'key' in object 'obj' is a string, it is expanded to point to an object having a property
-        // 'selector' that points to the string instead.
-        var expandPropertyToObjIfString = function(obj, key) {
-            var str;
-            if (typeof (str = obj[key]) === "string") {
+        // if key value at property 'key' in object 'obj' is a string or an Array, it is expanded to point to an object
+        // having a property 'selector' that points to the string instead.
+        var expandPropertyToObjIfStringOrArray = function(obj, key) {
+            var value;
+            if (typeof (value = obj[key]) === "string" || Array.isArray(value)) {
                 obj[key] = {
-                    selector: str
+                    selector: value
                 };
             }
         };
@@ -581,13 +581,13 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
         var expandSUsOrActions = function(SUsOrActions, scope) {
             if (typeof SUsOrActions === "object") {
                 for (var SUorAction_Name in SUsOrActions) {
-                    expandPropertyToObjIfString(SUsOrActions, SUorAction_Name);
+                    expandPropertyToObjIfStringOrArray(SUsOrActions, SUorAction_Name);
                     supplementWithDefaultValues(SUsOrActions[SUorAction_Name], SUorAction_Name, scope);
                 }
             }
         };
 
-        expandPropertyToObjIfString(urlData, 'CUs_specifier');
+        expandPropertyToObjIfStringOrArray(urlData, 'CUs_specifier');
 
         expandSUsOrActions(urlData.CUs_SUs, "CUs");
         expandSUsOrActions(urlData.CUs_actions, "CUs");

@@ -460,10 +460,32 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
      */
     function getMainElement($CU) {
         var $mainElement;
-        mainElementSelector && ($mainElement = $CU.find(mainElementSelector));
-        if ($mainElement && $mainElement.length) {
-            return $mainElement[0];
+
+        if (mainElementSelector) {
+
+            // If the mainElementSelector is an array, then check the selectors in order till a mainElement is found.
+            if (Array.isArray(mainElementSelector)) {
+                var i = 0;
+
+                while (!($mainElement && $mainElement.length) && i <= mainElementSelector.length) {
+                    $mainElement = $CU.find(mainElementSelector[i]);
+                    i++;
+                }
+            }
+            else {
+                $mainElement = $CU.find(mainElementSelector);
+            }
+
+            if ($mainElement && $mainElement.length) {
+                return $mainElement[0];
+            }
+
         }
+
+//        mainElementSelector && ($mainElement = $CU.find(mainElementSelector));
+//        if ($mainElement && $mainElement.length) {
+//            return $mainElement[0];
+//        }
 
         // If main element not specified or found, then return the first focusable in the CU.
         var $containedFocusables = $getContainedFocusables($CU).filter(function() {
