@@ -350,7 +350,7 @@ defaultSettings.urlDataMap = {
             CUs_specifier: ".genericStreamStory.uiUnifiedStory, " + // For the original layout. This selector has consistently
             // worked since Nov 2012. Possibly still exists for some users.
                            "._5uch._5jmm._5pat, " + // Related to changes made around Nov 2013
-                           "._6kq,", // for the new layout, that has a very limited release at the moment.
+                           "._6kq", // for the new layout, that has a very limited release at the moment.
             CUs_SUs: {
                 // The last selector in the following apply for the new FB layout (for eg: ._6k6, ._6k2 etc)
                 "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink,  ._6k6" },
