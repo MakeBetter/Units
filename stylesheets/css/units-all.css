@@ -1,0 +1,2120 @@
+/*
+* Skeleton V1.2
+* Copyright 2011, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 6/20/2012
+*/
+/* Table of Content
+==================================================
+	#Reset & Basics
+	#Basic Styles
+	#Site Styles
+	#Typography
+	#Links
+	#Lists
+	#Images
+	#Buttons
+	#Forms
+	#Misc */
+/* #Reset & Basics (Inspired by E. Meyers)
+================================================== */
+/* line 29, ../scss/base.scss */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* line 36, ../scss/base.scss */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+/* line 38, ../scss/base.scss */
+body {
+  line-height: 1;
+}
+
+/* line 40, ../scss/base.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 42, ../scss/base.scss */
+blockquote, q {
+  quotes: none;
+}
+
+/* line 45, ../scss/base.scss */
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* line 48, ../scss/base.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* #Basic Styles
+================================================== */
+/* line 55, ../scss/base.scss */
+body {
+  background: #fff;
+  font: 14px/21px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #444444;
+  -webkit-font-smoothing: antialiased;
+  /* Fix for webkit rendering */
+  -webkit-text-size-adjust: 100%;
+}
+
+/* #Typography
+================================================== */
+/* line 66, ../scss/base.scss */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: normal;
+}
+
+/* line 69, ../scss/base.scss */
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  font-weight: inherit;
+}
+
+/* line 70, ../scss/base.scss */
+h1 {
+  font-size: 46px;
+  line-height: 50px;
+  margin-bottom: 14px;
+}
+
+/* line 71, ../scss/base.scss */
+h2 {
+  font-size: 35px;
+  line-height: 40px;
+  margin-bottom: 10px;
+}
+
+/* line 72, ../scss/base.scss */
+h3 {
+  font-size: 28px;
+  line-height: 34px;
+  margin-bottom: 8px;
+}
+
+/* line 73, ../scss/base.scss */
+h4 {
+  font-size: 21px;
+  line-height: 30px;
+  margin-bottom: 4px;
+}
+
+/* line 74, ../scss/base.scss */
+h5 {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+/* line 75, ../scss/base.scss */
+h6 {
+  font-size: 17px;
+  line-height: 21px;
+}
+
+/* line 76, ../scss/base.scss */
+.subheader {
+  color: #777;
+}
+
+/* line 78, ../scss/base.scss */
+p {
+  margin: 0 0 20px 0;
+}
+
+/* line 79, ../scss/base.scss */
+p img {
+  margin: 0;
+}
+
+/* line 80, ../scss/base.scss */
+p.lead {
+  font-size: 21px;
+  line-height: 27px;
+  color: #777;
+}
+
+/* line 82, ../scss/base.scss */
+em {
+  font-style: italic;
+}
+
+/* line 83, ../scss/base.scss */
+strong {
+  font-weight: bold;
+  color: #333;
+}
+
+/* line 84, ../scss/base.scss */
+small {
+  font-size: 80%;
+}
+
+/*	Blockquotes  */
+/* line 87, ../scss/base.scss */
+blockquote, blockquote p {
+  font-size: 17px;
+  line-height: 24px;
+  color: #777;
+  font-style: italic;
+}
+
+/* line 88, ../scss/base.scss */
+blockquote {
+  margin: 0 0 20px;
+  padding: 9px 20px 0 19px;
+  border-left: 1px solid #ddd;
+}
+
+/* line 89, ../scss/base.scss */
+blockquote cite {
+  display: block;
+  font-size: 12px;
+  color: #555;
+}
+
+/* line 90, ../scss/base.scss */
+blockquote cite:before {
+  content: "\2014 \0020";
+}
+
+/* line 91, ../scss/base.scss */
+blockquote cite a, blockquote cite a:visited, blockquote cite a:visited {
+  color: #555;
+}
+
+/* line 93, ../scss/base.scss */
+hr {
+  border: solid #ddd;
+  border-width: 1px 0 0;
+  clear: both;
+  margin: 10px 0 30px;
+  height: 0;
+}
+
+/* #Links
+================================================== */
+/* #Lists
+================================================== */
+/* line 105, ../scss/base.scss */
+ul, ol {
+  margin-bottom: 20px;
+}
+
+/* line 106, ../scss/base.scss */
+ul {
+  list-style: none outside;
+}
+
+/* line 107, ../scss/base.scss */
+ol {
+  list-style: decimal;
+}
+
+/* line 108, ../scss/base.scss */
+ol, ul.square, ul.circle, ul.disc {
+  margin-left: 30px;
+}
+
+/* line 109, ../scss/base.scss */
+ul.square {
+  list-style: square outside;
+}
+
+/* line 110, ../scss/base.scss */
+ul.circle {
+  list-style: circle outside;
+}
+
+/* line 111, ../scss/base.scss */
+ul.disc {
+  list-style: disc outside;
+}
+
+/* line 113, ../scss/base.scss */
+ul ul, ul ol,
+ol ol, ol ul {
+  margin: 4px 0 5px 30px;
+  font-size: 90%;
+}
+
+/* line 115, ../scss/base.scss */
+ul ul li, ul ol li,
+ol ol li, ol ul li {
+  margin-bottom: 6px;
+}
+
+/* line 116, ../scss/base.scss */
+li {
+  line-height: 18px;
+  margin-bottom: 12px;
+}
+
+/* line 117, ../scss/base.scss */
+ul.large li {
+  line-height: 21px;
+}
+
+/* line 118, ../scss/base.scss */
+li p {
+  line-height: 21px;
+}
+
+/* #Images
+================================================== */
+/* line 123, ../scss/base.scss */
+img.scale-with-grid {
+  max-width: 100%;
+  height: auto;
+}
+
+/* #Buttons
+================================================== */
+/* line 135, ../scss/base.scss */
+.button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  background: #eee;
+  /* Old browsers */
+  border: 1px solid #aaa;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  color: #444;
+  display: inline-block;
+  font-size: 11px;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  line-height: normal;
+  padding: 8px 10px;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* line 165, ../scss/base.scss */
+.button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover {
+  color: #222;
+  background: #ddd;
+  /* Old browsers */
+  border: 1px solid #888;
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+}
+
+/* line 182, ../scss/base.scss */
+.button:active,
+button:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+input[type="button"]:active {
+  border: 1px solid #666;
+  background: #ccc;
+  /* Old browsers */
+  background: #cccccc -moz-linear-gradient(top, rgba(255, 255, 255, 0.35) 0%, rgba(10, 10, 10, 0.4) 100%);
+  /* FF3.6+ */
+  background: #cccccc -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255, 255, 255, 0.35)), color-stop(100%, rgba(10, 10, 10, 0.4)));
+  /* Chrome,Safari4+ */
+  background: #cccccc -webkit-linear-gradient(top, rgba(255, 255, 255, 0.35) 0%, rgba(10, 10, 10, 0.4) 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: #cccccc -o-linear-gradient(top, rgba(255, 255, 255, 0.35) 0%, rgba(10, 10, 10, 0.4) 100%);
+  /* Opera11.10+ */
+  background: #cccccc -ms-linear-gradient(top, rgba(255, 255, 255, 0.35) 0%, rgba(10, 10, 10, 0.4) 100%);
+  /* IE10+ */
+  background: #cccccc linear-gradient(top, rgba(255, 255, 255, 0.35) 0%, rgba(10, 10, 10, 0.4) 100%);
+  /* W3C */
+}
+
+/* line 196, ../scss/base.scss */
+.button.full-width,
+button.full-width,
+input[type="submit"].full-width,
+input[type="reset"].full-width,
+input[type="button"].full-width {
+  width: 100%;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-align: center;
+}
+
+/* Fix for odd Mozilla border & padding issues */
+/* line 204, ../scss/base.scss */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* #Forms
+================================================== */
+/* line 213, ../scss/base.scss */
+form {
+  margin-bottom: 20px;
+}
+
+/* line 215, ../scss/base.scss */
+fieldset {
+  margin-bottom: 20px;
+}
+
+/* line 221, ../scss/base.scss */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+  border: 1px solid #ccc;
+  padding: 6px 4px;
+  outline: none;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font: 13px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #777;
+  margin: 0;
+  width: 210px;
+  max-width: 100%;
+  display: block;
+  margin-bottom: 20px;
+  background: #fff;
+}
+
+/* line 236, ../scss/base.scss */
+select {
+  padding: 0;
+}
+
+/* line 241, ../scss/base.scss */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  border: 1px solid #aaa;
+  color: #444;
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* line 247, ../scss/base.scss */
+textarea {
+  min-height: 60px;
+}
+
+/* line 250, ../scss/base.scss */
+label,
+legend {
+  display: block;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* line 254, ../scss/base.scss */
+select {
+  width: 220px;
+}
+
+/* line 256, ../scss/base.scss */
+input[type="checkbox"] {
+  display: inline;
+}
+
+/* line 259, ../scss/base.scss */
+label span,
+legend span {
+  font-weight: normal;
+  font-size: 13px;
+  color: #444;
+}
+
+/* #Misc
+================================================== */
+/* line 266, ../scss/base.scss */
+.remove-bottom {
+  margin-bottom: 0 !important;
+}
+
+/* line 267, ../scss/base.scss */
+.half-bottom {
+  margin-bottom: 10px !important;
+}
+
+/* line 268, ../scss/base.scss */
+.add-bottom {
+  margin-bottom: 20px !important;
+}
+
+/**
+-----------
+NOTE, by Tanushree: This is a modified version of skeleton.scss. An additional grid for tablet landscape has been added. This was
+needed so we could fit in a 150px navigation menu along with the 16 column container.
+NOTE: This new grid is used only for widths between 1110px and 1024px. For all higher widths, and lower widths upto 959px, the base
+grid is used still.
+*/
+/*
+* Skeleton V1.2
+* Copyright 2011, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 6/20/2012
+*/
+/* Table of Contents
+==================================================
+    #Base 960 Grid
+    #Tablet landscape and 1024px desktop. Added for UnitsSite.
+    #Tablet (Portrait)
+    #Mobile (Portrait)
+    #Mobile (Landscape)
+    #Clearing */
+/* #Base 960 Grid
+================================================== */
+/* line 33, ../scss/skeleton.scss */
+.container {
+  position: relative;
+  width: 960px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* line 35, ../scss/skeleton.scss */
+.container .column,
+.container .columns {
+  float: left;
+  display: inline;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* line 36, ../scss/skeleton.scss */
+.row {
+  margin-bottom: 20px;
+}
+
+/* Nested Column Classes */
+/* line 39, ../scss/skeleton.scss */
+.column.alpha, .columns.alpha {
+  margin-left: 0;
+}
+
+/* line 40, ../scss/skeleton.scss */
+.column.omega, .columns.omega {
+  margin-right: 0;
+}
+
+/* Base Grid */
+/* line 44, ../scss/skeleton.scss */
+.container .one.column,
+.container .one.columns {
+  width: 40px;
+}
+
+/* line 45, ../scss/skeleton.scss */
+.container .two.columns {
+  width: 100px;
+}
+
+/* line 46, ../scss/skeleton.scss */
+.container .three.columns {
+  width: 160px;
+}
+
+/* line 47, ../scss/skeleton.scss */
+.container .four.columns {
+  width: 220px;
+}
+
+/* line 48, ../scss/skeleton.scss */
+.container .five.columns {
+  width: 280px;
+}
+
+/* line 49, ../scss/skeleton.scss */
+.container .six.columns {
+  width: 340px;
+}
+
+/* line 50, ../scss/skeleton.scss */
+.container .seven.columns {
+  width: 400px;
+}
+
+/* line 51, ../scss/skeleton.scss */
+.container .eight.columns {
+  width: 460px;
+}
+
+/* line 52, ../scss/skeleton.scss */
+.container .nine.columns {
+  width: 520px;
+}
+
+/* line 53, ../scss/skeleton.scss */
+.container .ten.columns {
+  width: 580px;
+}
+
+/* line 54, ../scss/skeleton.scss */
+.container .eleven.columns {
+  width: 640px;
+}
+
+/* line 55, ../scss/skeleton.scss */
+.container .twelve.columns {
+  width: 700px;
+}
+
+/* line 56, ../scss/skeleton.scss */
+.container .thirteen.columns {
+  width: 760px;
+}
+
+/* line 57, ../scss/skeleton.scss */
+.container .fourteen.columns {
+  width: 820px;
+}
+
+/* line 58, ../scss/skeleton.scss */
+.container .fifteen.columns {
+  width: 880px;
+}
+
+/* line 59, ../scss/skeleton.scss */
+.container .sixteen.columns {
+  width: 940px;
+}
+
+/* line 61, ../scss/skeleton.scss */
+.container .one-third.column {
+  width: 300px;
+}
+
+/* line 62, ../scss/skeleton.scss */
+.container .two-thirds.column {
+  width: 620px;
+}
+
+/* Offsets */
+/* line 65, ../scss/skeleton.scss */
+.container .offset-by-one {
+  padding-left: 60px;
+}
+
+/* line 66, ../scss/skeleton.scss */
+.container .offset-by-two {
+  padding-left: 120px;
+}
+
+/* line 67, ../scss/skeleton.scss */
+.container .offset-by-three {
+  padding-left: 180px;
+}
+
+/* line 68, ../scss/skeleton.scss */
+.container .offset-by-four {
+  padding-left: 240px;
+}
+
+/* line 69, ../scss/skeleton.scss */
+.container .offset-by-five {
+  padding-left: 300px;
+}
+
+/* line 70, ../scss/skeleton.scss */
+.container .offset-by-six {
+  padding-left: 360px;
+}
+
+/* line 71, ../scss/skeleton.scss */
+.container .offset-by-seven {
+  padding-left: 420px;
+}
+
+/* line 72, ../scss/skeleton.scss */
+.container .offset-by-eight {
+  padding-left: 480px;
+}
+
+/* line 73, ../scss/skeleton.scss */
+.container .offset-by-nine {
+  padding-left: 540px;
+}
+
+/* line 74, ../scss/skeleton.scss */
+.container .offset-by-ten {
+  padding-left: 600px;
+}
+
+/* line 75, ../scss/skeleton.scss */
+.container .offset-by-eleven {
+  padding-left: 660px;
+}
+
+/* line 76, ../scss/skeleton.scss */
+.container .offset-by-twelve {
+  padding-left: 720px;
+}
+
+/* line 77, ../scss/skeleton.scss */
+.container .offset-by-thirteen {
+  padding-left: 780px;
+}
+
+/* line 78, ../scss/skeleton.scss */
+.container .offset-by-fourteen {
+  padding-left: 840px;
+}
+
+/* line 79, ../scss/skeleton.scss */
+.container .offset-by-fifteen {
+  padding-left: 900px;
+}
+
+/* [Modification for UnitsSite]
+#Tablet landscape and 1024px desktop.
+This column width is introduced to accommodate the 150px left navigation menu along with a sixteen column container for a
+1024px screen width.
+
+NOTE: This grid is used only for widths between 1110px and 1024px. For all higher widths, and lower widths upto 959px, the base
+grid is used.
+================================================== */
+/* Note: Design for a width of 880px*/
+@media only screen and (min-width: 1024px) and (max-width: 1110px) {
+  /* line 94, ../scss/skeleton.scss */
+  .container {
+    width: 880px;
+  }
+
+  /* line 96, ../scss/skeleton.scss */
+  .container .column,
+  .container .columns {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  /* line 97, ../scss/skeleton.scss */
+  .column.alpha, .columns.alpha {
+    margin-left: 0;
+    margin-right: 10px;
+  }
+
+  /* line 98, ../scss/skeleton.scss */
+  .column.omega, .columns.omega {
+    margin-right: 0;
+    margin-left: 10px;
+  }
+
+  /* line 99, ../scss/skeleton.scss */
+  .alpha.omega {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* line 102, ../scss/skeleton.scss */
+  .container .one.column,
+  .container .one.columns {
+    width: 34px;
+  }
+
+  /* line 103, ../scss/skeleton.scss */
+  .container .two.columns {
+    width: 88px;
+  }
+
+  /* line 104, ../scss/skeleton.scss */
+  .container .three.columns {
+    width: 142px;
+  }
+
+  /* line 105, ../scss/skeleton.scss */
+  .container .four.columns {
+    width: 196px;
+  }
+
+  /* line 106, ../scss/skeleton.scss */
+  .container .five.columns {
+    width: 250px;
+  }
+
+  /* line 107, ../scss/skeleton.scss */
+  .container .six.columns {
+    width: 304px;
+  }
+
+  /* line 108, ../scss/skeleton.scss */
+  .container .seven.columns {
+    width: 358px;
+  }
+
+  /* line 109, ../scss/skeleton.scss */
+  .container .eight.columns {
+    width: 412px;
+  }
+
+  /* line 110, ../scss/skeleton.scss */
+  .container .nine.columns {
+    width: 466px;
+  }
+
+  /* line 111, ../scss/skeleton.scss */
+  .container .ten.columns {
+    width: 520px;
+  }
+
+  /* line 112, ../scss/skeleton.scss */
+  .container .eleven.columns {
+    width: 574px;
+  }
+
+  /* line 113, ../scss/skeleton.scss */
+  .container .twelve.columns {
+    width: 628px;
+  }
+
+  /* line 114, ../scss/skeleton.scss */
+  .container .thirteen.columns {
+    width: 682px;
+  }
+
+  /* line 115, ../scss/skeleton.scss */
+  .container .fourteen.columns {
+    width: 736px;
+  }
+
+  /* line 116, ../scss/skeleton.scss */
+  .container .fifteen.columns {
+    width: 790px;
+  }
+
+  /* line 117, ../scss/skeleton.scss */
+  .container .sixteen.columns {
+    width: 844px;
+  }
+
+  /* line 119, ../scss/skeleton.scss */
+  .container .one-third.column {
+    width: 268px;
+  }
+
+  /* line 120, ../scss/skeleton.scss */
+  .container .two-thirds.column {
+    width: 549px;
+  }
+
+  /* Offsets */
+  /* line 123, ../scss/skeleton.scss */
+  .container .offset-by-one {
+    padding-left: 54px;
+  }
+
+  /* line 124, ../scss/skeleton.scss */
+  .container .offset-by-two {
+    padding-left: 108px;
+  }
+
+  /* line 125, ../scss/skeleton.scss */
+  .container .offset-by-three {
+    padding-left: 162px;
+  }
+
+  /* line 126, ../scss/skeleton.scss */
+  .container .offset-by-four {
+    padding-left: 216px;
+  }
+
+  /* line 127, ../scss/skeleton.scss */
+  .container .offset-by-five {
+    padding-left: 270px;
+  }
+
+  /* line 128, ../scss/skeleton.scss */
+  .container .offset-by-six {
+    padding-left: 324px;
+  }
+
+  /* line 129, ../scss/skeleton.scss */
+  .container .offset-by-seven {
+    padding-left: 378px;
+  }
+
+  /* line 130, ../scss/skeleton.scss */
+  .container .offset-by-eight {
+    padding-left: 432px;
+  }
+
+  /* line 131, ../scss/skeleton.scss */
+  .container .offset-by-nine {
+    padding-left: 486px;
+  }
+
+  /* line 132, ../scss/skeleton.scss */
+  .container .offset-by-ten {
+    padding-left: 540px;
+  }
+
+  /* line 133, ../scss/skeleton.scss */
+  .container .offset-by-eleven {
+    padding-left: 594px;
+  }
+
+  /* line 134, ../scss/skeleton.scss */
+  .container .offset-by-twelve {
+    padding-left: 648px;
+  }
+
+  /* line 135, ../scss/skeleton.scss */
+  .container .offset-by-thirteen {
+    padding-left: 702px;
+  }
+
+  /* line 136, ../scss/skeleton.scss */
+  .container .offset-by-fourteen {
+    padding-left: 756px;
+  }
+
+  /* line 137, ../scss/skeleton.scss */
+  .container .offset-by-fifteen {
+    padding-left: 810px;
+  }
+}
+/* #Tablet (Portrait)
+================================================== */
+/* Note: Design for a width of 768px */
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+  /* line 147, ../scss/skeleton.scss */
+  .container {
+    width: 768px;
+  }
+
+  /* line 149, ../scss/skeleton.scss */
+  .container .column,
+  .container .columns {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  /* line 150, ../scss/skeleton.scss */
+  .column.alpha, .columns.alpha {
+    margin-left: 0;
+    margin-right: 10px;
+  }
+
+  /* line 151, ../scss/skeleton.scss */
+  .column.omega, .columns.omega {
+    margin-right: 0;
+    margin-left: 10px;
+  }
+
+  /* line 152, ../scss/skeleton.scss */
+  .alpha.omega {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* line 155, ../scss/skeleton.scss */
+  .container .one.column,
+  .container .one.columns {
+    width: 28px;
+  }
+
+  /* line 156, ../scss/skeleton.scss */
+  .container .two.columns {
+    width: 76px;
+  }
+
+  /* line 157, ../scss/skeleton.scss */
+  .container .three.columns {
+    width: 124px;
+  }
+
+  /* line 158, ../scss/skeleton.scss */
+  .container .four.columns {
+    width: 172px;
+  }
+
+  /* line 159, ../scss/skeleton.scss */
+  .container .five.columns {
+    width: 220px;
+  }
+
+  /* line 160, ../scss/skeleton.scss */
+  .container .six.columns {
+    width: 268px;
+  }
+
+  /* line 161, ../scss/skeleton.scss */
+  .container .seven.columns {
+    width: 316px;
+  }
+
+  /* line 162, ../scss/skeleton.scss */
+  .container .eight.columns {
+    width: 364px;
+  }
+
+  /* line 163, ../scss/skeleton.scss */
+  .container .nine.columns {
+    width: 412px;
+  }
+
+  /* line 164, ../scss/skeleton.scss */
+  .container .ten.columns {
+    width: 460px;
+  }
+
+  /* line 165, ../scss/skeleton.scss */
+  .container .eleven.columns {
+    width: 508px;
+  }
+
+  /* line 166, ../scss/skeleton.scss */
+  .container .twelve.columns {
+    width: 556px;
+  }
+
+  /* line 167, ../scss/skeleton.scss */
+  .container .thirteen.columns {
+    width: 604px;
+  }
+
+  /* line 168, ../scss/skeleton.scss */
+  .container .fourteen.columns {
+    width: 652px;
+  }
+
+  /* line 169, ../scss/skeleton.scss */
+  .container .fifteen.columns {
+    width: 700px;
+  }
+
+  /* line 170, ../scss/skeleton.scss */
+  .container .sixteen.columns {
+    width: 748px;
+  }
+
+  /* line 172, ../scss/skeleton.scss */
+  .container .one-third.column {
+    width: 236px;
+  }
+
+  /* line 173, ../scss/skeleton.scss */
+  .container .two-thirds.column {
+    width: 492px;
+  }
+
+  /* Offsets */
+  /* line 176, ../scss/skeleton.scss */
+  .container .offset-by-one {
+    padding-left: 48px;
+  }
+
+  /* line 177, ../scss/skeleton.scss */
+  .container .offset-by-two {
+    padding-left: 96px;
+  }
+
+  /* line 178, ../scss/skeleton.scss */
+  .container .offset-by-three {
+    padding-left: 144px;
+  }
+
+  /* line 179, ../scss/skeleton.scss */
+  .container .offset-by-four {
+    padding-left: 192px;
+  }
+
+  /* line 180, ../scss/skeleton.scss */
+  .container .offset-by-five {
+    padding-left: 240px;
+  }
+
+  /* line 181, ../scss/skeleton.scss */
+  .container .offset-by-six {
+    padding-left: 288px;
+  }
+
+  /* line 182, ../scss/skeleton.scss */
+  .container .offset-by-seven {
+    padding-left: 336px;
+  }
+
+  /* line 183, ../scss/skeleton.scss */
+  .container .offset-by-eight {
+    padding-left: 384px;
+  }
+
+  /* line 184, ../scss/skeleton.scss */
+  .container .offset-by-nine {
+    padding-left: 432px;
+  }
+
+  /* line 185, ../scss/skeleton.scss */
+  .container .offset-by-ten {
+    padding-left: 480px;
+  }
+
+  /* line 186, ../scss/skeleton.scss */
+  .container .offset-by-eleven {
+    padding-left: 528px;
+  }
+
+  /* line 187, ../scss/skeleton.scss */
+  .container .offset-by-twelve {
+    padding-left: 576px;
+  }
+
+  /* line 188, ../scss/skeleton.scss */
+  .container .offset-by-thirteen {
+    padding-left: 624px;
+  }
+
+  /* line 189, ../scss/skeleton.scss */
+  .container .offset-by-fourteen {
+    padding-left: 672px;
+  }
+
+  /* line 190, ../scss/skeleton.scss */
+  .container .offset-by-fifteen {
+    padding-left: 720px;
+  }
+}
+/*  #Mobile (Portrait)
+================================================== */
+/* Note: Design for a width of 320px */
+@media only screen and (max-width: 767px) {
+  /* line 200, ../scss/skeleton.scss */
+  .container {
+    width: 300px;
+  }
+
+  /* line 202, ../scss/skeleton.scss */
+  .container .columns,
+  .container .column {
+    margin: 0;
+  }
+
+  /* line 222, ../scss/skeleton.scss */
+  .container .one.column,
+  .container .one.columns,
+  .container .two.columns,
+  .container .three.columns,
+  .container .four.columns,
+  .container .five.columns,
+  .container .six.columns,
+  .container .seven.columns,
+  .container .eight.columns,
+  .container .nine.columns,
+  .container .ten.columns,
+  .container .eleven.columns,
+  .container .twelve.columns,
+  .container .thirteen.columns,
+  .container .fourteen.columns,
+  .container .fifteen.columns,
+  .container .sixteen.columns,
+  .container .one-third.column,
+  .container .two-thirds.column {
+    width: 300px;
+  }
+
+  /* Offsets */
+  /* line 239, ../scss/skeleton.scss */
+  .container .offset-by-one,
+  .container .offset-by-two,
+  .container .offset-by-three,
+  .container .offset-by-four,
+  .container .offset-by-five,
+  .container .offset-by-six,
+  .container .offset-by-seven,
+  .container .offset-by-eight,
+  .container .offset-by-nine,
+  .container .offset-by-ten,
+  .container .offset-by-eleven,
+  .container .offset-by-twelve,
+  .container .offset-by-thirteen,
+  .container .offset-by-fourteen,
+  .container .offset-by-fifteen {
+    padding-left: 0;
+  }
+}
+/* #Mobile (Landscape)
+================================================== */
+/* Note: Design for a width of 480px */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  /* line 250, ../scss/skeleton.scss */
+  .container {
+    width: 420px;
+  }
+
+  /* line 252, ../scss/skeleton.scss */
+  .container .columns,
+  .container .column {
+    margin: 0;
+  }
+
+  /* line 272, ../scss/skeleton.scss */
+  .container .one.column,
+  .container .one.columns,
+  .container .two.columns,
+  .container .three.columns,
+  .container .four.columns,
+  .container .five.columns,
+  .container .six.columns,
+  .container .seven.columns,
+  .container .eight.columns,
+  .container .nine.columns,
+  .container .ten.columns,
+  .container .eleven.columns,
+  .container .twelve.columns,
+  .container .thirteen.columns,
+  .container .fourteen.columns,
+  .container .fifteen.columns,
+  .container .sixteen.columns,
+  .container .one-third.column,
+  .container .two-thirds.column {
+    width: 420px;
+  }
+}
+/* #Clearing
+================================================== */
+/* Self Clearing Goodness */
+/* line 280, ../scss/skeleton.scss */
+.container:after {
+  content: "\0020";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+/* Use clearfix class on parent to clear nested columns,
+or wrap each row of columns in a <div class="row"> */
+/* line 287, ../scss/skeleton.scss */
+.clearfix:before,
+.clearfix:after,
+.row:before,
+.row:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
+/* line 295, ../scss/skeleton.scss */
+.row:after,
+.clearfix:after {
+  clear: both;
+}
+
+/* line 298, ../scss/skeleton.scss */
+.row,
+.clearfix {
+  zoom: 1;
+}
+
+/* You can also use a <br class="clear" /> to clear columns */
+/* line 302, ../scss/skeleton.scss */
+.clear {
+  clear: both;
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
+/* line 4, ../scss/layout.scss */
+.under-construction {
+  display: none;
+  background-color: lightgoldenrodyellow;
+  position: fixed;
+  right: 20px;
+}
+
+/* Table of Content
+==================================================
+	#Site Styles
+	#Home Page
+	#Media Queries
+	#Font-Face */
+/* #Site Styles
+================================================== */
+/* line 21, ../scss/layout.scss */
+body {
+  color: #444444;
+}
+
+/* line 25, ../scss/layout.scss */
+a {
+  color: #999999;
+  cursor: pointer;
+  text-decoration: none;
+}
+/* line 30, ../scss/layout.scss */
+a:hover {
+  color: #444444;
+}
+
+/* line 35, ../scss/layout.scss */
+p, li {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+/* line 40, ../scss/layout.scss */
+li {
+  line-height: 22px;
+}
+
+/* line 44, ../scss/layout.scss */
+.fixer {
+  clear: both;
+}
+
+/* line 48, ../scss/layout.scss */
+h3 {
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+/* line 53, ../scss/layout.scss */
+.bold {
+  font-weight: bold;
+  color: #444;
+}
+
+/* line 59, ../scss/layout.scss */
+header {
+  padding: 15px 0;
+}
+/* line 62, ../scss/layout.scss */
+header span {
+  margin: 0 0 0 20px;
+}
+/* line 66, ../scss/layout.scss */
+header a {
+  font-size: 16px;
+  float: right;
+  color: #999999;
+}
+/* line 71, ../scss/layout.scss */
+header a:hover {
+  color: #444444;
+}
+
+/* line 78, ../scss/layout.scss */
+footer {
+  height: 100px;
+  background-color: #333333;
+  color: #eeeeee;
+}
+/* line 83, ../scss/layout.scss */
+footer a {
+  color: #999999;
+}
+/* line 86, ../scss/layout.scss */
+footer a:hover {
+  color: #eee;
+}
+
+/* #Home page
+================================================== */
+/* line 95, ../scss/layout.scss */
+nav {
+  padding-top: 60px;
+  position: fixed;
+}
+/* line 9, ../scss/_base-variables.scss */
+nav > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 130px;
+}
+/* line 16, ../scss/_base-variables.scss */
+nav li {
+  margin: 0;
+  color: #999999;
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #bbb;
+}
+/* line 27, ../scss/_base-variables.scss */
+nav li.menu-selected, nav li:hover {
+  color: #333333;
+  border-bottom: 1px solid #999;
+  transition: all 0.5s ease-out;
+}
+/* line 35, ../scss/_base-variables.scss */
+nav a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  padding: 10px 5px 5px 5px;
+}
+
+/* line 104, ../scss/layout.scss */
+section {
+  padding: 30px;
+  margin: 10px 0 20px 0;
+  text-align: justify;
+  position: relative;
+  /* to make this a positioned parent */
+  /* Default color of section*/
+  background-color: #F4F1D7;
+  border: 1px solid #e9e3af;
+}
+/* line 114, ../scss/layout.scss */
+section h4 {
+  text-align: center;
+}
+
+/* Section individual colors */
+/* line 121, ../scss/layout.scss */
+section#home {
+  background-color: #F4F1D7;
+  border: 1px solid #e9e3af;
+}
+
+/* line 126, ../scss/layout.scss */
+section#core-concept {
+  background-color: #8CBEB2;
+  color: white;
+  border: 1px solid #6bac9c;
+}
+
+/* line 132, ../scss/layout.scss */
+section.feature {
+  background-color: #fbf4f0;
+  border-color: #f8ebe4;
+}
+/* line 136, ../scss/layout.scss */
+section.feature h4 {
+  color: #F06060;
+  font-weight: bold;
+}
+/* line 141, ../scss/layout.scss */
+section.feature:nth-child(2n) {
+  background-color: #f8ebe4;
+  border-color: #f5e2d7;
+}
+
+/* line 147, ../scss/layout.scss */
+section#supported-websites {
+  background-color: #45687d;
+  border-color: #334D5C;
+}
+
+/* Hero section (corresponds to 'Home' on the navigation menu') */
+/* line 154, ../scss/layout.scss */
+#home {
+  text-align: center;
+  padding: 20px;
+}
+/* line 158, ../scss/layout.scss */
+#home .title {
+  font-size: 6em;
+  line-height: 1;
+  color: #666666;
+}
+/* line 164, ../scss/layout.scss */
+#home .beta {
+  font-size: 0.2em;
+  color: #999999;
+}
+/* line 169, ../scss/layout.scss */
+#home .hero-text {
+  font-size: 1.5em;
+  line-height: 1.2;
+  width: 80%;
+  margin: 10px auto;
+}
+/* line 176, ../scss/layout.scss */
+#home .tagline {
+  color: gray;
+}
+/* line 180, ../scss/layout.scss */
+#home .description {
+  font-size: 1.3em;
+}
+/* line 184, ../scss/layout.scss */
+#home .install-button {
+  font-size: 150%;
+  background: #02a6eb;
+  color: white;
+  border: 1px solid #eaeaea;
+  margin: 20px 0;
+}
+/* line 191, ../scss/layout.scss */
+#home .install-button:hover {
+  background: #029fe1;
+  border: 1px solid #fafafa;
+}
+/* line 196, ../scss/layout.scss */
+#home .install-button .small-text {
+  font-size: 50%;
+}
+/* line 201, ../scss/layout.scss */
+#home .main-features {
+  margin-top: 40px;
+}
+/* line 203, ../scss/layout.scss */
+#home .main-features h5 {
+  font-weight: bold;
+}
+
+/* Core concept section*/
+/* line 212, ../scss/layout.scss */
+section#core-concept {
+  text-align: center;
+  margin: auto;
+}
+/* line 216, ../scss/layout.scss */
+section#core-concept h4 {
+  margin-bottom: 20px;
+}
+/* line 219, ../scss/layout.scss */
+section#core-concept img {
+  padding-right: 10px;
+}
+/* line 222, ../scss/layout.scss */
+section#core-concept h5 {
+  font-size: 18px;
+}
+
+/* line 228, ../scss/layout.scss */
+.text {
+  width: 600px;
+  margin: auto;
+}
+
+/* line 233, ../scss/layout.scss */
+.key-features-title {
+  background-color: #f1f1f1;
+  color: #acacac;
+  line-height: 40px;
+  text-align: center;
+  padding: 10px 10px;
+  margin: 10px 0;
+}
+
+/* Main Features */
+/* line 244, ../scss/layout.scss */
+.feature h4 {
+  margin-bottom: 10px;
+}
+/* line 248, ../scss/layout.scss */
+.feature figure, .feature img {
+  max-width: 600px;
+}
+/* line 252, ../scss/layout.scss */
+.feature figcaption {
+  background-color: lightgoldenrodyellow;
+}
+/* line 256, ../scss/layout.scss */
+.feature h6 {
+  font-style: italic;
+}
+
+/* line 262, ../scss/layout.scss */
+.try-it-out {
+  background-color: #555;
+  color: #fafafa;
+  display: inline-block;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  position: absolute;
+  right: -10px;
+  top: 50px;
+  width: 150px;
+  padding: 4px;
+  text-align: left;
+  z-index: 1;
+}
+/* line 274, ../scss/layout.scss */
+.try-it-out p {
+  font-size: 14px;
+  line-height: 17px;
+  margin: 0;
+}
+
+/* line 283, ../scss/layout.scss */
+#supported-websites {
+  color: #eee;
+}
+/* line 285, ../scss/layout.scss */
+#supported-websites h6 {
+  display: inline-block;
+  color: #e0d97a;
+  font-style: normal;
+}
+/* line 291, ../scss/layout.scss */
+#supported-websites ul {
+  border: 1px solid #426376;
+}
+/* line 295, ../scss/layout.scss */
+#supported-websites li {
+  margin-bottom: 6px;
+  padding: 5px;
+}
+/* line 299, ../scss/layout.scss */
+#supported-websites li span, #supported-websites li a {
+  color: #eee;
+  text-decoration: none;
+}
+/* line 304, ../scss/layout.scss */
+#supported-websites li:nth-child(2n) {
+  background-color: #496e83;
+  color: #fafafa;
+}
+
+/* Overlay and message that shows when inline install extension UI shows */
+/* line 313, ../scss/layout.scss */
+.overlay {
+  background: black;
+  opacity: 0.85;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: none;
+}
+/* line 321, ../scss/layout.scss */
+.overlay .message {
+  top: 300px;
+  position: absolute;
+  width: 400px;
+  color: #eeeeee;
+  font-size: 18px;
+  display: inline-block;
+  left: 50%;
+  margin-left: -200px;
+}
+
+/* #Footer
+================================================== */
+/* line 338, ../scss/layout.scss */
+footer ul {
+  line-height: 100px;
+  /* Center the ul content vertically. Will work if we have only one row of text. */
+  text-align: center;
+  /* Center horizontally */
+}
+/* line 342, ../scss/layout.scss */
+footer li {
+  display: inline-block;
+  margin-right: 30px;
+}
+
+/* #Media Queries
+================================================== */
+/* All Mobile Sizes (devices and browser) */
+@media only screen and (max-width: 767px) {
+  /* line 354, ../scss/layout.scss */
+  .text {
+    width: auto;
+  }
+}
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  /* Design for a section width of 420px */
+  /* line 362, ../scss/layout.scss */
+  section {
+    padding: 10px !important;
+  }
+
+  /* line 368, ../scss/layout.scss */
+  #video-container iframe, .feature img {
+    width: 400px;
+  }
+
+  /* line 373, ../scss/layout.scss */
+  #video-container iframe {
+    height: 250px;
+  }
+}
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (max-width: 479px) {
+  /* line 362, ../scss/layout.scss */
+  section {
+    padding: 10px !important;
+  }
+
+  /* line 368, ../scss/layout.scss */
+  #video-container iframe, .feature img {
+    width: 280px;
+  }
+
+  /* line 373, ../scss/layout.scss */
+  #video-container iframe {
+    height: 175px;
+  }
+}
+/* Changing from margin:auto to a fixed margin-left. This is because we don't want the left navigation menu to get hidden
+ for these specific widths.*/
+@media only screen and (min-width: 1024px) and (max-width: 1260px) {
+  /* line 397, ../scss/layout.scss */
+  .container {
+    margin-left: 150px;
+  }
+}
+/* This width range is specific to the design of this site. */
+@media only screen and (min-width: 1024px) and (max-width: 1110px) {
+  /* line 402, ../scss/layout.scss */
+  .try-it-out {
+    width: 120px;
+                /* Reduce width from 150px as it is overlapping with the main text in the section.
+This is happening because we reduce the section width for screen width > 1024 and < 1110px */
+  }
+}
+/* Tablet landscape and all smaller mobile devices*/
+@media only screen and (max-width: 1023px) {
+  /* hide the left navigation bar and the "try it out" labels in mobile */
+  /* line 412, ../scss/layout.scss */
+  nav, .try-it-out {
+    display: none;
+  }
+}
+
+/*
+This file contains styles that are applied on components that are inserted into webpages using content script.
+Also, hence the generous use of !important property here.
+*/
+/*
+Colors
+*/
+/* line 24, ../scss/_base.scss */
+a {
+  color: #1277dd;
+}
+
+/* line 28, ../scss/_base.scss */
+.UnitsProj-message {
+  color: #888888;
+}
+
+/*
+Fonts
+*/
+/*
+Miscellaneous
+*/
+/* line 42, ../scss/_base.scss */
+.UnitsProj-float-fixer {
+  clear: both !important;
+}
+
+/*highest z-index for a 32-bit int value*/
+/*
+Defining this because compass transition mixin does not accept the !important property.
+To be used only by content script CSS (i.e. units.scss), but declared in _base.css because the mixin close-button requires it.
+*/
+/* line 8, ../scss/units.scss */
+.CU-overlay {
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+/* line 13, ../scss/units.scss */
+.CU-overlay-selected-marker, .CU-overlay-selected:before, .CU-overlay-selected:after {
+  content: "";
+  width: 6px;
+  height: 4px;
+  position: absolute;
+  display: inline-block;
+  opacity: 0.7;
+  background-color: #999999;
+}
+
+/* line 23, ../scss/units.scss */
+.CU-overlay-selected {
+  -webkit-box-shadow: 0px 0px 7px 0px #999999 !important;
+  -moz-box-shadow: 0px 0px 7px 0px #999999 !important;
+  box-shadow: 0px 0px 7px 0px #999999 !important;
+  border: none !important;
+  transition: background-color 1s;
+}
+/* line 29, ../scss/units.scss */
+.CU-overlay-selected:before {
+  top: 0;
+  right: 0;
+}
+/* line 35, ../scss/units.scss */
+.CU-overlay-selected:after {
+  bottom: 0;
+  left: 0;
+}
+
+/* line 42, ../scss/units.scss */
+.highlighted-CU-overlay {
+  background-color: rgba(200, 250, 50, 0.2) !important;
+  transition: background-color 0s !important;
+}
+
+/* line 47, ../scss/units.scss */
+.CU-overlay-hovered {
+  border: 1px solid #dddddd;
+}
+
+/* line 51, ../scss/units.scss */
+.non-CU-page-overlay {
+  position: absolute !important;
+  pointer-events: none !important;
+  transition: opacity 0.1s;
+  background-color: #000;
+}
+
+/* ****** 'Select Link' module styles ***** */
+/* class for all hint labels */
+/* line 62, ../scss/units.scss */
+.UnitsProj-hintLabel {
+  display: none;
+  z-index: 2147483646 !important;
+  opacity: 0.8 !important;
+  position: fixed !important;
+  font: normal normal normal 10px/10px Verdana "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  color: #d7f0d7 !important;
+  background-color: #052805 !important;
+  padding: 1px 2px !important;
+  letter-spacing: 1px !important;
+  /* class for visible hint labels */
+}
+/* line 74, ../scss/units.scss */
+.UnitsProj-hintLabel.UnitsProj-hintLabel-visible {
+  display: inline !important;
+}
+
+/* To create an invisible text box which cannot be interacted with in any way
+but which can still be given focus and text input programmatically*/
+/* line 82, ../scss/units.scss */
+input.UnitsProj-dummyInput {
+  opacity: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  /* Use position fixed with (0, 0) to prevent page from scrolling when this textbox gets focus,
+  irrespective of the page's current scroll position*/
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: none !important;
+}
+
+/************* Focused element styles *************/
+/*
+We use outline-style: auto (and solid) so that outlines are drawn properly around anchors that contain block elements.
+See SO issue for this: http://stackoverflow.com/questions/17146707/outline-is-drawn-incorrectly-on-chrome-if-outline-style-is-set-to-solid-and-n/17148490
+Though we'll have to live with the issue #33 for image links (till Chrome fixes it).
+*/
+/* line 103, ../scss/units.scss */
+.UnitsProj-focused-image {
+  outline-color: #407465 !important;
+  outline-style: auto !important;
+  outline-width: 1px;
+}
+
+/*
+ For all a's that contains a large image: 1) Have a thick outline 2) Have an outline-offset so that the outline is
+ clearly visible
+*/
+/* line 114, ../scss/units.scss */
+.UnitsProj-focused-large-image {
+  outline-offset: 3px !important;
+  outline-width: 3px !important;
+}
+
+/*
+For textual and button links, 1) set the background-color. This is because on some sites, the links are laid out in the DOM
+such that the outline is not visible. We apply the background-color to make sure that the link is still clearly visible.
+2) Set the outline-style: solid (cannot be 'auto'. See issue: https://github.com/MakeBetter/Units/issues/33)
+*/
+/* line 125, ../scss/units.scss */
+.UnitsProj-focused-link-or-button {
+  outline-color: #529582 !important;
+  outline-width: 1px !important;
+  outline-style: solid !important;
+  background-color: #dbf3db !important;
+  color: #333 !important;
+}
+
+/* ****** Filter module styles ***** */
+/* line 135, ../scss/units.scss */
+.UnitsProj-highlight {
+  background-color: yellow;
+}
+
+/* line 137, ../scss/units.scss */
+.UnitsProj-HiddenByFiltering {
+  display: none !important;
+}
+
+/* This class can be used for (re)setting properties of any text input element that we insert into webpages using content script,
+and want to give a consistent look across webpages. That is, applying this class will override most/all styles associated with
+the text input element that might be specified by the webpage */
+/* line 143, ../scss/units.scss */
+input.UnitsProj-reset-text-input {
+  /*********
+  dimensions and float property of the input element
+  *********/
+  box-sizing: border-box !important;
+                                 /*using box-sizing for easier calculations. make sure to specify this because
+it varies across sites, and changes the effective dimensions of the textbox*/
+  margin: 0 !important;
+  padding: 2px !important;
+  width: 150px !important;
+  min-width: 0px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  float: none !important;
+  /********
+  border, outline and drop shadow
+  ********/
+  border: 1px solid #999999 !important;
+  -webkit-border-radius: 2px !important;
+  -moz-border-radius: 2px !important;
+  -ms-border-radius: 2px !important;
+  -o-border-radius: 2px !important;
+  border-radius: 2px !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  /**********
+  text properties
+  ***********/
+  font: normal normal normal 13px/15px "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  color: #333333 !important;
+  vertical-align: baseline !important;
+  word-spacing: 0px !important;
+  /*not sure if this is really required.*/
+  /*-webkit-appearance: textfield !important;*/
+  /*appearance: textfield !important;*/
+}
+
+/* line 181, ../scss/units.scss */
+input.UnitsProj-reset-text-input:focus {
+  /*show an outline around the element that is same as chrome's default. this needs to be set as it is turned off on
+  some sites. */
+  outline: 5px auto -webkit-focus-ring-color !important;
+}
+
+/* Make sure to re-set the height and width of this div whenever any of the following is changed: 1) the dimensions or
+margin of the #UnitsProj-filterUI-searchBox or .UnitsProj-close-button is changed 2) padding property of this div (since we set its
+box-sizing to border-box)*/
+/* line 191, ../scss/units.scss */
+div#UnitsProj-filterUI-container {
+  width: 181px !important;
+  height: 45px !important;
+  /*the height and width needs to be set based on padding of this container AND height, width, margin properties of search input box and close icon span. */
+  box-sizing: border-box !important;
+  /*using border-box to make calculations easier.*/
+  text-align: left !important;
+  /*this is important to be set to ensure that the input box and span align as required.*/
+  position: fixed !important;
+  /*top: 0px;*/
+  /*this is set via javascript*/
+  top: 0px;
+  left: 0px !important;
+  margin: 0px !important;
+  z-index: 100000 !important;
+  background-color: #d8d8d8 !important;
+  -webkit-border-radius: 0 0 6px 6px !important;
+  -moz-border-radius: 0 0 6px 6px !important;
+  -ms-border-radius: 0 0 6px 6px !important;
+  -o-border-radius: 0 0 6px 6px !important;
+  border-radius: 0 0 6px 6px !important;
+  /*for the sliding effect*/
+  -webkit-transition: top 0.1s ease-out !important;
+  -moz-transition: top 0.1s ease-out !important;
+  -ms-transition: top 0.1s ease-out !important;
+  -o-transition: top 0.1s ease-out !important;
+  transition: top 0.1s ease-out !important;
+  z-index: 2147483647 !important;
+  /* More than the z-index of zen mode backdrop, and less than help backdrop */
+}
+/* line 210, ../scss/units.scss */
+div#UnitsProj-filterUI-container .UnitsProj-close-button {
+  border: 1px solid transparent !important;
+  display: inline-block !important;
+  height: 13px !important;
+  line-height: 13px !important;
+                                                                                     /*IMPORTANT: that line-height and height have the same value
+to vertically center the text in the span. */
+  width: 13px !important;
+  box-sizing: content-box !important;
+                                  /* works better, because then we don't need to calculate the content height
+separately. the value of line-height needs to be the same as the content height.*/
+  text-align: center !important;
+  font-size: 15px !important;
+  font-family: arial, sans-serif !important;
+                                         /*the arial font seems to be work well for the multiplication symbol.
+change it if you find a better one.*/
+  color: #666 !important;
+  /*border-radius 50% to make it a circle*/
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  -ms-border-radius: 50% !important;
+  -o-border-radius: 50% !important;
+  border-radius: 50% !important;
+  cursor: default !important;
+  /* To not show the text selection icon */
+  -webkit-transition: all 0.1s ease-out !important;
+  -moz-transition: all 0.1s ease-out !important;
+  -ms-transition: all 0.1s ease-out !important;
+  -o-transition: all 0.1s ease-out !important;
+  transition: all 0.1s ease-out !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 6px !important;
+}
+/* line 85, ../scss/_base.scss */
+div#UnitsProj-filterUI-container .UnitsProj-close-button:hover {
+  background-color: #e38e83 !important;
+  border: solid 1px #d1847b !important;
+  color: #eee !important;
+}
+
+/* line 217, ../scss/units.scss */
+input#UnitsProj-filterUI-searchBox {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  /*the following properties are also set for .UnitsProj-reset-text-input. we can override them here if need be*/
+  box-sizing: border-box !important;
+                                 /*using box-sizing for easier calculations. make sure to specify this because
+it varies across sites, and changes the effective dimensions of the textbox*/
+  margin: 0 !important;
+  padding: 2px !important;
+  width: 150px !important;
+  height: 20px !important;
+}
+
+/* line 230, ../scss/units.scss */
+span#filter-message {
+  font-size: 11px !important;
+  color: #888888 !important;
+  position: absolute !important;
+  left: 6px !important;
+  bottom: 4px !important;
+  line-height: 11px !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  text-align: center !important;
+  font-weight: normal !important;
+}
+
+/* ****** Help styles ***** */
+/* line 244, ../scss/units.scss */
+#UnitsProj-help-container {
+  visibility: hidden !important;
+}
+
+/* line 248, ../scss/units.scss */
+#UnitsProj-iframe-help {
+  box-sizing: content-box !important;
+  width: 1120px !important;
+  position: fixed !important;
+  left: 50%;
+  margin-left: -550px;
+  /*center the div horizontally*/
+  z-index: 2147483647 !important;
+  /*highest z-index for a 32-bit int value*/
+  border: 2px solid #999;
+  border-radius: 4px !important;
+}
+
+/*
+Important to set the visibility property as important for both the container and iframe. Also, important to make this
+style more specific by using id's of the elements. Fix for #9.
+*/
+/* line 263, ../scss/units.scss */
+.UnitsProj-visible#UnitsProj-help-container, .UnitsProj-visible#UnitsProj-iframe-help {
+  visibility: visible !important;
+}
+
+/* line 267, ../scss/units.scss */
+.UnitsProj-hidden#UnitsProj-help-container, .UnitsProj-hidden#UnitsProj-iframe-help {
+  visibility: hidden !important;
+}
+
+/* line 271, ../scss/units.scss */
+.UnitsProj-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+/* line 279, ../scss/units.scss */
+#UnitsProj-help-backdrop {
+  background-color: #000000 !important;
+  opacity: 0.5 !important;
+  z-index: 2147483646 !important;
+  /* 1 less than the z-index of iframe help window */
+}
+
+/*********** Zen mode *************/
+/* line 288, ../scss/units.scss */
+.UnitsProj-zen-mode-active .UnitsProj-zen-mode-hidden {
+  display: none !important;
+  opacity: 0 !important;
+  /* Important to apply opacity: 0 as a backup for elements on which display:none does not work.*/
+}
+
+/* line 294, ../scss/units.scss */
+.UnitsProj-zen-mode-excluded {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* line 300, ../scss/units.scss */
+#UnitsProj-zen-mode-indicator {
+  position: fixed !important;
+  bottom: 30px !important;
+  right: 20px !important;
+  padding: 7px 10px !important;
+  border-radius: 2px !important;
+  background-color: #f9f9f9 !important;
+  border: 1px solid #ddd !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  color: #8a8a8a !important;
+  font-size: 12px !important;
+  line-height: 12px !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  opacity: 0.7;
+}
+
+/* line 316, ../scss/units.scss */
+.UnitsProj-zen-mode-active #UnitsProj-zen-mode-indicator {
+  background-color: #ecfbe1 !important;
+}

@@ -2,6 +2,7 @@
 @import "compass/css3/border-radius";
 
 .under-construction {
+  display: none;
   background-color: lightgoldenrodyellow;
   position: fixed;
   right: 20px;
@@ -21,12 +22,13 @@ body {
   color: $text-color;
 }
 
-header {
-  float: right;
-  padding-top: 20px;
+a {
+  color: $text-color-grey;
+  cursor: pointer;
+  text-decoration: none;
 
-  span {
-    margin: 0 20px 0 0;
+  &:hover {
+    color: $text-color;
   }
 }
 
@@ -51,6 +53,39 @@ h3 {
 .bold {
   font-weight: bold;
   color: #444;
+}
+
+
+header {
+  padding: 15px 0;
+
+  span {
+    margin: 0 0 0 20px;
+  }
+
+  a {
+    font-size: 16px;
+    float: right;
+    color: $text-color-grey;
+
+    &:hover {
+      color: $text-color;
+    }
+  }
+}
+
+$footer-height: 100px;
+footer {
+  height: $footer-height;
+  background-color: #333333;
+  color: #eeeeee;
+
+  a {
+    color:$text-color-grey;
+  }
+  a:hover {
+    color: #eee;
+  }
 }
 
 
@@ -292,6 +327,21 @@ section#core-concept {
     display: inline-block;
     left: 50%;
     margin-left: -200px;
+  }
+
+}
+
+/* #Footer
+================================================== */
+
+footer {
+  ul {
+    line-height: $footer-height; /* Center the ul content vertically. Will work if we have only one row of text. */
+    text-align: center; /* Center horizontally */
+  }
+  li {
+    display: inline-block;
+    margin-right: 30px;
   }
 
 }
