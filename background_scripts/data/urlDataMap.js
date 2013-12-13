@@ -345,7 +345,13 @@ defaultSettings.urlDataMap = {
     "instagram.com": [
         {
             urlPatterns: ["instagram.com"],
-            CUs_specifier: ".timelineCenter"
+            CUs_specifier: ".timelineCenter",
+            CUs_style: {
+                setOverlayZIndexHigh: true
+            },
+            page_SUs: {
+                std_header: "header",
+            },
         }
     ],
 
