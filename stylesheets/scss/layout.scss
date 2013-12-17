@@ -88,6 +88,9 @@ footer {
   }
 }
 
+.centered {
+  text-align: center;
+}
 
 /* #Home page
 ================================================== */
@@ -124,9 +127,9 @@ section#home {
 }
 
 section#core-concept {
-  background-color: #8CBEB2;
-  color: white;
-  border: 1px solid darken(#8CBEB2, 10);
+//  background-color: #8CBEB2;
+//  color: white;
+//  border: 1px solid darken(#8CBEB2, 10);
 }
 
 section.feature {
@@ -210,8 +213,8 @@ section#supported-websites {
 /* Core concept section*/
 
 section#core-concept {
-  text-align: center;
-  margin: auto;
+//  text-align: center;
+//  margin: auto;
 
   h4 {
     margin-bottom: 20px;
