@@ -1,0 +1,114 @@
+/* Table of Content
+==================================================
+	#Site Styles
+	#Home Page
+	#Media Queries
+	#Font-Face */
+/* #Site Styles
+================================================== */
+/* line 14, ../scss/common.scss */
+body {
+  color: #444444;
+}
+
+/* line 18, ../scss/common.scss */
+a {
+  color: #444444;
+  cursor: pointer;
+  text-decoration: underline;
+}
+/* line 24, ../scss/common.scss */
+a:hover {
+  color: #444444;
+}
+
+/* line 29, ../scss/common.scss */
+p, li {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+/* line 34, ../scss/common.scss */
+li {
+  line-height: 22px;
+}
+
+/* line 38, ../scss/common.scss */
+.fixer {
+  clear: both;
+}
+
+/* line 42, ../scss/common.scss */
+h3 {
+  padding-bottom: 10px;
+}
+
+/* line 46, ../scss/common.scss */
+.bold {
+  font-weight: bold;
+  color: #444;
+}
+
+/* line 55, ../scss/common.scss */
+header {
+  padding: 15px 0;
+}
+/* line 58, ../scss/common.scss */
+header span {
+  margin: 0 0 0 20px;
+}
+/* line 62, ../scss/common.scss */
+header a {
+  font-size: 16px;
+  float: right;
+  color: #999999;
+}
+/* line 67, ../scss/common.scss */
+header a:hover {
+  color: #444444;
+}
+
+/* line 73, ../scss/common.scss */
+.shortcut-key {
+  border: 1px solid #ddd;
+  padding: 2px 4px;
+  background-color: #eee;
+  border-radius: 3px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 14px;
+}
+
+/* line 82, ../scss/common.scss */
+.main-content {
+  padding: 20px;
+}
+
+/* #Footer
+================================================== */
+/* line 90, ../scss/common.scss */
+footer {
+  height: 100px;
+  background-color: #333333;
+  color: #eeeeee;
+}
+/* line 95, ../scss/common.scss */
+footer a {
+  color: #999999;
+  text-decoration: none;
+}
+/* line 99, ../scss/common.scss */
+footer a:hover {
+  color: #eee;
+}
+/* line 103, ../scss/common.scss */
+footer ul {
+  line-height: 100px;
+  /* Center the ul content vertically. Will work if we have only one row of text. */
+  text-align: center;
+  /* Center horizontally */
+}
+/* line 107, ../scss/common.scss */
+footer li {
+  display: inline-block;
+  margin-right: 30px;
+}

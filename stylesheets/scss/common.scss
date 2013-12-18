@@ -1,0 +1,111 @@
+@import "base-variables";
+@import "compass/css3/border-radius";
+
+/* Table of Content
+==================================================
+	#Site Styles
+	#Home Page
+	#Media Queries
+	#Font-Face */
+
+/* #Site Styles
+================================================== */
+
+body {
+  color: $text-color;
+}
+
+a {
+//  color: $text-color-grey;
+  color: $text-color;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: $text-color;
+  }
+}
+
+p, li {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+li {
+  line-height: 22px;
+}
+
+.fixer {
+  clear: both;
+}
+
+h3 {
+  padding-bottom: 10px;
+}
+
+.bold {
+  font-weight: bold;
+  color: #444;
+}
+
+.shortcut-key {
+
+}
+
+header {
+  padding: 15px 0;
+
+  span {
+    margin: 0 0 0 20px;
+  }
+
+  a {
+    font-size: 16px;
+    float: right;
+    color: $text-color-grey;
+
+    &:hover {
+      color: $text-color;
+    }
+  }
+}
+
+.shortcut-key {
+  border: 1px solid #ddd;
+  padding: 2px 4px;
+  background-color:#eee;
+  border-radius: 3px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 14px; // 14px of Lucida goes with the 17px font-size used for the body font.
+}
+
+.main-content {
+  padding: 20px;
+}
+
+/* #Footer
+================================================== */
+
+$footer-height: 100px;
+footer {
+  height: $footer-height;
+  background-color: #333333;
+  color: #eeeeee;
+
+  a {
+    color:$text-color-grey;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #eee;
+  }
+
+  ul {
+    line-height: $footer-height; /* Center the ul content vertically. Will work if we have only one row of text. */
+    text-align: center; /* Center horizontally */
+  }
+  li {
+    display: inline-block;
+    margin-right: 30px;
+  }
+}

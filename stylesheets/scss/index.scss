@@ -1,6 +1,11 @@
 @import "base-variables";
 @import "compass/css3/border-radius";
 
+/*
+Contains styles specific to index.html (Home page)
+*/
+
+
 .under-construction {
   display: none;
   background-color: lightgoldenrodyellow;
@@ -8,98 +13,15 @@
   right: 20px;
 }
 
-/* Table of Content
-==================================================
-	#Site Styles
-	#Home Page
-	#Media Queries
-	#Font-Face */
-
-/* #Site Styles
-================================================== */
-
-body {
-  color: $text-color;
-}
-
-a {
-  color: $text-color-grey;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    color: $text-color;
-  }
-}
-
-p, li {
-  font-size: 17px;
-  line-height: 24px;
-}
-
-li {
-  line-height: 22px;
-}
-
-.fixer {
-  clear: both;
-}
-
-h3 {
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-.bold {
-  font-weight: bold;
-  color: #444;
-}
-
-
-header {
-  padding: 15px 0;
-
-  span {
-    margin: 0 0 0 20px;
-  }
-
-  a {
-    font-size: 16px;
-    float: right;
-    color: $text-color-grey;
-
-    &:hover {
-      color: $text-color;
-    }
-  }
-}
-
-$footer-height: 100px;
-footer {
-  height: $footer-height;
-  background-color: #333333;
-  color: #eeeeee;
-
-  a {
-    color:$text-color-grey;
-  }
-  a:hover {
-    color: #eee;
-  }
-}
-
 .centered {
   text-align: center;
 }
 
-/* #Home page
-================================================== */
-
 nav {
   padding-top: 60px;
   position: fixed;
-//  z-index: 100;
-//  background-color: white;
+  //  z-index: 100;
+  //  background-color: white;
 
   @include simple-vertical-menu;
 }
@@ -113,8 +35,8 @@ section {
   /* Default color of section*/
   background-color: #F4F1D7;
   border: 1px solid darken(#F4F1D7, 10);
-  
-  h4 {
+
+  h4, h3 {
     text-align: center;
   }
 }
@@ -138,7 +60,7 @@ section.feature {
 
   h4 {
     color: #F06060;
-    font-weight: bold;
+//    font-weight: bold;
   }
 
   &:nth-child(2n) {
@@ -331,22 +253,6 @@ section#core-concept {
     left: 50%;
     margin-left: -200px;
   }
-
-}
-
-/* #Footer
-================================================== */
-
-footer {
-  ul {
-    line-height: $footer-height; /* Center the ul content vertically. Will work if we have only one row of text. */
-    text-align: center; /* Center horizontally */
-  }
-  li {
-    display: inline-block;
-    margin-right: 30px;
-  }
-
 }
 
 /* #Media Queries

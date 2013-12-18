@@ -46,7 +46,9 @@ module.exports = function(grunt) {
                 src: [
                 "stylesheets/css/base.css",
                 "stylesheets/css/skeleton.css",
-                "stylesheets/css/layout.css",
+                "stylesheets/css/common.css",
+                "stylesheets/css/index.css",
+                "stylesheets/css/about.css",
                 "stylesheets/css/units.css"
                 ],
                 dest: 'stylesheets/css/units-all.css'

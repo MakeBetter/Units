@@ -40,8 +40,8 @@
 <meta name="text:Header size" content="85px"/>
 
 
-<meta name="font:Description" content="'Avenir LT W01 55 Roman', Avenir, sans-serif"/>
-<meta name="font:Body" content= "'Avenir LT W01 55 Roman', Avenir, sans-serif"/>
+<meta name="font:Description" content="Georgia"/>
+<meta name="font:Body" content="Georgia"/>
 
 <meta name="text:Disqus Shortname" content=""/>
 
@@ -64,7 +64,9 @@ body {background:{color:Background}; color:{color:Text}; font:1em/1.5 {font:Body
 
 h1, h3 {font-family:{font:Heading};}
 h3 {font-size:{text:Title}; line-height:autopx; padding-bottom:5px;}
-h3.heading>a {border-bottom: 0; color: #20A864;}
+h3.heading>a {border-bottom: 0; color: #222;}
+
+h4 {font-size: 17px;}
 
 pre,code {font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif}
 
@@ -73,7 +75,7 @@ a:hover, a:active {color:{color:Link hover};}
 
 
 
-#header {color:{color:Minor text}; position:relative; margin:-49 auto; padding-top:40px; width:875px;}
+#header {color:{color:Minor text}; position:relative; margin:-49 auto; padding-top:40px; width:775px;}
 
 #header h1 {color:{color:Title}; text-align:center; font-size:{text:Header size}; line-height:90%; margin-bottom:30px; margin-top:-30px;
 letter-spacing:-1px;}
@@ -88,7 +90,7 @@ letter-spacing:-1px;}
 text-decoration:none;}
 #header li a:hover {background:none;}
 
-#container {background-color:{color:Container}; margin:30px auto; padding-top:5px; width:875px}
+#container {background-color:{color:Container}; margin:30px auto; padding-top:5px; width:775px}
 
 
 
@@ -102,17 +104,17 @@ text-decoration:none;}
     max-width:875px;
 }
 
-.single { width:875px; margin-bottom:10px;}
+.single { width:775px; margin-bottom:10px;}
 
 #posts {background-color:{color:Background}; border-top:1px solid {color:Top line};
 border-bottom:1px solid {color:Bottom line}; margin:0px; padding:0px; {block:IfCenterall}text-align:center;{/block:IfCenterall}font-size:{text:Caption};}
 
 
-#posts .post {list-style:none; padding:10px; max-width:875px;
+#posts .post {list-style:none; padding:10px; max-width:775px;
     clear:both;}
 #posts .content {color:{color:Text}; padding:0; margin-left:0px;}
 
-#footer {margin:0 auto; max-width:875px; padding-bottom:30px;}
+#footer {margin:0 auto; max-width:775px; padding-bottom:30px;}
 #pagination p {font-size:{text:Caption}; min-width:150px; line-height:autopx; margin:0 0 10px;
 white-space:nowrap;}
 #pagination p.back {display:inline; text-align:right; float:right; margin-left:20px;}
@@ -126,7 +128,7 @@ margin-bottom:20px; text-transform:lowercase;}
 p {margin-bottom:25px;}
 form .submit {height:0; overflow:hidden; display:block;}
 
-.meta { /*float:left; clear:left;*/ {block:IfCenterall}width:875px{/block:IfCenterall}; font-size:12px; color:  text-align:left; line-height:10px; margin-bottom: 20px; color: {color:Minor text}; font-family:{font:Heading};}
+.meta { /*float:left; clear:left;*/ {block:IfCenterall}width:775px{/block:IfCenterall}; font-size:12px; color:  text-align:left; line-height:10px; margin-bottom: 20px; color: {color:Minor text}; font-family:{font:Heading};}
 .meta h2 {font-size:14px; margin-bottom:5px; border-bottom:1px solid {color:Line};}
 .meta h2 a {text-decoration:none; display:block; padding:0px 0px;}
 .meta h2 a:hover {background:none;}
@@ -164,7 +166,7 @@ abbr, acronym {text-transform:uppercase;}
 .vidcaption {margin-top:120px;}
 
 .post img, .post object, .post embed {max-width:100%; {block:IfStretchsmallimages}
-    width: 875px;
+    width: 775px;
 {/block:IfStretchsmallimages}}
 
 .link-post h3 {padding:0; margin-bottom:18px;}
@@ -219,10 +221,10 @@ abbr, acronym {text-transform:uppercase;}
 .multi {margin-bottom:30px; margin-right:15px; {block:IfCenterall}margin-right:10px; margin-left:10px;{/block:IfCenterall};}
 
 
-.video embed, .video object, .video iframe {width:875px; height:500px; margin-bottom:-100px;}
+.video embed, .video object, .video iframe {width:775px; height:500px; margin-bottom:-100px;}
 
 
-.wide_audio iframe {width:875px; }
+.wide_audio iframe {width:775px; }
 
 
 #comment {
@@ -268,7 +270,7 @@ a.single_links
 
 p.answer_form_container { width: 512px; }
 
-ol.notes { width: 875px; list-style-type: none; margin:20px auto; padding: 0; }
+ol.notes { width: 775px; list-style-type: none; margin:20px auto; padding: 0; }
 ol.notes li.note { background: {color:Notes background}; margin: 0 0 0px 0; padding: 0 4px; }
 ol.notes a { color: {color:Links In Notes}; }
 ol.notes img.avatar { display: none; }
@@ -297,7 +299,19 @@ a {
 }
 
 
+.powered-by {
+    font-style: italic;
+    color: #888;
+    font-size: 13px;
+}
 
+.powered-by a {
+    color: #666;
+}
+
+.powered-by a:hover {
+    color: #888;
+}
 
 
 {CustomCSS}
@@ -313,8 +327,8 @@ a {
 
     $(document).ready(function(){
         $(".photoset").each(function() {
-            $(this).width('875px');
-            var newSrc = $(this).attr("src").replace('700','875');
+            $(this).width('775px');
+            var newSrc = $(this).attr("src").replace('700','775');
             $(this).attr("src", newSrc);
         });
 
@@ -685,12 +699,11 @@ a {
     <br><br />
 
     <center>
-        <a href="/archive">{lang:Archive}</a> //
-        <a href="/random">{lang:Random post}</a> //
         <a href="{RSS}">{lang:RSS}</a>
         <br />
-        <font size="2"><i>{lang:Powered by Tumblr 2} -
-            <a href="http://www.tumblr.com/theme/9601">Quite Big theme</a> by <a href="http://georgedunkley.tumblr.com/">George Dunkley</a></i></font></center>
+        <span class="powered-by">Theme adapted from <a href="http://www.tumblr.com/theme/9601">Quite Big theme</a> by <a href="http://georgedunkley.tumblr.com/">George Dunkley</a> </span>
+
+    </center>
 
 
 

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+
+
+	<meta charset="utf-8">
+	<title>Units</title>
+	<meta name="description" content="Units is a chrome extension for smart keyboard navigation, readability and accessibility.">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="stylesheets/css/base.css">
+	<link rel="stylesheet" href="stylesheets/css/skeleton.css">
+	<link rel="stylesheet" href="stylesheets/css/common.css">
+	<link rel="stylesheet" href="stylesheets/css/installed.css">
+
+    <!--<link rel="stylesheet" href="stylesheets/css/units-all.css">-->
+
+
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Favicons
+	================================================== -->
+	<!--<link rel="shortcut icon" href="images/favicon.ico">-->
+	<!--<link rel="apple-touch-icon" href="images/apple-touch-icon.png">-->
+	<!--<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">-->
+	<!--<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">-->
+
+    <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/nhigacflkpibihampdilikhaoehddmnc">
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-45048775-1', 'units.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="sixteen columns">
+            <header>
+                <!--<h2> Units</h2>-->
+            </header>
+            <div class="main-content">
+                <div>
+                    <h3>Thanks for installing the Units extension. Here are some tips to get you quickly started... </h3>
+
+                    <section>
+                        <h4>Navigate between <em>units</em></h4>
+
+                        <ol>
+                            <li>
+                                Visit one of:
+                                <a href="https://www.google.com/search?q=lolcats">Google Search</a>,
+                                <a href="http://www.facebook.com/">Facebook</a>,
+                                <a href="https://twitter.com/search?q=%23nowplaying">Twitter</a> or
+                                <a href="http://stackoverflow.com/questions/5874652/prop-vs-attr">Stack Overflow</a>
+                                <sup>*</sup>
+                            </li>
+                            <li>
+                                Notice that the first main <em> unit </em> on the page is selected. Press
+                                <span class="shortcut-key" id="next-cu">j</span> and
+                                <span class="shortcut-key" id="previous-cu">k</span> to move between the units.
+                            </li>
+                            <li>
+                                In most cases, the most important link in the unit is already selected for you. Press <span class="shortcut-key">o</span>
+                                to open it in a new tab or <span class="shortcut-key">enter</span> to open in the the same tab.
+                            </li>
+                            <li>
+                                Use <span class="shortcut-key">tab</span> to move focus to the next link in the unit/page.
+                            </li>
+                        </ol>
+                        <p>
+                            Note: For pages that don't have any units defined, <span class="shortcut-key">j</span> and <span class="shortcut-key">k</span>
+                            will simply smooth scroll the page.
+                        </p>
+                        <p class='defocused-text'>
+                            <sup>*</sup> A list of all the supported websites <a href="index.html#supported-websites">here</a>.
+                        </p>
+
+                    </section>
+
+                    <section>
+                        <h4>Invoke <em>unit</em> based shortcuts</h4>
+                        <p>
+                            Units allows you to have consistent shortcuts across websites that work on the selected unit.
+
+                            For example, press <span class="shortcut-key">u</span> to upvote,
+                            <span class="shortcut-key">s</span> to share, <span class="shortcut-key">m</span> to 'see more',
+                            <span class="shortcut-key">c</span> to comment on a post on Facebook, Quora, Hacker News or
+                            a StackExchange site.
+                        </p>
+                        <p>
+                            Bring up Units Help to see all the shortcuts defined for the page that you are on.
+                        </p>
+
+                    </section>
+
+                    <section>
+                        <h4> Read with more focus</h4>
+                        <p>
+                            Press <span class="shortcut-key">+</span> to increase the spotlight effect on the selected unit
+                            and <span class="shortcut-key">-</span> to decrease it.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h4> Filter units</h4>
+                        <p>
+                            This is a smart "find" feature - keep only those units on the page that match your search term.
+                            Try it out, you'll especially like it on Facebook. Press <span class="shortcut-key">alt + f</span>
+                            to bring up the search UI.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h4>Disable Units</h4>
+                        <ul>
+                            <li>
+                                To temporarily disable Units on any page, press <span class="shortcut-key">,</span>
+                            </li>
+                            <li> To permanently disable Units on a site: Click on the Units extension icon in the
+                                browser and disable from there.
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Configure</h4>
+                        <p>
+                            Units is highly customizable. Head over to the Options page of the extension to change
+                            settings and shortcuts.
+                        </p>
+                    </section>
+                    <section>
+                        <h4>Units Help</h4>
+                        <p>
+                            The Help dialog lists all the shortcuts that are valid for a specific page. Click on the
+                            extension icon to get to Help, or press <span class="shortcut-key">alt + /</span> to bring
+                            up the dialog.
+                        </p>
+                        Note: Make sure you are on a valid web page before trying to open Help. For example, it will not
+                        come up if you are on a new tab or on the Chrome extensions page.
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <ul>
+                <li><a href= "privacy.html"> Privacy </a></li>
+                <li><a href="http://blog.units.io"> Blog </a></li>
+                <li><a href="about.html"> About</a></li>
+                <li><a href="contact.html"> Contact </a></li>
+            </ul>
+        </div>
+
+    </footer>
+
+
+</body>
+
+</html>

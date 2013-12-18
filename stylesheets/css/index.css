@@ -1,4 +1,7 @@
-/* line 4, ../scss/layout.scss */
+/*
+Contains styles specific to index.html (Home page)
+*/
+/* line 9, ../scss/index.scss */
 .under-construction {
   display: none;
   background-color: lightgoldenrodyellow;
@@ -6,100 +9,12 @@
   right: 20px;
 }
 
-/* Table of Content
-==================================================
-	#Site Styles
-	#Home Page
-	#Media Queries
-	#Font-Face */
-/* #Site Styles
-================================================== */
-/* line 21, ../scss/layout.scss */
-body {
-  color: #444444;
-}
-
-/* line 25, ../scss/layout.scss */
-a {
-  color: #999999;
-  cursor: pointer;
-  text-decoration: none;
-}
-/* line 30, ../scss/layout.scss */
-a:hover {
-  color: #444444;
-}
-
-/* line 35, ../scss/layout.scss */
-p, li {
-  font-size: 17px;
-  line-height: 24px;
-}
-
-/* line 40, ../scss/layout.scss */
-li {
-  line-height: 22px;
-}
-
-/* line 44, ../scss/layout.scss */
-.fixer {
-  clear: both;
-}
-
-/* line 48, ../scss/layout.scss */
-h3 {
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-/* line 53, ../scss/layout.scss */
-.bold {
-  font-weight: bold;
-  color: #444;
-}
-
-/* line 59, ../scss/layout.scss */
-header {
-  padding: 15px 0;
-}
-/* line 62, ../scss/layout.scss */
-header span {
-  margin: 0 0 0 20px;
-}
-/* line 66, ../scss/layout.scss */
-header a {
-  font-size: 16px;
-  float: right;
-  color: #999999;
-}
-/* line 71, ../scss/layout.scss */
-header a:hover {
-  color: #444444;
-}
-
-/* line 78, ../scss/layout.scss */
-footer {
-  height: 100px;
-  background-color: #333333;
-  color: #eeeeee;
-}
-/* line 83, ../scss/layout.scss */
-footer a {
-  color: #999999;
-}
-/* line 86, ../scss/layout.scss */
-footer a:hover {
-  color: #eee;
-}
-
-/* line 91, ../scss/layout.scss */
+/* line 16, ../scss/index.scss */
 .centered {
   text-align: center;
 }
 
-/* #Home page
-================================================== */
-/* line 98, ../scss/layout.scss */
+/* line 20, ../scss/index.scss */
 nav {
   padding-top: 60px;
   position: fixed;
@@ -134,7 +49,7 @@ nav a {
   padding: 10px 5px 5px 5px;
 }
 
-/* line 107, ../scss/layout.scss */
+/* line 29, ../scss/index.scss */
 section {
   padding: 30px;
   margin: 10px 0 20px 0;
@@ -145,73 +60,72 @@ section {
   background-color: #F4F1D7;
   border: 1px solid #e9e3af;
 }
-/* line 117, ../scss/layout.scss */
-section h4 {
+/* line 39, ../scss/index.scss */
+section h4, section h3 {
   text-align: center;
 }
 
 /* Section individual colors */
-/* line 124, ../scss/layout.scss */
+/* line 46, ../scss/index.scss */
 section#home {
   background-color: #F4F1D7;
   border: 1px solid #e9e3af;
 }
 
-/* line 135, ../scss/layout.scss */
+/* line 57, ../scss/index.scss */
 section.feature {
   background-color: #fbf4f0;
   border-color: #f8ebe4;
 }
-/* line 139, ../scss/layout.scss */
+/* line 61, ../scss/index.scss */
 section.feature h4 {
   color: #F06060;
-  font-weight: bold;
 }
-/* line 144, ../scss/layout.scss */
+/* line 66, ../scss/index.scss */
 section.feature:nth-child(2n) {
   background-color: #f8ebe4;
   border-color: #f5e2d7;
 }
 
-/* line 150, ../scss/layout.scss */
+/* line 72, ../scss/index.scss */
 section#supported-websites {
   background-color: #45687d;
   border-color: #334D5C;
 }
 
 /* Hero section (corresponds to 'Home' on the navigation menu') */
-/* line 157, ../scss/layout.scss */
+/* line 79, ../scss/index.scss */
 #home {
   text-align: center;
   padding: 20px;
 }
-/* line 161, ../scss/layout.scss */
+/* line 83, ../scss/index.scss */
 #home .title {
   font-size: 6em;
   line-height: 1;
   color: #666666;
 }
-/* line 167, ../scss/layout.scss */
+/* line 89, ../scss/index.scss */
 #home .beta {
   font-size: 0.2em;
   color: #999999;
 }
-/* line 172, ../scss/layout.scss */
+/* line 94, ../scss/index.scss */
 #home .hero-text {
   font-size: 1.5em;
   line-height: 1.2;
   width: 80%;
   margin: 10px auto;
 }
-/* line 179, ../scss/layout.scss */
+/* line 101, ../scss/index.scss */
 #home .tagline {
   color: gray;
 }
-/* line 183, ../scss/layout.scss */
+/* line 105, ../scss/index.scss */
 #home .description {
   font-size: 1.3em;
 }
-/* line 187, ../scss/layout.scss */
+/* line 109, ../scss/index.scss */
 #home .install-button {
   font-size: 150%;
   background: #02a6eb;
@@ -219,45 +133,45 @@ section#supported-websites {
   border: 1px solid #eaeaea;
   margin: 20px 0;
 }
-/* line 194, ../scss/layout.scss */
+/* line 116, ../scss/index.scss */
 #home .install-button:hover {
   background: #029fe1;
   border: 1px solid #fafafa;
 }
-/* line 199, ../scss/layout.scss */
+/* line 121, ../scss/index.scss */
 #home .install-button .small-text {
   font-size: 50%;
 }
-/* line 204, ../scss/layout.scss */
+/* line 126, ../scss/index.scss */
 #home .main-features {
   margin-top: 40px;
 }
-/* line 206, ../scss/layout.scss */
+/* line 128, ../scss/index.scss */
 #home .main-features h5 {
   font-weight: bold;
 }
 
 /* Core concept section*/
-/* line 219, ../scss/layout.scss */
+/* line 141, ../scss/index.scss */
 section#core-concept h4 {
   margin-bottom: 20px;
 }
-/* line 222, ../scss/layout.scss */
+/* line 144, ../scss/index.scss */
 section#core-concept img {
   padding-right: 10px;
 }
-/* line 225, ../scss/layout.scss */
+/* line 147, ../scss/index.scss */
 section#core-concept h5 {
   font-size: 18px;
 }
 
-/* line 231, ../scss/layout.scss */
+/* line 153, ../scss/index.scss */
 .text {
   width: 600px;
   margin: auto;
 }
 
-/* line 236, ../scss/layout.scss */
+/* line 158, ../scss/index.scss */
 .key-features-title {
   background-color: #f1f1f1;
   color: #acacac;
@@ -268,24 +182,24 @@ section#core-concept h5 {
 }
 
 /* Main Features */
-/* line 247, ../scss/layout.scss */
+/* line 169, ../scss/index.scss */
 .feature h4 {
   margin-bottom: 10px;
 }
-/* line 251, ../scss/layout.scss */
+/* line 173, ../scss/index.scss */
 .feature figure, .feature img {
   max-width: 600px;
 }
-/* line 255, ../scss/layout.scss */
+/* line 177, ../scss/index.scss */
 .feature figcaption {
   background-color: lightgoldenrodyellow;
 }
-/* line 259, ../scss/layout.scss */
+/* line 181, ../scss/index.scss */
 .feature h6 {
   font-style: italic;
 }
 
-/* line 265, ../scss/layout.scss */
+/* line 187, ../scss/index.scss */
 .try-it-out {
   background-color: #555;
   color: #fafafa;
@@ -303,45 +217,45 @@ section#core-concept h5 {
   text-align: left;
   z-index: 1;
 }
-/* line 277, ../scss/layout.scss */
+/* line 199, ../scss/index.scss */
 .try-it-out p {
   font-size: 14px;
   line-height: 17px;
   margin: 0;
 }
 
-/* line 286, ../scss/layout.scss */
+/* line 208, ../scss/index.scss */
 #supported-websites {
   color: #eee;
 }
-/* line 288, ../scss/layout.scss */
+/* line 210, ../scss/index.scss */
 #supported-websites h6 {
   display: inline-block;
   color: #e0d97a;
   font-style: normal;
 }
-/* line 294, ../scss/layout.scss */
+/* line 216, ../scss/index.scss */
 #supported-websites ul {
   border: 1px solid #426376;
 }
-/* line 298, ../scss/layout.scss */
+/* line 220, ../scss/index.scss */
 #supported-websites li {
   margin-bottom: 6px;
   padding: 5px;
 }
-/* line 302, ../scss/layout.scss */
+/* line 224, ../scss/index.scss */
 #supported-websites li span, #supported-websites li a {
   color: #eee;
   text-decoration: none;
 }
-/* line 307, ../scss/layout.scss */
+/* line 229, ../scss/index.scss */
 #supported-websites li:nth-child(2n) {
   background-color: #496e83;
   color: #fafafa;
 }
 
 /* Overlay and message that shows when inline install extension UI shows */
-/* line 316, ../scss/layout.scss */
+/* line 238, ../scss/index.scss */
 .overlay {
   background: black;
   opacity: 0.85;
@@ -353,7 +267,7 @@ section#core-concept h5 {
   z-index: 1;
   display: none;
 }
-/* line 324, ../scss/layout.scss */
+/* line 246, ../scss/index.scss */
 .overlay .message {
   top: 300px;
   position: absolute;
@@ -365,26 +279,11 @@ section#core-concept h5 {
   margin-left: -200px;
 }
 
-/* #Footer
-================================================== */
-/* line 341, ../scss/layout.scss */
-footer ul {
-  line-height: 100px;
-  /* Center the ul content vertically. Will work if we have only one row of text. */
-  text-align: center;
-  /* Center horizontally */
-}
-/* line 345, ../scss/layout.scss */
-footer li {
-  display: inline-block;
-  margin-right: 30px;
-}
-
 /* #Media Queries
 ================================================== */
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
-  /* line 357, ../scss/layout.scss */
+  /* line 263, ../scss/index.scss */
   .text {
     width: auto;
   }
@@ -392,34 +291,34 @@ footer li {
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 @media only screen and (min-width: 480px) and (max-width: 767px) {
   /* Design for a section width of 420px */
-  /* line 365, ../scss/layout.scss */
+  /* line 271, ../scss/index.scss */
   section {
     padding: 10px !important;
   }
 
-  /* line 371, ../scss/layout.scss */
+  /* line 277, ../scss/index.scss */
   #video-container iframe, .feature img {
     width: 400px;
   }
 
-  /* line 376, ../scss/layout.scss */
+  /* line 282, ../scss/index.scss */
   #video-container iframe {
     height: 250px;
   }
 }
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) {
-  /* line 365, ../scss/layout.scss */
+  /* line 271, ../scss/index.scss */
   section {
     padding: 10px !important;
   }
 
-  /* line 371, ../scss/layout.scss */
+  /* line 277, ../scss/index.scss */
   #video-container iframe, .feature img {
     width: 280px;
   }
 
-  /* line 376, ../scss/layout.scss */
+  /* line 282, ../scss/index.scss */
   #video-container iframe {
     height: 175px;
   }
@@ -427,14 +326,14 @@ footer li {
 /* Changing from margin:auto to a fixed margin-left. This is because we don't want the left navigation menu to get hidden
  for these specific widths.*/
 @media only screen and (min-width: 1024px) and (max-width: 1260px) {
-  /* line 400, ../scss/layout.scss */
+  /* line 306, ../scss/index.scss */
   .container {
     margin-left: 150px;
   }
 }
 /* This width range is specific to the design of this site. */
 @media only screen and (min-width: 1024px) and (max-width: 1110px) {
-  /* line 405, ../scss/layout.scss */
+  /* line 311, ../scss/index.scss */
   .try-it-out {
     width: 120px;
                 /* Reduce width from 150px as it is overlapping with the main text in the section.
@@ -444,7 +343,7 @@ This is happening because we reduce the section width for screen width > 1024 an
 /* Tablet landscape and all smaller mobile devices*/
 @media only screen and (max-width: 1023px) {
   /* hide the left navigation bar and the "try it out" labels in mobile */
-  /* line 415, ../scss/layout.scss */
+  /* line 321, ../scss/index.scss */
   nav, .try-it-out {
     display: none;
   }
