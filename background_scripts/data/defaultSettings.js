@@ -18,7 +18,8 @@ var defaultSettings = {
     */
     disabledSites: {
 
-        urlPatterns: ['www.reddit.com*', 'gmail.com*', 'mail.google.com*', 'units.io*'], // Disabling Units because it might interfere
+        urlPatterns: ['www.reddit.com*', 'gmail.com*', 'mail.google.com*', 'units.io', 'units.io/#*'], // Disabling
+        // units.io homepage because it has the Units library running
         urlRegexps: []
     },
 

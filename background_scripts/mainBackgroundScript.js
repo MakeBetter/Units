@@ -73,4 +73,16 @@
         });
     }
 
+    // Redirect to a Getting Started page when the extension is installed.  
+    function redirectOnInstall() {
+        if (localStorage.installTime)
+            return;
+
+        var now = new Date().getTime();
+        localStorage.installTime = now;
+        chrome.tabs.create({url: "http://units.io/installed.html"});
+    }
+
+    redirectOnInstall();
+
 })(_u.mod_settings, _u.mod_getMainDomain);
