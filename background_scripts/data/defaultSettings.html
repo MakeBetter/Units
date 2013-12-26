@@ -4,8 +4,8 @@
 (If using Webstorm, use 'paste simple' from the context menu, so that it doesn't change
 formatting compared to the original JS file)
 -->
-<pre>
-// JSHint Config
+    <pre>
+        // JSHint Config
 /* exported defaultSettings */
 
 /**
@@ -25,7 +25,8 @@ var defaultSettings = {
     */
     disabledSites: {
 
-        urlPatterns: ['www.reddit.com*', 'gmail.com*', 'mail.google.com*'], // Disabling Units because it might interfere
+        urlPatterns: ['www.reddit.com*', 'gmail.com*', 'mail.google.com*', 'units.io', 'units.io/#*'], // Disabling
+        // units.io homepage because it has the Units library running
         urlRegexps: []
     },
 
@@ -57,6 +58,8 @@ var defaultSettings = {
 
         // default/starting opacity for non-CU-page overlays, can be anything between 0 and 1, but ideally should be
         // a low'ish value (close to 0)
+        // TODO: should we allow different values for each "url pattern"?) + maybe sites with larger CUs can have a
+        // higher value compared to sites with small CUs like HN, google search results etc.
         defaultSpotlightDimmingOpacity: 0
     },
 
@@ -236,82 +239,82 @@ var defaultSettings = {
     },
 
     /*
-    Default values for the description and kbdShortcuts associated with the standard ("std_") SUs and actions
-    defined in the urlData for a page. In most cases, the urlData will not specify values for these. However, if the
-    urlData specifies any of these values for any of the "std_" items, they will be used instead.
+    Default values for the description and kbdShortcuts associated with the standard SUs and actions defined in the
+    urlData for a page. In most cases, the urlData will not specify values for these. However, if the urlData does specify
+    values for these items, they will be used instead.
     */
     valuesFor_stdUrlDataItems: {
         page: {
-            std_searchField: {
+            searchField: {
                 descr: "Focus search box",
                 kbdShortcuts: ["/"]
             },
-            std_header: {
+            header: {
                 descr: "Focus (the first item on the) header",
                 kbdShortcuts: ["alt+h"]
             },
-            std_nextOrMore: {
+            nextOrMore: {
                 descr: "Show next or more content",
                 kbdShortcuts: ["g down"]
             },
-            std_comment: {
+            comment: {
                 descr: "Add comment",
                 kbdShortcuts: ["c"]
             },
-            std_viewComments: {
+            viewComments: {
                 descr: "View comments",
                 kbdShortcuts: ["g c"]
             },
-            std_logout: {
+            logout: {
                 descr: "Logout",
                 kbdShortcuts: ["q"]
             }
         },
         CUs: {
-            std_main: {
+            main: {
                 descr: ""
             },
-            std_upvote: {
+            upvote: {
                 descr: "Upvote (or 'like'/'+1'/etc).",
                 kbdShortcuts: ["u"]
             },
-            std_downvote: {
+            downvote: {
                 descr: "Downvote (or '-1'/etc).",
                 kbdShortcuts: ["d"]
             },
-            std_share: {
+            share: {
                 descr: "Share",
                 kbdShortcuts: ["s"]
             },
-            std_comment: {
+            comment: {
                 descr: "Add comment",
                 kbdShortcuts: ["c"]
             },
-            std_viewComments: {
+            viewComments: {
                 descr: "View (more) comments",
                 kbdShortcuts: ["v c"]
             },
-            std_edit: {
+            edit: {
                 descr: "Edit",
                 kbdShortcuts: ["e"]
             },
-            std_profile: {
+            profile: {
                 descr: "Go to user profile",
                 kbdShortcuts: ["p"]
             },
-            std_sharedContent: {
+            sharedContent: {
                 descr: "Open the shared content",
                 kbdShortcuts: ["v s"]
             },
-            std_toggleSelection: {
+            toggleSelection: {
                 descr: "toggleSelection",
                 kbdShortcuts: ["x"]
             },
-            std_seeMore: {
+            seeMore: {
                 descr: "See More",
                 kbdShortcuts: ["m"]
             },
-            std_star: {
+            star: {
                 descr: "Star",
                 kbdShortcuts: ["*"]
             }
@@ -326,6 +329,7 @@ var defaultSettings = {
         "i": "http://www.imdb.com/find?q=<<_serach_str_>>&s=all"
     }
 };
-</pre>
+
+    </pre>
 </body>
 </html>
