@@ -232,82 +232,82 @@ var defaultSettings = {
     },
 
     /*
-    Default values for the description and kbdShortcuts associated with the standard ("std_") SUs and actions
-    defined in the urlData for a page. In most cases, the urlData will not specify values for these. However, if the
-    urlData specifies any of these values for any of the "std_" items, they will be used instead.
+    Default values for the description and kbdShortcuts associated with the standard SUs and actions defined in the
+    urlData for a page. In most cases, the urlData will not specify values for these. However, if the urlData does specify
+    values for these items, they will be used instead.
     */
     valuesFor_stdUrlDataItems: {
         page: {
-            std_searchField: {
+            searchField: {
                 descr: "Focus search box",
                 kbdShortcuts: ["/"]
             },
-            std_header: {
+            header: {
                 descr: "Focus (the first item on the) header",
                 kbdShortcuts: ["alt+h"]
             },
-            std_nextOrMore: {
+            nextOrMore: {
                 descr: "Show next or more content",
                 kbdShortcuts: ["g down"]
             },
-            std_comment: {
+            comment: {
                 descr: "Add comment",
                 kbdShortcuts: ["c"]
             },
-            std_viewComments: {
+            viewComments: {
                 descr: "View comments",
                 kbdShortcuts: ["g c"]
             },
-            std_logout: {
+            logout: {
                 descr: "Logout",
                 kbdShortcuts: ["q"]
             }
         },
         CUs: {
-            std_main: {
+            main: {
                 descr: ""
             },
-            std_upvote: {
+            upvote: {
                 descr: "Upvote (or 'like'/'+1'/etc).",
                 kbdShortcuts: ["u"]
             },
-            std_downvote: {
+            downvote: {
                 descr: "Downvote (or '-1'/etc).",
                 kbdShortcuts: ["d"]
             },
-            std_share: {
+            share: {
                 descr: "Share",
                 kbdShortcuts: ["s"]
             },
-            std_comment: {
+            comment: {
                 descr: "Add comment",
                 kbdShortcuts: ["c"]
             },
-            std_viewComments: {
+            viewComments: {
                 descr: "View (more) comments",
                 kbdShortcuts: ["v c"]
             },
-            std_edit: {
+            edit: {
                 descr: "Edit",
                 kbdShortcuts: ["e"]
             },
-            std_profile: {
+            profile: {
                 descr: "Go to user profile",
                 kbdShortcuts: ["p"]
             },
-            std_sharedContent: {
+            sharedContent: {
                 descr: "Open the shared content",
                 kbdShortcuts: ["v s"]
             },
-            std_toggleSelection: {
+            toggleSelection: {
                 descr: "toggleSelection",
                 kbdShortcuts: ["x"]
             },
-            std_seeMore: {
+            seeMore: {
                 descr: "See More",
                 kbdShortcuts: ["m"]
             },
-            std_star: {
+            star: {
                 descr: "Star",
                 kbdShortcuts: ["*"]
             }
