@@ -680,11 +680,20 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
         var matches = function(data) {
             regexps = data.urlRegexps.concat(getEquivalentRegexps(data.urlPatterns));
-            var regexpsLen = regexps.length;
+            var regexpsLen = regexps.length,
+                strippedUrl2; // strippedUrl with trailing slash added or removed, as appropriate.
+
+            if (strippedUrl[strippedUrl.length - 1] === "/") {
+                strippedUrl2 = strippedUrl.slice(0, -1);
+            }
+            else {
+                strippedUrl2 = strippedUrl + "/";
+            }
 
             for (var i = 0; i < regexpsLen; ++i) {
                 var regexp = regexps[i];
-                if (regexp.test(strippedUrl)) {
+                // Test URL both with and without trailing slash. 
+                if (regexp.test(strippedUrl) || regexp.test(strippedUrl2)) {
                     return true;
                 }
             }
