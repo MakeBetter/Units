@@ -1,7 +1,8 @@
 // JSHint config
 /* exported defaultSettingsHelp */
 
-// Dictionary of defaultSettings keys and description
+// Dictionary of defaultSettings keys and description. This dictionary is used to show help description for defaultSettings
+// keys in the Advanced Options page. (This is an experimental feature and not really much in use at the moment).
 
 var defaultSettingsHelp = {
     disabledSites: "To disable Units on a site/ page, add its URL pattern or regex.",
@@ -43,7 +44,7 @@ var defaultSettingsHelp = {
     CUsShortcuts: "Content Unit (CU) related shortcuts. Work when CUs are present on a page.",
 
     /*
-     Default values for the description and kbdShortcuts associated with the standard ("std_") SUs and actions
+     Default values for the description and kbdShortcuts associated with the standard SUs and actions
      defined in the urlData for a page. In most cases, the urlData will not specify values for these. However, if the
      urlData specifies any of these values for any of the "std_" items, they will be used instead.
      */
