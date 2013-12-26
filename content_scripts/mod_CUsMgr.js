@@ -1296,7 +1296,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
             // (substituting (newWinTop + winHeight) for newWinBottom)
             newWinTop = (elTop + elBottom - winHeight - pageHeaderHeight)/2;
 
-            newWinTop += 50; // now shift slightly upward to make it closer to the top than bottom; looks nicer
+            newWinTop += 10; // now shift slightly upward to make it closer to the top than bottom; looks nicer
 
             if (direction === 'down' && elTop < newWinTop + pageHeaderHeight + margin ) {
                 newWinTop = elTop - pageHeaderHeight - margin;
