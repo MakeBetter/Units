@@ -57,8 +57,23 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
     }
 
     function showHelp() {
-        chrome.tabs.sendMessage(activeTabId, {message: 'showHelp'});
-        window.close();
+        var isContentScriptPresent = false;
+        chrome.tabs.sendMessage(activeTabId, {message: 'showHelp'}, function(response) {
+            // response = true if content script received message.
+            isContentScriptPresent = response;
+
+            if (response) {
+                window.close();
+            }
+        });
+
+        // Show error message if content script not available on current tab. This happens, for example for a new tab or
+        // the Chrome Extensions web page (where a valid webpage is not loaded.)
+        setTimeout(function() {
+            if (!isContentScriptPresent) {
+                document.getElementById("help-error-message").style.display = "block";
+            }
+        }, 100);
     }
 
     // Helpers

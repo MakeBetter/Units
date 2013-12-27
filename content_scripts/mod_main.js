@@ -188,6 +188,7 @@
 
             else if(request.message === "showHelp") {
                 mod_help.showHelp();
+                sendResponse(true);
             }
         }
     );
