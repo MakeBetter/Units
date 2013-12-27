@@ -210,8 +210,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         expandedUrlData = settings.expandedUrlData;
         CUsSpecifier = expandedUrlData.CUs_specifier;
         CUsSelector = CUsSpecifier.selector;
-        mainElementSelector = (tmp = expandedUrlData.CUs_SUs) && (tmp = tmp.mainEl) && tmp.selector;
-        headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_SUs) && (tmp = tmp.header) && tmp.selector;
+        mainElementSelector = (tmp = expandedUrlData.CUs_SUs) && (tmp = tmp.std_mainEl) && tmp.selector;
+        headerSelector = (tmp = expandedUrlData) && (tmp = tmp.page_SUs) && (tmp = tmp.std_header) && tmp.selector;
         CUStyleData = expandedUrlData.CUs_style;
         CUsShortcuts = settings.CUsShortcuts;
         animatedScroll = miscSettings.animatedScroll;
@@ -399,7 +399,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         var fn_onCUSelection, temp;
-        if ((temp = expandedUrlData.page_actions) && (temp = temp.onCUSelection) && (fn_onCUSelection = temp.fn)) {
+        if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUSelection) && (fn_onCUSelection = temp.fn)) {
             fn_onCUSelection($CU, document, $.extend(true, {}, expandedUrlData));
         }
 
@@ -439,7 +439,7 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
         }
 
         var fn_onCUDeselection, temp;
-        if ((temp = expandedUrlData.page_actions) && (temp = temp.onCUDeselection) && (fn_onCUDeselection = temp.fn)) {
+        if ((temp = expandedUrlData.page_actions) && (temp = temp.std_onCUDeselection) && (fn_onCUDeselection = temp.fn)) {
             fn_onCUDeselection($CU, document, $.extend(true, {}, expandedUrlData));
         }
     }
@@ -452,8 +452,8 @@ _u.mod_CUsMgr = (function($, mod_basicPageUtils, mod_domEvents, mod_keyboardLib,
     }
 
     /**
-     * Returns the "main" element in the specified $CU. This is determined using the "mainEl" SU specified in the expandedUrlData.
-     * If no mainEl is specified, this function simply returns the first focusable element in the $CU
+     * Returns the "main" element in the specified $CU. This is determined using the "std_mainEl" SU specified in the expandedUrlData.
+     * If no std_mainEl is specified, this function simply returns the first focusable element in the $CU
      *
      * @param $CU
      * @return {HtmlElement} Returns the "main" element, if one was found, else null.

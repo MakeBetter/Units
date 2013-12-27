@@ -71,21 +71,14 @@ i) Anywhere a selector is specified, the extended set of jQuery selectors can be
 ii) A selector can be specified as a string or an array of strings. When specified as an array, we consider them in order
 till an element is found.
 
-7) // Guide for standard items in urlData:
-Standard SUs and actions (both within page and CU levels) are elements/actions that are found commonly across websites.
-For example, "upvote" is a common CU based SU, found on Facebook, StackOverflow, Hacker News, Quora etc.
-
-These standard items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('descr' property).
+7) // Guide for standard ("std_") items in urlData:
+This applies to SUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
+These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('descr' property).
 This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
-to these items.
-
-However, if it specifically makes sense in a given case, these values (one or both) should be provided
+to these items. However, if it specifically makes sense in a given case, these values (one or both) should be provided
 and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
 opposed to supplementing them.) This allows complete control over what keyboard shortcuts are applied to a page.
-
-As a convention, all non-standard SUs and actions are prepended with an underscore.
  */
-
 // TODO: format of each urlData to be explained along with various ways of specifying, and the various keys etc.
 // TODO: maybe the formats can be explained at two levels - simple options and advanced ones
 // One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
@@ -152,18 +145,17 @@ defaultSettings.urlDataMap = {
                 setOverlayZIndexHigh: true  // use high z-index for CU overlay
             },
             CUs_SUs: {
-                mainEl: ".post_title",  // When a CU is selected, this identifies the element inside it that is given the
-                // initial focus (apart from allowing a shortcut to be specified to access it when a CU is selected)
-                comment: ".comment",   // a "standard" SU can use the "shorthand" notation by directly specifying the selector here
-                upvote: {
+                std_mainEl: ".post_title",  // When a CU is selected, this identifies the element inside it that is given the initial focus (apart from allowing a shortcut to be specified to access it when a CU is selected)
+                std_comment: ".comment",   // a "std_" SU can use the "shorthand" notation by directly specifying the selector here
+                std_upvote: {
                     selector: ".upvote",   // if the "expanded" notation is used, the selector is specified here
 
-                    // This following two keys are optional since this is a "standard" SU, but if one or both are
+                    // This following two keys are optional since this is a "std_" SU, but if one or both are
                     // specified, they will will override the default value
                     kbdShortcuts: ["u", "v"],
                     descr: "customized description.."
                 },
-                share: {
+                std_share: {
                     selector: ".share"
 //                        kbdShortcuts: ["u", "v"]
                 },
@@ -184,11 +176,11 @@ defaultSettings.urlDataMap = {
 
             // the structure of this item matches that of CUs_SUs
             page_SUs: {
-                searchField: {
+                std_searchField: {
                     selector: "#search"
 //                    kbdShortcuts: ["/"]
                 },
-                header: {
+                std_header: {
                 // Apart from being identified as an important unit on the page, it is sometimes helpful to specify a
                 // header in order to ensure that a new CU, upon selection, is positioned correctly on the page.
                 // This is applicable when the page has a fixed header (i.e. one that stays visible even as the page is
@@ -197,21 +189,21 @@ defaultSettings.urlDataMap = {
                 // non fixed header, it will simply be ignored for the purpose of positioning the CU causing  any issues.
                     selector: "#header"
                 },
-                nextOrMore: {
+                std_nextOrMore: {
                     selector: ".next"
-                    //kbdShortcuts: ["g down"]   // this is optional for standard items
+                    //kbdShortcuts: ["g down"]   // this is optional for standard items (i.e. ones prefixed with "std_")
                 }
             },
             // the structure of this item matches that of CUs_actions
             page_actions: {
-                "onCUSelection": {
+                "std_onCUSelection": {
                     // NOTE: the urlData paratmenter is a deep clone the original
                     fn: function($selectedCU, document, urlData) {
                         // this code will execute whenever a CU is selected
                     }
-                    //kbdShortcuts: null  // this is optional for standard items (i.e. ones prefixed with "")
+                    //kbdShortcuts: null  // this is optional for standard items (i.e. ones prefixed with "std_")
                 },
-                "onCUDeselection": {
+                "std_onCUDeselection": {
                     fn: function($deselectedCU, document, urlData) {
                         // this code will execute whenever a CU is deselected
                     }
@@ -235,7 +227,7 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-                logout: "#logout"
+                std_logout: "#logout"
             }
         }
     ],
@@ -245,14 +237,14 @@ defaultSettings.urlDataMap = {
             CUs_specifier: "#centerA, #centerB, .widget",
             CUs_SUs: {
                 // TODO: these don't have any effect right now since they are not focusable (see #178)
-                mainEl: ".s9TitleText, img"
+                std_mainEl: ".s9TitleText, img"
             }
         },
         {
             urlPatterns: ["www.amazon.com/**"],
             CUs_specifier: ".celwidget, .widget, .unified_widget, .shoveler, .yshShoveler",
             CUs_SUs: {
-                mainEl: "h3>a"
+                std_mainEl: "h3>a"
             }
         }
     ],
@@ -271,7 +263,7 @@ defaultSettings.urlDataMap = {
         urlPatterns: ["*.blogspot.*"],
         CUs_specifier: ".post-outer",
         CUs_SUs: {
-            mainEl: ".post-title a"
+            std_mainEl: ".post-title a"
         },
         CUs_style: {
             overlayPadding: "5px"
@@ -292,7 +284,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.boredpanda.com/**"],
             CUs_specifier: ".copWrp_contentImageWrapper",
             CUs_SUs: {
-                mainEl: ".wrapperSocialPanelButton"
+                std_mainEl: ".wrapperSocialPanelButton"
             }
         }
     ],
@@ -306,7 +298,7 @@ defaultSettings.urlDataMap = {
             useInnerElementsToGetOverlaySize: true
         },
         CUs_SUs: {
-            star: ".star"
+            std_star: ".star"
         }
     },
 
@@ -322,7 +314,7 @@ defaultSettings.urlDataMap = {
             setOverlayZIndexHigh: true
         },
         CUs_SUs: {
-            mainEl: "h3>a"
+            std_mainEl: "h3>a"
         }
     },
 
@@ -358,7 +350,7 @@ defaultSettings.urlDataMap = {
                 setOverlayZIndexHigh: true
             },
             page_SUs: {
-                header: "header",
+                std_header: "header",
             },
         }
     ],
@@ -373,10 +365,10 @@ defaultSettings.urlDataMap = {
                            "._6kq", // for the new layout, that has a very limited release at the moment.
             CUs_SUs: {
                 // The last selector in the following apply for the new FB layout (for eg: ._6k6, ._6k2 etc)
-                "upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink,  ._6k6" },
-                "comment": ".comment_link, ._6k2",
-                "share": ".share_action_link, ._6j_",
-                "viewComments": ".UFIPagerLink, .UFIBlingBoxCommentIcon, .prm:contains('Comment')", //.UFIPagerLink for "view more comments" link on both old and new layouts,
+                "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink,  ._6k6" },
+                "std_comment": ".comment_link, ._6k2",
+                "std_share": ".share_action_link, ._6j_",
+                "std_viewComments": ".UFIPagerLink, .UFIBlingBoxCommentIcon, .prm:contains('Comment')", //.UFIPagerLink for "view more comments" link on both old and new layouts,
                 // .UFIBlingBoxCommentIcon and .prm:contains('Comment')" for the comment icon on old and new layout respectively
 
                 // We don't want to focus the following:
@@ -396,7 +388,7 @@ defaultSettings.urlDataMap = {
                 // NOTE: We can afford for these selectors to be non-optimized because these will be looked for inside $CU.
                 // If these were meant for the entire page, then some of these would be very bad!
 
-                mainEl: [
+                std_mainEl: [
                     // mainEl is specified as an array of selectors for FB in order of preference.
                     // The first selector is for shared content, the second for the author of the post.
 
@@ -424,10 +416,10 @@ defaultSettings.urlDataMap = {
 
                     ".fwb.fcg a, a.profileLink"],
 
-                seeMore: ".text_exposed_link>a"
+                std_seeMore: ".text_exposed_link>a"
             },
             page_SUs: {
-                header: "#headNav",
+                std_header: "#headNav",
             },
             page_mainContent: ".uiLayer, #pagelet_stream_pager"
         },
@@ -435,24 +427,24 @@ defaultSettings.urlDataMap = {
             urlRegexps: [/^www\.facebook\.com(?!\/pages).+/], // Match all facebook.com* pages except of the type facebook.com/pages*
             CUs_specifier: "._4_7u .fbTimelineUnit",
             CUs_SUs: {
-                "upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
-                "comment": ".comment_link",
-                "share": ".share_action_link",
+                "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink" },
+                "std_comment": ".comment_link",
+                "std_share": ".share_action_link",
                 //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
-                "viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
-                mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a", // for the timeline page
-                seeMore: ".text_exposed_link>a"
+                "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
+                std_mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a", // for the timeline page
+                std_seeMore: ".text_exposed_link>a"
             },
             page_SUs: {
-                header: "#headNav, .stickyHeaderWrap", // #headNav is the main header, the latter is a dynamic header that sometimes shows up.
-                nextOrMore: "a.uiMorePagerPrimary:contains('Show Older Stories')"
+                std_header: "#headNav, .stickyHeaderWrap", // #headNav is the main header, the latter is a dynamic header that sometimes shows up.
+                std_nextOrMore: "a.uiMorePagerPrimary:contains('Show Older Stories')"
             }
 
         },
         {
             shared: "true",
             page_SUs: {
-                logout: "#logout_form input[type=submit]"
+                std_logout: "#logout_form input[type=submit]"
             }
         }
     ],
@@ -475,8 +467,8 @@ defaultSettings.urlDataMap = {
                 mouseoverOnCUSelection: true
             },
             CUs_SUs: {
-                mainEl: ".js-navigation-open",
-                toggleSelection: ".select-toggle-check",
+                std_mainEl: ".js-navigation-open",
+                std_toggleSelection: ".select-toggle-check",
             }
         },
         {
@@ -484,7 +476,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["github.com/search?*", "github.com/*/search?*"],
             CUs_specifier: ".source, .user-list-item, .code-list-item, .issue-list-item, .next_page",
             CUs_SUs: {
-                mainEl: "h3 a, .user-list-info>a"
+                std_mainEl: "h3 a, .user-list-info>a"
             },
             CUs_style: {
                 overlayPadding: "5px"
@@ -494,13 +486,13 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["github.com", "github.com/organizations/*"],
             CUs_specifier: ".alert, .pagination>a",
             CUs_SUs: {
-                mainEl: ".title>a:last-child"
+                std_mainEl: ".title>a:last-child"
             }
         },
         {
             shared: "true",
             page_SUs: {
-                logout: "#logout"
+                std_logout: "#logout"
             }
         },
     ],
@@ -524,13 +516,13 @@ defaultSettings.urlDataMap = {
                 "overlayPadding": "5px"
             },
             CUs_SUs: {
-                mainEl: ".r>a" // For the "in-depth article" section of the search results
+                std_mainEl: ".r>a" // For the "in-depth article" section of the search results
             },
             CUs_actions: {
 //                // This feature has now been removed since google removed the "preview" feature
 //                "toggle-preview": {
 //                    kbdShortcuts: ["p"],
-//                    // this function is meant to work in conjunction with onCUDeselection (see below)
+//                    // this function is meant to work in conjunction with std_onCUDeselection (see below)
 //                    fn: function($selectedCU, document, urlData) {
 //                        var $previewPane = $('#nycp');
 //                        // Closes any open preview on the page.
@@ -562,7 +554,7 @@ defaultSettings.urlDataMap = {
                 }
             },
             page_actions: {
-//                "onCUDeselection": {
+//                "std_onCUDeselection": {
 //                    fn: function($deselectedCU, document, urlData) {
 //                        if ($('#nycp').is(':visible')) { // if the preview pane is already visible
 //                            var closePreviewBtn = document.getElementById("nycx");
@@ -581,7 +573,7 @@ defaultSettings.urlDataMap = {
 //                useInnerElementsToGetOverlaySize: true
             },
             CUs_SUs: {
-                mainEl: ".gs_rt>a"
+                std_mainEl: ".gs_rt>a"
             }
         },
         {
@@ -592,7 +584,7 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-                logout: "#gb_71"
+                std_logout: "#gb_71"
             }
         }
     ],
@@ -603,7 +595,7 @@ defaultSettings.urlDataMap = {
             CUs_specifier: ".content-results-wrapper table", // .content-pagination a:contains('Next') main element
             // focus does not work because the link does not have an href. We need to implement a fake focus for such cases.
             CUs_SUs: {
-                mainEl: ".content-result-subheader a:contains('on:')"
+                std_mainEl: ".content-result-subheader a:contains('on:')"
             },
             CUs_style: {
                 overlayPadding: "5px"
@@ -620,7 +612,7 @@ defaultSettings.urlDataMap = {
                 setOverlayZIndexHigh: true
             },
             CUs_SUs: {
-                mainEl: ".new-miniprofile-container a"
+                std_mainEl: ".new-miniprofile-container a"
             }
         },
     ],
@@ -641,10 +633,10 @@ defaultSettings.urlDataMap = {
                 setOverlayZIndexHigh: true
             },
             CUs_SUs: {
-                mainEl: ".story-text>a"
+                std_mainEl: ".story-text>a"
             },
             page_SUs: {
-                header: ".header, nav"
+                std_header: ".header, nav"
             },
 
         },
@@ -719,7 +711,7 @@ defaultSettings.urlDataMap = {
                 // unit). Specifying the .answer_wrapper is required to make sure that user links only inside answer units are
                 // selected (and not those inside question units).
                 // .question_link: link to the question. Used in the one-answer-shared-page.
-                mainEl: ".question_link, .answer_wrapper .answer_user a.user, .topic_name",
+                std_mainEl: ".question_link, .answer_wrapper .answer_user a.user, .topic_name",
             }
         },
         {
@@ -732,7 +724,7 @@ defaultSettings.urlDataMap = {
                 // because Quora has many different kinds of units (and units with the same classes across units),
                 // it is important to have the main element data be very specific. otherwise, incorrect/ unexpected
                 // main elements will get selected.
-                mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
+                std_mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
 
             },
             CUs_style: {
@@ -747,7 +739,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.quora.com/@"],
             CUs_specifier: ".question.row, .main_col>div>.row .row, .invite_to_answer, .wiki_section, .e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
             CUs_SUs: {
-                mainEl: ".answer_user>span>a.user, a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
+                std_mainEl: ".answer_user>span>a.user, a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
             }
         },
         // Same as the URL pattern for the main feed page
@@ -756,7 +748,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.quora.com/*"], //
             CUs_specifier: ".e_col.p1.w4_5, .feed_item.row.p1, .row.w5.profile_feed_item",
             CUs_SUs: {
-                mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
+                std_mainEl: "a.question_link, h2.board_item_title a, .meta_feed_item a.topic_name, .meta_item_text>a.user",
             },
             CUs_style: {
                 overlayPadding: "0 0 0 5px"
@@ -766,23 +758,23 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-                logout: ".logout a:contains('Logout')",
-                header: ".fixed_header.header"
+                std_logout: ".logout a:contains('Logout')",
+                std_header: ".fixed_header.header"
             },
             CUs_SUs: {
-                seeMore: ".more_link",
-                "share": ".share_link",
+                std_seeMore: ".more_link",
+                "std_share": ".share_link",
                 _follow: {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"],
                     descr: "Follow"
                 },
-                "viewComments": {
+                "std_viewComments": {
                     kbdShortcuts: ["c", "v c"],
                     selector: ".view_comments"
                 },
-                "upvote": ".add_upvote, .remove_upvote, .rate_up",
-                "downvote": ".add_downvote, .remove_downvote, .rate_down",
+                "std_upvote": ".add_upvote, .remove_upvote, .rate_up",
+                "std_downvote": ".add_downvote, .remove_downvote, .rate_down",
             },
         }
     ],
@@ -807,8 +799,8 @@ defaultSettings.urlDataMap = {
                 "overlayPadding": "5px 10px 5px 0"
             },
             CUs_SUs: {
-                mainEl: "a.title",
-                "viewComments": {kbdShortcuts: ["c", "v c"], selector: ".flat-list.buttons .comments"},
+                std_mainEl: "a.title",
+                "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".flat-list.buttons .comments"},
                 _hide: {kbdShortcuts: ["h"],  selector: ".hide-button a" },
                 _save: {kbdShortcuts: ["shift+s"], selector: ".save-button a"}
             }
@@ -816,12 +808,12 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-                logout: ".logout a:contains('logout')"
+                std_logout: ".logout a:contains('logout')"
             },
             CUs_SUs: {
-                "upvote": ".arrow.up, .arrow.upmod",
-                "downvote": ".arrow.down, .arrow.downmod",
-                "share": ".share-button .active",
+                "std_upvote": ".arrow.up, .arrow.upmod",
+                "std_downvote": ".arrow.down, .arrow.downmod",
+                "std_share": ".share-button .active",
                 _hide: {kbdShortcuts: ["h"],  selector: ".hide-button" },
                 _report: {kbdShortcuts: ["r"],  selector: ".report-button" },
             }
@@ -894,11 +886,11 @@ defaultSettings.urlDataMap = {
                 "overlayPadding": "0 5px 0 5px"
             },
             CUs_SUs: {
-                "upvote": ".vote-up-off",
-                "downvote": ".vote-down-off",
-                "share": ".short-link",
-                "edit": ".suggest-edit-post",
-                "comment": ".comments-link",
+                "std_upvote": ".vote-up-off",
+                "std_downvote": ".vote-down-off",
+                "std_share": ".short-link",
+                "std_edit": ".suggest-edit-post",
+                "std_comment": ".comments-link",
                 _star: {kbdShortcuts: ["r"],  selector: ".star-off", descr: "Star question"}
 
             },
@@ -914,9 +906,9 @@ defaultSettings.urlDataMap = {
             },
             CUs_SUs: {
                 //TODO: specify shortcuts for MathOverflow.
-//                   "upvote": {keys: ["u"],  selector: ".vote-up-off" },
-//                   "downvote": {keys: ["d"],  selector: ".vote-down-off" },
-//                   "share": {keys: ["s"],  selector: ".short-link" },
+//                   "std_upvote": {keys: ["u"],  selector: ".vote-up-off" },
+//                   "std_downvote": {keys: ["d"],  selector: ".vote-down-off" },
+//                   "std_share": {keys: ["s"],  selector: ".short-link" },
 //                   "edit": {keys: ["e"],  selector: ".suggest-edit-post" },
 //                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
 //                   _star: {keys: ["r"],  selector: ".star-off" }
@@ -929,7 +921,7 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-                logout: [".profile-triangle", ".profile-links a:contains('log out')"] // DOES NOT WORK
+                std_logout: [".profile-triangle", ".profile-links a:contains('log out')"] // DOES NOT WORK
             }
         }
     ],
@@ -950,11 +942,11 @@ defaultSettings.urlDataMap = {
             overlayPadding: "0 10px"
         },
         CUs_SUs: {
-            mainEl: "h2.headline>a, .featued-post-description .featured-post-link",
+            std_mainEl: "h2.headline>a, .featued-post-description .featured-post-link",
         },
         page_SUs: {
-            header: '#module-header>.top-container',
-            nextOrMore: ".page-next>a"
+            std_header: '#module-header>.top-container',
+            std_nextOrMore: ".page-next>a"
         }
     },
 
@@ -975,7 +967,7 @@ defaultSettings.urlDataMap = {
             CUs_specifier: "article, .post",
 
             page_SUs: {
-                header: "#navigation, #top-ad"
+                std_header: "#navigation, #top-ad"
             }
         }
     ],
@@ -991,7 +983,7 @@ defaultSettings.urlDataMap = {
                 selector: ".js-actionable-tweet, .stream-user-gallery, .inline-reply-tweetbox, .view-more-container"
             },
             CUs_SUs: {
-                mainEl: '.js-details',
+                std_mainEl: '.js-details',
                 _reply: {
                     selector: '.js-action-reply',
                     kbdShortcuts: ["r"],
@@ -1012,17 +1004,17 @@ defaultSettings.urlDataMap = {
                     kbdShortcuts: ["e"],
                     descr: "Expand/ Collapse"
                 },
-                profile: '.js-user-profile-link'
+                std_profile: '.js-user-profile-link'
 
             },
             page_SUs: {
-                header: ".global-nav"
+                std_header: ".global-nav"
             },
         },
         {
             shared: "true",
             page_SUs: {
-                logout: "#signout-button"
+                std_logout: "#signout-button"
             }
         }
     ],
@@ -1051,7 +1043,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.washingtonpost.com", "www.washingtonpost.com/regional"],
             CUs_specifier: ".module:not(.right-rail, .hot-topics)", // :not can have comma within in jQuery's extensions to CSS selectors
             CUs_SUs: {
-                mainEl: ".headline>a, h2>a"
+                std_mainEl: ".headline>a, h2>a"
             }
         },
         {
@@ -1080,13 +1072,13 @@ defaultSettings.urlDataMap = {
                 buildCUAround: "center>a" // upvote link
             },
             CUs_SUs: {
-                mainEl: ".comhead>a, td.title>a", // commenter's name and shared post's title
-                comment: {
+                std_mainEl: ".comhead>a, td.title>a", // commenter's name and shared post's title
+                std_comment: {
                     selector: "a:contains('reply')",
                     descr: "Reply",
                     kbdShortcuts: ["r", "c"]
                 },
-                upvote: "center>a"
+                std_upvote: "center>a"
             }
         },
         {
@@ -1102,12 +1094,12 @@ defaultSettings.urlDataMap = {
 
             },
             CUs_SUs: {
-                "mainEl": "td.title>a",
-                "viewComments": {
+                "std_mainEl": "td.title>a",
+                "std_viewComments": {
                     kbdShortcuts: ["c", "v c"], // overridden to add additional shortcut
                     selector: "a:contains('comment'), a:contains('discuss')"
                 },
-                "upvote": "td:nth-child(2)>center>a"
+                "std_upvote": "td:nth-child(2)>center>a"
             }
         }
     ],
@@ -1122,14 +1114,14 @@ defaultSettings.urlDataMap = {
                 selector: ".primary-col li"
             },
             CUs_SUs: {
-                mainEl: ".yt-uix-tile-link"
+                std_mainEl: ".yt-uix-tile-link"
             }
         },
         {
             urlPatterns: ["www.youtube.com/user/*"],
             CUs_specifier: ".channels-content-item, .c4-spotlight-module, .expanded-shelf-content-item-wrapper",
             CUs_SUs: {
-                mainEl: ".yt-uix-tile-link, .title>a"
+                std_mainEl: ".yt-uix-tile-link, .title>a"
             },
             CUs_style: {
                 overlayPadding: "0 0 4px 0"
@@ -1140,7 +1132,7 @@ defaultSettings.urlDataMap = {
             CUs_specifier: ".c4-welcome-primary-col, .feed-item-snippet, .expanded-shelf-content-item, " +
                 ".feed-list-item, .yt-shelf-grid-item",
             CUs_SUs: {
-                mainEl: ".yt-uix-tile-link, .yt-ui-ellipsis a"
+                std_mainEl: ".yt-uix-tile-link, .yt-ui-ellipsis a"
             },
             CUs_style: {
                 overlayPadding: "0 0 4px 0"
@@ -1150,7 +1142,7 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.youtube.com/*"],
             CUs_specifier: ".feed-list-item",
             CUs_SUs: {
-                mainEl: ".feed-item-content a:not(.g-hovercard>a, .g-hovercard), .content-item-detail a, " +
+                std_mainEl: ".feed-item-content a:not(.g-hovercard>a, .g-hovercard), .content-item-detail a, " +
                     "a.yt-uix-tile-link, a.yt-uix-redirect-link"
             },
             CUs_style: {
@@ -1170,7 +1162,7 @@ defaultSettings.urlDataMap = {
                     kbdShortcuts:["d"],
                     descr: "Dislike video"
                 },
-                comment: ".comments-textarea-container textarea"
+                std_comment: ".comments-textarea-container textarea"
             }
         }
     ],
