@@ -160,8 +160,8 @@ defaultSettings.urlDataMap = {
 //                        kbdShortcuts: ["u", "v"]
                 },
 
-                // the following SU, which is not "standard" is prefixed with an underscore and requires the "expanded" notation
-                _markAsRead: {
+                // the following SU, which is not standard (i.e. "std_" prefixed) requires the "expanded" notation
+                markAsRead: {
                     descr: "Mark as read",
                     selector: ".mark-read",
                     kbdShortcuts: ["r"]
@@ -433,7 +433,7 @@ defaultSettings.urlDataMap = {
                 //.UFIPagerLink for "view more comments", .mls for the comment icon, and .UFIBlingBoxTimelineCommentIcon for number next to comment icon
                 "std_viewComments": ".UFIPagerLink, .mls, .UFIBlingBoxTimelineCommentIcon",
                 std_mainEl: ".shareUnit a, .profilePicChangeUnit a, a.coverPhotoChangeUnit, .photoUnit a", // for the timeline page
-                std_seeMore: ".text_exposed_link>a"
+                "seeMore": {kbdShortcuts: ["m"], selector: ".text_exposed_link>a", descr: "See more"}
             },
             page_SUs: {
                 std_header: "#headNav, .stickyHeaderWrap", // #headNav is the main header, the latter is a dynamic header that sometimes shows up.
@@ -764,7 +764,7 @@ defaultSettings.urlDataMap = {
             CUs_SUs: {
                 std_seeMore: ".more_link",
                 "std_share": ".share_link",
-                _follow: {
+                "follow": {
                     selector: ".follow_question",
                     kbdShortcuts:["shift+f"],
                     descr: "Follow"
@@ -801,8 +801,8 @@ defaultSettings.urlDataMap = {
             CUs_SUs: {
                 std_mainEl: "a.title",
                 "std_viewComments": {kbdShortcuts: ["c", "v c"], selector: ".flat-list.buttons .comments"},
-                _hide: {kbdShortcuts: ["h"],  selector: ".hide-button a" },
-                _save: {kbdShortcuts: ["shift+s"], selector: ".save-button a"}
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button a" },
+                "save": {kbdShortcuts: ["shift+s"], selector: ".save-button a"}
             }
         },
         {
@@ -814,8 +814,8 @@ defaultSettings.urlDataMap = {
                 "std_upvote": ".arrow.up, .arrow.upmod",
                 "std_downvote": ".arrow.down, .arrow.downmod",
                 "std_share": ".share-button .active",
-                _hide: {kbdShortcuts: ["h"],  selector: ".hide-button" },
-                _report: {kbdShortcuts: ["r"],  selector: ".report-button" },
+                "hide": {kbdShortcuts: ["h"],  selector: ".hide-button" },
+                "report": {kbdShortcuts: ["r"],  selector: ".report-button" },
             }
         },
     ],
@@ -891,7 +891,7 @@ defaultSettings.urlDataMap = {
                 "std_share": ".short-link",
                 "std_edit": ".suggest-edit-post",
                 "std_comment": ".comments-link",
-                _star: {kbdShortcuts: ["r"],  selector: ".star-off", descr: "Star question"}
+                "star": {kbdShortcuts: ["r"],  selector: ".star-off", descr: "Star question"}
 
             },
             CUs_actions: {
@@ -911,7 +911,7 @@ defaultSettings.urlDataMap = {
 //                   "std_share": {keys: ["s"],  selector: ".short-link" },
 //                   "edit": {keys: ["e"],  selector: ".suggest-edit-post" },
 //                   "add_comment": {keys: ["c"],  selector: ".comments-link" },
-//                   _star: {keys: ["r"],  selector: ".star-off" }
+//                   "star": {keys: ["r"],  selector: ".star-off" }
             },
             CUs_actions: {
 
@@ -984,22 +984,22 @@ defaultSettings.urlDataMap = {
             },
             CUs_SUs: {
                 std_mainEl: '.js-details',
-                _reply: {
+                reply: {
                     selector: '.js-action-reply',
                     kbdShortcuts: ["r"],
                     descr: "Reply"
                 },
-                _retweet: {
+                retweet: {
                     selector: '.retweet',
                     kbdShortcuts: ["t"],
                     descr: "Retweet"
                 },
-                _favorite: {
+                favorite: {
                     selector: '.favorite, .unfavorite',
                     kbdShortcuts: ["v"],
                     descr: "Favorite/ Un-favorite"
                 },
-                _expand: {
+                expand: {
                     selector: '.js-details',
                     kbdShortcuts: ["e"],
                     descr: "Expand/ Collapse"
@@ -1152,12 +1152,12 @@ defaultSettings.urlDataMap = {
         {
             shared: "true",
             page_SUs: {
-                _upvote: {
+                "upvote": {
                     selector: "#watch-like",
                     kbdShortcuts:["u"],
                     descr: "Like video"
                 },
-                _downvote: {
+                "downvote": {
                     selector: "#watch-dislike",
                     kbdShortcuts:["d"],
                     descr: "Dislike video"
