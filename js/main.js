@@ -8,7 +8,12 @@ function setup() {
     document.getElementsByClassName("install-button")[0].addEventListener("click", showChromeInstallExtensionUI);
 
     navigationMenu.addEventListener("click", function(event) {
-        navigateToSection(event.target.parentNode);
+        var target = event.target,
+            targetLi = target.tagName.toLowerCase() === 'li' ? target : target.parentNode;
+
+        navigateToSection(targetLi);
+
+        return false;
     });
 
     setNavigationMenuPosition();
@@ -48,7 +53,8 @@ function onDocumentScroll_highlightMenu(event) {
             sectionPositionTop = section.getBoundingClientRect().top;
 
         if (sectionPositionTop > headerHeight && sectionPositionTop < 150) {
-            correspondingMenuOption = document.getElementById(section.dataset.menuid); // Every section has its
+            correspondingMenuOption = navigationMenu.querySelector("[data-target='" + section.id + "']");
+//            correspondingMenuOption = document.getElementById(section.dataset.menuid); // Every section has its
             // corresponding menu option's id in its data
 
             if (correspondingMenuOption !== currentlySelectedMenuOption) {
@@ -81,15 +87,19 @@ function highlightMenuItem(menuItem) {
 }
 
 function navigateToSection(menuItem) {
-//    var sectionId = menuItem.dataset.target,
-//        section = document.getElementById(sectionId),
-//        pos = section && $(section).offset();
-//
-//    // Scroll to section
-//    window.scroll(pos.left, pos.top - headerHeight);
-//
+    var sectionId = menuItem.dataset.target,
+        section = document.getElementById(sectionId),
+        pos = section && $(section).offset();
+
+    // Scroll to section
+    var posTop = Math.max(pos.top - 20, 0);
+//    window.scroll(pos.left, scrollTop);
+
+    $('html,body').animate({scrollTop: posTop}, 200);
+
     // Highlight menu item
     highlightMenuItem(menuItem);
+    window.location = "#" + sectionId;
 }
 
 function showChromeInstallExtensionUI(event) {
