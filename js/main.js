@@ -95,7 +95,7 @@ function navigateToSection(menuItem) {
     var posTop = Math.max(pos.top - 20, 0);
 //    window.scroll(pos.left, scrollTop);
 
-    $('html,body').animate({scrollTop: posTop}, 200);
+    $('html,body').animate({scrollTop: posTop}, 400);
 
     // Highlight menu item
     highlightMenuItem(menuItem);
