@@ -1,3 +1,20 @@
 /*
 Contains styles specific to about.html
 */
+/* line 5, ../scss/about.scss */
+.team-member {
+  width: 200px;
+  float: left;
+  margin-right: 5px;
+  display: inline-block;
+}
+/* line 11, ../scss/about.scss */
+.team-member img {
+  margin: auto;
+}
+
+/* line 16, ../scss/about.scss */
+.team-container {
+  margin: auto;
+  width: 410px;
+}

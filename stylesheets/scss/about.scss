@@ -1,3 +1,19 @@
 /*
 Contains styles specific to about.html
 */
+
+.team-member {
+  width: 200px;
+  float: left;
+  margin-right: 5px;
+  display: inline-block;
+  
+  img {
+    margin: auto;
+  }
+}
+
+.team-container {
+  margin: auto;
+  width: 410px;
+}
