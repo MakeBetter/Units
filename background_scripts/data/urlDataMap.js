@@ -404,9 +404,9 @@ defaultSettings.urlDataMap = {
                     // Since Nov 2013, some users' FB has the selectors changed.
                     "a.uiVideoThumb, " +
                     "a._5pb3._5dec, " + // image of shared link
-                    "a._5pc0._5dec, ._5pc1._5dec a, " + // shared photo
+                    "a._5pc0._5dec, ._5pc1._5dec a, ._5ys3 a," + // shared photo
                     "._5pb_.mvm>a, " + // photo. Not a directly "shared" photo, generally a photo that a friend commented on.
-                    "._5pc1._5dec.mbs.mrs a" + // photo in a shared album
+                    "._5pc1._5dec.mbs.mrs a, " + // photo in a shared album
 
                     // Latest FB layout. Rolled out to a very limited set of users.
                     "a._4-eo, ._6m3 a, a._52c6, a._6ki, a._6k_",
@@ -1111,7 +1111,7 @@ defaultSettings.urlDataMap = {
             urlRegexps: [],
             protectedWebpageShortcuts: [],
             CUs_specifier:  {
-                selector: ".primary-col li"
+                selector: "#search-results li"
             },
             CUs_SUs: {
                 std_mainEl: ".yt-uix-tile-link"
