@@ -11,12 +11,14 @@
 /* #Site Styles
 ================================================== */
 
-html, body {
-  min-height: 100%;
+html {
+  height: 100%;
 }
 
 body {
   color: $text-color;
+  min-height: 100%;
+//  position: relative;
 }
 
 a {
@@ -105,6 +107,8 @@ footer, #footer {
   background-color: #333333;
   color: #eeeeee;
   width: 100%;
+  position: absolute;
+  bottom: 0;
 
   a {
     color:$text-color-grey;
