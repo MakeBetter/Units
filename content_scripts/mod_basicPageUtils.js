@@ -71,7 +71,8 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         removeActiveElementStyle(e.target);
     }
 
-    function onFocus() {
+    function onFocus(e) {
+        console.log(e);
         setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
         // applied its default style for the focused element
     }
@@ -402,9 +403,13 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         }
         // Else if focused element is link or button
         else if ($el.is("a, button, input[type=button], [role=button]")) {
-            $el
-                .addClass(class_focusedLinkOrButton);
+
+            //Style active link or button only if it contains text or children nodes. This check fixes issue #221. 
+            if ($el.text().trim().length || $el.children().length){
+                $el.addClass(class_focusedLinkOrButton);
+            }
         }
+
         // for any other types of elements, no styles added.
 
         return;
