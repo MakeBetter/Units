@@ -1,5 +1,5 @@
-// See _readme_module_template.js for module conventions
-
+// See section "Developers" within markdown.md if you're new to Units
+// the Units source code. Also see _readme_module_template.js
 /**
  * main module (mod_main.js) This is the main module which runs the extension by using the other modules
  */

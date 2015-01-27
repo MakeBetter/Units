@@ -1,20 +1,33 @@
 /*
 
- A general template suggested for modules in this program + it's conventions:
+ Most of the source code for Units consists of self-contained *modules*.
+ Each module has a specific role. A module can depend on other modules.
+ Modules shouldn't have circular dependencies. [This is not really a
+ "sacrosanct" rule but rather an experiment employed 1) because it seems
+ to make sense intuitively (to avoid circular dependencies) and 2) to see
+ how this affects the way we think of and design modules. If at any point
+ this becomes more limiting than useful, it can be rethought.]
 
- Modules are generally created using a variation of the 'Module Pattern' in JS, which uses an immediately invoked function
- expression (IIFE) to return a module object, the methods associated with which have access to its "private" data via
- their closures.
+ This purpose of this file is to describe the general template used for modules
+ (and coding conventions used therewith).
+
+ Modules are generally created using a variation of the Javascript pattern
+ called Module Pattern. This uses an immediately invoked function expression
+ (IIFE) that returns the "module object" which exposes the public functionality
+ of the module, while keeping its private data hidden from the outside world.
+ (The private data is visible only to code within the IIFE.)
 
  Notes:
 
- - The `thisModule` object
-    * Define a `thisModule` object at the top of the IIFE, which lists down the *public interface* of the module, and will
-    be returned by the IIFE.
-    * Also, (if the module needs to publish or subscribe to events), `thisModule` should extend the `_u.mod_pubSub` module).
-    * `thisModule` is like the 'exports' object in node.js/require.js, but called so since triggering an event using
-    `thisModule.trigger()` sounds better than `exports.trigger`. And similarly when accessing public variables
-    (properties) etc using `thisModule.varName`
+ - `thisModule` - the "module object"
+    * Define a `thisModule` object just at the beginning of the IIFE. This is object
+    * returned by the IIFE (and assigned to `_u.mod_moduleName`). `thisModule` lists
+    * down the *public interface* of the module (via its properties).
+    * If the module needs to publish or subscribe to events, `thisModule` should extend
+    * the `_u.mod_pubSub` module).
+    * `thisModule` is like the 'exports' object in node.js/require.js. (But we think
+    * thisModule.trigger() or thisModule.publicVar reads better within the code of the
+    * module than than exports.trigger() etc.
  - Module's data
     * All or most of the module's data should exist as private variables. These are defined outside the `thisModule` object.
     * Public variables should be avoided. But, if you must use them, they can be created as properties of the `thisModule`
@@ -32,7 +45,8 @@
     by the main module to initialize (and reinitialize) and reset (and disable) the module
  - Events handlers
     Each module can respond to events of other modules and raise events of its own. Ideally, both these groups ("Events
-    Raised and "Events Consumed") should be documented just after the `thisModule`.
+    Raised and "Events Consumed") should be documented just after the `thisModule` (TODO: is this being done? is it even
+    needed?)
  */
 
 // A template for modules in this project
