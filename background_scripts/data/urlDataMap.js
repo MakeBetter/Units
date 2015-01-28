@@ -365,7 +365,7 @@ defaultSettings.urlDataMap = {
                            "._6kq, " + // for the new layout, that has a very limited release at the moment.
                             "._4-u2.mbm._5jmm._5pat._5v3q._x72",// added on Jan 26, 2015
             // NOTE: FB CU_specifier data needs cleanup
-            
+
             CUs_SUs: {
                 // The last selector in the following apply for the new FB layout (for eg: ._6k6, ._6k2 etc)
                 "std_upvote": {kbdShortcuts: ["l", "u"],  selector: ".UFILikeLink,  ._6k6" },
@@ -464,14 +464,14 @@ defaultSettings.urlDataMap = {
             CUs_specifier: ".js-navigation-item, .pagination>a:last-child"
         },
         {
-            urlPatterns: ["github.com/*/issues/*", "github.com/*/issues?*"],
+            urlPatterns: ["github.com/*/issues*", "github.com/*/labels/*"],
             CUs_specifier: {
                 selector: ".js-navigation-item",
                 mouseoverOnCUSelection: true
             },
             CUs_SUs: {
                 std_mainEl: ".js-navigation-open",
-                std_toggleSelection: ".select-toggle-check",
+                std_toggleSelection: ".select-toggle-check"
             }
         },
         {
@@ -620,13 +620,18 @@ defaultSettings.urlDataMap = {
         },
     ],
 
-    // Experimental. Does not work well. 
-//    "medium.com": [
-//        {
-//            urlPatterns: ["medium.com", "medium.com/@"],
-//            CUs_specifier: ".post-item"
-//        }
-//    ],
+    "medium.com": [
+        {
+            urlPatterns: ["medium.com", "medium.com/*"],
+            CUs_specifier: ".block--list",
+            CUs_style: {
+                overlayPadding: "0 10px"
+            },
+            CUs_SUs: {
+                std_mainEl: ".block-title>a"
+            }
+        }
+    ],
 
     "npr.org": [
         {
@@ -977,16 +982,40 @@ defaultSettings.urlDataMap = {
 
     "twitter.com": [
         {
-            urlPatterns: ["twitter.com/*"], // works on all pages of twitter. Relevant URLS:  main feed page, user page, tweet page
-    //        protectedWebpageShortcuts: ["j", "k", "g", "o", "f", "n"]
+            urlPatterns: ["twitter.com/@"], // works on profile pages
             CUs_specifier: {
                 // .inline-reply-tweetbox: Reply to tweet container
                 // .view-more-container: "View more in conversation" link container
                 // .js-actionable tweet: All tweets (Main tweets + response tweets that show when the main tweet is expanded)
                 selector: ".js-actionable-tweet, .stream-user-gallery, .inline-reply-tweetbox, .view-more-container"
             },
+            /* If I do not specify mainEl (like we have done for other Twitter pages), then the "date" link gets focus
+            as it is the first focusable. It has a tooltip and focusing it for every tweet is unnecessarily distracting.
+             */
             CUs_SUs: {
-                std_mainEl: '.js-details',
+                std_mainEl: '.js-tweet-text a.pretty-link, .js-tweet-text a.twitter-timeline-link:not(.u-hidden), .ContextualLink'
+            }
+        },
+        {
+            urlPatterns: ["twitter.com/*"], // works on rest of the pages of twitter. Relevant URLS:  main feed page,
+            // tweet page, search results page
+            CUs_specifier: {
+                // .inline-reply-tweetbox: Reply to tweet container
+                // .view-more-container: "View more in conversation" link container
+                // .js-actionable tweet: All tweets (Main tweets + response tweets that show when the main tweet is expanded)
+                selector: ".js-actionable-tweet, .stream-user-gallery, .inline-reply-tweetbox, .view-more-container"
+            }
+            /* NOTE: no std_mainEl specified because selecting the first link or hashtag or username in the tweet content
+            * is quite distracting. By default, the user profile link is given focus, works alright. */
+        },
+        {
+            shared: "true",
+            page_SUs: {
+                std_logout: "#signout-button",
+                std_header: ".global-nav"
+            },
+            CUs_SUs: {
+                //std_mainEl: '.js-tweet-text a.pretty-link, .js-tweet-text a.twitter-timeline-link:not(.u-hidden), .ContextualLink',
                 reply: {
                     selector: '.js-action-reply',
                     kbdShortcuts: ["r"],
@@ -1009,15 +1038,6 @@ defaultSettings.urlDataMap = {
                 },
                 std_profile: '.js-user-profile-link'
 
-            },
-            page_SUs: {
-                std_header: ".global-nav"
-            },
-        },
-        {
-            shared: "true",
-            page_SUs: {
-                std_logout: "#signout-button"
             }
         }
     ],
