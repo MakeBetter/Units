@@ -71,8 +71,7 @@ _u.mod_basicPageUtils = (function($, mod_domEvents, mod_keyboardLib, mod_smoothS
         removeActiveElementStyle(e.target);
     }
 
-    function onFocus(e) {
-        console.log(e);
+    function onFocus() {
         setTimeout(styleActiveElement, 0); //yield first. we want to execute this method once the browser has
         // applied its default style for the focused element
     }
