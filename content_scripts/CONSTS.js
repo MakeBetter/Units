@@ -1,6 +1,10 @@
+// uses makeImmutable() to create an object with 'const' properties
+
 _u.CONSTS = (function(mod_commonHelper){
 
-    // properties defined in this object will be set as read-only properties of the global _u.CONSTS object
+    // use this object to define "CONST variables".
+    // properties defined in this object will be set
+    // as read-only properties of the global _u.CONSTS object
     var CONSTS = {
 
         /* -- Used by multiple modules -- */
@@ -32,5 +36,6 @@ _u.CONSTS = (function(mod_commonHelper){
             '*[tabindex]:not(*[tabindex=-1]):visible, *[contenteditable]'
 
         };
+
     return mod_commonHelper.makeImmutable(CONSTS);
 })(_u.mod_commonHelper);
