@@ -1,4 +1,8 @@
-// The following is just the dependencies from underscore.js 1.4.4(http://underscorejs.org/) that we need for the Events module from Backbone
+// The following is just the dependencies from underscore.js 1.4.4(http://underscorejs.org/)
+// that we need for the Events module from Backbone.
+
+// Tip: Using the variable `root` (which is assigned to `this`, which is `window` in browser`),
+// it adds `_` as a property of `window` (which makes `_` available globally).
 
 (function() {
 

@@ -2,6 +2,7 @@
 // (https://github.com/documentcloud/backbone/blob/master/backbone.js)
 // Instead of the Events object being assigned to Backbone.Events (as in the original), we
 // simply assign it to window.BackboneEvents
+
 //     Backbone.js 1.0.0
 
 //     (c) 2010-2013 Jeremy Ashkenas, DocumentCloud Inc.
