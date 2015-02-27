@@ -69,6 +69,12 @@ _u.mod_moduleName = (function($/*, mod_1, mod_2*/) {
     function setup() {
         reset();    // typically called to reset state before proceeding with any other setting up required
         //... setup code
+
+        // (Generally) all event handlers required by the current module should be bound within
+        // this setup() method. For that use either jQuery's methods for event binding or
+        // mod_domEvents.addEventListener(). Read documentation within mod_domEvents for why
+        // this is so.
+
     }
 
     // public function

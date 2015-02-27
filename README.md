@@ -32,3 +32,16 @@ executes only after the modules it depends on have initialized.)
 - `_u` is used as the top level namespace.
 
 - Refer to _readme_module_template.js which describes how modules are created
+
+Notes
+-----
+
+- The extension makes use of a lot of DOM event handlers for handling key events, mouse events etc
+
+- All event handlers bound by this extension should use mod_domEvents.addEventListener()
+ or $.on() (or $.click(), $.focus(), $.mouseover(), etc that call $.on() internally)
+
+- All event handlers that are to be bound when the extension first starts, should be bound within
+ the setup() methods of the various modules. This ensures that they get bound again if the extension
+ (or any of its modules) was re-enabled after being disabled, etc.
+

@@ -3,7 +3,7 @@
 // Scrolling is done CU-by-CU if the page has CUs, else normally.
 // Cmd/Alt is a modifier key and Space is treated as a special modifier elsewhere in this
 // extension. For this reason, we can use them for scrolling action only on *keyup*, if they
-// were *not* used as modifiers.
+// were *not* used as modifiers while key-down'ed.
 // However, for quick repeated scrolling, the thumb-modifier/space key can be
 // tapped twice in quick succession, without releasing it after pressing it down the second
 // time.

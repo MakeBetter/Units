@@ -1,10 +1,23 @@
 /**
- * Allows tracking of events set up by this extension (so that they be removed/reset when required)
- * For this,
- * 1) jQuery's `on` is overridden
- * 2) A wrapper `addEventListener` method is provided (like, in the case of jQuery's `on`, the the original DOM method
- * `addEventListener` isn't overwritten since it is shared with the webpage's DOM)
+ * This module allows:
+ * 1) Keeping track of the DOM event handlers setup by this extension
+ * 2) Removal of those events when required (like when the the extension
+ *   is disabled (paused) when this module's reset() is called
+ *
+ * To implement point 1) listed above:
+ * a) jQuery's `on` is overridden (this happens to the jQuery library embedded with the
+ * extension, and not to the jQuery library used on the page, in case it is)
+ * b) A wrapper to DOM's `addEventListener` is provided (as in the case of jQuery's `on`,
+ * the the original DOM method `addEventListener` isn't overwritten since it is shared
+ * with the webpage's DOM)
+ *
+ * NOTE: Both these methods – the `addEventListener` wrapper and the overridden jquery 'on' –
+ * should only be called from within the respective module's setup() method, otherwise the
+ * binding created by  it won't work after the extension is reinitialized for any reason (for
+ * example after being paused, or the settings changed) since that involves this module's
+ * reset() getting called which removes all handlers previously setup)
  */
+
 _u.mod_domEvents = (function($) {
     "use strict";
 
@@ -33,9 +46,7 @@ _u.mod_domEvents = (function($) {
      * A technique similar to the overriding of jQuery's 'on' function cannot be used for this, because the DOM, including
      * its functions, are shared with current web page.
      *
-     * !!!!
-     * NOTE: Make sure to call this method from a module's setup() method only. Otherwise all handlers bound with this will
-     * get reset when the content script is initialized.
+     * (Also see the 'NOTE' near the top of this file)
      * @param target
      * @param event
      * @param handler
@@ -47,15 +58,15 @@ _u.mod_domEvents = (function($) {
     }
 
 
-    // this function is not being defined as of now, since it serves no real pupose,
-    // unless the TODO is implemented. A similar thing will have to be done for
-    // $.fn.off
+    // this function (and a similar $.fn.off()) is not being implemented as of now,
+    // since it isn't really needed while being non-trivial to implement.
+    // Not having this function might simply result in some "orphaned" entries
+    // in `addEventListener_eventHandlers`, which will have no effect.
 //    function removeEventListener(target, event, handler, useCapture) {
 //        target.removeEventListener(event, handler, useCapture);
-//        // TODO: remove from `addEventListener_eventHandlers`, the the entry corresponding to the
-//        // event binding just removed. (strictly speaking, there should be no issue even if this
-//        // isn't done, but it should be done to be just to be technically correct, and since
-//        // some future code might depend on the contents of addEventListener_eventHandlers)
+//        // TODO: remove from `addEventListener_eventHandlers`
+//        // while not really needed, consider if should be done to be just to be technically correct –
+//        // some future code might depend on the contents of addEventListener_eventHandlers etc.
 //    }
 
 
