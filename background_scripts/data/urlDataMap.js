@@ -3,23 +3,39 @@
 /* exported specialDomain_masterDomain_map */
 
 /*
-A note on the terms 'CU' and 'SU' that occur multiple times throughout this file:
- Often the most important content of a webpage (i.e the actual *content* excluding the header, footer, side bars,
- adverts) is composed of a set of repeating units. We call such a unit a Content Unit (CU). E.g. on the Google Search
- results page, each search result is a CU. Each CU is a logical unit of content, attention and navigation/access.
- In addition to these CUs, there can be many other types of important units on the page. We call them 'SU's (secondary units).
- SUs can generally be of two types:
- - ones occurring within each CU (e.g: 'like', 'share', etc links/buttons)
- - ones outside any CU, and generally applicable to the whole page itself (e.g: 'logout' link, search field, etc).
- */
+***** First, a NOTE on the terms 'CU' and 'SU' *****
 
-/*
-The object `defaultSettings.urlDataMap` (along with the 'specialDomain_masterDomain_map' object) provides a way to
-map each URl to the data associated with it (which is called the `urlData` corresponding to that URL). [Currently, the
-term "URL" is used to mean the part of the URL that is stripped of "http(s)://", etc].
-Each `urlData` object identifies elements of importance on the webpage, including any "content units" (CUs), and the
-associated keyboard shortcuts. The `urlData` also specifies any other information associated with the URL.
+ * CU (Content Unit):
+Webpages with a feed-like structure, including search results on search engines, generally consist of 
+discrete *units of content*. Each such unit is called a CU.
+    - E.g. on the Google Search results page, each search result is a CU. 
+    - On the Facebook feed, each item on the feed is a CU.
+    - Each CU is a logical unit of content, attention and navigation/access.
+    - In such pages, CUs are the most important component of the page
 
+* SU (Secondary Unit):
+ These are links, buttons, fields etc that occur on the page. 
+ SUs can be of two types:
+    - those that occur within a CU (e.g: links such as 'like', 'share', etc corresponding to the CU)
+    - those applicable to the whole page, such as 'logout', the main search field, etc).
+ 
+
+
+***** The PURPOSE and structure of this file ******
+
+At the topmost level, this file defines two objects, namely `specialDomain_masterDomain_map` and 
+`defaultSettings.urlDataMap`.
+
+- The purpose of `specialDomain_masterDomain_map` is to map a group of related domains to 
+their corresponding "master domain".
+
+- `defaultSettings.urlDataMap` maps a URl to the data associated with it (called the `urlData`). [Here, the
+term "URL" is used to mean the part of the URL excluding the "http(s)://", etc].
+
+------------------
+
+Each `urlData` object identifies the CUs and SUs on that page. It also contains the
+associated keyboard shortcuts.
 Notes:
 1) Each key of the urlDataMap object is called a domain-key, and is the "main domain" for the corresponding
 website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
@@ -45,9 +61,9 @@ should be the last one specified.)
 The regexps associated with a `urlData` object are specified using the `urlRegexp` property. Wildcard-like patterns
 can also be specified using the `urlPatterns` property, as explained below:
 They allow using *'s and @'s as "wildcards":
- - A '*' matches any combination of *zero or more* characters of *ANY* type.
- - A '**' matches any combination of *one or more* characters of *ANY* type.
-- A '@' matches any combination of *one or more* characters that are not 'slashes' or 'periods'.
+ - A '*' matches any combination of ZERO or more characters of ANY type, including slashes and periods.
+ - A '**' matches any combination of ONE or more characters of ANY type, including slashes and periods.
+- A '@' matches any combination of ONE or more characters that are NOT slashes or periods.
 
 3) Only the part of the url after http(s):// is considered for matching with the provided patterns/regexps.
 
@@ -358,12 +374,13 @@ defaultSettings.urlDataMap = {
     "facebook.com": [
         {
             // Facebook main feed page
-            urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*", "www.facebook.com/hashtag/*"],
+            urlPatterns: ["www.facebook.com", "www.facebook.com/?ref=logo", "www.facebook.com/groups/*", "www.facebook.com/hashtag/*", "www.facebook.com/#"],
             CUs_specifier: ".genericStreamStory.uiUnifiedStory, " + // For the original layout. This selector has consistently
             // worked since Nov 2012. Possibly still exists for some users.
                            "._5uch._5jmm._5pat, " + // Related to changes made around Nov 2013
                            "._6kq, " + // for the new layout, that has a very limited release at the moment.
-                            "._4-u2.mbm._5jmm._5pat._5v3q._x72",// added on Jan 26, 2015
+                            "._4-u2.mbm._5jmm._5pat._5v3q._x72, " + // added on Jan 26, 2015
+                            ".userContentWrapper",      //added on Nov 24, 2018
             // NOTE: FB CU_specifier data needs cleanup
 
             CUs_SUs: {
@@ -510,11 +527,13 @@ defaultSettings.urlDataMap = {
             urlPatterns: ["www.google.@/*", "www.google.co.@/*"],
             urlRegexps: [], // since the array is empty this is redundant
             /*
-             #res li.g: search result
-             #brs: "related searches"
+             g-section-with-header: header result
+             #res div.g: search result
+             #brs: related searches
+             .NFQFxe: people results (also has data-attrid="kc:/people/person:sideways")
              #pnnext: "Next" link
              */
-            CUs_specifier: "#res li.g, #brs, #pnnext",
+            CUs_specifier: "g-section-with-header, #res div.g, #brs, .NFQFxe, #pnnext",
             CUs_style: {
                 "overlayPadding": "5px"
             },
@@ -1227,7 +1246,7 @@ defaultSettings.urlDataMap = {
 
 };
 
-// this array allows mapping a special domain to the corresponding "master domain"
+// this array allows mapping a group of related domains to their corresponding "master domain"
 var specialDomain_masterDomain_map = [
     {
         // to match domains like google.fr, google.co.in, google.co.uk etc (in addition to google.com, the matching of
