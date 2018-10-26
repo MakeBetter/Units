@@ -8,6 +8,7 @@ Setup
 - `gem install compass`
 - `cd <path-to-project's-base-directory>`
 - `compass compile`
+- Install folder as an Unpacked Extension on Google Chrome (refer: [https://developer.chrome.com/extensions](https://developer.chrome.com/extensions))
 
 
 Notes
@@ -29,7 +30,7 @@ folder.
 
 - `_u` is used as the top level namespace.
 
-- files with the prefix `mod_` define independent modules.
+- Files with the prefix `mod_` define independent modules.
 
 - `_readme_module_template.js` describes the template to create modules.
 
