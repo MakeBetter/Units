@@ -1,7 +1,5 @@
--Units
-=====
-
-Enhanced navigation on the web.
+Units - Enhanced navigation on the web.
+===== 
 
 
 Setup
