@@ -3,25 +3,30 @@
 /* exported specialDomain_masterDomain_map */
 
 /*
-***** First, a NOTE on the terms 'CU' and 'SU' *****
+
+*** The PURPOSE of this file ***
+- To link a specific web URL with a block of data referred to as the `urlData`
+ for that webpage.
+
+- Each `urlData` object identifies the CUs and SUs (defined below) correponding to
+its webpage, and their associated keyboard shortcuts.
+
+
+*** CUs and SUs ***
 
  * CU (Content Unit):
-Webpages with a feed-like structure, including search results on search engines, generally consist of 
-discrete *units of content*. Each such unit is called a CU.
-    - E.g. on the Google Search results page, each search result is a CU. 
-    - On the Facebook feed, each item on the feed is a CU.
-    - Each CU is a logical unit of content, attention and navigation/access.
-    - In such pages, CUs are the most important component of the page
+A set of repeating "units" that make up a webpage. Examples:
+    - On a search engine's results, each search result is a CU. 
+    - On a feed, each item on the feed is a CU.
+Each CU is a logical unit of content, attention and navigation.
 
 * SU (Secondary Unit):
- These are links, buttons, fields etc that occur on the page. 
- SUs can be of two types:
-    - those that occur within a CU (e.g: links such as 'like', 'share', etc corresponding to the CU)
-    - those applicable to the whole page, such as 'logout', the main search field, etc).
+ Links, buttons, fields etc on a page. 
+    - These can occur within a CU (e.g: links such as 'like', 'share')
+    - Or be applicable to the whole page, such as 'logout', the main search field, etc).
  
 
-
-***** The PURPOSE and structure of this file ******
+*** The STRUCTURE of this file ***
 
 At the topmost level, this file defines two objects, namely `specialDomain_masterDomain_map` and 
 `defaultSettings.urlDataMap`.
@@ -29,34 +34,63 @@ At the topmost level, this file defines two objects, namely `specialDomain_maste
 - The purpose of `specialDomain_masterDomain_map` is to map a group of related domains to 
 their corresponding "master domain".
 
-- `defaultSettings.urlDataMap` maps a URl to the data associated with it (called the `urlData`). [Here, the
-term "URL" is used to mean the part of the URL excluding the "http(s)://", etc].
+- `defaultSettings.urlDataMap` maps a URl to its `urlData` . [Here, "URL" is used to mean the
+ part of the URL excluding the "http(s)://", etc].
 
-------------------
+*/
 
-Each `urlData` object identifies the CUs and SUs on that page. It also contains the
-associated keyboard shortcuts.
+// this object maps certain special domains (denoted via regexps) 
+// to their corresponding "master domain"
+var specialDomain_masterDomain_map = [
+    {
+        // maps country specific google domains like google.fr, google.co.in, google.co.uk, etc
+        // to google.com
+        regexp: /^google\.(?:com|((?:co\.)?[a-z]{2}))$/,
+        masterDomainKey: "google.com"
+    },
+    {
+        regexp: /craigslist\.(?:org|((?:co\.)?[a-z]{2}))$/,
+        masterDomainKey: "craigslist.org"
+    },
+
+    {
+        // Match domains *.blogspot.com, *.blogspot.in etc. NOTE: Blogspot is an exception domain because it is registered
+        // as a "public suffix". See comments near the top of this file for more details.
+        regexp: /blogspot\.(?:com|((?:co\.)?[a-z]{2}))$/,
+        masterDomainKey: "blogspot.com"
+    }
+//    {
+//        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
+//        masterDomainKey: "stackexchange.com"
+//    },
+//    {
+//        regexp: /^(mathoverflow\.net)/,
+//        masterDomainKey: "stackexchange.com"
+//    }
+];
+
+
+/*
+The following object defines `urlData` objects grouped by their 'master domains'.
+
 Notes:
-1) Each key of the urlDataMap object is called a domain-key, and is the "main domain" for the corresponding
-website, i.e. the topmost "registrable" domain based on the public suffix list (publicsuffix.org).
+1) In most cases, a master domain is a "registrable" domain, based on
+`public_suffix_list.txt` (taken from publicsuffix.org). 
 
-Exception: There may be some exception to the above rule. Example, "blogspot.com". Now, per the public suffix list,
-blogspot.com is itself a public suffix (and so each first sub-domain of blogspot.com is a registrable domain and should
-technically an be individual key in urlDataMap).
-However, since all blogspot sub-domains have a similar markup format, we need them to map to the same key in the
-urlDataMap object. For this we are using specialDomain_masterDomain_map - We use a regex that matches all valid blogspot URLs
-and points to the "blogspot.com" key in the urlDataMap object.
+There can be exceptions to this. e.g: "blogspot.com". Now, per the public suffix list,
+blogspot.com is itself a public suffix (like .com), and sub-domains of blogspot.com
+(such as foo.blogspot.com) are considered registrable domains.
+However, since all blogspot sub-domains have a similar markup format, we can group them using the 
+same master key ("blogspot.com")
+This is enabled by using a regexp making all blogspot subdomains in `specialDomain_masterDomain_map`.
 
-2) If the value mapped to a domain-key is a string, that string is used as the domain-key instead. The "pointed to"
-domain-key is called a "master domain". For example, google.com may be used as the master domain for google.co.in etc)
-
-The value mapped to any master domain-key is an array. For an array with only one `urlData` object, the object may
+2) The value mapped to any master domain is an array. For an array with only one `urlData` object, the object may
 directly be specified instead of the array.
 
 A URL is mapped to a `urlData` object as follows. For any url, from among the array of `urlData` objects mapped
-to its domain/master domain, the `urlData` object containing the first matching wildcard pattern/regexp is used.
-(And so the "urlData" objects should be ordered accordingly. Eg: The urlData associated with a default/catch-all regexp
-should be the last one specified.)
+to its domain, the `urlData` object containing the first matching wildcard pattern/regexp is used.
+(And so the "urlData" objects should be ordered accordingly. Eg: The urlData associated with a default/catch-all
+regexp should be the last one specified.)
 
 The regexps associated with a `urlData` object are specified using the `urlRegexp` property. Wildcard-like patterns
 can also be specified using the `urlPatterns` property, as explained below:
@@ -69,25 +103,13 @@ They allow using *'s and @'s as "wildcards":
 
 4) As is convention, a domain name is considered case insensitive, but the rest of the URL isn't
 
-5) Regarding functions specified in the object:
-i) They will run in the context of the content script
-ii) Most functions will have access to a $CU type variable. If for any reason, the function needs to modify any
-properties on it, it must be done indirectly using the jQuery data() function (so that it stays associated with
-underlying DOM element(s), rather  than the jQuery set which changes whenever the CUs array is recalculated,
-for instance on dom change. E.g: $CU.data('foo', bar) instead of $CU.foo = bar.
 
-The data is structured this way because:
-i) it enables efficient lookup (which is not a very big concern as such, but still). This is so, because this way the retrieval of the array of
-urlData objects associated with a URL's domain takes O(1) time, and search for the specific urlData object matching
-the URL is then restricted to the (very small) array.
-ii) it results in better structure/organization compared to having arrays of regexps at the top level.
-
-6)
+5)
 i) Anywhere a selector is specified, the extended set of jQuery selectors can be used as well.
 ii) A selector can be specified as a string or an array of strings. When specified as an array, we consider them in order
 till an element is found.
 
-7) // Guide for standard ("std_") items in urlData:
+6) // Guide for standard ("std_") items in urlData:
 This applies to SUs and actions (both within page and CU levels), whose names begin with the prefix "std_"
 These items need not specify keyboard shortcuts ('kdbShortcuts' property) and brief description ('descr' property).
 This is the recommended policy for these items. In this case, the default shortcuts and description shall be applied
@@ -95,6 +117,7 @@ to these items. However, if it specifically makes sense in a given case, these v
 and they will override the defaults. Note: any keyboard shortcuts, if specified, will *replace* the default ones (as
 opposed to supplementing them.) This allows complete control over what keyboard shortcuts are applied to a page.
  */
+
 // TODO: format of each urlData to be explained along with various ways of specifying, and the various keys etc.
 // TODO: maybe the formats can be explained at two levels - simple options and advanced ones
 // One way of finding out all the properties that can be supplied to this object, is to search for urlData variable
@@ -1245,32 +1268,3 @@ defaultSettings.urlDataMap = {
 
 
 };
-
-// this array allows mapping a group of related domains to their corresponding "master domain"
-var specialDomain_masterDomain_map = [
-    {
-        // to match domains like google.fr, google.co.in, google.co.uk etc (in addition to google.com, the matching of
-        // which is superfluous here as it is the "master domain" key.)
-        regexp: /^google\.(?:com|((?:co\.)?[a-z]{2}))$/,
-        masterDomainKey: "google.com"
-    },
-    {
-        regexp: /craigslist\.(?:org|((?:co\.)?[a-z]{2}))$/,
-        masterDomainKey: "craigslist.org"
-    },
-
-    {
-        // Match domains *.blogspot.com, *.blogspot.in etc. NOTE: Blogspot is an exception domain because it is registered
-        // as a "public suffix". See comments near the top of this file for more details.
-        regexp: /blogspot\.(?:com|((?:co\.)?[a-z]{2}))$/,
-        masterDomainKey: "blogspot.com"
-    }
-//    {
-//        regexp: /^(stackoverflow\.com|superuser\.com|serverfault\.com|stackapps\.com|askubuntu\.com)/,
-//        masterDomainKey: "stackexchange.com"
-//    },
-//    {
-//        regexp: /^(mathoverflow\.net)/,
-//        masterDomainKey: "stackexchange.com"
-//    }
-];

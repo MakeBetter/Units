@@ -22,7 +22,7 @@
             "background_scripts/data/urlData.js",
             "background_scripts/data/defaultSettingsHelp.js",
 
-            "background_scripts/mod_getMainDomain.js",
+            "background_scripts/mod_getRegistrableDomain.js",
             "background_scripts/mod_settings.js",
             "background_scripts/mainBackgroundScript.js",
             "background_scripts/mod_splTabOperations.js"

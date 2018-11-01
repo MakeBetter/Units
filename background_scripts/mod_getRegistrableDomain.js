@@ -1,10 +1,10 @@
 
-_u.mod_getMainDomain = (function(mod_commonHelper) {
+_u.mod_getRegistrableDomain = (function(mod_commonHelper) {
     "use strict";
 
     /*-- Public interface --*/
     var thisModule ={
-        getMainDomain: getMainDomain,
+        getRegistrableDomain: getRegistrableDomain,
         publicSuffixMap: null
     };
 
@@ -56,13 +56,13 @@ _u.mod_getMainDomain = (function(mod_commonHelper) {
      * @param url
      * @returns {*}
      */
-    function getMainDomain(url) {
-        var mainDomain = _getMainDomain(url);
-        if (typeof mainDomain === "string") {
-            return mainDomain.toLowerCase();
+    function getRegistrableDomain(url) {
+        var registrableDomain = _getRegistrableDomain(url);
+        if (typeof registrableDomain === "string") {
+            return registrableDomain.toLowerCase();
         }
         else {
-            return mainDomain;
+            return registrableDomain;
         }
     }
 
@@ -78,7 +78,7 @@ _u.mod_getMainDomain = (function(mod_commonHelper) {
      * Similarly, for the domain, "en.wikipedia.org", "wikipedia.org" is the registrable domain
      *
      */
-    function _getMainDomain(url) {
+    function _getRegistrableDomain(url) {
         var domain = mod_commonHelper.getHostname(url),
             domainTokens = domain.split("."),   // "data.gov.ac" -> ["data", "gov", "ac"]
             domainTokensLen = domainTokens.length,
@@ -91,7 +91,7 @@ _u.mod_getMainDomain = (function(mod_commonHelper) {
             return domain;
         }
 
-        var mainDomain = null,
+        var registrableDomain = null,
             suffixesArrLen = suffixesArr.length,
             suffixTokens,
             i;
@@ -102,8 +102,8 @@ _u.mod_getMainDomain = (function(mod_commonHelper) {
 
             if (suffixTokens[0].charAt(0) === "!") {
                 if (domainMatchesSuffix(domainTokens, suffixTokens)) {
-                    mainDomain = domainTokens.slice(domainTokensLen - suffixTokens.length).join('.'); // for exception rules, the public suffix is obtained by removing the leftmost label/ token.
-                    return mainDomain;
+                    registrableDomain = domainTokens.slice(domainTokensLen - suffixTokens.length).join('.'); // for exception rules, the public suffix is obtained by removing the leftmost label/ token.
+                    return registrableDomain;
                 }
             }
         }
@@ -120,8 +120,8 @@ _u.mod_getMainDomain = (function(mod_commonHelper) {
 
                 // check if suffixArray[i] matches the last numTokensToMatch tokens of the domain
                 if (domainMatchesSuffix(domainTokens, suffixTokens)) {
-                    mainDomain = domainTokens.slice(domainTokensLen - numTokensToMatch - 1).join('.');
-                    return mainDomain;
+                    registrableDomain = domainTokens.slice(domainTokensLen - numTokensToMatch - 1).join('.');
+                    return registrableDomain;
                 }
             }
         }

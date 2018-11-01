@@ -1,4 +1,4 @@
-(function(mod_settings, mod_getMainDomain) {
+(function(mod_settings, mod_getRegistrableDomain) {
 
     var id_lastActiveTab;
 
@@ -33,7 +33,7 @@
 
     function sendSettingsWhenReady(request, sender, sendResponse) {
         (function _sendSettingsWhenReady() {
-            if (mod_getMainDomain.publicSuffixMap) {
+            if (mod_getRegistrableDomain.publicSuffixMap) {
                 var url = sender.tab.url;
                 mod_settings.getUserSettings(sendResponse, {url: url});
             }
@@ -85,4 +85,4 @@
 
     redirectOnInstall();
 
-})(_u.mod_settings, _u.mod_getMainDomain);
+})(_u.mod_settings, _u.mod_getRegistrableDomain);

@@ -1,6 +1,6 @@
 /* global jQuery, defaultSettings, specialDomain_masterDomain_map */
 
-_u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map) {
+_u.mod_settings = (function($, mod_commonHelper, mod_getRegistrableDomain, defaultSettings, specialDomain_masterDomain_map) {
     "use strict";
 
     /*-- Public interface --*/
@@ -436,7 +436,7 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
             return null;
         }
 
-        var domain = mod_getMainDomain.getMainDomain(url);
+        var domain = mod_getRegistrableDomain.getRegistrableDomain(url);
         var urlData = getUrlDataUsingDomainKey(settings, domain, url);
 
         if (!urlData) {
@@ -715,4 +715,4 @@ _u.mod_settings = (function($, mod_commonHelper, mod_getMainDomain, defaultSetti
 
     return thisModule;
 
-})(jQuery, _u.mod_commonHelper, _u.mod_getMainDomain, defaultSettings, specialDomain_masterDomain_map);
+})(jQuery, _u.mod_commonHelper, _u.mod_getRegistrableDomain, defaultSettings, specialDomain_masterDomain_map);
