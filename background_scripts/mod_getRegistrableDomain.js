@@ -1,4 +1,7 @@
 
+// Module to determine the "registrable domain" in a given URL, based on the public suffix
+// list (`public_suffix_list.txt`)
+
 _u.mod_getRegistrableDomain = (function(mod_commonHelper) {
     "use strict";
 
@@ -67,7 +70,7 @@ _u.mod_getRegistrableDomain = (function(mod_commonHelper) {
     }
 
     /**
-     * Returns the topmost "registrable" domain, based on the public suffix list
+     * Returns the "registrable" domain, based on the public suffix list
      * Algorithm:
      * 1. Split the domain name into tokens.
      * 2. Get the top level domain (tld) from the domain name.
