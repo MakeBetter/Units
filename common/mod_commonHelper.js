@@ -23,6 +23,7 @@ _u.mod_commonHelper = (function($) {
         stringifyJSONUnsupportedTypes_inSettings: stringifyJSONUnsupportedTypes_inSettings,
         destringifyJsonUnsupportedTypes_inSettings: destringifyJsonUnsupportedTypes_inSettings,
         getHostname: getHostname,
+        getPort: getPort,
         isObject: isObject,
     };
 
@@ -305,6 +306,12 @@ _u.mod_commonHelper = (function($) {
         var a = document.createElement('a');
         a.href = url;
         return a.hostname;
+    }
+
+    function getPort(url) {
+        var a = document.createElement('a');
+        a.href = url;
+        return a.port;
     }
 
     function isObject(object) {

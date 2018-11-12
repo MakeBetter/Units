@@ -88,7 +88,10 @@ var backgroundPageWindow = chrome.extension.getBackgroundPage(),
 
                 // populate textbox with the URL pattern for disabling the current domain
                 var hostname = mod_commonHelper.getHostname(activeTabURL);
-                disabledUrlPatternInput.value = hostname + "/*";
+                var port = mod_commonHelper.getPort(activeTabURL).toString();
+                var portStr = port === "" ? "" : (":" + port);
+                disabledUrlPatternInput.value = hostname + portStr + "/*";
+                
             }
             else {
                 enableExtensionUI.style.display = "none";
